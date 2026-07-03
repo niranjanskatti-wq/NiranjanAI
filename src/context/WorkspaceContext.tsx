@@ -98,11 +98,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [plugins, setPlugins] = useState<PluginItem[]>(MOCK_PLUGINS);
   const [models, setModels] = useState<ModelItem[]>(MOCK_MODELS);
   
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    `[${new Date().toLocaleTimeString()}] System loaded: Niranjan AI v1.0.0.`,
-    `[${new Date().toLocaleTimeString()}] Connected to OpenRouter and Local Ollama servers.`,
-    `[${new Date().toLocaleTimeString()}] Agents initialized: Hermes Core, Research, Flights, IFZA, Farm, Browser.`
-  ]);
+  const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
@@ -145,6 +141,15 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     checkHealth();
     const interval = setInterval(checkHealth, 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const time = new Date().toLocaleTimeString();
+    setTerminalLogs([
+      `[${time}] System loaded: Niranjan AI v1.0.0.`,
+      `[${time}] Connected to OpenRouter and Local Ollama servers.`,
+      `[${time}] Agents initialized: Hermes Core, Research, Flights, IFZA, Farm, Browser.`
+    ]);
   }, []);
 
   useEffect(() => {

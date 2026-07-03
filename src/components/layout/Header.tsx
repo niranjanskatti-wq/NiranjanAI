@@ -24,11 +24,13 @@ export function Header() {
     models
   } = useWorkspace();
 
+  const [mounted, setMounted] = useState(false);
   const [timeString, setTimeString] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showThemeMenu, setShowThemeMenu] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const updateTime = () => {
       const now = new Date();
       setTimeString(
@@ -90,7 +92,7 @@ export function Header() {
         {/* Local Clock */}
         <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-neutral-400 text-xs font-mono select-none">
           <Clock className="w-3.5 h-3.5 text-neutral-500" />
-          <span>{timeString}</span>
+          <span>{mounted ? timeString : "--:--:--"}</span>
         </div>
 
         {/* Theme Dropdown Toggle */}
