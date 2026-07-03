@@ -14,6 +14,7 @@ import {
   MOCK_TASKS,
   APIService
 } from "@/lib/api";
+import { HermesService } from "@/lib/api/hermes";
 
 type ViewType =
   | "dashboard"
@@ -167,7 +168,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       return now.toLocaleTimeString("en-US", { hour12: false });
     };
 
-    const initialLog = `[${getFormattedTime()}] Initializing workspace...`;
+    const initialLog = `[${getFormattedTime()}] Connecting to Hermes...`;
     
     // Spawn task in Running state
     const newTask: Task = {
@@ -177,7 +178,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       priority: promptToRun.toLowerCase().includes("critical") ? "critical" : "medium",
       agentUsed,
       executionTime: "Running...",
-      progress: 20,
+      progress: 10,
       timestamp: "Just now",
       logs: [initialLog]
     };
@@ -185,58 +186,82 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     setTasks((prev) => [newTask, ...prev]);
     setTerminalLogs((prev) => [...prev, initialLog]);
 
-    const messages = [
-      "Loading selected AI model...",
-      "Preparing task...",
-      "Executing request...",
-      "Task completed successfully."
-    ];
+    try {
+      const result = await HermesService.executeTask(promptToRun);
+      
+      const messages = [
+        "Connection established. Loading selected AI model...",
+        "Preparing task...",
+        "Executing request...",
+        `Response: ${result.response}`,
+        "Task completed successfully."
+      ];
 
-    let currentStep = 0;
-    
-    const interval = setInterval(() => {
-      const msg = messages[currentStep];
-      const logLine = `[${getFormattedTime()}] ${msg}`;
+      let currentStep = 0;
       
-      setTerminalLogs((prev) => [...prev, logLine]);
+      const interval = setInterval(() => {
+        const msg = messages[currentStep];
+        const logLine = `[${getFormattedTime()}] ${msg}`;
+        
+        setTerminalLogs((prev) => [...prev, logLine]);
+        
+        setTasks((prev) =>
+          prev.map((t) => {
+            if (t.id === taskId) {
+              const updatedLogs = [...t.logs, logLine];
+              const isLastStep = currentStep === messages.length - 1;
+              return {
+                ...t,
+                logs: updatedLogs,
+                status: isLastStep ? "completed" : "running",
+                progress: isLastStep ? 100 : Math.min(10 + (currentStep + 1) * 20, 99),
+                executionTime: isLastStep ? result.executionTime || "4.0s" : "Running..."
+              };
+            }
+            return t;
+          })
+        );
+
+        currentStep++;
+        
+        if (currentStep === messages.length) {
+          clearInterval(interval);
+          setIsExecuting(false);
+          
+          // Check if task involves documents or setup
+          if (promptToRun.toLowerCase().includes("ifza")) {
+            addDocument(
+              "IFZA Setup Draft " + Math.floor(Math.random() * 100) + ".pdf",
+              "pdf",
+              "1.1 MB",
+              "IFZA Setup",
+              ["IFZA", "Draft", "Corporate"],
+              `Generated setup summary based on prompt: "${promptToRun}". Ready for submission.`
+            );
+          }
+        }
+      }, 1000);
+
+    } catch (error) {
+      const errorLog = `[${getFormattedTime()}] [ERROR] Hermes Offline`;
       
+      setTerminalLogs((prev) => [...prev, errorLog]);
       setTasks((prev) =>
         prev.map((t) => {
           if (t.id === taskId) {
-            const updatedLogs = [...t.logs, logLine];
-            const isLastStep = currentStep === messages.length - 1;
             return {
               ...t,
-              logs: updatedLogs,
-              status: isLastStep ? "completed" : "running",
-              progress: isLastStep ? 100 : Math.min(20 + (currentStep + 1) * 20, 99),
-              executionTime: isLastStep ? "4.0s" : "Running..."
+              logs: [...t.logs, errorLog],
+              status: "failed",
+              progress: 0,
+              executionTime: "Offline"
             };
           }
           return t;
         })
       );
-
-      currentStep++;
-      
-      if (currentStep === messages.length) {
-        clearInterval(interval);
-        setIsExecuting(false);
-        
-        // Check if task involves documents or setup
-        if (promptToRun.toLowerCase().includes("ifza")) {
-          // Automatically create a mock file
-          addDocument(
-            "IFZA Setup Draft " + Math.floor(Math.random() * 100) + ".pdf",
-            "pdf",
-            "1.1 MB",
-            "IFZA Setup",
-            ["IFZA", "Draft", "Corporate"],
-            `Generated setup summary based on prompt: "${promptToRun}". Ready for submission.`
-          );
-        }
-      }
-    }, 1000);
+      setIsExecuting(false);
+    }
   };
 
   const sendChatMessage = async (text: string) => {
