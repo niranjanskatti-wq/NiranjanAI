@@ -155,66 +155,88 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     setIsExecuting(true);
     setPrompt("");
     
-    const initialLogCount = terminalLogs.length;
-    const appendLog = (newLog: string) => {
-      setTerminalLogs((prev) => [...prev, newLog]);
+    const taskId = `task-${Date.now()}`;
+    const agentUsed = promptToRun.toLowerCase().includes("flight")
+      ? "Flight Booking Agent"
+      : promptToRun.toLowerCase().includes("ifza")
+      ? "IFZA Assistant"
+      : "Hermes Core Agent";
+
+    const getFormattedTime = () => {
+      const now = new Date();
+      return now.toLocaleTimeString("en-US", { hour12: false });
     };
+
+    const initialLog = `[${getFormattedTime()}] Initializing workspace...`;
     
     // Spawn task in Running state
-    const newTaskPlaceholder: Task = {
-      id: `task-${Date.now()}`,
+    const newTask: Task = {
+      id: taskId,
       title: promptToRun,
       status: "running",
       priority: promptToRun.toLowerCase().includes("critical") ? "critical" : "medium",
-      agentUsed: promptToRun.toLowerCase().includes("flight")
-        ? "Flight Booking Agent"
-        : promptToRun.toLowerCase().includes("ifza")
-        ? "IFZA Assistant"
-        : "Hermes Core Agent",
-      executionTime: "Calculating...",
+      agentUsed,
+      executionTime: "Running...",
       progress: 20,
       timestamp: "Just now",
-      logs: []
+      logs: [initialLog]
     };
     
-    setTasks((prev) => [newTaskPlaceholder, ...prev]);
+    setTasks((prev) => [newTask, ...prev]);
+    setTerminalLogs((prev) => [...prev, initialLog]);
 
-    try {
-      const completedTask = await APIService.executePrompt(
-        promptToRun,
-        activeModel,
-        appendLog
-      );
+    const messages = [
+      "Loading selected AI model...",
+      "Preparing task...",
+      "Executing request...",
+      "Task completed successfully."
+    ];
+
+    let currentStep = 0;
+    
+    const interval = setInterval(() => {
+      const msg = messages[currentStep];
+      const logLine = `[${getFormattedTime()}] ${msg}`;
       
-      // Update tasks state
+      setTerminalLogs((prev) => [...prev, logLine]);
+      
       setTasks((prev) =>
-        prev.map((t) => (t.id === newTaskPlaceholder.id ? completedTask : t))
+        prev.map((t) => {
+          if (t.id === taskId) {
+            const updatedLogs = [...t.logs, logLine];
+            const isLastStep = currentStep === messages.length - 1;
+            return {
+              ...t,
+              logs: updatedLogs,
+              status: isLastStep ? "completed" : "running",
+              progress: isLastStep ? 100 : Math.min(20 + (currentStep + 1) * 20, 99),
+              executionTime: isLastStep ? "4.0s" : "Running..."
+            };
+          }
+          return t;
+        })
       );
+
+      currentStep++;
       
-      // Check if task involves documents or setup
-      if (promptToRun.toLowerCase().includes("ifza")) {
-        // Automatically create a mock file
-        addDocument(
-          "IFZA Setup Draft " + Math.floor(Math.random() * 100) + ".pdf",
-          "pdf",
-          "1.1 MB",
-          "IFZA Setup",
-          ["IFZA", "Draft", "Corporate"],
-          `Generated setup summary based on prompt: "${promptToRun}". Ready for submission.`
-        );
+      if (currentStep === messages.length) {
+        clearInterval(interval);
+        setIsExecuting(false);
+        
+        // Check if task involves documents or setup
+        if (promptToRun.toLowerCase().includes("ifza")) {
+          // Automatically create a mock file
+          addDocument(
+            "IFZA Setup Draft " + Math.floor(Math.random() * 100) + ".pdf",
+            "pdf",
+            "1.1 MB",
+            "IFZA Setup",
+            ["IFZA", "Draft", "Corporate"],
+            `Generated setup summary based on prompt: "${promptToRun}". Ready for submission.`
+          );
+        }
       }
-    } catch (error) {
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.id === newTaskPlaceholder.id
-            ? { ...t, status: "failed", executionTime: "Error", progress: 0 }
-            : t
-        )
-      );
-      appendLog(`[ERROR] Task execution failed: ${error}`);
-    } finally {
-      setIsExecuting(false);
-    }
+    }, 1000);
   };
 
   const sendChatMessage = async (text: string) => {
