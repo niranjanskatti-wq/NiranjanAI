@@ -33,7 +33,11 @@ export function DashboardView() {
     setPrompt,
     runPrompt,
     isExecuting,
-    activeModel
+    activeModel,
+    hermesStatus,
+    hermesLatency,
+    hermesLastChecked,
+    hermesUrl
   } = useWorkspace();
 
   const promptInputRef = useRef<HTMLTextAreaElement>(null);
@@ -236,27 +240,52 @@ export function DashboardView() {
 
       {/* System Status Section */}
       <div className="space-y-3">
-        <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+        <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider text-left">
           System Node Registry
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {systemStatus.map((node, idx) => {
             const Icon = node.icon;
+            const isHermes = node.name === "Hermes Gateway";
+            
+            const status = isHermes
+              ? (hermesStatus === "online" ? "online" : hermesStatus === "connecting" ? "warning" : "offline")
+              : "online";
+              
+            const latency = isHermes ? hermesLatency : node.latency;
+            
+            let connectionStateText = "";
+            if (isHermes) {
+              if (hermesStatus === "online") connectionStateText = "🟢 Hermes Online";
+              else if (hermesStatus === "offline") connectionStateText = "🔴 Hermes Offline";
+              else connectionStateText = "🟡 Connecting...";
+            }
+
             return (
               <Card key={idx} hoverEffect={false} className="p-3 bg-neutral-950/20 border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-1.5 rounded-lg bg-white/5 border border-white/5 text-neutral-400">
                     <Icon className="w-4 h-4" />
                   </div>
-                  <div>
+                  <div className="text-left">
                     <h4 className="text-xs font-semibold text-neutral-200">{node.name}</h4>
-                    <p className="text-[9px] text-neutral-500 mt-0.5">{node.provider}</p>
+                    {isHermes ? (
+                      <div className="space-y-0.5 mt-0.5 text-[9px] font-mono">
+                        <p className={hermesStatus === "online" ? "text-emerald-400" : hermesStatus === "offline" ? "text-rose-400" : "text-amber-400"}>
+                          {connectionStateText}
+                        </p>
+                        <p className="text-neutral-500 truncate max-w-[130px]" title={hermesUrl}>URL: {hermesUrl}</p>
+                        <p className="text-neutral-500">Checked: {hermesLastChecked}</p>
+                      </div>
+                    ) : (
+                      <p className="text-[9px] text-neutral-500 mt-0.5">{node.provider}</p>
+                    )}
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <StatusIndicator status="online" size="sm" />
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <StatusIndicator status={status} size="sm" />
                   <span className="text-[9px] font-mono text-neutral-500">
-                    {node.latency} | H: {node.health}
+                    {latency} {!isHermes && `| H: ${node.health}`}
                   </span>
                 </div>
               </Card>

@@ -69,6 +69,12 @@ interface WorkspaceContextProps {
   fastApiUrl: string;
   setFastApiUrl: (url: string) => void;
   
+  // Hermes Real-time Monitor States
+  hermesStatus: "online" | "offline" | "connecting";
+  hermesLatency: string;
+  hermesLastChecked: string;
+  hermesUrl: string;
+  
   runPrompt: (customPrompt?: string) => Promise<void>;
   sendChatMessage: (message: string) => Promise<void>;
   togglePlugin: (id: string) => void;
@@ -114,6 +120,32 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     hermes: "••••••••••••••••••••"
   });
   const [fastApiUrl, setFastApiUrl] = useState("http://127.0.0.1:8000");
+
+  const [hermesStatus, setHermesStatus] = useState<"online" | "offline" | "connecting">("connecting");
+  const [hermesLatency, setHermesLatency] = useState<string>("0ms");
+  const [hermesLastChecked, setHermesLastChecked] = useState<string>("Never");
+  const hermesUrl = process.env.NEXT_PUBLIC_HERMES_URL || "http://localhost:8000";
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      const start = Date.now();
+      try {
+        await HermesService.health();
+        const latency = `${Date.now() - start}ms`;
+        setHermesStatus("online");
+        setHermesLatency(latency);
+        setHermesLastChecked(new Date().toLocaleTimeString("en-US", { hour12: false }));
+      } catch (err) {
+        setHermesStatus("offline");
+        setHermesLatency("∞");
+        setHermesLastChecked(new Date().toLocaleTimeString("en-US", { hour12: false }));
+      }
+    };
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Sync DOM attribute for theme switching support
@@ -412,6 +444,11 @@ export class FastAPIConnector {
         setApiKeys,
         fastApiUrl,
         setFastApiUrl,
+        
+        hermesStatus,
+        hermesLatency,
+        hermesLastChecked,
+        hermesUrl,
         
         runPrompt,
         sendChatMessage,
