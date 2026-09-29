@@ -1,0 +1,251 @@
+{
+ "language": "en",
+ "messages": [
+  {
+   "id": "en.birthday.001",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Everything good in me started with you. Thank you for your love, your patience and your blessings. Wishing you good health and many happy years 🙏"
+  },
+  {
+   "id": "en.birthday.002",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! You have given us so much and asked for so little. Today is all about you. Love you always ❤️"
+  },
+  {
+   "id": "en.birthday.003",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, my love! Every day with you is a gift, and today I get to celebrate the best one. Here's to you and to us ❤️"
+  },
+  {
+   "id": "en.birthday.004",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Still the only person who can annoy me and make me laugh in the same minute. Have the best day 🎂"
+  },
+  {
+   "id": "en.birthday.005",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Have a fantastic day and an even better year ahead 🎉"
+  },
+  {
+   "id": "en.birthday.006",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {name}! Wishing you lots of laughter, good food and great company today 🥳"
+  },
+  {
+   "id": "en.birthday.007",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a very happy birthday, {name}. May the year ahead bring you good health, success and happiness."
+  },
+  {
+   "id": "en.birthday.008",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Wishing you a wonderful day and a year full of happiness 🎂"
+  },
+  {
+   "id": "en.birthday.009",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Many happy returns of the day, {nickname}! Stay happy and healthy always 🎉"
+  },
+  {
+   "id": "en.birthday.010",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent",
+    "elder"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! Your blessings mean everything to us. Wishing you good health, peace and many more years with all of us 🙏"
+  },
+  {
+   "id": "en.milestone_birthday.001",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy {age_th} birthday, {nickname}! What a beautiful milestone. Wishing you health, joy and many more wonderful years 🎉"
+  },
+  {
+   "id": "en.milestone_birthday.002",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "{age} years of making the world better! Happy birthday, {nickname}. Today we celebrate you 🥳"
+  },
+  {
+   "id": "en.anniversary.001",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy anniversary, my love! Thank you for every laugh, every hard day we got through together, and every ordinary moment that feels special with you ❤️"
+  },
+  {
+   "id": "en.anniversary.002",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy {years_th} anniversary! I would choose you again, every single time ❤️"
+  },
+  {
+   "id": "en.couple_anniversary.001",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy anniversary, {couple_names}! Wishing you both a lifetime of love, laughter and togetherness 💐"
+  },
+  {
+   "id": "en.couple_anniversary.002",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy anniversary! May your bond grow stronger with every year. Lots of love to you both 💐"
+  },
+  {
+   "id": "en.couple_anniversary.003",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy {years_th} anniversary! You have shown us what real togetherness looks like. Wishing you both good health and many more happy years 🙏"
+  },
+  {
+   "id": "en.work_anniversary.001",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Congratulations on your work anniversary, {name}! Your dedication inspires everyone around you. Wishing you continued success."
+  },
+  {
+   "id": "en.engagement.001",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Congratulations on your engagement, {nickname}! So happy for you both. Wishing you a lifetime of love 💍"
+  },
+  {
+   "id": "en.congratulations.001",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Congratulations, {nickname}! So proud of you. Wishing you all the success ahead 🎉"
+  },
+  {
+   "id": "en.congratulations.002",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Many congratulations, {name}! You truly deserve this. Keep shining ✨"
+  },
+  {
+   "id": "en.belated.001",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Belated happy birthday, {nickname}! Sorry I'm late, but my wishes are just as warm. Hope you had a lovely day 🎂"
+  },
+  {
+   "id": "en.belated.002",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "I missed the day but not the love! Belated wishes, {nickname}. Hope it was a wonderful one 💐"
+  },
+  {
+   "id": "en.festival.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy {festival}! Wishing you and your family joy, good health and prosperity 🙏"
+  },
+  {
+   "id": "en.thank_you.001",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thank you so much for the lovely wishes! It really made my day 😊"
+  },
+  {
+   "id": "en.thank_you.002",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thank you for remembering my birthday! Your wishes mean a lot 🙏"
+  },
+  {
+   "id": "en.general.001",
+   "occasion": "general",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thinking of you today, {nickname}! Wishing you all the very best 😊"
+  }
+ ]
+}

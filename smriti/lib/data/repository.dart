@@ -128,6 +128,65 @@ class Repository {
 
   Future<void> deleteGift(int id) => (db.delete(db.giftIdeas)..where((g) => g.id.equals(id))).go();
 
+  // ---------- wish history ----------
+  Stream<List<WishLog>> watchWishLogs() => (db.select(db.wishLogs)
+        ..orderBy([(w) => OrderingTerm(expression: w.createdAt, mode: OrderingMode.desc)]))
+      .watch();
+
+  Future<List<WishLog>> wishLogsFor(int personId) =>
+      (db.select(db.wishLogs)..where((w) => w.personId.equals(personId))).get();
+
+  Future<int> logWish({
+    int? personId,
+    int? eventId,
+    String? festivalId,
+    String? occasionDate,
+    required String method,
+    String? message,
+    String? templateId,
+    bool confirmed = false,
+  }) =>
+      db.into(db.wishLogs).insert(WishLogsCompanion.insert(
+            personId: Value(personId),
+            eventId: Value(eventId),
+            festivalId: Value(festivalId),
+            occasionDate: Value(occasionDate),
+            method: method,
+            message: Value(message),
+            templateId: Value(templateId),
+            confirmed: Value(confirmed),
+          ));
+
+  /// Marks an occurrence as wished: confirms the latest log for it, or adds one.
+  Future<void> markWished({int? eventId, String? festivalId, required String occasionDate, int? personId}) async {
+    final q = db.select(db.wishLogs)
+      ..where((w) => w.occasionDate.equals(occasionDate))
+      ..orderBy([(w) => OrderingTerm(expression: w.createdAt, mode: OrderingMode.desc)]);
+    if (eventId != null) q.where((w) => w.eventId.equals(eventId));
+    if (festivalId != null) q.where((w) => w.festivalId.equals(festivalId));
+    if (personId != null && festivalId != null) q.where((w) => w.personId.equals(personId));
+    final existing = await q.get();
+    if (existing.isNotEmpty) {
+      await (db.update(db.wishLogs)..where((w) => w.id.equals(existing.first.id)))
+          .write(const WishLogsCompanion(confirmed: Value(true)));
+    } else {
+      await logWish(
+          personId: personId,
+          eventId: eventId,
+          festivalId: festivalId,
+          occasionDate: occasionDate,
+          method: 'manual',
+          confirmed: true);
+    }
+  }
+
+  Future<void> unmarkWished({int? eventId, required String occasionDate}) =>
+      (db.update(db.wishLogs)
+            ..where((w) => w.occasionDate.equals(occasionDate) & (eventId == null ? const Constant(true) : w.eventId.equals(eventId))))
+          .write(const WishLogsCompanion(confirmed: Value(false)));
+
+  Future<void> deleteWishLog(int id) => (db.delete(db.wishLogs)..where((w) => w.id.equals(id))).go();
+
   // ---------- notices ----------
   Stream<List<ContactNotice>> watchUnseenNotices() => (db.select(db.contactNotices)
         ..where((n) => n.seen.equals(false))

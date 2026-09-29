@@ -129,6 +129,18 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _whatsappAppMeta = const VerificationMeta(
+    'whatsappApp',
+  );
+  @override
+  late final GeneratedColumn<String> whatsappApp = GeneratedColumn<String>(
+    'whatsapp_app',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('auto'),
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -279,6 +291,7 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
     timeZone,
     callNumber,
     whatsappNumber,
+    whatsappApp,
     notes,
     likes,
     dislikes,
@@ -375,6 +388,15 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
         whatsappNumber.isAcceptableOrUnknown(
           data['whatsapp_number']!,
           _whatsappNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('whatsapp_app')) {
+      context.handle(
+        _whatsappAppMeta,
+        whatsappApp.isAcceptableOrUnknown(
+          data['whatsapp_app']!,
+          _whatsappAppMeta,
         ),
       );
     }
@@ -515,6 +537,10 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
         DriftSqlType.string,
         data['${effectivePrefix}whatsapp_number'],
       ),
+      whatsappApp: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}whatsapp_app'],
+      )!,
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -588,6 +614,9 @@ class Person extends DataClass implements Insertable<Person> {
   /// Normalised numbers (+91…). A null WhatsApp number means "same as call".
   final String? callNumber;
   final String? whatsappNumber;
+
+  /// "auto" (ask if both are installed), "whatsapp" or "business".
+  final String whatsappApp;
   final String? notes;
   final String? likes;
   final String? dislikes;
@@ -619,6 +648,7 @@ class Person extends DataClass implements Insertable<Person> {
     this.timeZone,
     this.callNumber,
     this.whatsappNumber,
+    required this.whatsappApp,
     this.notes,
     this.likes,
     this.dislikes,
@@ -660,6 +690,7 @@ class Person extends DataClass implements Insertable<Person> {
     if (!nullToAbsent || whatsappNumber != null) {
       map['whatsapp_number'] = Variable<String>(whatsappNumber);
     }
+    map['whatsapp_app'] = Variable<String>(whatsappApp);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
@@ -716,6 +747,7 @@ class Person extends DataClass implements Insertable<Person> {
       whatsappNumber: whatsappNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(whatsappNumber),
+      whatsappApp: Value(whatsappApp),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
@@ -764,6 +796,7 @@ class Person extends DataClass implements Insertable<Person> {
       timeZone: serializer.fromJson<String?>(json['timeZone']),
       callNumber: serializer.fromJson<String?>(json['callNumber']),
       whatsappNumber: serializer.fromJson<String?>(json['whatsappNumber']),
+      whatsappApp: serializer.fromJson<String>(json['whatsappApp']),
       notes: serializer.fromJson<String?>(json['notes']),
       likes: serializer.fromJson<String?>(json['likes']),
       dislikes: serializer.fromJson<String?>(json['dislikes']),
@@ -793,6 +826,7 @@ class Person extends DataClass implements Insertable<Person> {
       'timeZone': serializer.toJson<String?>(timeZone),
       'callNumber': serializer.toJson<String?>(callNumber),
       'whatsappNumber': serializer.toJson<String?>(whatsappNumber),
+      'whatsappApp': serializer.toJson<String>(whatsappApp),
       'notes': serializer.toJson<String?>(notes),
       'likes': serializer.toJson<String?>(likes),
       'dislikes': serializer.toJson<String?>(dislikes),
@@ -820,6 +854,7 @@ class Person extends DataClass implements Insertable<Person> {
     Value<String?> timeZone = const Value.absent(),
     Value<String?> callNumber = const Value.absent(),
     Value<String?> whatsappNumber = const Value.absent(),
+    String? whatsappApp,
     Value<String?> notes = const Value.absent(),
     Value<String?> likes = const Value.absent(),
     Value<String?> dislikes = const Value.absent(),
@@ -848,6 +883,7 @@ class Person extends DataClass implements Insertable<Person> {
     whatsappNumber: whatsappNumber.present
         ? whatsappNumber.value
         : this.whatsappNumber,
+    whatsappApp: whatsappApp ?? this.whatsappApp,
     notes: notes.present ? notes.value : this.notes,
     likes: likes.present ? likes.value : this.likes,
     dislikes: dislikes.present ? dislikes.value : this.dislikes,
@@ -886,6 +922,9 @@ class Person extends DataClass implements Insertable<Person> {
       whatsappNumber: data.whatsappNumber.present
           ? data.whatsappNumber.value
           : this.whatsappNumber,
+      whatsappApp: data.whatsappApp.present
+          ? data.whatsappApp.value
+          : this.whatsappApp,
       notes: data.notes.present ? data.notes.value : this.notes,
       likes: data.likes.present ? data.likes.value : this.likes,
       dislikes: data.dislikes.present ? data.dislikes.value : this.dislikes,
@@ -925,6 +964,7 @@ class Person extends DataClass implements Insertable<Person> {
           ..write('timeZone: $timeZone, ')
           ..write('callNumber: $callNumber, ')
           ..write('whatsappNumber: $whatsappNumber, ')
+          ..write('whatsappApp: $whatsappApp, ')
           ..write('notes: $notes, ')
           ..write('likes: $likes, ')
           ..write('dislikes: $dislikes, ')
@@ -954,6 +994,7 @@ class Person extends DataClass implements Insertable<Person> {
     timeZone,
     callNumber,
     whatsappNumber,
+    whatsappApp,
     notes,
     likes,
     dislikes,
@@ -982,6 +1023,7 @@ class Person extends DataClass implements Insertable<Person> {
           other.timeZone == this.timeZone &&
           other.callNumber == this.callNumber &&
           other.whatsappNumber == this.whatsappNumber &&
+          other.whatsappApp == this.whatsappApp &&
           other.notes == this.notes &&
           other.likes == this.likes &&
           other.dislikes == this.dislikes &&
@@ -1008,6 +1050,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
   final Value<String?> timeZone;
   final Value<String?> callNumber;
   final Value<String?> whatsappNumber;
+  final Value<String> whatsappApp;
   final Value<String?> notes;
   final Value<String?> likes;
   final Value<String?> dislikes;
@@ -1032,6 +1075,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     this.timeZone = const Value.absent(),
     this.callNumber = const Value.absent(),
     this.whatsappNumber = const Value.absent(),
+    this.whatsappApp = const Value.absent(),
     this.notes = const Value.absent(),
     this.likes = const Value.absent(),
     this.dislikes = const Value.absent(),
@@ -1057,6 +1101,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     this.timeZone = const Value.absent(),
     this.callNumber = const Value.absent(),
     this.whatsappNumber = const Value.absent(),
+    this.whatsappApp = const Value.absent(),
     this.notes = const Value.absent(),
     this.likes = const Value.absent(),
     this.dislikes = const Value.absent(),
@@ -1082,6 +1127,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     Expression<String>? timeZone,
     Expression<String>? callNumber,
     Expression<String>? whatsappNumber,
+    Expression<String>? whatsappApp,
     Expression<String>? notes,
     Expression<String>? likes,
     Expression<String>? dislikes,
@@ -1107,6 +1153,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
       if (timeZone != null) 'time_zone': timeZone,
       if (callNumber != null) 'call_number': callNumber,
       if (whatsappNumber != null) 'whatsapp_number': whatsappNumber,
+      if (whatsappApp != null) 'whatsapp_app': whatsappApp,
       if (notes != null) 'notes': notes,
       if (likes != null) 'likes': likes,
       if (dislikes != null) 'dislikes': dislikes,
@@ -1134,6 +1181,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     Value<String?>? timeZone,
     Value<String?>? callNumber,
     Value<String?>? whatsappNumber,
+    Value<String>? whatsappApp,
     Value<String?>? notes,
     Value<String?>? likes,
     Value<String?>? dislikes,
@@ -1159,6 +1207,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
       timeZone: timeZone ?? this.timeZone,
       callNumber: callNumber ?? this.callNumber,
       whatsappNumber: whatsappNumber ?? this.whatsappNumber,
+      whatsappApp: whatsappApp ?? this.whatsappApp,
       notes: notes ?? this.notes,
       likes: likes ?? this.likes,
       dislikes: dislikes ?? this.dislikes,
@@ -1209,6 +1258,9 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     }
     if (whatsappNumber.present) {
       map['whatsapp_number'] = Variable<String>(whatsappNumber.value);
+    }
+    if (whatsappApp.present) {
+      map['whatsapp_app'] = Variable<String>(whatsappApp.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -1263,6 +1315,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
           ..write('timeZone: $timeZone, ')
           ..write('callNumber: $callNumber, ')
           ..write('whatsappNumber: $whatsappNumber, ')
+          ..write('whatsappApp: $whatsappApp, ')
           ..write('notes: $notes, ')
           ..write('likes: $likes, ')
           ..write('dislikes: $dislikes, ')
@@ -3258,6 +3311,631 @@ class ContactNoticesCompanion extends UpdateCompanion<ContactNotice> {
   }
 }
 
+class $WishLogsTable extends WishLogs with TableInfo<$WishLogsTable, WishLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WishLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _personIdMeta = const VerificationMeta(
+    'personId',
+  );
+  @override
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+    'person_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES people (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _eventIdMeta = const VerificationMeta(
+    'eventId',
+  );
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+    'event_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES events (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _festivalIdMeta = const VerificationMeta(
+    'festivalId',
+  );
+  @override
+  late final GeneratedColumn<String> festivalId = GeneratedColumn<String>(
+    'festival_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occasionDateMeta = const VerificationMeta(
+    'occasionDate',
+  );
+  @override
+  late final GeneratedColumn<String> occasionDate = GeneratedColumn<String>(
+    'occasion_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _methodMeta = const VerificationMeta('method');
+  @override
+  late final GeneratedColumn<String> method = GeneratedColumn<String>(
+    'method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _messageMeta = const VerificationMeta(
+    'message',
+  );
+  @override
+  late final GeneratedColumn<String> message = GeneratedColumn<String>(
+    'message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<String> templateId = GeneratedColumn<String>(
+    'template_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _confirmedMeta = const VerificationMeta(
+    'confirmed',
+  );
+  @override
+  late final GeneratedColumn<bool> confirmed = GeneratedColumn<bool>(
+    'confirmed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("confirmed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    personId,
+    eventId,
+    festivalId,
+    occasionDate,
+    method,
+    message,
+    templateId,
+    confirmed,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wish_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WishLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('person_id')) {
+      context.handle(
+        _personIdMeta,
+        personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta),
+      );
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(
+        _eventIdMeta,
+        eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta),
+      );
+    }
+    if (data.containsKey('festival_id')) {
+      context.handle(
+        _festivalIdMeta,
+        festivalId.isAcceptableOrUnknown(data['festival_id']!, _festivalIdMeta),
+      );
+    }
+    if (data.containsKey('occasion_date')) {
+      context.handle(
+        _occasionDateMeta,
+        occasionDate.isAcceptableOrUnknown(
+          data['occasion_date']!,
+          _occasionDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('method')) {
+      context.handle(
+        _methodMeta,
+        method.isAcceptableOrUnknown(data['method']!, _methodMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_methodMeta);
+    }
+    if (data.containsKey('message')) {
+      context.handle(
+        _messageMeta,
+        message.isAcceptableOrUnknown(data['message']!, _messageMeta),
+      );
+    }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    }
+    if (data.containsKey('confirmed')) {
+      context.handle(
+        _confirmedMeta,
+        confirmed.isAcceptableOrUnknown(data['confirmed']!, _confirmedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WishLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WishLog(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      personId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}person_id'],
+      ),
+      eventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}event_id'],
+      ),
+      festivalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}festival_id'],
+      ),
+      occasionDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occasion_date'],
+      ),
+      method: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method'],
+      )!,
+      message: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}message'],
+      ),
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_id'],
+      ),
+      confirmed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}confirmed'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WishLogsTable createAlias(String alias) {
+    return $WishLogsTable(attachedDatabase, alias);
+  }
+}
+
+class WishLog extends DataClass implements Insertable<WishLog> {
+  final int id;
+
+  /// Person the call or message went to.
+  final int? personId;
+  final int? eventId;
+
+  /// Festival id from assets/festivals (Phase 5).
+  final String? festivalId;
+
+  /// The occurrence this was for, "yyyy-mm-dd".
+  final String? occasionDate;
+
+  /// call, whatsapp, sms, copy, share, card, manual.
+  final String method;
+  final String? message;
+  final String? templateId;
+
+  /// True once the user confirms "Mark as wished".
+  final bool confirmed;
+  final DateTime createdAt;
+  const WishLog({
+    required this.id,
+    this.personId,
+    this.eventId,
+    this.festivalId,
+    this.occasionDate,
+    required this.method,
+    this.message,
+    this.templateId,
+    required this.confirmed,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || personId != null) {
+      map['person_id'] = Variable<int>(personId);
+    }
+    if (!nullToAbsent || eventId != null) {
+      map['event_id'] = Variable<int>(eventId);
+    }
+    if (!nullToAbsent || festivalId != null) {
+      map['festival_id'] = Variable<String>(festivalId);
+    }
+    if (!nullToAbsent || occasionDate != null) {
+      map['occasion_date'] = Variable<String>(occasionDate);
+    }
+    map['method'] = Variable<String>(method);
+    if (!nullToAbsent || message != null) {
+      map['message'] = Variable<String>(message);
+    }
+    if (!nullToAbsent || templateId != null) {
+      map['template_id'] = Variable<String>(templateId);
+    }
+    map['confirmed'] = Variable<bool>(confirmed);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  WishLogsCompanion toCompanion(bool nullToAbsent) {
+    return WishLogsCompanion(
+      id: Value(id),
+      personId: personId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(personId),
+      eventId: eventId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventId),
+      festivalId: festivalId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(festivalId),
+      occasionDate: occasionDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(occasionDate),
+      method: Value(method),
+      message: message == null && nullToAbsent
+          ? const Value.absent()
+          : Value(message),
+      templateId: templateId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateId),
+      confirmed: Value(confirmed),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory WishLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WishLog(
+      id: serializer.fromJson<int>(json['id']),
+      personId: serializer.fromJson<int?>(json['personId']),
+      eventId: serializer.fromJson<int?>(json['eventId']),
+      festivalId: serializer.fromJson<String?>(json['festivalId']),
+      occasionDate: serializer.fromJson<String?>(json['occasionDate']),
+      method: serializer.fromJson<String>(json['method']),
+      message: serializer.fromJson<String?>(json['message']),
+      templateId: serializer.fromJson<String?>(json['templateId']),
+      confirmed: serializer.fromJson<bool>(json['confirmed']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'personId': serializer.toJson<int?>(personId),
+      'eventId': serializer.toJson<int?>(eventId),
+      'festivalId': serializer.toJson<String?>(festivalId),
+      'occasionDate': serializer.toJson<String?>(occasionDate),
+      'method': serializer.toJson<String>(method),
+      'message': serializer.toJson<String?>(message),
+      'templateId': serializer.toJson<String?>(templateId),
+      'confirmed': serializer.toJson<bool>(confirmed),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  WishLog copyWith({
+    int? id,
+    Value<int?> personId = const Value.absent(),
+    Value<int?> eventId = const Value.absent(),
+    Value<String?> festivalId = const Value.absent(),
+    Value<String?> occasionDate = const Value.absent(),
+    String? method,
+    Value<String?> message = const Value.absent(),
+    Value<String?> templateId = const Value.absent(),
+    bool? confirmed,
+    DateTime? createdAt,
+  }) => WishLog(
+    id: id ?? this.id,
+    personId: personId.present ? personId.value : this.personId,
+    eventId: eventId.present ? eventId.value : this.eventId,
+    festivalId: festivalId.present ? festivalId.value : this.festivalId,
+    occasionDate: occasionDate.present ? occasionDate.value : this.occasionDate,
+    method: method ?? this.method,
+    message: message.present ? message.value : this.message,
+    templateId: templateId.present ? templateId.value : this.templateId,
+    confirmed: confirmed ?? this.confirmed,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  WishLog copyWithCompanion(WishLogsCompanion data) {
+    return WishLog(
+      id: data.id.present ? data.id.value : this.id,
+      personId: data.personId.present ? data.personId.value : this.personId,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      festivalId: data.festivalId.present
+          ? data.festivalId.value
+          : this.festivalId,
+      occasionDate: data.occasionDate.present
+          ? data.occasionDate.value
+          : this.occasionDate,
+      method: data.method.present ? data.method.value : this.method,
+      message: data.message.present ? data.message.value : this.message,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+      confirmed: data.confirmed.present ? data.confirmed.value : this.confirmed,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishLog(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('festivalId: $festivalId, ')
+          ..write('occasionDate: $occasionDate, ')
+          ..write('method: $method, ')
+          ..write('message: $message, ')
+          ..write('templateId: $templateId, ')
+          ..write('confirmed: $confirmed, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    personId,
+    eventId,
+    festivalId,
+    occasionDate,
+    method,
+    message,
+    templateId,
+    confirmed,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WishLog &&
+          other.id == this.id &&
+          other.personId == this.personId &&
+          other.eventId == this.eventId &&
+          other.festivalId == this.festivalId &&
+          other.occasionDate == this.occasionDate &&
+          other.method == this.method &&
+          other.message == this.message &&
+          other.templateId == this.templateId &&
+          other.confirmed == this.confirmed &&
+          other.createdAt == this.createdAt);
+}
+
+class WishLogsCompanion extends UpdateCompanion<WishLog> {
+  final Value<int> id;
+  final Value<int?> personId;
+  final Value<int?> eventId;
+  final Value<String?> festivalId;
+  final Value<String?> occasionDate;
+  final Value<String> method;
+  final Value<String?> message;
+  final Value<String?> templateId;
+  final Value<bool> confirmed;
+  final Value<DateTime> createdAt;
+  const WishLogsCompanion({
+    this.id = const Value.absent(),
+    this.personId = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.festivalId = const Value.absent(),
+    this.occasionDate = const Value.absent(),
+    this.method = const Value.absent(),
+    this.message = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.confirmed = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  WishLogsCompanion.insert({
+    this.id = const Value.absent(),
+    this.personId = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.festivalId = const Value.absent(),
+    this.occasionDate = const Value.absent(),
+    required String method,
+    this.message = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.confirmed = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : method = Value(method);
+  static Insertable<WishLog> custom({
+    Expression<int>? id,
+    Expression<int>? personId,
+    Expression<int>? eventId,
+    Expression<String>? festivalId,
+    Expression<String>? occasionDate,
+    Expression<String>? method,
+    Expression<String>? message,
+    Expression<String>? templateId,
+    Expression<bool>? confirmed,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (personId != null) 'person_id': personId,
+      if (eventId != null) 'event_id': eventId,
+      if (festivalId != null) 'festival_id': festivalId,
+      if (occasionDate != null) 'occasion_date': occasionDate,
+      if (method != null) 'method': method,
+      if (message != null) 'message': message,
+      if (templateId != null) 'template_id': templateId,
+      if (confirmed != null) 'confirmed': confirmed,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  WishLogsCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? personId,
+    Value<int?>? eventId,
+    Value<String?>? festivalId,
+    Value<String?>? occasionDate,
+    Value<String>? method,
+    Value<String?>? message,
+    Value<String?>? templateId,
+    Value<bool>? confirmed,
+    Value<DateTime>? createdAt,
+  }) {
+    return WishLogsCompanion(
+      id: id ?? this.id,
+      personId: personId ?? this.personId,
+      eventId: eventId ?? this.eventId,
+      festivalId: festivalId ?? this.festivalId,
+      occasionDate: occasionDate ?? this.occasionDate,
+      method: method ?? this.method,
+      message: message ?? this.message,
+      templateId: templateId ?? this.templateId,
+      confirmed: confirmed ?? this.confirmed,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (personId.present) {
+      map['person_id'] = Variable<int>(personId.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (festivalId.present) {
+      map['festival_id'] = Variable<String>(festivalId.value);
+    }
+    if (occasionDate.present) {
+      map['occasion_date'] = Variable<String>(occasionDate.value);
+    }
+    if (method.present) {
+      map['method'] = Variable<String>(method.value);
+    }
+    if (message.present) {
+      map['message'] = Variable<String>(message.value);
+    }
+    if (templateId.present) {
+      map['template_id'] = Variable<String>(templateId.value);
+    }
+    if (confirmed.present) {
+      map['confirmed'] = Variable<bool>(confirmed.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishLogsCompanion(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('festivalId: $festivalId, ')
+          ..write('occasionDate: $occasionDate, ')
+          ..write('method: $method, ')
+          ..write('message: $message, ')
+          ..write('templateId: $templateId, ')
+          ..write('confirmed: $confirmed, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -3471,6 +4149,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $EventPeopleTable eventPeople = $EventPeopleTable(this);
   late final $GiftIdeasTable giftIdeas = $GiftIdeasTable(this);
   late final $ContactNoticesTable contactNotices = $ContactNoticesTable(this);
+  late final $WishLogsTable wishLogs = $WishLogsTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -3482,6 +4161,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     eventPeople,
     giftIdeas,
     contactNotices,
+    wishLogs,
     settings,
   ];
   @override
@@ -3514,6 +4194,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       ),
       result: [TableUpdate('contact_notices', kind: UpdateKind.delete)],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'people',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('wish_logs', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'events',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('wish_logs', kind: UpdateKind.update)],
+    ),
   ]);
 }
 
@@ -3529,6 +4223,7 @@ typedef $$PeopleTableCreateCompanionBuilder = PeopleCompanion Function({
   Value<String?> timeZone,
   Value<String?> callNumber,
   Value<String?> whatsappNumber,
+  Value<String> whatsappApp,
   Value<String?> notes,
   Value<String?> likes,
   Value<String?> dislikes,
@@ -3554,6 +4249,7 @@ typedef $$PeopleTableUpdateCompanionBuilder = PeopleCompanion Function({
   Value<String?> timeZone,
   Value<String?> callNumber,
   Value<String?> whatsappNumber,
+  Value<String> whatsappApp,
   Value<String?> notes,
   Value<String?> likes,
   Value<String?> dislikes,
@@ -3625,6 +4321,25 @@ final class $$PeopleTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$WishLogsTable, List<WishLog>> _wishLogsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.wishLogs,
+    aliasName: 'people__id__wish_logs__person_id',
+  );
+
+  $$WishLogsTableProcessedTableManager get wishLogsRefs {
+    final manager = $$WishLogsTableTableManager(
+      $_db,
+      $_db.wishLogs,
+    ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_wishLogsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$PeopleTableFilterComposer
@@ -3688,6 +4403,11 @@ class $$PeopleTableFilterComposer
 
   ColumnFilters<String> get whatsappNumber => $composableBuilder(
     column: $table.whatsappNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get whatsappApp => $composableBuilder(
+    column: $table.whatsappApp,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3825,6 +4545,31 @@ class $$PeopleTableFilterComposer
     );
     return f(composer);
   }
+
+  Expression<bool> wishLogsRefs(
+    Expression<bool> Function($$WishLogsTableFilterComposer f) f,
+  ) {
+    final $$WishLogsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishLogs,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishLogsTableFilterComposer(
+            $db: $db,
+            $table: $db.wishLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PeopleTableOrderingComposer
@@ -3888,6 +4633,11 @@ class $$PeopleTableOrderingComposer
 
   ColumnOrderings<String> get whatsappNumber => $composableBuilder(
     column: $table.whatsappNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get whatsappApp => $composableBuilder(
+    column: $table.whatsappApp,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3999,6 +4749,11 @@ class $$PeopleTableAnnotationComposer
 
   GeneratedColumn<String> get whatsappNumber => $composableBuilder(
     column: $table.whatsappNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get whatsappApp => $composableBuilder(
+    column: $table.whatsappApp,
     builder: (column) => column,
   );
 
@@ -4122,6 +4877,31 @@ class $$PeopleTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> wishLogsRefs<T extends Object>(
+    Expression<T> Function($$WishLogsTableAnnotationComposer a) f,
+  ) {
+    final $$WishLogsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishLogs,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishLogsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.wishLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PeopleTableTableManager
@@ -4141,6 +4921,7 @@ class $$PeopleTableTableManager
             bool eventPeopleRefs,
             bool giftIdeasRefs,
             bool contactNoticesRefs,
+            bool wishLogsRefs,
           })
         > {
   $$PeopleTableTableManager(_$AppDatabase db, $PeopleTable table)
@@ -4167,6 +4948,7 @@ class $$PeopleTableTableManager
                 Value<String?> timeZone = const Value.absent(),
                 Value<String?> callNumber = const Value.absent(),
                 Value<String?> whatsappNumber = const Value.absent(),
+                Value<String> whatsappApp = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> likes = const Value.absent(),
                 Value<String?> dislikes = const Value.absent(),
@@ -4191,6 +4973,7 @@ class $$PeopleTableTableManager
                 timeZone: timeZone,
                 callNumber: callNumber,
                 whatsappNumber: whatsappNumber,
+                whatsappApp: whatsappApp,
                 notes: notes,
                 likes: likes,
                 dislikes: dislikes,
@@ -4217,6 +5000,7 @@ class $$PeopleTableTableManager
                 Value<String?> timeZone = const Value.absent(),
                 Value<String?> callNumber = const Value.absent(),
                 Value<String?> whatsappNumber = const Value.absent(),
+                Value<String> whatsappApp = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> likes = const Value.absent(),
                 Value<String?> dislikes = const Value.absent(),
@@ -4241,6 +5025,7 @@ class $$PeopleTableTableManager
                 timeZone: timeZone,
                 callNumber: callNumber,
                 whatsappNumber: whatsappNumber,
+                whatsappApp: whatsappApp,
                 notes: notes,
                 likes: likes,
                 dislikes: dislikes,
@@ -4267,6 +5052,7 @@ class $$PeopleTableTableManager
                 eventPeopleRefs = false,
                 giftIdeasRefs = false,
                 contactNoticesRefs = false,
+                wishLogsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -4274,6 +5060,7 @@ class $$PeopleTableTableManager
                     if (eventPeopleRefs) db.eventPeople,
                     if (giftIdeasRefs) db.giftIdeas,
                     if (contactNoticesRefs) db.contactNotices,
+                    if (wishLogsRefs) db.wishLogs,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -4341,6 +5128,27 @@ class $$PeopleTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (wishLogsRefs)
+                        await $_getPrefetchedData<
+                          Person,
+                          $PeopleTable,
+                          WishLog
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PeopleTableReferences
+                              ._wishLogsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PeopleTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).wishLogsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.personId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -4365,6 +5173,7 @@ typedef $$PeopleTableProcessedTableManager =
         bool eventPeopleRefs,
         bool giftIdeasRefs,
         bool contactNoticesRefs,
+        bool wishLogsRefs,
       })
     >;
 typedef $$EventsTableCreateCompanionBuilder = EventsCompanion Function({
@@ -4425,6 +5234,25 @@ final class $$EventsTableReferences
     ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_eventPeopleRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$WishLogsTable, List<WishLog>> _wishLogsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.wishLogs,
+    aliasName: 'events__id__wish_logs__event_id',
+  );
+
+  $$WishLogsTableProcessedTableManager get wishLogsRefs {
+    final manager = $$WishLogsTableTableManager(
+      $_db,
+      $_db.wishLogs,
+    ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_wishLogsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -4546,6 +5374,31 @@ class $$EventsTableFilterComposer
           }) => $$EventPeopleTableFilterComposer(
             $db: $db,
             $table: $db.eventPeople,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> wishLogsRefs(
+    Expression<bool> Function($$WishLogsTableFilterComposer f) f,
+  ) {
+    final $$WishLogsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishLogs,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishLogsTableFilterComposer(
+            $db: $db,
+            $table: $db.wishLogs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4753,6 +5606,31 @@ class $$EventsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> wishLogsRefs<T extends Object>(
+    Expression<T> Function($$WishLogsTableAnnotationComposer a) f,
+  ) {
+    final $$WishLogsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishLogs,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishLogsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.wishLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$EventsTableTableManager
@@ -4768,7 +5646,7 @@ class $$EventsTableTableManager
           $$EventsTableUpdateCompanionBuilder,
           (Event, $$EventsTableReferences),
           Event,
-          PrefetchHooks Function({bool eventPeopleRefs})
+          PrefetchHooks Function({bool eventPeopleRefs, bool wishLogsRefs})
         > {
   $$EventsTableTableManager(_$AppDatabase db, $EventsTable table)
     : super(
@@ -4869,35 +5747,59 @@ class $$EventsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({eventPeopleRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (eventPeopleRefs) db.eventPeople],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (eventPeopleRefs)
-                    await $_getPrefetchedData<
-                      Event,
-                      $EventsTable,
-                      EventPeopleData
-                    >(
-                      currentTable: table,
-                      referencedTable: $$EventsTableReferences
-                          ._eventPeopleRefsTable(db),
-                      managerFromTypedResult: (p0) => $$EventsTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).eventPeopleRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.eventId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({eventPeopleRefs = false, wishLogsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (eventPeopleRefs) db.eventPeople,
+                    if (wishLogsRefs) db.wishLogs,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (eventPeopleRefs)
+                        await $_getPrefetchedData<
+                          Event,
+                          $EventsTable,
+                          EventPeopleData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$EventsTableReferences
+                              ._eventPeopleRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$EventsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).eventPeopleRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.eventId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (wishLogsRefs)
+                        await $_getPrefetchedData<Event, $EventsTable, WishLog>(
+                          currentTable: table,
+                          referencedTable: $$EventsTableReferences
+                              ._wishLogsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$EventsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).wishLogsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.eventId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -4914,7 +5816,7 @@ typedef $$EventsTableProcessedTableManager =
       $$EventsTableUpdateCompanionBuilder,
       (Event, $$EventsTableReferences),
       Event,
-      PrefetchHooks Function({bool eventPeopleRefs})
+      PrefetchHooks Function({bool eventPeopleRefs, bool wishLogsRefs})
     >;
 typedef $$EventPeopleTableCreateCompanionBuilder =
     EventPeopleCompanion Function({
@@ -5899,6 +6801,498 @@ typedef $$ContactNoticesTableProcessedTableManager =
       ContactNotice,
       PrefetchHooks Function({bool personId})
     >;
+typedef $$WishLogsTableCreateCompanionBuilder = WishLogsCompanion Function({
+  Value<int> id,
+  Value<int?> personId,
+  Value<int?> eventId,
+  Value<String?> festivalId,
+  Value<String?> occasionDate,
+  required String method,
+  Value<String?> message,
+  Value<String?> templateId,
+  Value<bool> confirmed,
+  Value<DateTime> createdAt,
+});
+typedef $$WishLogsTableUpdateCompanionBuilder = WishLogsCompanion Function({
+  Value<int> id,
+  Value<int?> personId,
+  Value<int?> eventId,
+  Value<String?> festivalId,
+  Value<String?> occasionDate,
+  Value<String> method,
+  Value<String?> message,
+  Value<String?> templateId,
+  Value<bool> confirmed,
+  Value<DateTime> createdAt,
+});
+
+final class $$WishLogsTableReferences
+    extends BaseReferences<_$AppDatabase, $WishLogsTable, WishLog> {
+  $$WishLogsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $PeopleTable _personIdTable(_$AppDatabase db) =>
+      db.people.createAlias('wish_logs__person_id__people__id');
+
+  $$PeopleTableProcessedTableManager? get personId {
+    final $_column = $_itemColumn<int>('person_id');
+    if ($_column == null) return null;
+    final manager = $$PeopleTableTableManager(
+      $_db,
+      $_db.people,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_personIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $EventsTable _eventIdTable(_$AppDatabase db) =>
+      db.events.createAlias('wish_logs__event_id__events__id');
+
+  $$EventsTableProcessedTableManager? get eventId {
+    final $_column = $_itemColumn<int>('event_id');
+    if ($_column == null) return null;
+    final manager = $$EventsTableTableManager(
+      $_db,
+      $_db.events,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$WishLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $WishLogsTable> {
+  $$WishLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occasionDate => $composableBuilder(
+    column: $table.occasionDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get confirmed => $composableBuilder(
+    column: $table.confirmed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PeopleTableFilterComposer get personId {
+    final $$PeopleTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableFilterComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableFilterComposer get eventId {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WishLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WishLogsTable> {
+  $$WishLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occasionDate => $composableBuilder(
+    column: $table.occasionDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get confirmed => $composableBuilder(
+    column: $table.confirmed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PeopleTableOrderingComposer get personId {
+    final $$PeopleTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableOrderingComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableOrderingComposer get eventId {
+    final $$EventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WishLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WishLogsTable> {
+  $$WishLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occasionDate => $composableBuilder(
+    column: $table.occasionDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get method =>
+      $composableBuilder(column: $table.method, builder: (column) => column);
+
+  GeneratedColumn<String> get message =>
+      $composableBuilder(column: $table.message, builder: (column) => column);
+
+  GeneratedColumn<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get confirmed =>
+      $composableBuilder(column: $table.confirmed, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$PeopleTableAnnotationComposer get personId {
+    final $$PeopleTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableAnnotationComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableAnnotationComposer get eventId {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WishLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WishLogsTable,
+          WishLog,
+          $$WishLogsTableFilterComposer,
+          $$WishLogsTableOrderingComposer,
+          $$WishLogsTableAnnotationComposer,
+          $$WishLogsTableCreateCompanionBuilder,
+          $$WishLogsTableUpdateCompanionBuilder,
+          (WishLog, $$WishLogsTableReferences),
+          WishLog,
+          PrefetchHooks Function({bool personId, bool eventId})
+        > {
+  $$WishLogsTableTableManager(_$AppDatabase db, $WishLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WishLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WishLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WishLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> personId = const Value.absent(),
+                Value<int?> eventId = const Value.absent(),
+                Value<String?> festivalId = const Value.absent(),
+                Value<String?> occasionDate = const Value.absent(),
+                Value<String> method = const Value.absent(),
+                Value<String?> message = const Value.absent(),
+                Value<String?> templateId = const Value.absent(),
+                Value<bool> confirmed = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => WishLogsCompanion(
+                id: id,
+                personId: personId,
+                eventId: eventId,
+                festivalId: festivalId,
+                occasionDate: occasionDate,
+                method: method,
+                message: message,
+                templateId: templateId,
+                confirmed: confirmed,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> personId = const Value.absent(),
+                Value<int?> eventId = const Value.absent(),
+                Value<String?> festivalId = const Value.absent(),
+                Value<String?> occasionDate = const Value.absent(),
+                required String method,
+                Value<String?> message = const Value.absent(),
+                Value<String?> templateId = const Value.absent(),
+                Value<bool> confirmed = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => WishLogsCompanion.insert(
+                id: id,
+                personId: personId,
+                eventId: eventId,
+                festivalId: festivalId,
+                occasionDate: occasionDate,
+                method: method,
+                message: message,
+                templateId: templateId,
+                confirmed: confirmed,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WishLogsTable, WishLog>(table),
+                  $$WishLogsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({personId = false, eventId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (personId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.personId,
+                        referencedTable: $$WishLogsTableReferences
+                            ._personIdTable(db),
+                        referencedColumn: $$WishLogsTableReferences
+                            ._personIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (eventId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.eventId,
+                        referencedTable: $$WishLogsTableReferences
+                            ._eventIdTable(db),
+                        referencedColumn: $$WishLogsTableReferences
+                            ._eventIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$WishLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WishLogsTable,
+      WishLog,
+      $$WishLogsTableFilterComposer,
+      $$WishLogsTableOrderingComposer,
+      $$WishLogsTableAnnotationComposer,
+      $$WishLogsTableCreateCompanionBuilder,
+      $$WishLogsTableUpdateCompanionBuilder,
+      (WishLog, $$WishLogsTableReferences),
+      WishLog,
+      PrefetchHooks Function({bool personId, bool eventId})
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -6047,6 +7441,8 @@ class $AppDatabaseManager {
       $$GiftIdeasTableTableManager(_db, _db.giftIdeas);
   $$ContactNoticesTableTableManager get contactNotices =>
       $$ContactNoticesTableTableManager(_db, _db.contactNotices);
+  $$WishLogsTableTableManager get wishLogs =>
+      $$WishLogsTableTableManager(_db, _db.wishLogs);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
 }

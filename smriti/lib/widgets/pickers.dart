@@ -36,6 +36,7 @@ Future<DateParts?> pickDate(
 
   return showModalBottomSheet<DateParts>(
     context: context,
+    useRootNavigator: true,
     builder: (ctx) {
       final c = ctx.c;
       final style = TextStyle(fontFamily: sans, fontSize: 19, color: c.text, fontWeight: FontWeight.w600);
@@ -119,6 +120,7 @@ int daysInMonthOf(int month) => const [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 3
 Future<Relationship?> pickRelationship(BuildContext context, Relationship? current) =>
     showModalBottomSheet<Relationship>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       builder: (ctx) => SafeArea(
         child: Padding(
@@ -152,6 +154,7 @@ Future<Relationship?> pickRelationship(BuildContext context, Relationship? curre
 /// Searchable list of time zones with their current offset.
 Future<String?> pickTimeZone(BuildContext context, String? current) => showModalBottomSheet<String>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       builder: (ctx) => _TimeZoneSheet(current: current),
     );
@@ -237,6 +240,7 @@ Future<(String, String?)?> chooseNumbers(
   var wa = numbers.any((n) => n.number == currentWhatsapp) ? currentWhatsapp! : call;
   return showModalBottomSheet<(String, String?)>(
     context: context,
+    useRootNavigator: true,
     isScrollControlled: true,
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setState) {

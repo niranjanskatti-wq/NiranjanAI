@@ -12,6 +12,8 @@ import 'features/contacts/import_birthdays_screen.dart';
 import 'features/events/event_detail_screen.dart';
 import 'features/events/event_form_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/wish/not_wished_screen.dart';
+import 'features/wish/wish_buttons.dart';
 import 'features/onboarding/welcome_screen.dart';
 import 'features/people/archived_screen.dart';
 import 'features/people/people_screen.dart';
@@ -41,6 +43,7 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/search', builder: (_, _) => const SearchScreen()),
         GoRoute(path: '/me/new', builder: (_, _) => const PersonFormScreen(isMe: true)),
         GoRoute(path: '/archived', builder: (_, _) => const ArchivedScreen()),
+        GoRoute(path: '/not-wished', builder: (_, _) => const NotWishedScreen()),
         GoRoute(path: '/import/contacts', builder: (_, _) => const BulkAddScreen()),
         GoRoute(path: '/import/birthdays', builder: (_, _) => const ImportBirthdaysScreen()),
         GoRoute(
@@ -129,6 +132,10 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
       darkTheme: buildTheme(Brightness.dark),
       themeMode: mode,
       routerConfig: _router,
+      builder: (context, child) => Stack(children: [
+        ?child,
+        const Align(alignment: Alignment.bottomCenter, child: WishedChip()),
+      ]),
     );
   }
 }

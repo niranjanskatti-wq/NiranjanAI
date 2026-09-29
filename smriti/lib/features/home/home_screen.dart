@@ -13,6 +13,7 @@ import '../../widgets/add_sheet.dart';
 import '../../widgets/common.dart';
 import '../../widgets/countdown.dart';
 import '../../widgets/event_row.dart';
+import '../wish/wish_buttons.dart';
 
 enum TimeFilter { today, week, month, all }
 
@@ -59,6 +60,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final today = ref.watch(todayProvider).value ?? Day.today();
     final me = ref.watch(meProvider).value;
     final notices = ref.watch(noticesProvider).value ?? const [];
+    final missed = ref.watch(missedProvider);
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -124,6 +126,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             child: HeroCard(item: hero),
                           ),
                         ),
+                      if (missed.isNotEmpty) ...[
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: SectionLabel('Missed this week'),
+                          ),
+                        ),
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          sliver: SliverList.separated(
+                            itemCount: missed.length,
+                            separatorBuilder: (_, _) => const SizedBox(height: 8),
+                            itemBuilder: (_, i) => UpcomingRow(item: missed[i], belated: true),
+                          ),
+                        ),
+                      ],
                       SliverToBoxAdapter(child: _filters(context)),
                       if (list.isEmpty)
                         SliverToBoxAdapter(
@@ -305,12 +323,11 @@ class HeroCard extends StatelessWidget {
                   )
                 else
                   Countdown(target: item.date),
-                const SizedBox(height: 10),
-                Text(
-                  e.kind == EventKind.other ? relativeDays(item.daysLeft) : 'Call and Share arrive in the next update',
-                  textAlign: TextAlign.center,
-                  style: context.text.bodySmall,
-                ),
+                const SizedBox(height: 12),
+                if (canWish(e))
+                  CallShareButtons(entry: e, date: item.date)
+                else
+                  Text(relativeDays(item.daysLeft), textAlign: TextAlign.center, style: context.text.bodySmall),
               ],
             ),
           ),
@@ -328,7 +345,6 @@ class _TodayBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final names = items.map((u) => u.entry.title).join(', ');
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Container(
@@ -338,19 +354,28 @@ class _TodayBanner extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: c.gold),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('🎉', style: TextStyle(fontSize: 26, color: c.text)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${items.length} celebrations today', style: context.text.titleMedium),
-                  Text(names, style: context.text.bodySmall, maxLines: 2, overflow: TextOverflow.ellipsis),
-                ],
+            Row(children: [
+              Text('🎉', style: TextStyle(fontSize: 24, color: c.text)),
+              const SizedBox(width: 10),
+              Text('${items.length} celebrations today', style: context.text.titleLarge),
+            ]),
+            const SizedBox(height: 6),
+            for (final u in items)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(children: [
+                  EventAvatar(entry: u.entry, size: 32),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text('${u.entry.title} · ${u.entry.typeLabel}',
+                        style: context.text.bodyMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                  if (canWish(u.entry)) MiniCallShare(entry: u.entry, date: u.date),
+                ]),
               ),
-            ),
           ],
         ),
       ),

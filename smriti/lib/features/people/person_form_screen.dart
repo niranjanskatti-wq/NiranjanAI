@@ -175,6 +175,7 @@ class _PersonFormScreenState extends ConsumerState<PersonFormScreen> {
     final c = context.c;
     final choice = await showModalBottomSheet<String>(
       context: context,
+      useRootNavigator: true,
       builder: (ctx) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           ListTile(
@@ -508,6 +509,7 @@ class _PersonFormScreenState extends ConsumerState<PersonFormScreen> {
               name: _name.text.isEmpty ? '+' : _name.text,
               relationship: 'friend',
               stars: 3,
+              whatsappApp: 'auto',
               editedFields: '',
               isMe: false,
               isArchived: false,

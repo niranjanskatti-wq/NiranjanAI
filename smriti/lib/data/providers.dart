@@ -41,6 +41,17 @@ final giftsProvider =
 final noticesProvider =
     StreamProvider<List<ContactNotice>>((ref) => ref.watch(repoProvider).watchUnseenNotices());
 
+final wishLogsProvider = StreamProvider<List<WishLog>>((ref) => ref.watch(repoProvider).watchWishLogs());
+
+/// "eventId|yyyy-mm-dd" keys of occurrences marked as wished.
+final wishedKeysProvider = Provider<Set<String>>((ref) {
+  final logs = ref.watch(wishLogsProvider).value ?? const [];
+  return {
+    for (final l in logs)
+      if (l.confirmed && l.occasionDate != null) '${l.eventId ?? l.festivalId}|${l.occasionDate}',
+  };
+});
+
 /// Today's date; emits again when the clock passes midnight.
 final todayProvider = StreamProvider<Day>((ref) {
   final controller = StreamController<Day>();

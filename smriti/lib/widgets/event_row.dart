@@ -5,13 +5,15 @@ import '../core/theme/tokens.dart';
 import '../core/util/format.dart';
 import '../data/enums.dart';
 import '../data/models.dart';
+import '../features/wish/wish_buttons.dart';
 import 'common.dart';
 
 /// One line in the upcoming list: avatar, name, what and when, stars, days left.
 class UpcomingRow extends StatelessWidget {
-  const UpcomingRow({super.key, required this.item});
+  const UpcomingRow({super.key, required this.item, this.belated = false});
 
   final Upcoming item;
+  final bool belated;
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +60,14 @@ class UpcomingRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              _DaysLeft(days: item.daysLeft),
+              if (canWish(e)) ...[
+                const SizedBox(width: 6),
+                MiniCallShare(entry: e, date: item.date, belated: belated),
+              ],
+              const SizedBox(width: 10),
+              belated
+                  ? Text('${-item.daysLeft}d ago', style: context.text.bodySmall?.copyWith(fontWeight: FontWeight.w700))
+                  : _DaysLeft(days: item.daysLeft),
             ],
           ),
         ),

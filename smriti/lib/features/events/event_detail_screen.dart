@@ -10,6 +10,7 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../../widgets/countdown.dart';
+import '../wish/wish_buttons.dart';
 
 class EventDetailScreen extends ConsumerWidget {
   const EventDetailScreen({super.key, required this.id});
@@ -93,6 +94,12 @@ class EventDetailScreen extends ConsumerWidget {
                           Countdown(target: item.date),
                         const SizedBox(height: 8),
                         Text(relativeDays(item.daysLeft), style: context.text.bodySmall),
+                        if (canWish(e)) ...[
+                          const SizedBox(height: 14),
+                          CallShareButtons(entry: e, date: item.date),
+                          const SizedBox(height: 4),
+                          _WishedToggle(eventId: id, date: item.date.toString()),
+                        ],
                       ]),
                     ),
                   ),
@@ -136,4 +143,26 @@ class EventDetailScreen extends ConsumerWidget {
           Text(v, style: context.text.titleSmall),
         ]),
       );
+}
+
+/// "Wished" switch for this occurrence of the event.
+class _WishedToggle extends ConsumerWidget {
+  const _WishedToggle({required this.eventId, required this.date});
+
+  final int eventId;
+  final String date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final wished = ref.watch(wishedKeysProvider).contains('$eventId|$date');
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Wished'),
+      subtitle: Text(wished ? 'Marked as wished for this year' : 'Turn on once you have wished'),
+      value: wished,
+      onChanged: (v) => v
+          ? ref.read(repoProvider).markWished(eventId: eventId, occasionDate: date)
+          : ref.read(repoProvider).unmarkWished(eventId: eventId, occasionDate: date),
+    );
+  }
 }

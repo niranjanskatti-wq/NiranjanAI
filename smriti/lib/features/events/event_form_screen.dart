@@ -38,6 +38,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   DateParts? _date;
   int? _stars;
   final List<Person?> _people = [null, null];
+  Person? _sendTo;
   bool _repeatTouched = false;
   bool _saving = false;
 
@@ -64,6 +65,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         _title.text = e.title ?? '';
         _customLabel.text = e.customLabel ?? '';
         _notes.text = e.notes ?? '';
+        if (e.sendWishesToId != null) _sendTo = await repo.getPerson(e.sendWishesToId!);
         for (var i = 0; i < entry.people.length && i < 2; i++) {
           _people[i] = entry.people[i];
         }
@@ -101,6 +103,20 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         EventKind.other => EventType.otherTypes,
       };
 
+  Future<void> _pickSendTo() async {
+    final people = await ref.read(repoProvider).watchPeople().first;
+    if (!mounted) return;
+    final chosen = await showModalBottomSheet<Object>(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      builder: (ctx) => _PersonPickerSheet(people: people, noneLabel: 'Nobody else (send to them)'),
+    );
+    if (chosen is Person) setState(() => _sendTo = chosen);
+    if (chosen == 'none') setState(() => _sendTo = null);
+    if (chosen == 'new' && mounted) await context.push('/person/new');
+  }
+
   Future<void> _pickPerson(int slot) async {
     final people = await ref.read(repoProvider).watchPeople().first;
     final me = await ref.read(repoProvider).getMe();
@@ -108,6 +124,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     final choices = [?me, ...people];
     final chosen = await showModalBottomSheet<Object>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       builder: (ctx) => _PersonPickerSheet(people: choices),
     );
@@ -146,6 +163,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       feb29Rule: Value(_feb29.name),
       stars: Value(_stars),
       notes: Value(_notes.text.trim().isEmpty ? null : _notes.text.trim()),
+      sendWishesToId: Value(_kind == EventKind.other ? null : _sendTo?.id),
     );
     final ids = switch (_kind) {
       EventKind.person => [_people[0]!.id],
@@ -286,10 +304,35 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
                 tilePadding: const EdgeInsets.symmetric(horizontal: 4),
-                initiallyExpanded: isFeb29 || _notes.text.isNotEmpty,
                 title: Text('More options', style: context.text.titleMedium),
-                subtitle: Text('Notes, 29 February', style: context.text.bodySmall),
+                initiallyExpanded: isFeb29 || _notes.text.isNotEmpty || _sendTo != null,
+                subtitle: Text(_kind == EventKind.other ? 'Notes, 29 February' : 'Send wishes to, notes, 29 February',
+                    style: context.text.bodySmall),
                 children: [
+                  if (_kind != EventKind.other) ...[
+                    InkWell(
+                      borderRadius: BorderRadius.circular(Radii.button),
+                      onTap: _pickSendTo,
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: 'Send wishes to',
+                          helperText: 'Call and Share use this person\'s number; the message still uses the event person\'s name.',
+                          helperMaxLines: 3,
+                          suffixIcon: _sendTo == null
+                              ? const Icon(Icons.chevron_right_rounded)
+                              : IconButton(
+                                  tooltip: 'Clear',
+                                  onPressed: () => setState(() => _sendTo = null),
+                                  icon: const Icon(Icons.close_rounded)),
+                        ),
+                        child: Text(
+                          _sendTo == null ? 'Them directly' : '${_sendTo!.shortName} · ${_sendTo!.relationLabel}',
+                          style: context.text.bodyLarge,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   if (isFeb29) ...[
                     const SectionLabel('In years without 29 February'),
                     SegmentedButton<Feb29Rule>(
@@ -307,9 +350,6 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                     textCapitalization: TextCapitalization.sentences,
                     decoration: const InputDecoration(labelText: 'Notes', hintText: 'Policy number, venue, anything'),
                   ),
-                  const SizedBox(height: 8),
-                  Text('"Send wishes to" and time-zone alarms arrive with Call, Share and reminders.',
-                      style: context.text.bodySmall),
                 ],
               ),
             ),
@@ -359,9 +399,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
 }
 
 class _PersonPickerSheet extends StatefulWidget {
-  const _PersonPickerSheet({required this.people});
+  const _PersonPickerSheet({required this.people, this.noneLabel});
 
   final List<Person> people;
+  final String? noneLabel;
 
   @override
   State<_PersonPickerSheet> createState() => _PersonPickerSheetState();
@@ -387,6 +428,12 @@ class _PersonPickerSheetState extends State<_PersonPickerSheet> {
               onChanged: (v) => setState(() => _q = v.trim()),
             ),
           ),
+          if (widget.noneLabel != null)
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: Text(widget.noneLabel!),
+              onTap: () => Navigator.pop(context, 'none'),
+            ),
           ListTile(
             leading: const Icon(Icons.person_add_alt_outlined),
             title: const Text('Add a new person first'),

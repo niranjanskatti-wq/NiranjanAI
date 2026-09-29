@@ -7,6 +7,7 @@ import '../data/enums.dart';
 /// Bottom sheet behind the gold + button.
 Future<void> showAddSheet(BuildContext context) => showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       builder: (ctx) {
         Widget option(IconData icon, Color color, String title, String sub, String route) => ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),

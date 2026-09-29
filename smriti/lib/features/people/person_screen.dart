@@ -10,6 +10,8 @@ import '../../data/database.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
+import '../wish/wish_buttons.dart';
+import '../wish/wish_history.dart';
 
 class PersonScreen extends ConsumerWidget {
   const PersonScreen({super.key, required this.id});
@@ -85,6 +87,10 @@ class _PersonView extends ConsumerWidget {
               const SizedBox(height: 8),
               Center(child: Text('Archived', style: TextStyle(color: c.muted, fontWeight: FontWeight.w700))),
             ],
+            if (!p.isMe) ...[
+              const SizedBox(height: 16),
+              PersonCallShare(person: p, next: upcoming.where((u) => canWish(u.entry)).firstOrNull),
+            ],
             const SizedBox(height: 20),
             InfoCard(
               title: 'Events',
@@ -112,6 +118,10 @@ class _PersonView extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             _GiftCard(personId: p.id, gifts: gifts),
+            if (!p.isMe) ...[
+              const SizedBox(height: 12),
+              WishHistoryCard(person: p, eventIds: entries.map((e) => e.event.id).toSet()),
+            ],
             const SizedBox(height: 12),
             InfoCard(
               title: 'Details',

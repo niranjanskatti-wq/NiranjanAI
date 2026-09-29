@@ -21,6 +21,9 @@ class People extends Table {
   /// Normalised numbers (+91…). A null WhatsApp number means "same as call".
   TextColumn get callNumber => text().nullable()();
   TextColumn get whatsappNumber => text().nullable()();
+
+  /// "auto" (ask if both are installed), "whatsapp" or "business".
+  TextColumn get whatsappApp => text().withDefault(const Constant('auto'))();
   TextColumn get notes => text().nullable()();
   TextColumn get likes => text().nullable()();
   TextColumn get dislikes => text().nullable()();
@@ -113,6 +116,30 @@ class ContactNotices extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
+/// Every call or share, and whether the event was marked as wished.
+class WishLogs extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  /// Person the call or message went to.
+  IntColumn get personId => integer().nullable().references(People, #id, onDelete: KeyAction.setNull)();
+  IntColumn get eventId => integer().nullable().references(Events, #id, onDelete: KeyAction.setNull)();
+
+  /// Festival id from assets/festivals (Phase 5).
+  TextColumn get festivalId => text().nullable()();
+
+  /// The occurrence this was for, "yyyy-mm-dd".
+  TextColumn get occasionDate => text().nullable()();
+
+  /// call, whatsapp, sms, copy, share, card, manual.
+  TextColumn get method => text()();
+  TextColumn get message => text().nullable()();
+  TextColumn get templateId => text().nullable()();
+
+  /// True once the user confirms "Mark as wished".
+  BoolColumn get confirmed => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
 class Settings extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
@@ -121,15 +148,22 @@ class Settings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [People, Events, EventPeople, GiftIdeas, ContactNotices, Settings])
+@DriftDatabase(tables: [People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Settings])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.addColumn(people, people.whatsappApp);
+            await m.createTable(wishLogs);
+          }
+        },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
         },

@@ -4,7 +4,8 @@ Platform: Android only (installed as an APK, no Play Store).
 Design review: `docs/design-review.html` · Screenshots: `test/screenshots/`
 
 ## Current status
-**Phase 1 · People, events, countdown** — built, waiting for your test on the phone and "approved".
+Building all phases in a row (your choice), testing everything on the phone at the end.
+**Phase 2 · Call, Share, Send wishes to, wish history** — built.
 
 ## Done
 ### Phase 0 · Design (approved)
@@ -37,8 +38,24 @@ Design review: `docs/design-review.html` · Screenshots: `test/screenshots/`
   phone numbers with or without +91 / 0 / spaces, couples, archiving, first launch, home screen
 - App icon, charcoal splash screen, GitHub build that publishes the APK as a release
 
+### Phase 2 · Call, Share, wish history
+- Call button: dials directly (asks once for permission; falls back to the dialler)
+- Share sheet: message preview, Change message, Edit (with "Save for this event"), language choice,
+  WhatsApp (asks WhatsApp or WhatsApp Business once if both are installed), Text message, Copy,
+  and More: WhatsApp group, Telegram, Email, other apps
+- Call and Share on the home hero card, every upcoming row, the Today banner, event pages,
+  person profiles and the "Not wished" list
+- "Send wishes to" per event (under More options): Call and Share use that person's number,
+  while the message still uses the event person's name
+- Couple events: choose which of the two to call or message
+- Every call and share is logged; a small "Mark … as wished?" chip appears afterwards (never blocks)
+- "Wished" switch on each event page · "Missed this week" section on Home with belated wishes
+- Wish history on each profile (swipe to delete an entry) · "Not wished in 12+ months" list
+- Message engine with placeholders {name} {nickname} {age} {age_th} {relation} {years_married}
+  {years_th} {couple_names} {festival} {my_name}; avoids repeating messages already sent
+- Starter English messages (full library comes in Phase 4) · 39 automatic tests
+
 ## Pending
-- Phase 2: Call button, Share sheet (WhatsApp, Text Message, Copy), "Send wishes to", wish history
 - Phase 3: Reminders and alarms · Phase 4: Messages · Phase 5: Festivals & Wish Mode
 - Phase 6: Excel, backup, cards, photo memories · Phase 7: Widget, gifts planner, groups, lock
 - Phase 8: Polish and full phone test

@@ -90,7 +90,7 @@ void main() {
     return db;
   }
 
-  Future<void> shoot(WidgetTester tester, AppDatabase db, String name, {String? route}) async {
+  Future<void> shoot(WidgetTester tester, AppDatabase db, String name, {String? route, String? tap}) async {
     tester.view.physicalSize = const Size(1080, 2280);
     tester.view.devicePixelRatio = 2.75;
     addTearDown(tester.view.reset);
@@ -107,6 +107,13 @@ void main() {
         await tester.pump(const Duration(milliseconds: 100));
       }
     }
+    if (tap != null) {
+      await tester.tap(find.text(tap).first);
+      for (var i = 0; i < 10; i++) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('screenshots/$name.png'));
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(seconds: 1));
@@ -118,5 +125,6 @@ void main() {
   testWidgets('people', (t) async => shoot(t, await seed(theme: 'light'), 'people_light', route: '/people'));
   testWidgets('profile', (t) async => shoot(t, await seed(theme: 'light'), 'profile_light', route: '/person/2'));
   testWidgets('event', (t) async => shoot(t, await seed(), 'event_dark', route: '/event/3'));
+  testWidgets('share sheet', (t) async => shoot(t, await seed(), 'share_dark', tap: 'Share'));
   testWidgets('calendar', (t) async => shoot(t, await seed(), 'calendar_dark', route: '/calendar'));
 }
