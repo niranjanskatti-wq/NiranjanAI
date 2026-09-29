@@ -319,16 +319,20 @@ class HeroCard extends StatelessWidget {
     final c = context.c;
     final e = item.entry;
     final phrase = item.yearsPhrase;
+    final festival = e.kind == EventKind.festival;
+    final saffron = groupColor(EventGroup.festival);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Radii.card + 4),
         gradient: LinearGradient(
-          colors: [c.raised, c.surface],
+          colors: festival
+              ? [Color.alphaBlend(saffron.withValues(alpha: 0.18), c.raised), c.surface]
+              : [c.raised, c.surface],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           stops: const [0, 0.7],
         ),
-        border: Border.all(color: item.milestone ? c.gold : c.line),
+        border: Border.all(color: festival ? saffron.withValues(alpha: 0.6) : (item.milestone ? c.gold : c.line)),
         boxShadow: c.shadow,
       ),
       child: Material(
@@ -351,19 +355,19 @@ class HeroCard extends StatelessWidget {
                         children: [
                           Text(e.title,
                               style: context.text.headlineLarge, maxLines: 2, overflow: TextOverflow.ellipsis),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 6),
+                          Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                            KindPill(entry: e, large: true),
+                            if (phrase != null) Badge2(item.milestone ? '$phrase!' : phrase, sparkle: item.milestone),
+                          ]),
+                          const SizedBox(height: 6),
                           Text(
                             [
-                              if (e.kind != EventKind.other) e.relationLine,
-                              e.typeLabel,
+                              if (e.kind == EventKind.person || e.kind == EventKind.couple) e.relationLine,
                               fmtWeekday(item.date),
-                            ].join(' · '),
+                            ].where((t) => t.isNotEmpty).join(' · '),
                             style: context.text.bodySmall,
                           ),
-                          if (phrase != null) ...[
-                            const SizedBox(height: 6),
-                            Badge2(item.milestone ? '$phrase!' : phrase, sparkle: item.milestone),
-                          ],
                         ],
                       ),
                     ),

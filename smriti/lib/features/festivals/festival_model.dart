@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:drift/drift.dart' show Value;
@@ -103,6 +104,17 @@ class FestivalEntry extends EventEntry {
 
   @override
   int get stars => 3;
+
+  @override
+  IconData get icon {
+    final id = festival.key.split(':').last;
+    if (const {'republic_day', 'independence_day', 'gandhi_jayanti', 'kannada_rajyotsava'}.contains(id)) {
+      return Icons.flag_rounded;
+    }
+    if (id == 'christmas') return Icons.park_rounded;
+    if (id == 'new_year') return Icons.celebration_rounded;
+    return Icons.temple_hindu_rounded;
+  }
 }
 
 // ---------- loading ----------

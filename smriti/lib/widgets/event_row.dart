@@ -22,56 +22,108 @@ class UpcomingRow extends ConsumerWidget {
     final c = context.c;
     final e = item.entry;
     final bell = (ref.watch(allRemindersProvider).value?[e.event.id] ?? const []).any((s) => s.enabled);
-    final sub = [
-      if (e.relationLine.isNotEmpty && e.kind != EventKind.other) e.relationLine,
-      e.typeLabel,
-      fmtDayMonth(item.date),
-      ?item.yearsPhrase,
+    final festival = e.kind == EventKind.festival;
+    final saffron = groupColor(EventGroup.festival);
+    final age = item.ageText;
+    final details = [
+      if (e.relationLine.isNotEmpty && (e.kind == EventKind.person || e.kind == EventKind.couple)) e.relationLine,
+      fmtWeekday(item.date),
     ].join(' · ');
     return Material(
-      color: c.surface,
+      color: festival ? Color.alphaBlend(saffron.withValues(alpha: 0.09), c.surface) : c.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: item.milestone ? c.gold : c.line),
+        side: BorderSide(
+          color: festival ? saffron.withValues(alpha: 0.45) : (item.milestone ? c.gold : c.line),
+        ),
       ),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
         onTap: () => openEntry(context, e),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 14, 10),
+        child: IntrinsicHeight(
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              EventAvatar(entry: e, size: 42),
-              const SizedBox(width: 12),
+              // A coloured edge so festivals stand apart from people's days.
+              if (festival) Container(width: 4, color: saffron),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Flexible(
-                        child: Text(e.title,
-                            style: context.text.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(festival ? 8 : 12, 10, 14, 10),
+                  child: Row(
+                    children: [
+                      EventAvatar(entry: e, size: 44),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(children: [
+                              Flexible(
+                                child: Text(e.title,
+                                    style: context.text.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+                              ),
+                              if (e.kind == EventKind.person || e.kind == EventKind.couple) ...[
+                                const SizedBox(width: 6),
+                                Icon(Icons.star_rounded, size: 13, color: c.gold),
+                                Text('${e.stars}', style: context.text.labelSmall?.copyWith(color: c.muted)),
+                              ],
+                              if (item.milestone) ...[
+                                const SizedBox(width: 6),
+                                Icon(Icons.auto_awesome, size: 14, color: c.gold),
+                              ],
+                              if (bell) ...[
+                                const SizedBox(width: 6),
+                                Icon(Icons.notifications_none_rounded, size: 14, color: c.muted),
+                              ],
+                            ]),
+                            const SizedBox(height: 4),
+                            // Kind and age get their own line so the age is never cut off.
+                            Row(children: [
+                              KindPill(entry: e),
+                              if (age != null) ...[
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    age,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: sans,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: item.milestone ? c.goldText : c.text,
+                                    ),
+                                  ),
+                                ),
+                              ] else if (e.type == EventType.birthday && e.kind == EventKind.person) ...[
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text('No birth year',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.text.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
+                                ),
+                              ],
+                            ]),
+                            const SizedBox(height: 4),
+                            Text(details, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
                       ),
-                      if (item.milestone) ...[const SizedBox(width: 6), Icon(Icons.auto_awesome, size: 14, color: c.gold)],
-                      if (bell) ...[const SizedBox(width: 6), Icon(Icons.notifications_none_rounded, size: 14, color: c.muted)],
-                    ]),
-                    const SizedBox(height: 2),
-                    Text(sub, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    if (e.kind == EventKind.person || e.kind == EventKind.couple) ...[
-                      const SizedBox(height: 3),
-                      Stars(value: e.stars, size: 11),
+                      if (canWish(e)) ...[
+                        const SizedBox(width: 6),
+                        MiniCallShare(entry: e, date: item.date, belated: belated),
+                      ],
+                      const SizedBox(width: 10),
+                      belated
+                          ? Text('${-item.daysLeft}d ago',
+                              style: context.text.bodySmall?.copyWith(fontWeight: FontWeight.w700))
+                          : _DaysLeft(days: item.daysLeft, color: festival ? saffron : null),
                     ],
-                  ],
+                  ),
                 ),
               ),
-              if (canWish(e)) ...[
-                const SizedBox(width: 6),
-                MiniCallShare(entry: e, date: item.date, belated: belated),
-              ],
-              const SizedBox(width: 10),
-              belated
-                  ? Text('${-item.daysLeft}d ago', style: context.text.bodySmall?.copyWith(fontWeight: FontWeight.w700))
-                  : _DaysLeft(days: item.daysLeft),
             ],
           ),
         ),
@@ -81,9 +133,10 @@ class UpcomingRow extends ConsumerWidget {
 }
 
 class _DaysLeft extends StatelessWidget {
-  const _DaysLeft({required this.days});
+  const _DaysLeft({required this.days, this.color});
 
   final int days;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +152,7 @@ class _DaysLeft extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 height: 1,
-                color: c.text,
+                color: color ?? c.text,
                 fontFeatures: const [FontFeature.tabularFigures()])),
         const SizedBox(height: 2),
         Text(days == 1 ? 'day' : 'days', style: context.text.bodySmall?.copyWith(fontSize: 10)),

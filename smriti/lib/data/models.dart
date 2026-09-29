@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import '../core/util/occurrence.dart';
 import 'database.dart';
 import 'enums.dart';
@@ -45,6 +47,17 @@ class EventEntry {
 
   Person? get primary => people.isEmpty ? null : people.first;
   bool get isMine => people.isNotEmpty && people.every((p) => p.isMe);
+
+  /// Icon for rows and avatars without a person.
+  IconData get icon => type.icon;
+
+  /// Short name for the coloured label on rows: "Birthday", "Anniversary", "Festival".
+  String get shortLabel => switch (type) {
+        EventType.weddingAnniversary => 'Anniversary',
+        EventType.workAnniversary => 'Work anniversary',
+        EventType.firstMeeting => 'First met',
+        _ => typeLabel,
+      };
 
   String get typeLabel =>
       (event.customLabel?.trim().isNotEmpty ?? false) ? event.customLabel!.trim() : type.label;
@@ -109,6 +122,14 @@ class Upcoming {
   int? get years => entry.repeat == Repeat.monthly ? null : yearsOn(date, entry.startYear);
   bool get milestone => isMilestone(entry.type, years);
   bool get isToday => daysLeft == 0;
+
+  /// Short age for list rows: "Turning 61", "25 years", or null.
+  String? get ageText {
+    final y = years;
+    if (y == null || y <= 0) return null;
+    if (entry.type == EventType.birthday) return entry.isMine ? 'You turn $y' : 'Turning $y';
+    return '$y ${y == 1 ? 'year' : 'years'}';
+  }
 
   /// "Turning 60", "35 years", or null.
   String? get yearsPhrase {

@@ -65,6 +65,21 @@ class EventAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (entry.kind == EventKind.festival) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF4B45F), Color(0xFFD9651C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(size * 0.3),
+        ),
+        child: Icon(entry.icon, color: Colors.white, size: size * 0.52),
+      );
+    }
     if (entry.kind == EventKind.other || entry.people.isEmpty) {
       return Container(
         width: size,
@@ -148,6 +163,36 @@ class Badge2 extends StatelessWidget {
         Text(label,
             style: TextStyle(
                 fontFamily: sans, fontSize: 11, fontWeight: FontWeight.w700, color: c.onGold, letterSpacing: 0.3)),
+      ]),
+    );
+  }
+}
+
+/// Coloured label saying what kind of day it is: Birthday, Anniversary, Festival…
+class KindPill extends StatelessWidget {
+  const KindPill({super.key, required this.entry, this.large = false});
+
+  final EventEntry entry;
+  final bool large;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = groupColor(entry.type.group);
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final fg = dark ? Color.lerp(color, Colors.white, 0.25)! : Color.lerp(color, Colors.black, 0.3)!;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: large ? 10 : 7, vertical: large ? 4 : 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: dark ? 0.22 : 0.16),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(entry.kind == EventKind.festival ? entry.icon : entry.type.icon, size: large ? 15 : 12, color: fg),
+        SizedBox(width: large ? 5 : 4),
+        Text(
+          entry.kind == EventKind.festival ? 'Festival' : entry.shortLabel,
+          style: TextStyle(fontFamily: sans, fontSize: large ? 13 : 11, fontWeight: FontWeight.w700, color: fg),
+        ),
       ]),
     );
   }

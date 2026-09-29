@@ -10,6 +10,7 @@ import '../../core/util/format.dart';
 import '../../core/util/occurrence.dart';
 import '../../core/util/phone.dart';
 import '../../data/database.dart';
+import '../../data/enums.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
@@ -51,6 +52,9 @@ class _PersonView extends ConsumerWidget {
     final upcoming = computeUpcoming(entries, today, includeArchived: true);
     final past = entries.where((e) => e.nextFrom(today) == null).toList();
     final gifts = ref.watch(giftsProvider(p.id)).value ?? const <GiftIdea>[];
+    final birthday = upcoming.where((u) => u.entry.type == EventType.birthday && u.entry.kind == EventKind.person).firstOrNull;
+    final turning = birthday?.years;
+    final ageNow = turning == null ? null : (birthday!.isToday ? turning : turning - 1);
 
     return Scaffold(
       appBar: AppBar(
@@ -82,6 +86,15 @@ class _PersonView extends ConsumerWidget {
               textAlign: TextAlign.center,
               style: context.text.bodySmall,
             ),
+            if (ageNow != null && ageNow >= 0) ...[
+              const SizedBox(height: 8),
+              Center(
+                child: Text(
+                  birthday!.isToday ? 'Turns $ageNow today 🎉' : 'Age $ageNow · turning ${ageNow + 1} ${relativeDays(birthday.daysLeft)}',
+                  style: context.text.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: c.goldText),
+                ),
+              ),
+            ],
             if (!p.isMe) ...[
               const SizedBox(height: 6),
               Center(child: Stars(value: p.stars, size: 18)),
@@ -108,7 +121,7 @@ class _PersonView extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text('No dates yet. Add a birthday or anniversary.', style: context.text.bodyMedium),
                   ),
-                for (final u in upcoming) _EventLine(item: u),
+                for (final u in upcoming) _DateTile(item: u, showPartner: u.entry.kind == EventKind.couple),
                 for (final e in past)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -203,41 +216,91 @@ class _PersonView extends ConsumerWidget {
       );
 }
 
-class _EventLine extends StatelessWidget {
-  const _EventLine({required this.item});
+/// One date on the profile, large and clear: what it is, the date, the age and how long to go.
+class _DateTile extends StatelessWidget {
+  const _DateTile({required this.item, this.showPartner = false});
 
   final Upcoming item;
+  final bool showPartner;
 
   @override
   Widget build(BuildContext context) {
     final e = item.entry;
     final c = context.c;
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: () => context.push('/event/${e.event.id}'),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(color: groupColor(e.type.group), shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(e.kind.name == 'couple' ? '${e.typeLabel} · ${e.title}' : e.typeLabel,
-                  style: context.text.titleMedium),
-              Text(
-                [fmtWeekday(item.date), ?item.yearsPhrase, relativeDays(item.daysLeft)].join(' · '),
-                style: context.text.bodySmall,
+    final color = groupColor(e.type.group);
+    final ev = e.event;
+    final monthly = e.repeat == Repeat.monthly;
+    final date = monthly ? 'Every month on the ${ordinal(ev.day)}' : '${ev.day} ${monthNames[ev.month - 1]}';
+    final since = e.startYear;
+    final phrase = item.yearsPhrase;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: color.withValues(alpha: 0.10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: item.milestone ? c.gold : color.withValues(alpha: 0.4)),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => context.push('/event/${ev.id}'),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+            child: Row(children: [
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  KindPill(entry: e, large: true),
+                  if (showPartner) ...[
+                    const SizedBox(height: 4),
+                    Text(e.title, style: context.text.bodySmall),
+                  ],
+                  const SizedBox(height: 8),
+                  Text(
+                    since != null && !monthly ? '$date $since' : date,
+                    style: context.text.headlineSmall?.copyWith(fontFamily: serif, fontWeight: FontWeight.w700),
+                  ),
+                  if (phrase != null) ...[
+                    const SizedBox(height: 2),
+                    Row(children: [
+                      Flexible(
+                        child: Text(
+                          phrase,
+                          style: context.text.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: c.goldText),
+                        ),
+                      ),
+                      if (item.milestone) ...[const SizedBox(width: 6), Icon(Icons.auto_awesome, size: 16, color: c.gold)],
+                    ]),
+                  ],
+                  if (phrase == null && e.type == EventType.birthday && e.kind == EventKind.person && e.primary != null)
+                    GestureDetector(
+                      onTap: () => context.push('/person/${e.primary!.id}/edit'),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text('Add birth year to see the age',
+                            style: context.text.bodyMedium?.copyWith(
+                                color: c.goldText, fontWeight: FontWeight.w700, decoration: TextDecoration.underline)),
+                      ),
+                    ),
+                  const SizedBox(height: 2),
+                  Text('Next: ${fmtWeekday(item.date)} ${item.date.year}', style: context.text.bodySmall),
+                ]),
               ),
+              const SizedBox(width: 12),
+              Column(mainAxisSize: MainAxisSize.min, children: [
+                if (item.isToday)
+                  const Badge2('Today')
+                else ...[
+                  Text('${item.daysLeft}',
+                      style: TextStyle(
+                          fontFamily: sans, fontSize: 28, fontWeight: FontWeight.w800, height: 1, color: c.text)),
+                  const SizedBox(height: 2),
+                  Text(item.daysLeft == 1 ? 'day to go' : 'days to go', style: context.text.bodySmall),
+                ],
+              ]),
             ]),
           ),
-          if (item.milestone) Badge2('${item.years}') else Icon(Icons.chevron_right_rounded, color: c.muted),
-        ]),
+        ),
       ),
     );
   }
 }
-

@@ -154,6 +154,7 @@ void main() {
     await shoot(t, db, 'wishmode_light', route: '/wish-mode/1');
   });
   testWidgets('calendar', (t) async => shoot(t, await seed(), 'calendar_dark', route: '/calendar'));
+  testWidgets('home lower', (t) async => shoot(t, await seed(theme: 'light'), 'home_lower_light', scroll: 600));
   testWidgets('settings', (t) async => shoot(t, await seed(), 'settings_dark', route: '/settings', scroll: 900));
   testWidgets('profile lower', (t) async => shoot(t, await seed(), 'profile_lower_dark', route: '/person/2', scroll: 700));
   testWidgets('gift planner', (t) async => shoot(t, await seed(theme: 'light'), 'gifts_light', route: '/gifts'));

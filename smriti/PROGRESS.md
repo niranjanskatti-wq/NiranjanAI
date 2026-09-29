@@ -157,6 +157,17 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Screenshots of every main screen in `test/screenshots/`; all 28 card designs in `docs/screens/`
 - 76 automatic tests
 
+### Changes after your first look
+- Festivals and holidays now look different from people's days: saffron tint and side stripe,
+  a temple icon (flag for national days, tree for Christmas) and a "Festival" label
+- Every row has a coloured label: pink Birthday, gold Anniversary, saffron Festival, blue for
+  bills and renewals
+- The age ("Turning 61", "25 years") has its own line in bold on the Home list, so it's never
+  cut off; "No birth year" shows when the year isn't saved
+- Person page: "Age 60 · turning 61 in 4 days" under the name, and each date as a large card
+  (Birthday / Anniversary label, "3 October 1965", "Turning 61", next date and days to go),
+  with "Add birth year to see the age" when the year is missing
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).
