@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/tokens.dart';
 import '../../core/util/phone.dart';
@@ -10,6 +11,7 @@ import '../../data/database.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
+import '../cards/card_screen.dart';
 import '../messages/message_engine.dart';
 import '../messages/message_store.dart';
 import 'wish_service.dart';
@@ -289,6 +291,15 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
     Navigator.pop(context);
   }
 
+  Future<void> _card() async {
+    final me = await ref.read(repoProvider).getMe();
+    if (!mounted) return;
+    final router = GoRouter.of(context);
+    final req = CardRequest(cardDataFor(t, message: _text, me: me, to: _to), target: t, to: _to);
+    Navigator.pop(context);
+    router.push('/card', extra: req);
+  }
+
   Future<void> _more() async {
     final svc = WishService(ref);
     final choice = await showModalBottomSheet<String>(
@@ -428,6 +439,14 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
                 title: 'Copy message',
                 subtitle: 'Paste it anywhere',
                 onTap: _copy,
+              ),
+              const SizedBox(height: 8),
+              _BigOption(
+                color: const Color(0xFFB08A45),
+                icon: Icons.image_outlined,
+                title: 'Greeting card',
+                subtitle: 'Turn this message into a picture',
+                onTap: _card,
               ),
               const SizedBox(height: 4),
               TextButton(onPressed: _more, child: const Text('More: WhatsApp group · Telegram · Email · Other apps')),

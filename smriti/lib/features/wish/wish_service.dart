@@ -211,4 +211,7 @@ class WishService {
     await SharePlus.instance.share(ShareParams(text: text));
     await _log(t, to, 'share', message: text);
   }
+
+  /// Records that a greeting card image was shared.
+  Future<void> cardShared(WishTarget t, Person? to, String text) => _log(t, to, 'card', message: text);
 }

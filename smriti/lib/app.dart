@@ -8,6 +8,7 @@ import 'data/providers.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/backup/backup_service.dart';
 import 'features/calendar/calendar_screen.dart';
+import 'features/cards/card_screen.dart';
 import 'features/export/export_screen.dart';
 import 'features/export/import_screen.dart';
 import 'features/contacts/bulk_add_screen.dart';
@@ -110,6 +111,7 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/reliability', builder: (_, _) => const ReliabilityScreen()),
         GoRoute(path: '/thank-you', builder: (_, _) => const ThankYouScreen()),
         GoRoute(path: '/festivals', builder: (_, _) => const FestivalsScreen()),
+        GoRoute(path: '/card', builder: (_, state) => CardStudioScreen(request: state.extra! as CardRequest)),
         GoRoute(path: '/export', builder: (_, _) => const ExportScreen()),
         GoRoute(path: '/import', builder: (_, _) => const ImportScreen()),
         GoRoute(path: '/backup', builder: (_, _) => const BackupScreen()),

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../cards/card_screen.dart';
+import '../messages/message_engine.dart';
+import '../wish/suggest.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
 import '../../core/util/occurrence.dart';
@@ -162,6 +165,22 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                       ),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () => context.push('/event/$id/message'),
+                    ),
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.image_outlined, color: c.goldText),
+                      title: const Text('Greeting card'),
+                      subtitle: const Text('Make a picture card to send'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () async {
+                        final t = await targetFor(ref, e, item?.date ?? today);
+                        final lang = Lang.parse(await ref.read(databaseProvider).getSetting('messageLang'));
+                        final to = t.recipients.firstOrNull;
+                        final draft = ev.draftMessage?.trim() ?? '';
+                        final msg = draft.isNotEmpty ? draft : (await suggestFor(ref, t, to, lang)).textAt(0);
+                        if (context.mounted) await openCardFor(context, ref, t, message: msg, to: to);
+                      },
                     ),
                   ),
                 ],
