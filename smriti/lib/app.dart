@@ -10,6 +10,7 @@ import 'features/backup/backup_screen.dart';
 import 'features/backup/backup_service.dart';
 import 'features/calendar/calendar_screen.dart';
 import 'features/calendar_sync/calendar_sync.dart';
+import 'features/calendar_sync/calendar_import_screen.dart';
 import 'features/calendar_sync/calendar_sync_screen.dart';
 import 'features/cards/card_screen.dart';
 import 'features/export/export_screen.dart';
@@ -72,6 +73,7 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/archived', builder: (_, _) => const ArchivedScreen()),
         GoRoute(path: '/not-wished', builder: (_, _) => const NotWishedScreen()),
         GoRoute(path: '/import/contacts', builder: (_, _) => const BulkAddScreen()),
+        GoRoute(path: '/import/calendar', builder: (_, _) => const CalendarImportScreen()),
         GoRoute(path: '/import/birthdays', builder: (_, _) => const ImportBirthdaysScreen()),
         GoRoute(
           path: '/person/new',
@@ -196,7 +198,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
   /// Refreshes the home-screen widget once the data has loaded.
   void _publishWidget() {
     if (!ref.read(entriesProvider).hasValue) return;
-    HomeWidgetService.publish(ref.read(allEntriesProvider), ref.read(todayProvider).value ?? Day.today());
+    HomeWidgetService.publish(ref.read(visibleEntriesProvider), ref.read(todayProvider).value ?? Day.today());
   }
 
   /// Opens the right screen for a tapped notification or its button.
@@ -247,7 +249,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(allRemindersProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(wishedKeysProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(festivalsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
-    ref.listen(allEntriesProvider, (_, _) => _publishWidget());
+    ref.listen(visibleEntriesProvider, (_, _) => _publishWidget());
     ref.listen(entriesProvider, (_, _) => CalendarSync.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',

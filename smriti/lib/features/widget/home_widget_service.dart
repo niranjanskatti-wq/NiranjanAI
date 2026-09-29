@@ -38,10 +38,12 @@ class HomeWidgetService {
   /// For the background refresh, where there are no providers.
   static Future<void> refreshFrom(AppDatabase db) async {
     if (!NotificationService.supported) return;
+    final showFestivals = await db.getSetting('showFestivals') != 'false';
+    final showImportant = await db.getSetting('showImportant') != 'false';
     final entries = await Repository(db).watchEntries().first;
-    final festivals = (await FestivalRepo.loadAll(db)).where((f) => f.enabled).toList();
+    final festivals = showFestivals ? (await FestivalRepo.loadAll(db)).where((f) => f.enabled).toList() : const <Festival>[];
     await publish([
-      ...entries,
+      ...entries.where((e) => visibleKind(e, festivals: showFestivals, important: showImportant)),
       for (var i = 0; i < festivals.length; i++) FestivalEntry(festivals[i], -(i + 1)),
     ], Day.today());
   }

@@ -168,6 +168,18 @@ Building all phases in a row (your choice), testing everything on the phone at t
   (Birthday / Anniversary label, "3 October 1965", "Turning 61", next date and days to go),
   with "Add birth year to see the age" when the year is missing
 
+### "What to show" and import from Google Calendar
+- New button at the top of Home (sliders icon, next to Search), also in Settings › What Home shows:
+  switch off "Festivals & holidays" and/or "Bills, renewals & other dates" to see only birthdays and
+  anniversaries on Home, in the Calendar and on the widget. A gold dot shows when something is hidden.
+  Search still finds everything; festival reminders stay in Settings › Festivals
+- Import from Google Calendar (People › ⋮, or Settings › Contacts): reads the calendars on the phone,
+  shows yearly/monthly events and upcoming all-day dates, guesses Birthday / Anniversary / Other from
+  the title ("Appa's birthday", "Ravi & Priya anniversary", "Our anniversary"), and lets you correct
+  names and kinds before adding. Holiday calendars, dates Smriti copied there, and anything already in
+  Smriti are left out. New people are linked to the matching phone contact by name
+- 80 automatic tests
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

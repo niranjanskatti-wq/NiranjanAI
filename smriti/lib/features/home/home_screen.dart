@@ -63,6 +63,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
   }
 
   bool _matches(Upcoming u, Day today) {
+    // A chip for something that is now hidden falls back to showing everything.
+    if ((_kind == KindFilter.festivals && ref.read(showFestivalsProvider).value == false) ||
+        (_kind == KindFilter.important && ref.read(showImportantProvider).value == false)) {
+      _kind = KindFilter.all;
+    }
     final timeOk = switch (_time) {
       TimeFilter.today => u.daysLeft == 0,
       TimeFilter.week => u.daysLeft <= 6,
@@ -81,7 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final all = ref.watch(entriesProvider).whenData((_) => ref.watch(allEntriesProvider));
+    final all = ref.watch(entriesProvider).whenData((_) => ref.watch(visibleEntriesProvider));
     final upcoming = all.whenData((list) => computeUpcoming(list, ref.watch(todayProvider).value ?? Day.today()));
     final sessions = ref.watch(openSessionsProvider).value ?? const [];
     final today = ref.watch(todayProvider).value ?? Day.today();
@@ -266,8 +271,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
           chip('All', TimeFilter.all, _time, (v) => _time = v),
           const SizedBox(width: 10),
           chip('People', KindFilter.people, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
-          chip('Festivals', KindFilter.festivals, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
-          chip('Important dates', KindFilter.important, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
+          if (ref.watch(showFestivalsProvider).value ?? true)
+            chip('Festivals', KindFilter.festivals, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
+          if (ref.watch(showImportantProvider).value ?? true)
+            chip('Important dates', KindFilter.important, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
         ],
       ),
     );
@@ -296,6 +303,8 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
+          const ShowButton(),
+          const SizedBox(width: 8),
           IconButton.outlined(
             tooltip: 'Search',
             onPressed: () => context.push('/search'),
@@ -303,6 +312,87 @@ class _Header extends StatelessWidget {
             style: IconButton.styleFrom(side: BorderSide(color: context.c.line)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// "What to show" button on Home: switch festivals and other dates on or off.
+class ShowButton extends ConsumerWidget {
+  const ShowButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.c;
+    final festivals = ref.watch(showFestivalsProvider).value ?? true;
+    final important = ref.watch(showImportantProvider).value ?? true;
+    final filtered = !festivals || !important;
+    return Badge(
+      isLabelVisible: filtered,
+      backgroundColor: c.gold,
+      smallSize: 9,
+      child: IconButton.outlined(
+        tooltip: 'What to show',
+        onPressed: () => showWhatToShow(context),
+        icon: Icon(filtered ? Icons.filter_alt_rounded : Icons.tune_rounded),
+        style: IconButton.styleFrom(side: BorderSide(color: filtered ? c.gold : c.line)),
+      ),
+    );
+  }
+}
+
+/// Sheet with the "show festivals / other dates" switches.
+Future<void> showWhatToShow(BuildContext context) => showModalBottomSheet<void>(
+      context: context,
+      useRootNavigator: true,
+      builder: (_) => const _WhatToShowSheet(),
+    );
+
+class _WhatToShowSheet extends ConsumerWidget {
+  const _WhatToShowSheet();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.c;
+    final db = ref.read(databaseProvider);
+    final festivals = ref.watch(showFestivalsProvider).value ?? true;
+    final important = ref.watch(showImportantProvider).value ?? true;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text('What to show', style: context.text.titleLarge),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: Text('Birthdays and anniversaries always show. Turn off the rest to see only your people.',
+                style: context.text.bodySmall),
+          ),
+          SwitchListTile(
+            secondary: Icon(Icons.temple_hindu_rounded, color: groupColor(EventGroup.festival)),
+            title: const Text('Festivals & holidays'),
+            subtitle: const Text('Diwali, Ugadi, Christmas…'),
+            value: festivals,
+            onChanged: (v) => db.setSetting('showFestivals', '$v'),
+          ),
+          SwitchListTile(
+            secondary: Icon(Icons.receipt_long_outlined, color: groupColor(EventGroup.important)),
+            title: const Text('Bills, renewals & other dates'),
+            subtitle: const Text('Insurance, passport, rent…'),
+            value: important,
+            onChanged: (v) => db.setSetting('showImportant', '$v'),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: Text(
+              'This changes Home, Calendar and the widget. Reminders are not changed: '
+              'festival reminders are in Settings › Festivals.',
+              style: context.text.bodySmall?.copyWith(color: c.muted),
+            ),
+          ),
+        ]),
       ),
     );
   }

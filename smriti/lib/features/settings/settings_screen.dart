@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:go_router/go_router.dart';
 
+import '../home/home_screen.dart';
 import '../lock/app_lock.dart';
 import '../widget/home_widget_service.dart';
 import '../../core/theme/tokens.dart';
@@ -64,6 +65,8 @@ class SettingsScreen extends ConsumerWidget {
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Festivals')),
           tile(Icons.celebration_outlined, 'Festivals', 'Switch on or off, edit dates, add your own',
               () => context.push('/festivals')),
+          tile(Icons.tune_rounded, 'What Home shows', 'Hide festivals or bills to see only your people',
+              () => showWhatToShow(context)),
           const FestivalReminderSwitches(),
           const SizedBox(height: 12),
           const ReminderSettingsSection(),
@@ -73,6 +76,8 @@ class SettingsScreen extends ConsumerWidget {
               () => context.push('/import/contacts')),
           tile(Icons.cake_outlined, 'Import birthdays from contacts', 'Finds dates already saved in your phone',
               () => context.push('/import/birthdays')),
+          tile(Icons.event_note_outlined, 'Import from Google Calendar', 'Birthdays, anniversaries and dates saved there',
+              () => context.push('/import/calendar')),
           tile(Icons.sync_rounded, 'Check contacts for changed numbers', 'Also happens each time you open Smriti',
               () async {
             await ContactSync(ref.read(repoProvider)).run();

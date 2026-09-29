@@ -56,6 +56,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
             itemBuilder: (_) => const [
               PopupMenuItem(value: '/import/contacts', child: Text('Add many from contacts')),
               PopupMenuItem(value: '/import/birthdays', child: Text('Import birthdays from contacts')),
+              PopupMenuItem(value: '/import/calendar', child: Text('Import from Google Calendar')),
               PopupMenuItem(value: '/groups', child: Text('Groups')),
               PopupMenuItem(value: '/gifts', child: Text('Gift planner')),
               PopupMenuItem(value: '/not-wished', child: Text('Not wished in 12+ months')),

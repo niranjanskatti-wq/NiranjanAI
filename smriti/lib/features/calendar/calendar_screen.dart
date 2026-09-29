@@ -44,7 +44,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final entries = ref.watch(allEntriesProvider);
+    final entries = ref.watch(visibleEntriesProvider);
     final today = ref.watch(todayProvider).value ?? Day.today();
     final byDay = _byDay(entries, today);
     final daysCount = daysInMonth(_month.year, _month.month);

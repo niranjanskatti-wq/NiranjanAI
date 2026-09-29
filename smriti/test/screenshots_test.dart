@@ -155,6 +155,12 @@ void main() {
   });
   testWidgets('calendar', (t) async => shoot(t, await seed(), 'calendar_dark', route: '/calendar'));
   testWidgets('home lower', (t) async => shoot(t, await seed(theme: 'light'), 'home_lower_light', scroll: 600));
+  testWidgets('home people only', (t) async {
+    final db = await seed();
+    await db.setSetting('showFestivals', 'false');
+    await db.setSetting('showImportant', 'false');
+    await shoot(t, db, 'home_people_only_dark', scroll: 500);
+  });
   testWidgets('settings', (t) async => shoot(t, await seed(), 'settings_dark', route: '/settings', scroll: 900));
   testWidgets('profile lower', (t) async => shoot(t, await seed(), 'profile_lower_dark', route: '/person/2', scroll: 700));
   testWidgets('gift planner', (t) async => shoot(t, await seed(theme: 'light'), 'gifts_light', route: '/gifts'));

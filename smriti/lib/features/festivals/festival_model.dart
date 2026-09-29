@@ -215,6 +215,31 @@ final festivalEntriesProvider = Provider<List<FestivalEntry>>((ref) {
 final allEntriesProvider = Provider<List<EventEntry>>(
     (ref) => [...?ref.watch(entriesProvider).value, ...ref.watch(festivalEntriesProvider)]);
 
+/// Whether Home, the calendar and the widget show festivals.
+final showFestivalsProvider =
+    StreamProvider<bool>((ref) => ref.watch(databaseProvider).watchSetting('showFestivals').map((v) => v != 'false'));
+
+/// Whether Home, the calendar and the widget show bills, renewals and other dates.
+final showImportantProvider =
+    StreamProvider<bool>((ref) => ref.watch(databaseProvider).watchSetting('showImportant').map((v) => v != 'false'));
+
+/// Keeps only what the Home "Show" switches allow.
+bool visibleKind(EventEntry e, {required bool festivals, required bool important}) => switch (e.kind) {
+      EventKind.festival => festivals,
+      EventKind.other => important,
+      _ => true,
+    };
+
+/// What Home, the calendar and the widget show. Search still finds everything.
+final visibleEntriesProvider = Provider<List<EventEntry>>((ref) {
+  final festivals = ref.watch(showFestivalsProvider).value ?? true;
+  final important = ref.watch(showImportantProvider).value ?? true;
+  return ref
+      .watch(allEntriesProvider)
+      .where((e) => visibleKind(e, festivals: festivals, important: important))
+      .toList();
+});
+
 // ---------- changes ----------
 
 class FestivalRepo {

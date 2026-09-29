@@ -59,6 +59,7 @@ class MainActivity : FlutterFragmentActivity() {
             try {
                 when (call.method) {
                     "calendars" -> result.success(PhoneCalendar.calendars(contentResolver))
+                    "importable" -> result.success(PhoneCalendar.importable(contentResolver))
                     "upsert" -> {
                         @Suppress("UNCHECKED_CAST")
                         result.success(PhoneCalendar.upsert(contentResolver, call.arguments as Map<String, Any?>))
