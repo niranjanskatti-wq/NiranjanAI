@@ -251,6 +251,15 @@ class NotificationService {
     } catch (_) {}
   }
 
+  static Future<int> sdkInt() async {
+    if (!supported) return 0;
+    try {
+      return (await _window.invokeMethod<int>('sdkInt')) ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   static Future<String> manufacturer() async {
     if (!supported) return '';
     try {

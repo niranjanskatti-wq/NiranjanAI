@@ -6786,6 +6786,403 @@ class WishSessionItemsCompanion extends UpdateCompanion<WishSessionItem> {
   }
 }
 
+class $PhotoMemoriesTable extends PhotoMemories
+    with TableInfo<$PhotoMemoriesTable, PhotoMemory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PhotoMemoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _personIdMeta = const VerificationMeta(
+    'personId',
+  );
+  @override
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+    'person_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES people (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _captionMeta = const VerificationMeta(
+    'caption',
+  );
+  @override
+  late final GeneratedColumn<String> caption = GeneratedColumn<String>(
+    'caption',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    personId,
+    year,
+    path,
+    caption,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'photo_memories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PhotoMemory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('person_id')) {
+      context.handle(
+        _personIdMeta,
+        personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_personIdMeta);
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_yearMeta);
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+        _pathMeta,
+        path.isAcceptableOrUnknown(data['path']!, _pathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pathMeta);
+    }
+    if (data.containsKey('caption')) {
+      context.handle(
+        _captionMeta,
+        caption.isAcceptableOrUnknown(data['caption']!, _captionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PhotoMemory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PhotoMemory(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      personId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}person_id'],
+      )!,
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      )!,
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+      caption: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}caption'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PhotoMemoriesTable createAlias(String alias) {
+    return $PhotoMemoriesTable(attachedDatabase, alias);
+  }
+}
+
+class PhotoMemory extends DataClass implements Insertable<PhotoMemory> {
+  final int id;
+  final int personId;
+  final int year;
+  final String path;
+  final String? caption;
+  final DateTime createdAt;
+  const PhotoMemory({
+    required this.id,
+    required this.personId,
+    required this.year,
+    required this.path,
+    this.caption,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['person_id'] = Variable<int>(personId);
+    map['year'] = Variable<int>(year);
+    map['path'] = Variable<String>(path);
+    if (!nullToAbsent || caption != null) {
+      map['caption'] = Variable<String>(caption);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PhotoMemoriesCompanion toCompanion(bool nullToAbsent) {
+    return PhotoMemoriesCompanion(
+      id: Value(id),
+      personId: Value(personId),
+      year: Value(year),
+      path: Value(path),
+      caption: caption == null && nullToAbsent
+          ? const Value.absent()
+          : Value(caption),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PhotoMemory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PhotoMemory(
+      id: serializer.fromJson<int>(json['id']),
+      personId: serializer.fromJson<int>(json['personId']),
+      year: serializer.fromJson<int>(json['year']),
+      path: serializer.fromJson<String>(json['path']),
+      caption: serializer.fromJson<String?>(json['caption']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'personId': serializer.toJson<int>(personId),
+      'year': serializer.toJson<int>(year),
+      'path': serializer.toJson<String>(path),
+      'caption': serializer.toJson<String?>(caption),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  PhotoMemory copyWith({
+    int? id,
+    int? personId,
+    int? year,
+    String? path,
+    Value<String?> caption = const Value.absent(),
+    DateTime? createdAt,
+  }) => PhotoMemory(
+    id: id ?? this.id,
+    personId: personId ?? this.personId,
+    year: year ?? this.year,
+    path: path ?? this.path,
+    caption: caption.present ? caption.value : this.caption,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PhotoMemory copyWithCompanion(PhotoMemoriesCompanion data) {
+    return PhotoMemory(
+      id: data.id.present ? data.id.value : this.id,
+      personId: data.personId.present ? data.personId.value : this.personId,
+      year: data.year.present ? data.year.value : this.year,
+      path: data.path.present ? data.path.value : this.path,
+      caption: data.caption.present ? data.caption.value : this.caption,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoMemory(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('year: $year, ')
+          ..write('path: $path, ')
+          ..write('caption: $caption, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, personId, year, path, caption, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PhotoMemory &&
+          other.id == this.id &&
+          other.personId == this.personId &&
+          other.year == this.year &&
+          other.path == this.path &&
+          other.caption == this.caption &&
+          other.createdAt == this.createdAt);
+}
+
+class PhotoMemoriesCompanion extends UpdateCompanion<PhotoMemory> {
+  final Value<int> id;
+  final Value<int> personId;
+  final Value<int> year;
+  final Value<String> path;
+  final Value<String?> caption;
+  final Value<DateTime> createdAt;
+  const PhotoMemoriesCompanion({
+    this.id = const Value.absent(),
+    this.personId = const Value.absent(),
+    this.year = const Value.absent(),
+    this.path = const Value.absent(),
+    this.caption = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  PhotoMemoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required int personId,
+    required int year,
+    required String path,
+    this.caption = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : personId = Value(personId),
+       year = Value(year),
+       path = Value(path);
+  static Insertable<PhotoMemory> custom({
+    Expression<int>? id,
+    Expression<int>? personId,
+    Expression<int>? year,
+    Expression<String>? path,
+    Expression<String>? caption,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (personId != null) 'person_id': personId,
+      if (year != null) 'year': year,
+      if (path != null) 'path': path,
+      if (caption != null) 'caption': caption,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  PhotoMemoriesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? personId,
+    Value<int>? year,
+    Value<String>? path,
+    Value<String?>? caption,
+    Value<DateTime>? createdAt,
+  }) {
+    return PhotoMemoriesCompanion(
+      id: id ?? this.id,
+      personId: personId ?? this.personId,
+      year: year ?? this.year,
+      path: path ?? this.path,
+      caption: caption ?? this.caption,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (personId.present) {
+      map['person_id'] = Variable<int>(personId.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (caption.present) {
+      map['caption'] = Variable<String>(caption.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoMemoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('year: $year, ')
+          ..write('path: $path, ')
+          ..write('caption: $caption, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -7013,6 +7410,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WishSessionItemsTable wishSessionItems = $WishSessionItemsTable(
     this,
   );
+  late final $PhotoMemoriesTable photoMemories = $PhotoMemoriesTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -7032,6 +7430,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     customFestivals,
     wishSessions,
     wishSessionItems,
+    photoMemories,
     settings,
   ];
   @override
@@ -7098,6 +7497,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('wish_session_items', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'people',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('photo_memories', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -7247,6 +7653,24 @@ final class $$PeopleTableReferences
     final cache = $_typedResult.readTableOrNull(
       _wishSessionItemsRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$PhotoMemoriesTable, List<PhotoMemory>>
+  _photoMemoriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.photoMemories,
+    aliasName: 'people__id__photo_memories__person_id',
+  );
+
+  $$PhotoMemoriesTableProcessedTableManager get photoMemoriesRefs {
+    final manager = $$PhotoMemoriesTableTableManager(
+      $_db,
+      $_db.photoMemories,
+    ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_photoMemoriesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -7498,6 +7922,31 @@ class $$PeopleTableFilterComposer
           }) => $$WishSessionItemsTableFilterComposer(
             $db: $db,
             $table: $db.wishSessionItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> photoMemoriesRefs(
+    Expression<bool> Function($$PhotoMemoriesTableFilterComposer f) f,
+  ) {
+    final $$PhotoMemoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.photoMemories,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PhotoMemoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.photoMemories,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -7863,6 +8312,31 @@ class $$PeopleTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> photoMemoriesRefs<T extends Object>(
+    Expression<T> Function($$PhotoMemoriesTableAnnotationComposer a) f,
+  ) {
+    final $$PhotoMemoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.photoMemories,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PhotoMemoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.photoMemories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PeopleTableTableManager
@@ -7884,6 +8358,7 @@ class $$PeopleTableTableManager
             bool contactNoticesRefs,
             bool wishLogsRefs,
             bool wishSessionItemsRefs,
+            bool photoMemoriesRefs,
           })
         > {
   $$PeopleTableTableManager(_$AppDatabase db, $PeopleTable table)
@@ -8016,6 +8491,7 @@ class $$PeopleTableTableManager
                 contactNoticesRefs = false,
                 wishLogsRefs = false,
                 wishSessionItemsRefs = false,
+                photoMemoriesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -8025,6 +8501,7 @@ class $$PeopleTableTableManager
                     if (contactNoticesRefs) db.contactNotices,
                     if (wishLogsRefs) db.wishLogs,
                     if (wishSessionItemsRefs) db.wishSessionItems,
+                    if (photoMemoriesRefs) db.photoMemories,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -8134,6 +8611,27 @@ class $$PeopleTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (photoMemoriesRefs)
+                        await $_getPrefetchedData<
+                          Person,
+                          $PeopleTable,
+                          PhotoMemory
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PeopleTableReferences
+                              ._photoMemoriesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PeopleTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).photoMemoriesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.personId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -8160,6 +8658,7 @@ typedef $$PeopleTableProcessedTableManager =
         bool contactNoticesRefs,
         bool wishLogsRefs,
         bool wishSessionItemsRefs,
+        bool photoMemoriesRefs,
       })
     >;
 typedef $$EventsTableCreateCompanionBuilder = EventsCompanion Function({
@@ -12388,6 +12887,338 @@ typedef $$WishSessionItemsTableProcessedTableManager =
       WishSessionItem,
       PrefetchHooks Function({bool sessionId, bool personId})
     >;
+typedef $$PhotoMemoriesTableCreateCompanionBuilder =
+    PhotoMemoriesCompanion Function({
+      Value<int> id,
+      required int personId,
+      required int year,
+      required String path,
+      Value<String?> caption,
+      Value<DateTime> createdAt,
+    });
+typedef $$PhotoMemoriesTableUpdateCompanionBuilder =
+    PhotoMemoriesCompanion Function({
+      Value<int> id,
+      Value<int> personId,
+      Value<int> year,
+      Value<String> path,
+      Value<String?> caption,
+      Value<DateTime> createdAt,
+    });
+
+final class $$PhotoMemoriesTableReferences
+    extends BaseReferences<_$AppDatabase, $PhotoMemoriesTable, PhotoMemory> {
+  $$PhotoMemoriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PeopleTable _personIdTable(_$AppDatabase db) =>
+      db.people.createAlias('photo_memories__person_id__people__id');
+
+  $$PeopleTableProcessedTableManager get personId {
+    final $_column = $_itemColumn<int>('person_id')!;
+
+    final manager = $$PeopleTableTableManager(
+      $_db,
+      $_db.people,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_personIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PhotoMemoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $PhotoMemoriesTable> {
+  $$PhotoMemoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get caption => $composableBuilder(
+    column: $table.caption,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PeopleTableFilterComposer get personId {
+    final $$PeopleTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableFilterComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PhotoMemoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PhotoMemoriesTable> {
+  $$PhotoMemoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get caption => $composableBuilder(
+    column: $table.caption,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PeopleTableOrderingComposer get personId {
+    final $$PeopleTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableOrderingComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PhotoMemoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PhotoMemoriesTable> {
+  $$PhotoMemoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<String> get caption =>
+      $composableBuilder(column: $table.caption, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$PeopleTableAnnotationComposer get personId {
+    final $$PeopleTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableAnnotationComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PhotoMemoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PhotoMemoriesTable,
+          PhotoMemory,
+          $$PhotoMemoriesTableFilterComposer,
+          $$PhotoMemoriesTableOrderingComposer,
+          $$PhotoMemoriesTableAnnotationComposer,
+          $$PhotoMemoriesTableCreateCompanionBuilder,
+          $$PhotoMemoriesTableUpdateCompanionBuilder,
+          (PhotoMemory, $$PhotoMemoriesTableReferences),
+          PhotoMemory,
+          PrefetchHooks Function({bool personId})
+        > {
+  $$PhotoMemoriesTableTableManager(_$AppDatabase db, $PhotoMemoriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PhotoMemoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PhotoMemoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PhotoMemoriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> personId = const Value.absent(),
+                Value<int> year = const Value.absent(),
+                Value<String> path = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => PhotoMemoriesCompanion(
+                id: id,
+                personId: personId,
+                year: year,
+                path: path,
+                caption: caption,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int personId,
+                required int year,
+                required String path,
+                Value<String?> caption = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => PhotoMemoriesCompanion.insert(
+                id: id,
+                personId: personId,
+                year: year,
+                path: path,
+                caption: caption,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PhotoMemoriesTable, PhotoMemory>(table),
+                  $$PhotoMemoriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({personId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (personId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.personId,
+                        referencedTable: $$PhotoMemoriesTableReferences
+                            ._personIdTable(db),
+                        referencedColumn: $$PhotoMemoriesTableReferences
+                            ._personIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PhotoMemoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PhotoMemoriesTable,
+      PhotoMemory,
+      $$PhotoMemoriesTableFilterComposer,
+      $$PhotoMemoriesTableOrderingComposer,
+      $$PhotoMemoriesTableAnnotationComposer,
+      $$PhotoMemoriesTableCreateCompanionBuilder,
+      $$PhotoMemoriesTableUpdateCompanionBuilder,
+      (PhotoMemory, $$PhotoMemoriesTableReferences),
+      PhotoMemory,
+      PrefetchHooks Function({bool personId})
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -12552,6 +13383,8 @@ class $AppDatabaseManager {
       $$WishSessionsTableTableManager(_db, _db.wishSessions);
   $$WishSessionItemsTableTableManager get wishSessionItems =>
       $$WishSessionItemsTableTableManager(_db, _db.wishSessionItems);
+  $$PhotoMemoriesTableTableManager get photoMemories =>
+      $$PhotoMemoriesTableTableManager(_db, _db.photoMemories);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
 }

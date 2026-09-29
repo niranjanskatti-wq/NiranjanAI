@@ -79,17 +79,16 @@ class SettingsScreen extends ConsumerWidget {
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('People')),
           tile(Icons.inventory_2_outlined, 'Archived people', null, () => context.push('/archived')),
           const SizedBox(height: 12),
-          const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Coming in later updates')),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Text(
-              'Excel export and backup · Greeting cards · Widget and app lock',
-              style: context.text.bodySmall,
-            ),
-          ),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Backup & Excel')),
+          tile(Icons.backup_outlined, 'Backup & restore', 'Automatic every week · Download/Smriti Backups',
+              () => context.push('/backup')),
+          tile(Icons.table_chart_outlined, 'Export to Excel', 'All events, by month, people, important dates',
+              () => context.push('/export')),
+          tile(Icons.upload_file_rounded, 'Import from Excel', 'Add many at once, or move to a new phone',
+              () => context.push('/import')),
           const SizedBox(height: 24),
           Center(
-            child: Text('Smriti · Phase 1', style: context.text.bodySmall?.copyWith(color: c.muted)),
+            child: Text('Smriti 0.1', style: context.text.bodySmall?.copyWith(color: c.muted)),
           ),
           Center(
             child: Text('Everything stays on this phone.', style: context.text.bodySmall),

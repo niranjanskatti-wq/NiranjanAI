@@ -5,7 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/tokens.dart';
 import 'data/providers.dart';
+import 'features/backup/backup_screen.dart';
+import 'features/backup/backup_service.dart';
 import 'features/calendar/calendar_screen.dart';
+import 'features/export/export_screen.dart';
+import 'features/export/import_screen.dart';
 import 'features/contacts/bulk_add_screen.dart';
 import 'features/contacts/contact_sync.dart';
 import 'features/contacts/import_birthdays_screen.dart';
@@ -106,6 +110,9 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/reliability', builder: (_, _) => const ReliabilityScreen()),
         GoRoute(path: '/thank-you', builder: (_, _) => const ThankYouScreen()),
         GoRoute(path: '/festivals', builder: (_, _) => const FestivalsScreen()),
+        GoRoute(path: '/export', builder: (_, _) => const ExportScreen()),
+        GoRoute(path: '/import', builder: (_, _) => const ImportScreen()),
+        GoRoute(path: '/backup', builder: (_, _) => const BackupScreen()),
         GoRoute(
           path: '/festival',
           builder: (_, state) => FestivalScreen(festivalKey: state.uri.queryParameters['key'] ?? ''),
@@ -163,6 +170,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
   void _sync() {
     ContactSync(ref.read(repoProvider)).run();
     AlarmScheduler.syncSoon(ref.read(databaseProvider));
+    if (NotificationService.supported) BackupService(ref.read(databaseProvider)).autoIfDue();
   }
 
   /// Opens the right screen for a tapped notification or its button.

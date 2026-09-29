@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -56,7 +57,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         : (byDay[selected.day] ?? const <Upcoming>[]);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Calendar')),
+      appBar: AppBar(title: const Text('Calendar'), actions: [
+        IconButton(
+          tooltip: 'Export to Excel',
+          icon: const Icon(Icons.table_chart_outlined),
+          onPressed: () => context.push('/export'),
+        ),
+      ]),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
         children: [

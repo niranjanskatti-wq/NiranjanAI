@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:workmanager/workmanager.dart';
 
+import '../backup/backup_service.dart';
 import '../../data/database.dart';
 import '../../data/repository.dart';
 import '../festivals/festival_alarms.dart';
@@ -98,6 +99,7 @@ void backgroundDispatcher() {
     final db = AppDatabase();
     try {
       await AlarmScheduler.syncNow(db);
+      await BackupService(db).autoIfDue();
     } finally {
       await db.close();
     }

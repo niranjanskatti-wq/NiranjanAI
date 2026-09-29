@@ -213,6 +213,16 @@ class WishSessionItems extends Table {
   TextColumn get message => text().nullable()();
 }
 
+/// Photos from each year's celebration, shown on the person's profile.
+class PhotoMemories extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get personId => integer().references(People, #id, onDelete: KeyAction.cascade)();
+  IntColumn get year => integer()();
+  TextColumn get path => text()();
+  TextColumn get caption => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
 /// Every call or share, and whether the event was marked as wished.
 class WishLogs extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -247,13 +257,13 @@ class Settings extends Table {
 
 @DriftDatabase(tables: [
   People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages,
-  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, Settings,
+  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Settings,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -282,6 +292,9 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(customFestivals);
             await m.createTable(wishSessions);
             await m.createTable(wishSessionItems);
+          }
+          if (from < 6) {
+            await m.createTable(photoMemories);
           }
         },
         beforeOpen: (details) async {
