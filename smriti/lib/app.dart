@@ -1,0 +1,163 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'core/theme/app_theme.dart';
+import 'core/theme/tokens.dart';
+import 'data/providers.dart';
+import 'features/calendar/calendar_screen.dart';
+import 'features/contacts/bulk_add_screen.dart';
+import 'features/contacts/contact_sync.dart';
+import 'features/contacts/import_birthdays_screen.dart';
+import 'features/events/event_detail_screen.dart';
+import 'features/events/event_form_screen.dart';
+import 'features/home/home_screen.dart';
+import 'features/onboarding/welcome_screen.dart';
+import 'features/people/archived_screen.dart';
+import 'features/people/people_screen.dart';
+import 'features/people/person_form_screen.dart';
+import 'features/people/person_screen.dart';
+import 'features/search/search_screen.dart';
+import 'features/settings/settings_screen.dart';
+
+final _rootKey = GlobalKey<NavigatorState>();
+
+GoRouter buildRouter(bool onboarded) => GoRouter(
+      navigatorKey: _rootKey,
+      initialLocation: onboarded ? '/home' : '/welcome',
+      routes: [
+        GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, shell) => _Shell(shell: shell),
+          branches: [
+            StatefulShellBranch(routes: [GoRoute(path: '/home', builder: (_, _) => const HomeScreen())]),
+            StatefulShellBranch(
+                routes: [GoRoute(path: '/calendar', builder: (_, _) => const CalendarScreen())]),
+            StatefulShellBranch(routes: [GoRoute(path: '/people', builder: (_, _) => const PeopleScreen())]),
+            StatefulShellBranch(
+                routes: [GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen())]),
+          ],
+        ),
+        GoRoute(path: '/search', builder: (_, _) => const SearchScreen()),
+        GoRoute(path: '/me/new', builder: (_, _) => const PersonFormScreen(isMe: true)),
+        GoRoute(path: '/archived', builder: (_, _) => const ArchivedScreen()),
+        GoRoute(path: '/import/contacts', builder: (_, _) => const BulkAddScreen()),
+        GoRoute(path: '/import/birthdays', builder: (_, _) => const ImportBirthdaysScreen()),
+        GoRoute(
+          path: '/person/new',
+          builder: (_, state) => PersonFormScreen(fromContacts: state.uri.queryParameters['contacts'] == '1'),
+        ),
+        GoRoute(
+          path: '/person/:id',
+          builder: (_, state) => PersonScreen(id: int.parse(state.pathParameters['id']!)),
+        ),
+        GoRoute(
+          path: '/person/:id/edit',
+          builder: (_, state) => PersonFormScreen(id: int.parse(state.pathParameters['id']!)),
+        ),
+        GoRoute(
+          path: '/event/new',
+          builder: (_, state) {
+            final q = state.uri.queryParameters;
+            return EventFormScreen(
+              initialKind: q['kind'],
+              personId: int.tryParse(q['person'] ?? ''),
+              initialType: q['type'],
+            );
+          },
+        ),
+        GoRoute(
+          path: '/event/:id',
+          builder: (_, state) => EventDetailScreen(id: int.parse(state.pathParameters['id']!)),
+        ),
+        GoRoute(
+          path: '/event/:id/edit',
+          builder: (_, state) => EventFormScreen(id: int.parse(state.pathParameters['id']!)),
+        ),
+      ],
+    );
+
+class SmritiApp extends ConsumerStatefulWidget {
+  const SmritiApp({super.key});
+
+  @override
+  ConsumerState<SmritiApp> createState() => _SmritiAppState();
+}
+
+class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserver {
+  GoRouter? _router;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _sync();
+  }
+
+  /// Keeps linked people's numbers in step with the phone's contacts.
+  void _sync() => ContactSync(ref.read(repoProvider)).run();
+
+  @override
+  Widget build(BuildContext context) {
+    final mode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
+    final onboarded = ref.watch(onboardedProvider);
+    if (!onboarded.hasValue) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: buildTheme(Brightness.light),
+        darkTheme: buildTheme(Brightness.dark),
+        themeMode: mode,
+        home: const Scaffold(body: SizedBox.shrink()),
+      );
+    }
+    _router ??= buildRouter(onboarded.requireValue);
+    return MaterialApp.router(
+      title: 'Smriti',
+      debugShowCheckedModeBanner: false,
+      theme: buildTheme(Brightness.light),
+      darkTheme: buildTheme(Brightness.dark),
+      themeMode: mode,
+      routerConfig: _router,
+    );
+  }
+}
+
+class _Shell extends StatelessWidget {
+  const _Shell({required this.shell});
+
+  final StatefulNavigationShell shell;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: shell,
+        bottomNavigationBar: DecoratedBox(
+          decoration: BoxDecoration(border: Border(top: BorderSide(color: context.c.line))),
+          child: NavigationBar(
+            selectedIndex: shell.currentIndex,
+            onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
+            destinations: const [
+              NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Home'),
+              NavigationDestination(
+                  icon: Icon(Icons.calendar_month_outlined),
+                  selectedIcon: Icon(Icons.calendar_month_rounded),
+                  label: 'Calendar'),
+              NavigationDestination(
+                  icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people_rounded), label: 'People'),
+              NavigationDestination(
+                  icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings_rounded), label: 'Settings'),
+            ],
+          ),
+        ),
+      );
+}

@@ -191,6 +191,17 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _contactLookupKeyMeta = const VerificationMeta(
+    'contactLookupKey',
+  );
+  @override
+  late final GeneratedColumn<String> contactLookupKey = GeneratedColumn<String>(
+    'contact_lookup_key',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _editedFieldsMeta = const VerificationMeta(
     'editedFields',
   );
@@ -274,6 +285,7 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
     clothingSize,
     favouriteSweets,
     contactId,
+    contactLookupKey,
     editedFields,
     isMe,
     isArchived,
@@ -408,6 +420,15 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
         contactId.isAcceptableOrUnknown(data['contact_id']!, _contactIdMeta),
       );
     }
+    if (data.containsKey('contact_lookup_key')) {
+      context.handle(
+        _contactLookupKeyMeta,
+        contactLookupKey.isAcceptableOrUnknown(
+          data['contact_lookup_key']!,
+          _contactLookupKeyMeta,
+        ),
+      );
+    }
     if (data.containsKey('edited_fields')) {
       context.handle(
         _editedFieldsMeta,
@@ -518,6 +539,10 @@ class $PeopleTable extends People with TableInfo<$PeopleTable, Person> {
         DriftSqlType.string,
         data['${effectivePrefix}contact_id'],
       ),
+      contactLookupKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}contact_lookup_key'],
+      ),
       editedFields: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}edited_fields'],
@@ -572,6 +597,9 @@ class Person extends DataClass implements Insertable<Person> {
   /// Phone contact this person is linked to, if any.
   final String? contactId;
 
+  /// Android lookup key: finds the contact again if its id changes.
+  final String? contactLookupKey;
+
   /// Comma-separated field names the user edited by hand ("callNumber",
   /// "whatsappNumber"). Contact sync never silently overwrites these.
   final String editedFields;
@@ -597,6 +625,7 @@ class Person extends DataClass implements Insertable<Person> {
     this.clothingSize,
     this.favouriteSweets,
     this.contactId,
+    this.contactLookupKey,
     required this.editedFields,
     required this.isMe,
     required this.isArchived,
@@ -648,6 +677,9 @@ class Person extends DataClass implements Insertable<Person> {
     }
     if (!nullToAbsent || contactId != null) {
       map['contact_id'] = Variable<String>(contactId);
+    }
+    if (!nullToAbsent || contactLookupKey != null) {
+      map['contact_lookup_key'] = Variable<String>(contactLookupKey);
     }
     map['edited_fields'] = Variable<String>(editedFields);
     map['is_me'] = Variable<bool>(isMe);
@@ -702,6 +734,9 @@ class Person extends DataClass implements Insertable<Person> {
       contactId: contactId == null && nullToAbsent
           ? const Value.absent()
           : Value(contactId),
+      contactLookupKey: contactLookupKey == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contactLookupKey),
       editedFields: Value(editedFields),
       isMe: Value(isMe),
       isArchived: Value(isArchived),
@@ -735,6 +770,7 @@ class Person extends DataClass implements Insertable<Person> {
       clothingSize: serializer.fromJson<String?>(json['clothingSize']),
       favouriteSweets: serializer.fromJson<String?>(json['favouriteSweets']),
       contactId: serializer.fromJson<String?>(json['contactId']),
+      contactLookupKey: serializer.fromJson<String?>(json['contactLookupKey']),
       editedFields: serializer.fromJson<String>(json['editedFields']),
       isMe: serializer.fromJson<bool>(json['isMe']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
@@ -763,6 +799,7 @@ class Person extends DataClass implements Insertable<Person> {
       'clothingSize': serializer.toJson<String?>(clothingSize),
       'favouriteSweets': serializer.toJson<String?>(favouriteSweets),
       'contactId': serializer.toJson<String?>(contactId),
+      'contactLookupKey': serializer.toJson<String?>(contactLookupKey),
       'editedFields': serializer.toJson<String>(editedFields),
       'isMe': serializer.toJson<bool>(isMe),
       'isArchived': serializer.toJson<bool>(isArchived),
@@ -789,6 +826,7 @@ class Person extends DataClass implements Insertable<Person> {
     Value<String?> clothingSize = const Value.absent(),
     Value<String?> favouriteSweets = const Value.absent(),
     Value<String?> contactId = const Value.absent(),
+    Value<String?> contactLookupKey = const Value.absent(),
     String? editedFields,
     bool? isMe,
     bool? isArchived,
@@ -818,6 +856,9 @@ class Person extends DataClass implements Insertable<Person> {
         ? favouriteSweets.value
         : this.favouriteSweets,
     contactId: contactId.present ? contactId.value : this.contactId,
+    contactLookupKey: contactLookupKey.present
+        ? contactLookupKey.value
+        : this.contactLookupKey,
     editedFields: editedFields ?? this.editedFields,
     isMe: isMe ?? this.isMe,
     isArchived: isArchived ?? this.isArchived,
@@ -855,6 +896,9 @@ class Person extends DataClass implements Insertable<Person> {
           ? data.favouriteSweets.value
           : this.favouriteSweets,
       contactId: data.contactId.present ? data.contactId.value : this.contactId,
+      contactLookupKey: data.contactLookupKey.present
+          ? data.contactLookupKey.value
+          : this.contactLookupKey,
       editedFields: data.editedFields.present
           ? data.editedFields.value
           : this.editedFields,
@@ -887,6 +931,7 @@ class Person extends DataClass implements Insertable<Person> {
           ..write('clothingSize: $clothingSize, ')
           ..write('favouriteSweets: $favouriteSweets, ')
           ..write('contactId: $contactId, ')
+          ..write('contactLookupKey: $contactLookupKey, ')
           ..write('editedFields: $editedFields, ')
           ..write('isMe: $isMe, ')
           ..write('isArchived: $isArchived, ')
@@ -915,6 +960,7 @@ class Person extends DataClass implements Insertable<Person> {
     clothingSize,
     favouriteSweets,
     contactId,
+    contactLookupKey,
     editedFields,
     isMe,
     isArchived,
@@ -942,6 +988,7 @@ class Person extends DataClass implements Insertable<Person> {
           other.clothingSize == this.clothingSize &&
           other.favouriteSweets == this.favouriteSweets &&
           other.contactId == this.contactId &&
+          other.contactLookupKey == this.contactLookupKey &&
           other.editedFields == this.editedFields &&
           other.isMe == this.isMe &&
           other.isArchived == this.isArchived &&
@@ -967,6 +1014,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
   final Value<String?> clothingSize;
   final Value<String?> favouriteSweets;
   final Value<String?> contactId;
+  final Value<String?> contactLookupKey;
   final Value<String> editedFields;
   final Value<bool> isMe;
   final Value<bool> isArchived;
@@ -990,6 +1038,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     this.clothingSize = const Value.absent(),
     this.favouriteSweets = const Value.absent(),
     this.contactId = const Value.absent(),
+    this.contactLookupKey = const Value.absent(),
     this.editedFields = const Value.absent(),
     this.isMe = const Value.absent(),
     this.isArchived = const Value.absent(),
@@ -1014,6 +1063,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     this.clothingSize = const Value.absent(),
     this.favouriteSweets = const Value.absent(),
     this.contactId = const Value.absent(),
+    this.contactLookupKey = const Value.absent(),
     this.editedFields = const Value.absent(),
     this.isMe = const Value.absent(),
     this.isArchived = const Value.absent(),
@@ -1038,6 +1088,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     Expression<String>? clothingSize,
     Expression<String>? favouriteSweets,
     Expression<String>? contactId,
+    Expression<String>? contactLookupKey,
     Expression<String>? editedFields,
     Expression<bool>? isMe,
     Expression<bool>? isArchived,
@@ -1062,6 +1113,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
       if (clothingSize != null) 'clothing_size': clothingSize,
       if (favouriteSweets != null) 'favourite_sweets': favouriteSweets,
       if (contactId != null) 'contact_id': contactId,
+      if (contactLookupKey != null) 'contact_lookup_key': contactLookupKey,
       if (editedFields != null) 'edited_fields': editedFields,
       if (isMe != null) 'is_me': isMe,
       if (isArchived != null) 'is_archived': isArchived,
@@ -1088,6 +1140,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     Value<String?>? clothingSize,
     Value<String?>? favouriteSweets,
     Value<String?>? contactId,
+    Value<String?>? contactLookupKey,
     Value<String>? editedFields,
     Value<bool>? isMe,
     Value<bool>? isArchived,
@@ -1112,6 +1165,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
       clothingSize: clothingSize ?? this.clothingSize,
       favouriteSweets: favouriteSweets ?? this.favouriteSweets,
       contactId: contactId ?? this.contactId,
+      contactLookupKey: contactLookupKey ?? this.contactLookupKey,
       editedFields: editedFields ?? this.editedFields,
       isMe: isMe ?? this.isMe,
       isArchived: isArchived ?? this.isArchived,
@@ -1174,6 +1228,9 @@ class PeopleCompanion extends UpdateCompanion<Person> {
     if (contactId.present) {
       map['contact_id'] = Variable<String>(contactId.value);
     }
+    if (contactLookupKey.present) {
+      map['contact_lookup_key'] = Variable<String>(contactLookupKey.value);
+    }
     if (editedFields.present) {
       map['edited_fields'] = Variable<String>(editedFields.value);
     }
@@ -1212,6 +1269,7 @@ class PeopleCompanion extends UpdateCompanion<Person> {
           ..write('clothingSize: $clothingSize, ')
           ..write('favouriteSweets: $favouriteSweets, ')
           ..write('contactId: $contactId, ')
+          ..write('contactLookupKey: $contactLookupKey, ')
           ..write('editedFields: $editedFields, ')
           ..write('isMe: $isMe, ')
           ..write('isArchived: $isArchived, ')
@@ -3477,6 +3535,7 @@ typedef $$PeopleTableCreateCompanionBuilder = PeopleCompanion Function({
   Value<String?> clothingSize,
   Value<String?> favouriteSweets,
   Value<String?> contactId,
+  Value<String?> contactLookupKey,
   Value<String> editedFields,
   Value<bool> isMe,
   Value<bool> isArchived,
@@ -3501,6 +3560,7 @@ typedef $$PeopleTableUpdateCompanionBuilder = PeopleCompanion Function({
   Value<String?> clothingSize,
   Value<String?> favouriteSweets,
   Value<String?> contactId,
+  Value<String?> contactLookupKey,
   Value<String> editedFields,
   Value<bool> isMe,
   Value<bool> isArchived,
@@ -3658,6 +3718,11 @@ class $$PeopleTableFilterComposer
 
   ColumnFilters<String> get contactId => $composableBuilder(
     column: $table.contactId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contactLookupKey => $composableBuilder(
+    column: $table.contactLookupKey,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3856,6 +3921,11 @@ class $$PeopleTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get contactLookupKey => $composableBuilder(
+    column: $table.contactLookupKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get editedFields => $composableBuilder(
     column: $table.editedFields,
     builder: (column) => ColumnOrderings(column),
@@ -3953,6 +4023,11 @@ class $$PeopleTableAnnotationComposer
 
   GeneratedColumn<String> get contactId =>
       $composableBuilder(column: $table.contactId, builder: (column) => column);
+
+  GeneratedColumn<String> get contactLookupKey => $composableBuilder(
+    column: $table.contactLookupKey,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get editedFields => $composableBuilder(
     column: $table.editedFields,
@@ -4098,6 +4173,7 @@ class $$PeopleTableTableManager
                 Value<String?> clothingSize = const Value.absent(),
                 Value<String?> favouriteSweets = const Value.absent(),
                 Value<String?> contactId = const Value.absent(),
+                Value<String?> contactLookupKey = const Value.absent(),
                 Value<String> editedFields = const Value.absent(),
                 Value<bool> isMe = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
@@ -4121,6 +4197,7 @@ class $$PeopleTableTableManager
                 clothingSize: clothingSize,
                 favouriteSweets: favouriteSweets,
                 contactId: contactId,
+                contactLookupKey: contactLookupKey,
                 editedFields: editedFields,
                 isMe: isMe,
                 isArchived: isArchived,
@@ -4146,6 +4223,7 @@ class $$PeopleTableTableManager
                 Value<String?> clothingSize = const Value.absent(),
                 Value<String?> favouriteSweets = const Value.absent(),
                 Value<String?> contactId = const Value.absent(),
+                Value<String?> contactLookupKey = const Value.absent(),
                 Value<String> editedFields = const Value.absent(),
                 Value<bool> isMe = const Value.absent(),
                 Value<bool> isArchived = const Value.absent(),
@@ -4169,6 +4247,7 @@ class $$PeopleTableTableManager
                 clothingSize: clothingSize,
                 favouriteSweets: favouriteSweets,
                 contactId: contactId,
+                contactLookupKey: contactLookupKey,
                 editedFields: editedFields,
                 isMe: isMe,
                 isArchived: isArchived,

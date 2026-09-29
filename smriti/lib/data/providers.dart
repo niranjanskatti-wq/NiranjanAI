@@ -42,16 +42,22 @@ final noticesProvider =
     StreamProvider<List<ContactNotice>>((ref) => ref.watch(repoProvider).watchUnseenNotices());
 
 /// Today's date; emits again when the clock passes midnight.
-final todayProvider = StreamProvider<Day>((ref) async* {
+final todayProvider = StreamProvider<Day>((ref) {
+  final controller = StreamController<Day>();
   var last = Day.today();
-  yield last;
-  await for (final _ in Stream.periodic(const Duration(seconds: 20))) {
+  controller.add(last);
+  final timer = Timer.periodic(const Duration(seconds: 20), (_) {
     final now = Day.today();
     if (now != last) {
       last = now;
-      yield now;
+      controller.add(now);
     }
-  }
+  });
+  ref.onDispose(() {
+    timer.cancel();
+    controller.close();
+  });
+  return controller.stream;
 });
 
 final upcomingProvider = Provider<AsyncValue<List<Upcoming>>>((ref) {

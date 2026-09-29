@@ -118,10 +118,10 @@ class Upcoming {
   }
 }
 
-List<Upcoming> computeUpcoming(Iterable<EventEntry> entries, Day today) {
+List<Upcoming> computeUpcoming(Iterable<EventEntry> entries, Day today, {bool includeArchived = false}) {
   final out = <Upcoming>[];
   for (final e in entries) {
-    if (e.isArchived) continue;
+    if (e.isArchived && !includeArchived) continue;
     final d = e.nextFrom(today);
     if (d != null) out.add(Upcoming(e, d, today.daysUntil(d)));
   }

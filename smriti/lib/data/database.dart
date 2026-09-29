@@ -30,6 +30,9 @@ class People extends Table {
   /// Phone contact this person is linked to, if any.
   TextColumn get contactId => text().nullable()();
 
+  /// Android lookup key: finds the contact again if its id changes.
+  TextColumn get contactLookupKey => text().nullable()();
+
   /// Comma-separated field names the user edited by hand ("callNumber",
   /// "whatsappNumber"). Contact sync never silently overwrites these.
   TextColumn get editedFields => text().withDefault(const Constant(''))();
