@@ -1,11 +1,11 @@
 # Smriti — Progress
 
 Platform: Android only (installed as an APK, no Play Store).
-Design review: `docs/design-review.html` · Screenshots: `test/screenshots/`
+Design review: `docs/design-review.html` · Screenshots: `test/screenshots/` · Card designs: `docs/screens/cards.png`
 
 ## Current status
 Building all phases in a row (your choice), testing everything on the phone at the end.
-**Phase 5 · Festivals & Wish Mode** — built.
+**Phase 6 · Excel, backup, cards, memories** — built.
 
 ## Done
 ### Phase 0 · Design (approved)
@@ -112,8 +112,29 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - 61 automatic tests (festival dates, edits and resets, your own festivals, festival reminders,
   pausing and continuing Wish Mode)
 
+### Phase 6 · Excel, backup, greeting cards, photo memories
+- Export to Excel (Settings › Export, or the button on Calendar): one file with four sheets:
+  All Events, By Month, People, Important Dates. Bold gold header row that stays in place,
+  dd-mm-yyyy dates, filters on every column. Choose everyone, some people or by stars, a month or
+  an event type, and leave out phone numbers or notes before sharing. Save to Downloads or share
+- Import from Excel: add many people and dates at once, or move everything to a new phone from a
+  Smriti export. Shows a preview first (ready / already in Smriti / problems, with the row number)
+  and saves nothing until you confirm. A blank template with examples is one tap away
+- Backup & restore: one .zip with everything (all data and photos) in Download › Smriti Backups.
+  Automatic once a week; the newest 4 are kept. Share a backup to Google Drive for safe keeping.
+  Restore from the list or from any file; a safety backup of the current data is made first
+- Greeting cards: 28 designs (charcoal & gold, minimal, floral, rose, balloons, cake, confetti,
+  watercolour, golden number and laurel for milestones, two rings and art deco for anniversaries,
+  rangoli, marigold toran, temple arch, lotus, diyas, fireworks, Holi colours, kites, rakhi,
+  dandiya, new sunrise, tiranga, Kannada colours, Christmas). The right designs come first for the
+  day (kites for Sankranti, diyas for Diwali…). Tap to change the words; Hindi and Kannada work.
+  Share as a picture or save to the Gallery. Open from the Share sheet or the event page
+- Photo memories on each profile: add photos (several at once) under a year, see them year by year
+  ("2025 · turned 61"), swipe through full screen, add captions, change the year, delete
+- 69 automatic tests (Excel round trip, filters, template, backup/restore, card choices)
+
 ## Pending
-- Phase 6: Excel, backup, cards, photo memories · Phase 7: Widget, gifts planner, groups, lock
+- Phase 7: Home-screen widget, gift planner, groups, fingerprint lock, phone calendar
 - Phase 8: Polish and full phone test
 
 ## Known issues

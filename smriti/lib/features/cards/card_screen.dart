@@ -30,22 +30,14 @@ class CardRequest {
 String _first(String name) => name.trim().split(RegExp(r'\s+')).first;
 
 /// Sensible first words for a card about [t].
-CardData cardDataFor(
-  WishTarget t, {
-  String message = '',
-  Person? me,
-  Person? to,
-}) {
+CardData cardDataFor(WishTarget t, {String message = '', Person? me, Person? to}) {
   final e = t.entry;
   final years = t.years;
   var kind = CardKind.general;
   String headline;
   if (t.festivalId != null || e?.type == EventType.festival) {
     kind = CardKind.festival;
-    final f = (t.festivalName ?? e?.title ?? 'Festival')
-        .split(' (')
-        .first
-        .replaceAll(' begins', '');
+    final f = (t.festivalName ?? e?.title ?? 'Festival').split(' (').first.replaceAll(' begins', '');
     headline = 'Happy $f';
   } else if (e == null) {
     headline = 'Best wishes';
@@ -53,36 +45,24 @@ CardData cardDataFor(
     switch (e.type) {
       case EventType.birthday:
         kind = t.milestone ? CardKind.milestone : CardKind.birthday;
-        headline = years != null && years > 0 && t.milestone
-            ? 'Happy ${ordinal(years)} Birthday'
-            : 'Happy Birthday';
+        headline = years != null && years > 0 && t.milestone ? 'Happy ${ordinal(years)} Birthday' : 'Happy Birthday';
       case EventType.weddingAnniversary || EventType.firstMeeting:
         kind = t.milestone ? CardKind.milestone : CardKind.anniversary;
-        headline = years != null && years > 0
-            ? 'Happy ${ordinal(years)} Anniversary'
-            : 'Happy Anniversary';
+        headline = years != null && years > 0 ? 'Happy ${ordinal(years)} Anniversary' : 'Happy Anniversary';
       case EventType.engagement:
         kind = CardKind.anniversary;
         headline = 'Happy Engagement Anniversary';
       case EventType.workAnniversary:
-        headline = years != null && years > 0
-            ? 'Happy ${ordinal(years)} Work Anniversary'
-            : 'Happy Work Anniversary';
+        headline = years != null && years > 0 ? 'Happy ${ordinal(years)} Work Anniversary' : 'Happy Work Anniversary';
       case EventType.graduation:
         headline = 'Congratulations';
       default:
-        headline = (e.event.customLabel?.trim().isNotEmpty ?? false)
-            ? e.event.customLabel!.trim()
-            : 'Best wishes';
+        headline = (e.event.customLabel?.trim().isNotEmpty ?? false) ? e.event.customLabel!.trim() : 'Best wishes';
     }
   }
-  if (t.belated)
-    headline =
-        'Belated ${headline.replaceFirst('Happy ', '').toLowerCase()} wishes';
+  if (t.belated) headline = 'Belated ${headline.replaceFirst('Happy ', '').toLowerCase()} wishes';
   final people = e?.people.where((p) => !p.isMe).toList() ?? const <Person>[];
-  final name = people.isNotEmpty
-      ? people.map((p) => p.shortName).join(' & ')
-      : (t.about ?? to)?.shortName ?? '';
+  final name = people.isNotEmpty ? people.map((p) => p.shortName).join(' & ') : (t.about ?? to)?.shortName ?? '';
   return CardData(
     kind: kind,
     headline: headline,
@@ -95,13 +75,7 @@ CardData cardDataFor(
 }
 
 /// Opens the card maker for a wish.
-Future<void> openCardFor(
-  BuildContext context,
-  WidgetRef ref,
-  WishTarget t, {
-  String message = '',
-  Person? to,
-}) async {
+Future<void> openCardFor(BuildContext context, WidgetRef ref, WishTarget t, {String message = '', Person? to}) async {
   final me = await ref.read(repoProvider).getMe();
   if (!context.mounted) return;
   await context.push(
@@ -138,8 +112,7 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
     return data!.buffer.asUint8List();
   }
 
-  String get _fileName =>
-      'Smriti card ${DateTime.now().millisecondsSinceEpoch}.png';
+  String get _fileName => 'Smriti card ${DateTime.now().millisecondsSinceEpoch}.png';
 
   Future<void> _share() async {
     setState(() => _busy = true);
@@ -154,8 +127,7 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
         ),
       );
       final t = widget.request.target;
-      if (t != null)
-        await WishService(ref).cardShared(t, widget.request.to, _d.message);
+      if (t != null) await WishService(ref).cardShared(t, widget.request.to, _d.message);
     } catch (e) {
       if (mounted) showToast(context, 'Could not share: $e');
     }
@@ -166,13 +138,8 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
     setState(() => _busy = true);
     try {
       final bytes = await _capture();
-      if (!await Gal.hasAccess(toAlbum: true))
-        await Gal.requestAccess(toAlbum: true);
-      await Gal.putImageBytes(
-        bytes,
-        album: 'Smriti',
-        name: _fileName.replaceAll('.png', ''),
-      );
+      if (!await Gal.hasAccess(toAlbum: true)) await Gal.requestAccess(toAlbum: true);
+      await Gal.putImageBytes(bytes, album: 'Smriti', name: _fileName.replaceAll('.png', ''));
       HapticFeedback.lightImpact();
       if (mounted) showToast(context, 'Saved to Gallery › Smriti');
     } catch (e) {
@@ -191,12 +158,7 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
       useRootNavigator: true,
       isScrollControlled: true,
       builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          16 + MediaQuery.viewInsetsOf(ctx).bottom,
-        ),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.viewInsetsOf(ctx).bottom),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -226,10 +188,7 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
                 decoration: const InputDecoration(labelText: 'Signed'),
               ),
               const SizedBox(height: 12),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Done'),
-              ),
+              FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Done')),
             ],
           ),
         ),
@@ -253,33 +212,20 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Greeting card'),
-        actions: [
-          TextButton.icon(
-            onPressed: _edit,
-            icon: const Icon(Icons.edit_outlined, size: 18),
-            label: const Text('Words'),
-          ),
-        ],
+        actions: [TextButton.icon(onPressed: _edit, icon: const Icon(Icons.edit_outlined, size: 18), label: const Text('Words'))],
       ),
       body: Column(
         children: [
           Expanded(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: GestureDetector(
                   onTap: _edit,
                   child: Container(
                     decoration: BoxDecoration(
                       boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.25),
-                          blurRadius: 18,
-                          offset: const Offset(0, 6),
-                        ),
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 18, offset: const Offset(0, 6)),
                       ],
                     ),
                     child: RepaintBoundary(
@@ -308,10 +254,7 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
                       Container(
                         width: 76,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: on ? c.gold : c.line,
-                            width: on ? 2.5 : 1,
-                          ),
+                          border: Border.all(color: on ? c.gold : c.line, width: on ? 2.5 : 1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: ClipRRect(
@@ -330,9 +273,7 @@ class _CardStudioScreenState extends ConsumerState<CardStudioScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
-                          style: context.text.labelSmall?.copyWith(
-                            color: on ? c.text : c.muted,
-                          ),
+                          style: context.text.labelSmall?.copyWith(color: on ? c.text : c.muted),
                         ),
                       ),
                     ],

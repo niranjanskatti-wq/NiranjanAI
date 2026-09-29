@@ -19,6 +19,7 @@ import 'features/events/event_form_screen.dart';
 import 'features/festivals/festival_model.dart';
 import 'features/festivals/festivals_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/memories/memories.dart';
 import 'features/wishmode/wish_mode_runner.dart';
 import 'features/wishmode/wish_mode_setup.dart';
 import 'features/messages/event_message_screen.dart';
@@ -72,6 +73,10 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(
           path: '/person/:id',
           builder: (_, state) => PersonScreen(id: int.parse(state.pathParameters['id']!)),
+        ),
+        GoRoute(
+          path: '/person/:id/memories',
+          builder: (_, state) => MemoriesScreen(personId: int.parse(state.pathParameters['id']!)),
         ),
         GoRoute(
           path: '/person/:id/edit',

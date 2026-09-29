@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../memories/memories.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
 import '../../core/util/occurrence.dart';
@@ -118,6 +119,8 @@ class _PersonView extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             _GiftCard(personId: p.id, gifts: gifts),
+            const SizedBox(height: 12),
+            MemoriesCard(person: p),
             if (!p.isMe) ...[
               const SizedBox(height: 12),
               WishHistoryCard(person: p, eventIds: entries.map((e) => e.event.id).toSet()),

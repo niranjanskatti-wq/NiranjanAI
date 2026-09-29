@@ -24,12 +24,7 @@ class CardData {
   final int? years;
   final String? festivalId;
 
-  CardData copyWith({
-    String? headline,
-    String? name,
-    String? message,
-    String? footer,
-  }) => CardData(
+  CardData copyWith({String? headline, String? name, String? message, String? footer}) => CardData(
     kind: kind,
     headline: headline ?? this.headline,
     name: name ?? this.name,
@@ -69,13 +64,7 @@ class CardTemplate {
 }
 
 const _all = {...CardKind.values};
-const _diwali = {
-  'dhanteras',
-  'naraka_chaturdashi',
-  'diwali_lakshmi_puja',
-  'balipratipada',
-  'bhai_dooj',
-};
+const _diwali = {'dhanteras', 'naraka_chaturdashi', 'diwali_lakshmi_puja', 'balipratipada', 'bhai_dooj'};
 const _pooja = {
   'ganesh_chaturthi',
   'gowri_habba',
@@ -95,8 +84,7 @@ const _pooja = {
 /// then ones made for that kind of day, then the rest.
 List<CardTemplate> templatesFor(CardData data) {
   int rank(CardTemplate t) {
-    if (data.festivalId != null && t.festivals.contains(data.festivalId))
-      return 0;
+    if (data.festivalId != null && t.festivals.contains(data.festivalId)) return 0;
     if (t.kinds.contains(data.kind)) return t.festivals.isEmpty ? 1 : 2;
     return 3;
   }
@@ -110,10 +98,7 @@ List<CardTemplate> templatesFor(CardData data) {
   return list;
 }
 
-CardTemplate templateById(String? id) => cardTemplates.firstWhere(
-  (t) => t.id == id,
-  orElse: () => cardTemplates.first,
-);
+CardTemplate templateById(String? id) => cardTemplates.firstWhere((t) => t.id == id, orElse: () => cardTemplates.first);
 
 // ---------------------------------------------------------------------------
 // Drawing helpers. Everything is in fractions of the card size so the card
@@ -126,39 +111,18 @@ Paint _stroke(Color c, double w) => Paint()
   ..strokeWidth = w
   ..strokeCap = StrokeCap.round;
 
-void _border(Canvas c, Size s, Color color, double inset, double width) =>
-    c.drawRect(
-      Rect.fromLTRB(
-        s.width * inset,
-        s.width * inset,
-        s.width * (1 - inset),
-        s.height - s.width * inset,
-      ),
-      _stroke(color, s.width * width),
-    );
+void _border(Canvas c, Size s, Color color, double inset, double width) => c.drawRect(
+  Rect.fromLTRB(s.width * inset, s.width * inset, s.width * (1 - inset), s.height - s.width * inset),
+  _stroke(color, s.width * width),
+);
 
-void _flower(
-  Canvas c,
-  Offset o,
-  double r,
-  int petals,
-  Color petal,
-  Color heart, {
-  double turn = 0,
-}) {
+void _flower(Canvas c, Offset o, double r, int petals, Color petal, Color heart, {double turn = 0}) {
   for (var i = 0; i < petals; i++) {
     final a = turn + i * 2 * math.pi / petals;
     c.save();
     c.translate(o.dx, o.dy);
     c.rotate(a);
-    c.drawOval(
-      Rect.fromCenter(
-        center: Offset(0, -r * 0.55),
-        width: r * 0.62,
-        height: r * 1.05,
-      ),
-      _fill(petal),
-    );
+    c.drawOval(Rect.fromCenter(center: Offset(0, -r * 0.55), width: r * 0.62, height: r * 1.05), _fill(petal));
     c.restore();
   }
   c.drawCircle(o, r * 0.28, _fill(heart));
@@ -190,8 +154,7 @@ void _glow(Canvas c, Offset o, double r, Color color) => c.drawCircle(
   o,
   r,
   Paint()
-    ..shader = RadialGradient(colors: [color, color.withValues(alpha: 0)])
-        .createShader(Rect.fromCircle(center: o, radius: r)),
+    ..shader = RadialGradient(colors: [color, color.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: o, radius: r)),
 );
 
 void _text(
@@ -206,13 +169,7 @@ void _text(
   final tp = TextPainter(
     text: TextSpan(
       text: t,
-      style: TextStyle(
-        fontFamily: family,
-        fontSize: size,
-        color: color,
-        fontWeight: weight,
-        height: 1,
-      ),
+      style: TextStyle(fontFamily: family, fontSize: size, color: color, fontWeight: weight, height: 1),
     ),
     textDirection: TextDirection.ltr,
   )..layout();
@@ -226,16 +183,8 @@ void _minimal(Canvas c, Size s, CardData d) {
   const gold = Color(0xFFB08A45);
   _border(c, s, gold, 0.05, 0.003);
   final y = s.height * 0.17, w = s.width;
-  c.drawLine(
-    Offset(w * 0.30, y),
-    Offset(w * 0.44, y),
-    _stroke(gold, w * 0.003),
-  );
-  c.drawLine(
-    Offset(w * 0.56, y),
-    Offset(w * 0.70, y),
-    _stroke(gold, w * 0.003),
-  );
+  c.drawLine(Offset(w * 0.30, y), Offset(w * 0.44, y), _stroke(gold, w * 0.003));
+  c.drawLine(Offset(w * 0.56, y), Offset(w * 0.70, y), _stroke(gold, w * 0.003));
   _sparkle(c, Offset(w / 2, y), w * 0.035, gold);
 }
 
@@ -252,10 +201,7 @@ void _charcoalGold(Canvas c, Size s, CardData d) {
   ]) {
     final o = Offset(w * x, y == 0 ? w * 0.045 : s.height - w * 0.045);
     c.drawArc(
-      Rect.fromCircle(
-        center: o + Offset(sx * w * 0.06, sy * w * 0.06),
-        radius: w * 0.04,
-      ),
+      Rect.fromCircle(center: o + Offset(sx * w * 0.06, sy * w * 0.06), radius: w * 0.04),
       0,
       2 * math.pi,
       false,
@@ -263,18 +209,8 @@ void _charcoalGold(Canvas c, Size s, CardData d) {
     );
   }
   _sparkle(c, Offset(w / 2, s.height * 0.16), w * 0.04, gold);
-  _sparkle(
-    c,
-    Offset(w * 0.42, s.height * 0.175),
-    w * 0.015,
-    gold.withValues(alpha: 0.7),
-  );
-  _sparkle(
-    c,
-    Offset(w * 0.58, s.height * 0.175),
-    w * 0.015,
-    gold.withValues(alpha: 0.7),
-  );
+  _sparkle(c, Offset(w * 0.42, s.height * 0.175), w * 0.015, gold.withValues(alpha: 0.7));
+  _sparkle(c, Offset(w * 0.58, s.height * 0.175), w * 0.015, gold.withValues(alpha: 0.7));
 }
 
 void _floralCorners(Canvas c, Size s, CardData d) {
@@ -285,11 +221,7 @@ void _floralCorners(Canvas c, Size s, CardData d) {
     _flower(c, o, w * 0.1, 5, const Color(0xFFE8A0A8), const Color(0xFFF6D28B));
     _flower(
       c,
-      o +
-          Offset(
-            math.cos(turn + 0.75) * w * 0.14,
-            math.sin(turn + 0.75) * w * 0.14,
-          ),
+      o + Offset(math.cos(turn + 0.75) * w * 0.14, math.sin(turn + 0.75) * w * 0.14),
       w * 0.065,
       5,
       const Color(0xFFF2C09A),
@@ -306,35 +238,18 @@ void _roseBlush(Canvas c, Size s, CardData d) {
   final r = math.Random(4);
   for (var i = 0; i < 26; i++) {
     final x = r.nextDouble() * s.width, y = r.nextDouble() * s.height;
-    if (y > s.height * 0.22 &&
-        y < s.height * 0.88 &&
-        x > s.width * 0.12 &&
-        x < s.width * 0.88)
-      continue;
+    if (y > s.height * 0.22 && y < s.height * 0.88 && x > s.width * 0.12 && x < s.width * 0.88) continue;
     c.save();
     c.translate(x, y);
     c.rotate(r.nextDouble() * math.pi);
     final pw = s.width * (0.03 + r.nextDouble() * 0.03);
     c.drawOval(
       Rect.fromCenter(center: Offset.zero, width: pw, height: pw * 1.5),
-      _fill(
-        Color.lerp(
-          const Color(0xFFE38A9A),
-          const Color(0xFFC2566E),
-          r.nextDouble(),
-        )!.withValues(alpha: 0.75),
-      ),
+      _fill(Color.lerp(const Color(0xFFE38A9A), const Color(0xFFC2566E), r.nextDouble())!.withValues(alpha: 0.75)),
     );
     c.restore();
   }
-  _flower(
-    c,
-    Offset(s.width / 2, s.height * 0.13),
-    s.width * 0.07,
-    6,
-    const Color(0xFFC2566E),
-    const Color(0xFFF3C6A0),
-  );
+  _flower(c, Offset(s.width / 2, s.height * 0.13), s.width * 0.07, 6, const Color(0xFFC2566E), const Color(0xFFF3C6A0));
 }
 
 void _rangoli(Canvas c, Size s, CardData d) {
@@ -352,11 +267,7 @@ void _rangoli(Canvas c, Size s, CardData d) {
   c.drawCircle(o, w * 0.025, _fill(const Color(0xFF2E7D5B)));
   for (var i = 0; i < 24; i++) {
     final a = i * math.pi / 12;
-    c.drawCircle(
-      o + Offset(math.cos(a), math.sin(a)) * w * 0.235,
-      w * 0.007,
-      _fill(const Color(0xFFFFF3E0)),
-    );
+    c.drawCircle(o + Offset(math.cos(a), math.sin(a)) * w * 0.235, w * 0.007, _fill(const Color(0xFFFFF3E0)));
   }
   _border(c, s, const Color(0xFFF4B942), 0.035, 0.003);
 }
@@ -372,13 +283,7 @@ void _toran(Canvas c, Size s, CardData d) {
     final x = w * t;
     final y = w * 0.04 + 4 * t * (1 - t) * w * 0.05;
     if (i.isOdd) {
-      _leaf(
-        c,
-        Offset(x, y),
-        w * 0.13,
-        math.pi / 2 - 0.1,
-        const Color(0xFF4F7A3A),
-      );
+      _leaf(c, Offset(x, y), w * 0.13, math.pi / 2 - 0.1, const Color(0xFF4F7A3A));
     } else {
       for (var k = 0; k < 3; k++) {
         _flower(
@@ -395,13 +300,7 @@ void _toran(Canvas c, Size s, CardData d) {
   // Small kalash-like diyas at the bottom corners.
   for (final x in [0.1, 0.9]) {
     final o = Offset(w * x, s.height - w * 0.08);
-    c.drawArc(
-      Rect.fromCenter(center: o, width: w * 0.1, height: w * 0.06),
-      0,
-      math.pi,
-      true,
-      _fill(const Color(0xFFC8641E)),
-    );
+    c.drawArc(Rect.fromCenter(center: o, width: w * 0.1, height: w * 0.06), 0, math.pi, true, _fill(const Color(0xFFC8641E)));
     _glow(c, o - Offset(0, w * 0.03), w * 0.05, const Color(0x99FFC857));
   }
 }
@@ -412,18 +311,8 @@ void _templeArch(Canvas c, Size s, CardData d) {
   Path arch(double inset) => Path()
     ..moveTo(w * inset, h - w * inset)
     ..lineTo(w * inset, h * 0.3)
-    ..quadraticBezierTo(
-      w * inset,
-      h * 0.12 + w * inset,
-      w / 2,
-      w * inset + h * 0.02,
-    )
-    ..quadraticBezierTo(
-      w * (1 - inset),
-      h * 0.12 + w * inset,
-      w * (1 - inset),
-      h * 0.3,
-    )
+    ..quadraticBezierTo(w * inset, h * 0.12 + w * inset, w / 2, w * inset + h * 0.02)
+    ..quadraticBezierTo(w * (1 - inset), h * 0.12 + w * inset, w * (1 - inset), h * 0.3)
     ..lineTo(w * (1 - inset), h - w * inset)
     ..close();
   c.drawPath(arch(0.06), _stroke(gold, w * 0.005));
@@ -432,11 +321,7 @@ void _templeArch(Canvas c, Size s, CardData d) {
     final top = Offset(w * x, x == 0.5 ? h * 0.08 : h * 0.13);
     c.drawLine(top, top + Offset(0, w * 0.06), _stroke(gold, w * 0.003));
     c.drawArc(
-      Rect.fromCenter(
-        center: top + Offset(0, w * 0.085),
-        width: w * 0.05,
-        height: w * 0.05,
-      ),
+      Rect.fromCenter(center: top + Offset(0, w * 0.085), width: w * 0.05, height: w * 0.05),
       math.pi,
       math.pi,
       true,
@@ -452,9 +337,7 @@ void _diyas(Canvas c, Size s, CardData d) {
     c.drawCircle(
       Offset(r.nextDouble() * w, r.nextDouble() * h * 0.6),
       w * 0.003 * (1 + r.nextDouble()),
-      _fill(
-        const Color(0xFFFFE1A1).withValues(alpha: 0.3 + r.nextDouble() * 0.5),
-      ),
+      _fill(const Color(0xFFFFE1A1).withValues(alpha: 0.3 + r.nextDouble() * 0.5)),
     );
   }
   for (final (x, scale) in [(0.25, 0.8), (0.5, 1.0), (0.75, 0.8)]) {
@@ -463,78 +346,33 @@ void _diyas(Canvas c, Size s, CardData d) {
     _glow(c, base - Offset(0, bw * 0.45), bw * 1.1, const Color(0x88FFB347));
     final bowl = Path()
       ..moveTo(base.dx - bw / 2, base.dy - bw * 0.1)
-      ..quadraticBezierTo(
-        base.dx,
-        base.dy + bw * 0.45,
-        base.dx + bw / 2,
-        base.dy - bw * 0.1,
-      )
-      ..quadraticBezierTo(
-        base.dx + bw * 0.62,
-        base.dy - bw * 0.2,
-        base.dx + bw * 0.35,
-        base.dy - bw * 0.12,
-      )
+      ..quadraticBezierTo(base.dx, base.dy + bw * 0.45, base.dx + bw / 2, base.dy - bw * 0.1)
+      ..quadraticBezierTo(base.dx + bw * 0.62, base.dy - bw * 0.2, base.dx + bw * 0.35, base.dy - bw * 0.12)
       ..close();
     c.drawPath(bowl, _fill(const Color(0xFFB5541C)));
-    c.drawOval(
-      Rect.fromCenter(
-        center: base - Offset(0, bw * 0.1),
-        width: bw,
-        height: bw * 0.14,
-      ),
-      _fill(const Color(0xFFE07B2E)),
-    );
+    c.drawOval(Rect.fromCenter(center: base - Offset(0, bw * 0.1), width: bw, height: bw * 0.14), _fill(const Color(0xFFE07B2E)));
     final f = base - Offset(bw * 0.05, bw * 0.18);
     final flame = Path()
       ..moveTo(f.dx, f.dy - bw * 0.42)
       ..quadraticBezierTo(f.dx + bw * 0.14, f.dy - bw * 0.1, f.dx, f.dy)
-      ..quadraticBezierTo(
-        f.dx - bw * 0.14,
-        f.dy - bw * 0.1,
-        f.dx,
-        f.dy - bw * 0.42,
-      );
+      ..quadraticBezierTo(f.dx - bw * 0.14, f.dy - bw * 0.1, f.dx, f.dy - bw * 0.42);
     c.drawPath(flame, _fill(const Color(0xFFFFD166)));
-    c.drawOval(
-      Rect.fromCenter(
-        center: f - Offset(0, bw * 0.1),
-        width: bw * 0.06,
-        height: bw * 0.14,
-      ),
-      _fill(Colors.white),
-    );
+    c.drawOval(Rect.fromCenter(center: f - Offset(0, bw * 0.1), width: bw * 0.06, height: bw * 0.14), _fill(Colors.white));
   }
 }
 
 void _fireworks(Canvas c, Size s, CardData d) {
   final w = s.width;
   final r = math.Random(21);
-  const colors = [
-    Color(0xFFF7C66B),
-    Color(0xFFF06292),
-    Color(0xFF4DD0E1),
-    Color(0xFFB39DDB),
-    Color(0xFFFFFFFF),
-  ];
-  for (final (x, y, size) in [
-    (0.22, 0.14, 0.15),
-    (0.72, 0.1, 0.18),
-    (0.5, 0.25, 0.1),
-    (0.1, 0.9, 0.09),
-    (0.88, 0.86, 0.12),
-  ]) {
+  const colors = [Color(0xFFF7C66B), Color(0xFFF06292), Color(0xFF4DD0E1), Color(0xFFB39DDB), Color(0xFFFFFFFF)];
+  for (final (x, y, size) in [(0.22, 0.14, 0.15), (0.72, 0.1, 0.18), (0.5, 0.25, 0.1), (0.1, 0.9, 0.09), (0.88, 0.86, 0.12)]) {
     final o = Offset(w * x, s.height * y);
     final col = colors[r.nextInt(colors.length)];
     final n = 18 + r.nextInt(8);
     for (var i = 0; i < n; i++) {
       final a = i * 2 * math.pi / n;
       final dir = Offset(math.cos(a), math.sin(a));
-      c.drawLine(
-        o + dir * w * size * 0.3,
-        o + dir * w * size,
-        _stroke(col.withValues(alpha: 0.85), w * 0.004),
-      );
+      c.drawLine(o + dir * w * size * 0.3, o + dir * w * size, _stroke(col.withValues(alpha: 0.85), w * 0.004));
       c.drawCircle(o + dir * w * size * 1.1, w * 0.005, _fill(col));
     }
     _glow(c, o, w * size * 0.5, col.withValues(alpha: 0.35));
@@ -571,11 +409,7 @@ void _holi(Canvas c, Size s, CardData d) {
     );
     for (var k = 0; k < 8; k++) {
       c.drawCircle(
-        o +
-            Offset(
-              (r.nextDouble() - 0.5) * w * 0.4,
-              (r.nextDouble() - 0.5) * w * 0.4,
-            ),
+        o + Offset((r.nextDouble() - 0.5) * w * 0.4, (r.nextDouble() - 0.5) * w * 0.4),
         w * 0.006 * (1 + r.nextDouble() * 2),
         _fill(col.withValues(alpha: 0.8)),
       );
@@ -601,16 +435,8 @@ void _kites(Canvas c, Size s, CardData d) {
       ..lineTo(-k * 0.45, 0)
       ..close();
     c.drawPath(p, _fill(col));
-    c.drawLine(
-      Offset(0, -k * 0.6),
-      Offset(0, k * 0.6),
-      _stroke(Colors.white.withValues(alpha: 0.7), w * 0.002),
-    );
-    c.drawLine(
-      Offset(-k * 0.45, 0),
-      Offset(k * 0.45, 0),
-      _stroke(Colors.white.withValues(alpha: 0.7), w * 0.002),
-    );
+    c.drawLine(Offset(0, -k * 0.6), Offset(0, k * 0.6), _stroke(Colors.white.withValues(alpha: 0.7), w * 0.002));
+    c.drawLine(Offset(-k * 0.45, 0), Offset(k * 0.45, 0), _stroke(Colors.white.withValues(alpha: 0.7), w * 0.002));
     c.drawPath(
       Path()
         ..moveTo(0, k * 0.6)
@@ -622,23 +448,12 @@ void _kites(Canvas c, Size s, CardData d) {
     c.restore();
     final tail = Path()
       ..moveTo(o.dx, o.dy + k * 0.6)
-      ..cubicTo(
-        o.dx - w * 0.2,
-        h * 0.5,
-        o.dx + w * 0.2,
-        h * 0.75,
-        w * 0.5 + (x - 0.5) * w * 0.3,
-        h * 1.02,
-      );
+      ..cubicTo(o.dx - w * 0.2, h * 0.5, o.dx + w * 0.2, h * 0.75, w * 0.5 + (x - 0.5) * w * 0.3, h * 1.02);
     c.drawPath(tail, _stroke(const Color(0x661F3A5F), w * 0.0025));
   }
   // Sesame-jaggery sweets at the bottom.
   for (var i = 0; i < 5; i++) {
-    c.drawCircle(
-      Offset(w * (0.36 + i * 0.07), h * 0.94),
-      w * 0.028,
-      _fill(const Color(0xFFD9A441)),
-    );
+    c.drawCircle(Offset(w * (0.36 + i * 0.07), h * 0.94), w * 0.028, _fill(const Color(0xFFD9A441)));
   }
 }
 
@@ -666,22 +481,14 @@ void _lotus(Canvas c, Size s, CardData d) {
   }
   for (var i = 0; i < 3; i++) {
     final y = h * 0.9 + i * w * 0.025;
-    c.drawLine(
-      Offset(w * (0.2 + i * 0.05), y),
-      Offset(w * (0.8 - i * 0.05), y),
-      _stroke(const Color(0x668E6A9B), w * 0.003),
-    );
+    c.drawLine(Offset(w * (0.2 + i * 0.05), y), Offset(w * (0.8 - i * 0.05), y), _stroke(const Color(0x668E6A9B), w * 0.003));
   }
   _sparkle(c, Offset(w / 2, h * 0.06), w * 0.03, const Color(0xFFB8467C));
 }
 
 void _rakhi(Canvas c, Size s, CardData d) {
   final w = s.width, y = s.height * 0.18;
-  for (final (dy, col) in [
-    (-0.006, const Color(0xFFC0392B)),
-    (0.0, const Color(0xFFE6B450)),
-    (0.006, const Color(0xFFC0392B)),
-  ]) {
+  for (final (dy, col) in [(-0.006, const Color(0xFFC0392B)), (0.0, const Color(0xFFE6B450)), (0.006, const Color(0xFFC0392B))]) {
     final p = Path()..moveTo(0, y + w * dy);
     for (var x = 0.0; x <= 1.0; x += 0.05) {
       p.lineTo(w * x, y + w * dy + math.sin(x * math.pi * 6) * w * 0.006);
@@ -690,15 +497,7 @@ void _rakhi(Canvas c, Size s, CardData d) {
   }
   final o = Offset(w / 2, y);
   _flower(c, o, w * 0.2, 12, const Color(0xFFE6B450), const Color(0xFFE6B450));
-  _flower(
-    c,
-    o,
-    w * 0.14,
-    10,
-    const Color(0xFFC0392B),
-    const Color(0xFFC0392B),
-    turn: 0.3,
-  );
+  _flower(c, o, w * 0.14, 10, const Color(0xFFC0392B), const Color(0xFFC0392B), turn: 0.3);
   _flower(c, o, w * 0.08, 8, const Color(0xFFF7E1A0), const Color(0xFF1E88E5));
   for (final x in [0.12, 0.88]) {
     c.drawCircle(Offset(w * x, y), w * 0.018, _fill(const Color(0xFFE6B450)));
@@ -720,24 +519,10 @@ void _balloons(Canvas c, Size s, CardData d) {
     c.drawPath(
       Path()
         ..moveTo(o.dx, o.dy + bw * 1.2)
-        ..cubicTo(
-          o.dx - bw * 0.3,
-          o.dy + bw * 2,
-          o.dx + bw * 0.3,
-          o.dy + bw * 2.6,
-          o.dx,
-          o.dy + bw * 3.4,
-        ),
+        ..cubicTo(o.dx - bw * 0.3, o.dy + bw * 2, o.dx + bw * 0.3, o.dy + bw * 2.6, o.dx, o.dy + bw * 3.4),
       _stroke(const Color(0x8823324A), w * 0.002),
     );
-    c.drawOval(
-      Rect.fromCenter(
-        center: o + Offset(0, bw * 0.55),
-        width: bw,
-        height: bw * 1.25,
-      ),
-      _fill(col),
-    );
+    c.drawOval(Rect.fromCenter(center: o + Offset(0, bw * 0.55), width: bw, height: bw * 1.25), _fill(col));
     c.drawPath(
       Path()
         ..moveTo(o.dx, o.dy + bw * 1.15)
@@ -747,11 +532,7 @@ void _balloons(Canvas c, Size s, CardData d) {
       _fill(col),
     );
     c.drawOval(
-      Rect.fromCenter(
-        center: o + Offset(-bw * 0.2, bw * 0.3),
-        width: bw * 0.18,
-        height: bw * 0.3,
-      ),
+      Rect.fromCenter(center: o + Offset(-bw * 0.2, bw * 0.3), width: bw * 0.18, height: bw * 0.3),
       _fill(Colors.white.withValues(alpha: 0.45)),
     );
   }
@@ -759,13 +540,7 @@ void _balloons(Canvas c, Size s, CardData d) {
 
 void _confetti(Canvas c, Size s, CardData d) {
   final w = s.width, h = s.height;
-  const colors = [
-    Color(0xFFD14B7C),
-    Color(0xFFF2B33D),
-    Color(0xFF2BB3A3),
-    Color(0xFF5B7BE0),
-    Color(0xFFE8703A),
-  ];
+  const colors = [Color(0xFFD14B7C), Color(0xFFF2B33D), Color(0xFF2BB3A3), Color(0xFF5B7BE0), Color(0xFFE8703A)];
   final r = math.Random(11);
   for (var i = 0; i < 90; i++) {
     final x = r.nextDouble() * w, y = r.nextDouble() * h;
@@ -776,10 +551,7 @@ void _confetti(Canvas c, Size s, CardData d) {
     c.rotate(r.nextDouble() * math.pi);
     final col = colors[r.nextInt(colors.length)];
     if (i.isEven) {
-      c.drawRect(
-        Rect.fromCenter(center: Offset.zero, width: w * 0.02, height: w * 0.01),
-        _fill(col),
-      );
+      c.drawRect(Rect.fromCenter(center: Offset.zero, width: w * 0.02, height: w * 0.01), _fill(col));
     } else {
       c.drawCircle(Offset.zero, w * 0.007, _fill(col));
     }
@@ -791,35 +563,21 @@ void _cake(Canvas c, Size s, CardData d) {
   final w = s.width, h = s.height;
   final base = h * 0.95;
   c.drawRRect(
-    RRect.fromRectAndRadius(
-      Rect.fromLTRB(w * 0.24, base - w * 0.2, w * 0.76, base),
-      Radius.circular(w * 0.03),
-    ),
+    RRect.fromRectAndRadius(Rect.fromLTRB(w * 0.24, base - w * 0.2, w * 0.76, base), Radius.circular(w * 0.03)),
     _fill(const Color(0xFFD6477A)),
   );
   c.drawRRect(
-    RRect.fromRectAndRadius(
-      Rect.fromLTRB(w * 0.32, base - w * 0.36, w * 0.68, base - w * 0.2),
-      Radius.circular(w * 0.03),
-    ),
+    RRect.fromRectAndRadius(Rect.fromLTRB(w * 0.32, base - w * 0.36, w * 0.68, base - w * 0.2), Radius.circular(w * 0.03)),
     _fill(const Color(0xFFF7A8C4)),
   );
   final drip = Path()..moveTo(w * 0.24, base - w * 0.2);
   for (var i = 0; i < 8; i++) {
     final x0 = w * (0.24 + i * 0.065);
-    drip.quadraticBezierTo(
-      x0 + w * 0.0325,
-      base - w * (i.isEven ? 0.13 : 0.16),
-      x0 + w * 0.065,
-      base - w * 0.2,
-    );
+    drip.quadraticBezierTo(x0 + w * 0.0325, base - w * (i.isEven ? 0.13 : 0.16), x0 + w * 0.065, base - w * 0.2);
   }
   drip.close();
   c.drawPath(drip, _fill(const Color(0xFFFFF1F5)));
-  c.drawRect(
-    Rect.fromLTRB(w * 0.18, base, w * 0.82, base + w * 0.015),
-    _fill(const Color(0xFFB08A45)),
-  );
+  c.drawRect(Rect.fromLTRB(w * 0.18, base, w * 0.82, base + w * 0.015), _fill(const Color(0xFFB08A45)));
   for (var i = 0; i < 5; i++) {
     final x = w * (0.38 + i * 0.06);
     c.drawRect(
@@ -828,11 +586,7 @@ void _cake(Canvas c, Size s, CardData d) {
     );
     _glow(c, Offset(x, base - w * 0.46), w * 0.03, const Color(0x99FFC857));
     c.drawOval(
-      Rect.fromCenter(
-        center: Offset(x, base - w * 0.46),
-        width: w * 0.014,
-        height: w * 0.026,
-      ),
+      Rect.fromCenter(center: Offset(x, base - w * 0.46), width: w * 0.014, height: w * 0.026),
       _fill(const Color(0xFFFFB300)),
     );
   }
@@ -844,10 +598,7 @@ void _confettiTop(Canvas c, Size s) {
   for (var i = 0; i < 16; i++) {
     _sparkle(
       c,
-      Offset(
-        r.nextDouble() * s.width,
-        r.nextDouble() * s.height * 0.1 + s.width * 0.04,
-      ),
+      Offset(r.nextDouble() * s.width, r.nextDouble() * s.height * 0.1 + s.width * 0.04),
       s.width * 0.012,
       const Color(0xFFD6477A).withValues(alpha: 0.5),
     );
@@ -857,25 +608,14 @@ void _confettiTop(Canvas c, Size s) {
 void _rings(Canvas c, Size s, CardData d) {
   final w = s.width, o = Offset(w / 2, s.height * 0.18);
   final gold = Paint()
-    ..shader = const LinearGradient(
-      colors: [Color(0xFFE9CF8E), Color(0xFFB08A45), Color(0xFFE9CF8E)],
-    ).createShader(Rect.fromCircle(center: o, radius: w * 0.2))
+    ..shader = const LinearGradient(colors: [Color(0xFFE9CF8E), Color(0xFFB08A45), Color(0xFFE9CF8E)])
+        .createShader(Rect.fromCircle(center: o, radius: w * 0.2))
     ..style = PaintingStyle.stroke
     ..strokeWidth = w * 0.018;
   c.drawCircle(o - Offset(w * 0.06, 0), w * 0.1, gold);
   c.drawCircle(o + Offset(w * 0.06, 0), w * 0.1, gold);
-  _sparkle(
-    c,
-    o + Offset(w * 0.16, -w * 0.1),
-    w * 0.025,
-    const Color(0xFFB08A45),
-  );
-  _sparkle(
-    c,
-    o + Offset(-w * 0.18, w * 0.08),
-    w * 0.015,
-    const Color(0xFFB08A45),
-  );
+  _sparkle(c, o + Offset(w * 0.16, -w * 0.1), w * 0.025, const Color(0xFFB08A45));
+  _sparkle(c, o + Offset(-w * 0.18, w * 0.08), w * 0.015, const Color(0xFFB08A45));
   _border(c, s, const Color(0xFFB08A45), 0.04, 0.002);
 }
 
@@ -913,14 +653,9 @@ void _starry(Canvas c, Size s, CardData d) {
   final r = math.Random(2);
   for (var i = 0; i < 80; i++) {
     final p = Offset(r.nextDouble() * w, r.nextDouble() * h);
-    final middle =
-        p.dx > w * 0.1 && p.dx < w * 0.9 && p.dy > h * 0.22 && p.dy < h * 0.88;
+    final middle = p.dx > w * 0.1 && p.dx < w * 0.9 && p.dy > h * 0.22 && p.dy < h * 0.88;
     if (middle && r.nextDouble() > 0.2) continue;
-    c.drawCircle(
-      p,
-      w * 0.002 * (1 + r.nextDouble() * 2),
-      _fill(Colors.white.withValues(alpha: 0.3 + r.nextDouble() * 0.6)),
-    );
+    c.drawCircle(p, w * 0.002 * (1 + r.nextDouble() * 2), _fill(Colors.white.withValues(alpha: 0.3 + r.nextDouble() * 0.6)));
   }
   final moon = Offset(w * 0.78, h * 0.12);
   _glow(c, moon, w * 0.2, const Color(0x55F5D38A));
@@ -956,8 +691,7 @@ void _artDeco(Canvas c, Size s, CardData d) {
   for (final (o, dir) in [(Offset(w / 2, 0), 1.0), (Offset(w / 2, h), -1.0)]) {
     for (var i = 0; i <= 12; i++) {
       final a = math.pi * i / 12;
-      final end =
-          o + Offset(math.cos(a) * w * 0.3, dir * math.sin(a) * w * 0.2);
+      final end = o + Offset(math.cos(a) * w * 0.3, dir * math.sin(a) * w * 0.2);
       c.drawLine(o, end, _stroke(gold.withValues(alpha: 0.7), w * 0.002));
     }
     for (final r in [0.1, 0.2, 0.3]) {
@@ -994,12 +728,7 @@ void _dandiya(Canvas c, Size s, CardData d) {
     c.rotate(a);
     for (var i = 0; i < 8; i++) {
       c.drawRect(
-        Rect.fromLTWH(
-          -w * 0.012,
-          -w * 0.18 + i * w * 0.045,
-          w * 0.024,
-          w * 0.045,
-        ),
+        Rect.fromLTWH(-w * 0.012, -w * 0.18 + i * w * 0.045, w * 0.024, w * 0.045),
         _fill(i.isEven ? const Color(0xFFFFB300) : const Color(0xFFE53935)),
       );
     }
@@ -1015,11 +744,7 @@ void _dandiya(Canvas c, Size s, CardData d) {
         : t < 0.75
         ? Offset(w * (1 - (t - 0.5) * 4), h - w * 0.03)
         : Offset(w * 0.03, h * (1 - (t - 0.75) * 4));
-    c.drawCircle(
-      p,
-      w * 0.012,
-      _fill(i.isEven ? const Color(0xFFFFE9A8) : const Color(0xFF26C6DA)),
-    );
+    c.drawCircle(p, w * 0.012, _fill(i.isEven ? const Color(0xFFFFE9A8) : const Color(0xFF26C6DA)));
   }
 }
 
@@ -1044,37 +769,17 @@ void _tricolour(Canvas c, Size s, CardData d) {
   c.drawCircle(o, w * 0.07, _stroke(navy, w * 0.006));
   for (var i = 0; i < 24; i++) {
     final a = i * math.pi / 12;
-    c.drawLine(
-      o,
-      o + Offset(math.cos(a), math.sin(a)) * w * 0.07,
-      _stroke(navy, w * 0.002),
-    );
+    c.drawLine(o, o + Offset(math.cos(a), math.sin(a)) * w * 0.07, _stroke(navy, w * 0.002));
   }
 }
 
 void _kannada(Canvas c, Size s, CardData d) {
   final w = s.width, h = s.height;
   c.drawRect(Rect.fromLTWH(0, 0, w, h * 0.09), _fill(const Color(0xFFFFD500)));
-  c.drawRect(
-    Rect.fromLTWH(0, h * 0.09, w, h * 0.04),
-    _fill(const Color(0xFFD32F2F)),
-  );
-  c.drawRect(
-    Rect.fromLTWH(0, h * 0.91, w, h * 0.09),
-    _fill(const Color(0xFFD32F2F)),
-  );
-  c.drawRect(
-    Rect.fromLTWH(0, h * 0.87, w, h * 0.04),
-    _fill(const Color(0xFFFFD500)),
-  );
-  _flower(
-    c,
-    Offset(w / 2, h * 0.22),
-    w * 0.08,
-    8,
-    const Color(0xFFFFD500),
-    const Color(0xFFD32F2F),
-  );
+  c.drawRect(Rect.fromLTWH(0, h * 0.09, w, h * 0.04), _fill(const Color(0xFFD32F2F)));
+  c.drawRect(Rect.fromLTWH(0, h * 0.91, w, h * 0.09), _fill(const Color(0xFFD32F2F)));
+  c.drawRect(Rect.fromLTWH(0, h * 0.87, w, h * 0.04), _fill(const Color(0xFFFFD500)));
+  _flower(c, Offset(w / 2, h * 0.22), w * 0.08, 8, const Color(0xFFFFD500), const Color(0xFFD32F2F));
 }
 
 void _christmas(Canvas c, Size s, CardData d) {
@@ -1097,17 +802,11 @@ void _christmas(Canvas c, Size s, CardData d) {
         ..lineTo(top.dx + half, y + w * 0.07)
         ..lineTo(top.dx - half, y + w * 0.07)
         ..close(),
-      _fill(
-        Color.lerp(const Color(0xFF3F8F5E), const Color(0xFF2E6B47), i / 2)!,
-      ),
+      _fill(Color.lerp(const Color(0xFF3F8F5E), const Color(0xFF2E6B47), i / 2)!),
     );
   }
   c.drawRect(
-    Rect.fromCenter(
-      center: Offset(top.dx, top.dy + w * 0.33),
-      width: w * 0.05,
-      height: w * 0.05,
-    ),
+    Rect.fromCenter(center: Offset(top.dx, top.dy + w * 0.33), width: w * 0.05, height: w * 0.05),
     _fill(const Color(0xFF7A4A24)),
   );
   _sparkle(c, top, w * 0.04, const Color(0xFFF5D38A));
@@ -1124,25 +823,10 @@ void _christmas(Canvas c, Size s, CardData d) {
 void _thankYouNote(Canvas c, Size s, CardData d) {
   final w = s.width, h = s.height;
   for (var y = h * 0.3; y < h * 0.88; y += w * 0.06) {
-    c.drawLine(
-      Offset(w * 0.1, y),
-      Offset(w * 0.9, y),
-      _stroke(const Color(0x1A5E86B8), w * 0.002),
-    );
+    c.drawLine(Offset(w * 0.1, y), Offset(w * 0.9, y), _stroke(const Color(0x1A5E86B8), w * 0.002));
   }
-  c.drawLine(
-    Offset(w * 0.08, 0),
-    Offset(w * 0.08, h),
-    _stroke(const Color(0x40D1495B), w * 0.002),
-  );
-  _flower(
-    c,
-    Offset(w * 0.86, h * 0.1),
-    w * 0.06,
-    5,
-    const Color(0xFFF2C09A),
-    const Color(0xFFD1495B),
-  );
+  c.drawLine(Offset(w * 0.08, 0), Offset(w * 0.08, h), _stroke(const Color(0x40D1495B), w * 0.002));
+  _flower(c, Offset(w * 0.86, h * 0.1), w * 0.06, 5, const Color(0xFFF2C09A), const Color(0xFFD1495B));
   _leaf(c, Offset(w * 0.86, h * 0.1), w * 0.1, 2.4, const Color(0xFF8FAF7E));
 }
 
@@ -1158,27 +842,11 @@ void _sunrise(Canvas c, Size s, CardData d) {
       _stroke(const Color(0xFFF08A24), w * 0.004),
     );
   }
-  c.drawArc(
-    Rect.fromCircle(center: o, radius: w * 0.11),
-    math.pi,
-    math.pi,
-    true,
-    _fill(const Color(0xFFF6A623)),
-  );
-  c.drawLine(
-    Offset(w * 0.12, o.dy),
-    Offset(w * 0.88, o.dy),
-    _stroke(const Color(0xFF8A5A2B), w * 0.004),
-  );
+  c.drawArc(Rect.fromCircle(center: o, radius: w * 0.11), math.pi, math.pi, true, _fill(const Color(0xFFF6A623)));
+  c.drawLine(Offset(w * 0.12, o.dy), Offset(w * 0.88, o.dy), _stroke(const Color(0xFF8A5A2B), w * 0.004));
   // Neem and mango leaves for new beginnings.
   for (var i = 0; i < 5; i++) {
-    _leaf(
-      c,
-      Offset(w * (0.3 + i * 0.1), o.dy + w * 0.02),
-      w * 0.07,
-      math.pi / 2 + (i - 2) * 0.2,
-      const Color(0xFF4F7A3A),
-    );
+    _leaf(c, Offset(w * (0.3 + i * 0.1), o.dy + w * 0.02), w * 0.07, math.pi / 2 + (i - 2) * 0.2, const Color(0xFF4F7A3A));
   }
 }
 
@@ -1240,12 +908,7 @@ final cardTemplates = <CardTemplate>[
   const CardTemplate(
     id: 'floral',
     name: 'Floral corners',
-    kinds: {
-      CardKind.birthday,
-      CardKind.anniversary,
-      CardKind.thankYou,
-      CardKind.general,
-    },
+    kinds: {CardKind.birthday, CardKind.anniversary, CardKind.thankYou, CardKind.general},
     bg: _ivory,
     ink: Color(0xFF3B2F2A),
     accent: Color(0xFFB0506A),
@@ -1316,12 +979,7 @@ final cardTemplates = <CardTemplate>[
   const CardTemplate(
     id: 'starry',
     name: 'Starry night',
-    kinds: {
-      CardKind.general,
-      CardKind.birthday,
-      CardKind.thankYou,
-      CardKind.festival,
-    },
+    kinds: {CardKind.general, CardKind.birthday, CardKind.thankYou, CardKind.festival},
     festivals: {'guru_purnima', 'maha_shivaratri'},
     bg: [Color(0xFF0D1B3E), Color(0xFF1A2F5E)],
     ink: Color(0xFFF0EEE6),
@@ -1367,13 +1025,7 @@ final cardTemplates = <CardTemplate>[
     id: 'temple',
     name: 'Temple arch',
     kinds: {CardKind.festival, CardKind.anniversary, CardKind.general},
-    festivals: {
-      'ram_navami',
-      'hanuman_jayanti',
-      'krishna_janmashtami',
-      'maha_shivaratri',
-      'akshaya_tritiya',
-    },
+    festivals: {'ram_navami', 'hanuman_jayanti', 'krishna_janmashtami', 'maha_shivaratri', 'akshaya_tritiya'},
     bg: [Color(0xFF7A1F2B), Color(0xFF4E1320)],
     ink: Color(0xFFFDF1DC),
     accent: Color(0xFFE8C07A),
@@ -1433,14 +1085,7 @@ final cardTemplates = <CardTemplate>[
     id: 'lotus',
     name: 'Lotus',
     kinds: {CardKind.festival, CardKind.general},
-    festivals: {
-      'ganesh_chaturthi',
-      'varamahalakshmi',
-      'gowri_habba',
-      'guru_purnima',
-      'akshaya_tritiya',
-      'nag_panchami',
-    },
+    festivals: {'ganesh_chaturthi', 'varamahalakshmi', 'gowri_habba', 'guru_purnima', 'akshaya_tritiya', 'nag_panchami'},
     bg: [Color(0xFFFBEFF5), Color(0xFFF1DDEB)],
     ink: Color(0xFF4A2440),
     accent: Color(0xFFA23A6C),
@@ -1544,35 +1189,24 @@ class GreetingCard extends StatelessWidget {
                   ? 15.0
                   : 17.0) *
               k;
-          TextStyle style(
-            String family,
-            double size,
-            Color color, {
-            FontWeight w = FontWeight.w600,
-            bool italic = false,
-          }) => TextStyle(
-            fontFamily: family,
-            fontFamilyFallback: fontFallback,
-            fontSize: size,
-            color: color,
-            fontWeight: w,
-            fontStyle: italic ? FontStyle.italic : FontStyle.normal,
-            height: 1.25,
-          );
+          TextStyle style(String family, double size, Color color, {FontWeight w = FontWeight.w600, bool italic = false}) =>
+              TextStyle(
+                fontFamily: family,
+                fontFamilyFallback: fontFallback,
+                fontSize: size,
+                color: color,
+                fontWeight: w,
+                fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+                height: 1.25,
+              );
           return ClipRect(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: t.bg,
-                ),
+                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: t.bg),
               ),
               child: Stack(
                 children: [
-                  Positioned.fill(
-                    child: CustomPaint(painter: _CardPainter(t, data)),
-                  ),
+                  Positioned.fill(child: CustomPaint(painter: _CardPainter(t, data))),
                   Positioned(
                     left: w * 0.11,
                     right: w * 0.11,
@@ -1589,28 +1223,14 @@ class GreetingCard extends StatelessWidget {
                               Text(
                                 data.headline,
                                 textAlign: TextAlign.center,
-                                style: style(
-                                  serif,
-                                  25 * k,
-                                  t.accent,
-                                  italic: true,
-                                ),
+                                style: style(serif, 25 * k, t.accent, italic: true),
                                 maxLines: 2,
                               ),
                             if (data.name.isNotEmpty) ...[
                               SizedBox(height: 2 * k),
                               FittedBox(
                                 fit: BoxFit.scaleDown,
-                                child: Text(
-                                  data.name,
-                                  style: style(
-                                    serif,
-                                    46 * k,
-                                    t.ink,
-                                    w: FontWeight.w700,
-                                  ),
-                                  maxLines: 1,
-                                ),
+                                child: Text(data.name, style: style(serif, 46 * k, t.ink, w: FontWeight.w700), maxLines: 1),
                               ),
                             ],
                             if (msg.isNotEmpty) ...[
@@ -1618,26 +1238,12 @@ class GreetingCard extends StatelessWidget {
                               Text(
                                 msg,
                                 textAlign: TextAlign.center,
-                                style: style(
-                                  sans,
-                                  msgSize,
-                                  t.ink.withValues(alpha: 0.88),
-                                  w: FontWeight.w500,
-                                ),
+                                style: style(sans, msgSize, t.ink.withValues(alpha: 0.88), w: FontWeight.w500),
                               ),
                             ],
                             if (data.footer.isNotEmpty) ...[
                               SizedBox(height: 12 * k),
-                              Text(
-                                data.footer,
-                                textAlign: TextAlign.center,
-                                style: style(
-                                  serif,
-                                  20 * k,
-                                  t.accent,
-                                  italic: true,
-                                ),
-                              ),
+                              Text(data.footer, textAlign: TextAlign.center, style: style(serif, 20 * k, t.accent, italic: true)),
                             ],
                           ],
                         ),
@@ -1664,6 +1270,5 @@ class _CardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) => t.paint(canvas, size, data);
 
   @override
-  bool shouldRepaint(_CardPainter old) =>
-      old.t != t || old.data.years != data.years;
+  bool shouldRepaint(_CardPainter old) => old.t != t || old.data.years != data.years;
 }

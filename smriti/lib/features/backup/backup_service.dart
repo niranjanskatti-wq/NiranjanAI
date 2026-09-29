@@ -17,7 +17,7 @@ class BackupService {
 
   static const keep = 4;
   static const prefix = 'Smriti backup';
-  static final _stamp = DateFormat('yyyy-MM-dd HH.mm');
+  static final _stamp = DateFormat('yyyy-MM-dd HH.mm.ss');
 
   /// Download/Smriti Backups when the phone allows it, otherwise the app's own folder.
   static Future<Directory> folder() async {
