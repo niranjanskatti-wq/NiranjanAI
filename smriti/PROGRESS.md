@@ -5,7 +5,7 @@ Design review: `docs/design-review.html` · Screenshots: `test/screenshots/` · 
 
 ## Current status
 Building all phases in a row (your choice), testing everything on the phone at the end.
-**Phase 7 · Groups, gifts, widget, lock, phone calendar** — built.
+**All 8 phases built.** Next: your test on the phone.
 
 ## Done
 ### Phase 0 · Design (approved)
@@ -150,8 +150,29 @@ Building all phases in a row (your choice), testing everything on the phone at t
   Changes are copied over by themselves; switching off can remove them again
 - 74 automatic tests (groups, gifts, widget dates, calendar items, upgrading an old database)
 
+### Phase 8 · Polish and checks
+- Speed check with 600 people and 900 dates: data loads in about 60 ms, the countdown list in
+  under 20 ms, alarm planning under 0.2 s, a full Excel export under 0.3 s; screens scroll smoothly
+- Search builds results as you scroll, so one-letter searches stay quick with hundreds of people
+- Screenshots of every main screen in `test/screenshots/`; all 28 card designs in `docs/screens/`
+- 76 automatic tests
+
+## Phone test checklist (do these once the app is on your phone)
+1. Open Smriti, enter your name, allow notifications and contacts when asked.
+2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).
+3. Add 5–10 people from contacts (People › ⋮ › Add many from contacts) and their birthdays.
+4. Settings › Test the midnight alarm: lock the phone and wait 1 minute. It should ring with the
+   full-screen alert. Try Snooze and Call.
+5. Tap Share on someone: send a WhatsApp message, a text message, and a Greeting card picture.
+6. Check the Diwali date in Festivals against your printed Mahalakshmi calendar.
+7. Settings › Home-screen widget: add it and check the days left.
+8. Settings › Fingerprint lock: switch on, leave the app for a minute, come back.
+9. Settings › Backup & restore: tap "Back up now", then share the file to Google Drive.
+10. Settings › Export to Excel: save the file and open it in Excel or Google Sheets.
+Tell me anything that looks wrong or that you want changed; changes are easy from here.
+
 ## Pending
-- Phase 8: Polish, speed with 500+ people, full phone test
+- Your phone test (checklist above), then any changes you want
 
 ## Known issues
 - The two signing secrets must be added on GitHub before the build you keep using. A build made
