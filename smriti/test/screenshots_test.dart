@@ -17,6 +17,8 @@ import 'package:smriti/core/util/occurrence.dart';
 import 'package:smriti/data/database.dart';
 import 'package:smriti/data/providers.dart';
 import 'package:smriti/data/repository.dart';
+import 'package:smriti/features/cards/card_screen.dart';
+import 'package:smriti/features/cards/card_templates.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 
 Future<void> _loadFont(String family, List<String> files) async {
@@ -85,12 +87,17 @@ void main() {
         personIds: []);
     final amma = await person('Shanta Katti', 'Amma', 'mother', 5);
     await bday(amma, 58);
-    await repo.addGift(appa, 'Reading glasses stand');
-    await repo.addGift(appa, 'Mysore Pak from Guru Sweets');
+    await repo.addGift(appa, 'Reading glasses stand', budget: 1800);
+    await repo.addGift(appa, 'Mysore Pak from Guru Sweets', budget: 600);
+    await repo.addGift(chinnu, 'Watercolour set', budget: 900);
+    final family = await repo.addGroup('Family');
+    await repo.setGroupMembers(family, {appa, amma, chinnu, ravi, priya});
+    await repo.addGroup('Office', color: 1);
     return db;
   }
 
-  Future<void> shoot(WidgetTester tester, AppDatabase db, String name, {String? route, String? tap}) async {
+  Future<void> shoot(WidgetTester tester, AppDatabase db, String name,
+      {String? route, Object? extra, String? tap, double scroll = 0}) async {
     tester.view.physicalSize = const Size(1080, 2280);
     tester.view.devicePixelRatio = 2.75;
     addTearDown(tester.view.reset);
@@ -103,7 +110,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
     if (route != null) {
-      tester.element(find.byType(Scaffold).first).push(route);
+      tester.element(find.byType(Scaffold).first).push(route, extra: extra);
       for (var i = 0; i < 25; i++) {
         await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 40)));
         await tester.pump(const Duration(milliseconds: 100));
@@ -113,6 +120,12 @@ void main() {
       await tester.tap(find.text(tap).first);
       for (var i = 0; i < 10; i++) {
         await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+    if (scroll > 0) {
+      await tester.drag(find.byType(Scrollable).last, Offset(0, -scroll));
+      for (var i = 0; i < 5; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
     }
@@ -141,4 +154,19 @@ void main() {
     await shoot(t, db, 'wishmode_light', route: '/wish-mode/1');
   });
   testWidgets('calendar', (t) async => shoot(t, await seed(), 'calendar_dark', route: '/calendar'));
+  testWidgets('settings', (t) async => shoot(t, await seed(), 'settings_dark', route: '/settings', scroll: 900));
+  testWidgets('profile lower', (t) async => shoot(t, await seed(), 'profile_lower_dark', route: '/person/2', scroll: 700));
+  testWidgets('gift planner', (t) async => shoot(t, await seed(theme: 'light'), 'gifts_light', route: '/gifts'));
+  testWidgets('group', (t) async => shoot(t, await seed(), 'group_dark', route: '/group/1'));
+  testWidgets('export', (t) async => shoot(t, await seed(theme: 'light'), 'export_light', route: '/export'));
+  testWidgets('card studio', (t) async => shoot(t, await seed(), 'card_dark',
+      route: '/card',
+      extra: const CardRequest(CardData(
+        kind: CardKind.milestone,
+        headline: 'Happy 60th Birthday',
+        name: 'Appa',
+        message: 'Sixty years of love, patience and the best advice. Wishing you health and happiness always.',
+        footer: '— Niranjan',
+        years: 60,
+      ))));
 }

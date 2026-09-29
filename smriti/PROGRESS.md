@@ -5,7 +5,7 @@ Design review: `docs/design-review.html` · Screenshots: `test/screenshots/` · 
 
 ## Current status
 Building all phases in a row (your choice), testing everything on the phone at the end.
-**Phase 6 · Excel, backup, cards, memories** — built.
+**Phase 7 · Groups, gifts, widget, lock, phone calendar** — built.
 
 ## Done
 ### Phase 0 · Design (approved)
@@ -133,9 +133,25 @@ Building all phases in a row (your choice), testing everything on the phone at t
   ("2025 · turned 61"), swipe through full screen, add captions, change the year, delete
 - 69 automatic tests (Excel round trip, filters, template, backup/restore, card choices)
 
+### Phase 7 · Groups, gift planner, widget, lock, phone calendar
+- Groups (People › ⋮ › Groups, or Settings): Family, Office, College friends… with a colour. Add
+  people from the group or from a profile ("Groups" card). Filter the People list by group, pick a
+  group in Wish Mode, export one group to Excel; groups come back when importing a Smriti export
+- Gift planner (People › ⋮ › Gift planner, or Settings): each idea can have a budget (₹) and the
+  occasion it is for. The planner shows the next 30/60/90 days with the plan for each occasion
+  ("No gift idea yet" when there is none), planned vs bought totals, and everything still to buy
+- Home-screen widget (Settings › Home-screen widget, or long-press the home screen › Widgets):
+  the next date large with days left, then the three after it. It counts the days itself, so it
+  stays right even if Smriti isn't opened for a while. Tap it to open Smriti
+- Fingerprint lock (Settings › Privacy & extras): your fingerprint or the phone's PIN opens Smriti.
+  It locks again after 30 seconds away. The midnight alarm always shows, even when locked
+- Phone calendar (Settings › Phone calendar): optionally copies birthdays, anniversaries and
+  important dates into Google Calendar (or any calendar on the phone), repeating every year or month.
+  Changes are copied over by themselves; switching off can remove them again
+- 74 automatic tests (groups, gifts, widget dates, calendar items, upgrading an old database)
+
 ## Pending
-- Phase 7: Home-screen widget, gift planner, groups, fingerprint lock, phone calendar
-- Phase 8: Polish and full phone test
+- Phase 8: Polish, speed with 500+ people, full phone test
 
 ## Known issues
 - The two signing secrets must be added on GitHub before the build you keep using. A build made

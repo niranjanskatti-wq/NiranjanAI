@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/tokens.dart';
 import '../../core/util/occurrence.dart';
+import '../../data/database.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
@@ -29,7 +30,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final q = _q.toLowerCase();
 
     final matchedPeople = q.isEmpty
-        ? const []
+        ? const <Person>[]
         : people
             .where((p) =>
                 p.name.toLowerCase().contains(q) ||
@@ -65,27 +66,28 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             )
           : (matchedPeople.isEmpty && matchedEvents.isEmpty)
               ? Center(child: Text('No matches for "$_q"', style: context.text.bodyMedium))
-              : ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
-                  children: [
-                    if (matchedPeople.isNotEmpty) ...[
-                      const SectionLabel('People'),
-                      for (final p in matchedPeople)
-                        ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                          leading: PersonAvatar(person: p, size: 40),
-                          title: Text(p.shortName),
-                          subtitle: Text(p.relationLabel),
-                          onTap: () => context.push('/person/${p.id}'),
-                        ),
-                    ],
-                    if (matchedEvents.isNotEmpty) ...[
-                      const SectionLabel('Events'),
-                      for (final u in matchedEvents)
-                        Padding(padding: const EdgeInsets.only(bottom: 8), child: UpcomingRow(item: u)),
-                    ],
-                  ],
-                ),
+              : Builder(builder: (context) {
+                  // One flat list, built lazily so a one-letter search stays smooth.
+                  final rows = <Widget Function()>[
+                    if (matchedPeople.isNotEmpty) () => const SectionLabel('People'),
+                    for (final p in matchedPeople)
+                      () => ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                            leading: PersonAvatar(person: p, size: 40),
+                            title: Text(p.shortName),
+                            subtitle: Text(p.relationLabel),
+                            onTap: () => context.push('/person/${p.id}'),
+                          ),
+                    if (matchedEvents.isNotEmpty) () => const SectionLabel('Events'),
+                    for (final u in matchedEvents)
+                      () => Padding(padding: const EdgeInsets.only(bottom: 8), child: UpcomingRow(item: u)),
+                  ];
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
+                    itemCount: rows.length,
+                    itemBuilder: (_, i) => rows[i](),
+                  );
+                }),
     );
   }
 }
