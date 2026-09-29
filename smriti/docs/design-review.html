@@ -327,6 +327,7 @@ ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column;
       <li><a href="#screens">Screen list</a></li>
       <li><a href="#model">Data model</a></li>
       <li><a href="#files">Editable files</a></li>
+      <li><a href="#festivals">Festival dates</a></li>
       <li><a href="#tech">Tech &amp; permissions</a></li>
       <li><a href="#decide">Decisions for you</a></li>
     </ul>
@@ -721,8 +722,8 @@ ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column;
     <div class="table-wrap"><table>
       <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
       <tbody>
-        <tr><td class="n">31</td><td class="name">Festivals</td><td>A list with an on/off switch each, the next date, and "Add my own".</td></tr>
-        <tr><td class="n">32</td><td class="name">Edit festival</td><td>Change a year's date, rename it, or set who to suggest (e.g. brothers and sisters for Raksha Bandhan).</td></tr>
+        <tr><td class="n">31</td><td class="name">Festivals</td><td>All festivals with an on/off switch each and the next date, plus a big "Add my own festival" button.</td></tr>
+        <tr><td class="n">32</td><td class="name">Edit / add festival</td><td>Change the date for any year, rename it, delete one you added, or set who to suggest (e.g. brothers and sisters for Raksha Bandhan). A festival you add can repeat on the same date every year, or you can enter its date for each year. Changes are saved in the app and never overwritten by updates. A small "Reset to calendar date" link undoes an edit.</td></tr>
         <tr><td class="n">33</td><td class="name">Start Wish Mode</td><td>Choose who: a group, a star rating, selected people or everyone.</td></tr>
         <tr><td class="n">34</td><td class="name">Wish Mode</td><td>One person at a time with photo, name and message. WhatsApp, Text, Copy, Call, Edit, Skip, Next and a progress bar. Pause any time.</td></tr>
         <tr><td class="n">35</td><td class="name">Today's wishes</td><td>The same flow for everyone with an event today, in order.</td></tr>
@@ -931,7 +932,7 @@ erDiagram
   "tone": "emotional",
   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ನೀವು ನಮ್ಮ ಜೀವನದ ದೊಡ್ಡ ಶಕ್ತಿ. ಸದಾ ಆರೋಗ್ಯವಾಗಿ, ನಗುನಗುತ್ತಾ ಇರಿ 🙏"
 }</pre>
-    <p>What one festival looks like (dates shown are examples; the full verified list comes in Phase 5):</p>
+    <p>What one festival looks like (the real file has every year from 2026 to 2036):</p>
     <pre class="code">{
   "id": "diwali",
   "name": { "en": "Diwali", "hi": "दिवाली", "kn": "ದೀಪಾವಳಿ" },
@@ -939,6 +940,34 @@ erDiagram
   "suggest": ["all"],
   "dates": { "2026": "2026-11-08", "2027": "2027-10-29", "…": "…" }
 }</pre>
+  </section>
+
+  <!-- ================= FESTIVALS ================= -->
+  <section class="section" id="festivals">
+    <p class="eyebrow">Festival dates · Mahalakshmi calendar system</p>
+    <h2>Festival dates for 2026–2036</h2>
+    <p>Hindu festival dates are calculated with the same rules the Mahalakshmi calendar uses: lunar months that end on the new moon, sunrise at Mumbai, and the traditional rule for which part of the day each festival needs (morning, midday, afternoon, evening or midnight). Eid has been removed.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Festival</th><th>2026</th><th>2027</th><th>2028</th><th>2029</th><th>2030</th><th>2031</th><th>2032</th><th>2033</th><th>2034</th><th>2035</th><th>2036</th></tr></thead>
+      <tbody style="font-variant-numeric:tabular-nums;white-space:nowrap">
+        <tr><td class="name">Makar Sankranti</td><td>14 Jan</td><td>15 Jan</td><td>15 Jan</td><td>14 Jan</td><td>14 Jan</td><td>15 Jan</td><td>15 Jan</td><td>14 Jan</td><td>14 Jan</td><td>15 Jan</td><td>15 Jan</td></tr>
+        <tr><td class="name">Holi (colours)</td><td>4 Mar</td><td>22 Mar</td><td>11 Mar</td><td>1 Mar</td><td>20 Mar</td><td>9 Mar</td><td>27 Mar</td><td>16 Mar</td><td>5 Mar</td><td>24 Mar</td><td>12 Mar</td></tr>
+        <tr><td class="name">Ugadi / Gudi Padwa</td><td>19 Mar</td><td>7 Apr</td><td>27 Mar</td><td>14 Apr</td><td>3 Apr</td><td>24 Mar</td><td>10 Apr</td><td>31 Mar</td><td>21 Mar</td><td>9 Apr</td><td>28 Mar</td></tr>
+        <tr><td class="name">Ram Navami</td><td>26 Mar</td><td>15 Apr</td><td>3 Apr</td><td>22 Apr</td><td>12 Apr</td><td>1 Apr</td><td>18 Apr</td><td>7 Apr</td><td>28 Mar</td><td>16 Apr</td><td>5 Apr</td></tr>
+        <tr><td class="name">Raksha Bandhan</td><td>28 Aug</td><td>17 Aug</td><td>5 Aug</td><td>23 Aug</td><td>13 Aug</td><td>2 Aug</td><td>20 Aug</td><td>10 Aug</td><td>29 Aug</td><td>18 Aug</td><td>6 Aug</td></tr>
+        <tr><td class="name">Krishna Janmashtami</td><td>4 Sep</td><td>24 Aug</td><td>13 Aug</td><td>31 Aug</td><td>20 Aug</td><td>9 Aug</td><td>27 Aug</td><td>17 Aug</td><td>5 Sep</td><td>26 Aug</td><td>14 Aug</td></tr>
+        <tr><td class="name">Ganesh Chaturthi</td><td>14 Sep</td><td>4 Sep</td><td>23 Aug</td><td>11 Sep</td><td>1 Sep</td><td>20 Sep</td><td>8 Sep</td><td>28 Aug</td><td>16 Sep</td><td>5 Sep</td><td>24 Aug</td></tr>
+        <tr><td class="name">Dasara</td><td>20 Oct</td><td>9 Oct</td><td>27 Sep</td><td>16 Oct</td><td>6 Oct</td><td>25 Oct</td><td>14 Oct</td><td>3 Oct</td><td>22 Oct</td><td>11 Oct</td><td>29 Sep</td></tr>
+        <tr><td class="name">Diwali (Lakshmi Puja)</td><td>8 Nov</td><td>29 Oct</td><td>17 Oct</td><td>5 Nov</td><td>26 Oct</td><td>14 Nov</td><td>2 Nov</td><td>22 Oct</td><td>10 Nov</td><td>30 Oct</td><td>19 Oct</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">New Year, Republic Day, Independence Day and Christmas have fixed dates and are switched on too. Sixteen more are in the file but switched off at first, so you can turn on the ones you want: Maha Shivaratri, Holika Dahan, Hanuman Jayanti, Akshaya Tritiya, Guru Purnima, Nag Panchami, Varamahalakshmi, Gowri Habba, Anant Chaturdashi, Navratri, Dhanteras, Naraka Chaturdashi, Balipratipada, Bhai Dooj, Gandhi Jayanti and Kannada Rajyotsava.</p>
+    <div class="rules">
+      <div class="rule"><b>Matches Marathi calendars</b><p>For 2024 and 2025, all 23 calculated festivals match the dates Marathi calendars printed. That includes Diwali on 1 Nov 2024 and 21 Oct 2025, where Marathi calendars differ from North Indian ones by a day.</p></div>
+      <div class="rule"><b>Checked against published lists</b><p>2026 and 2027 match published festival lists. Ganesh Chaturthi, Holi and Diwali for 2028–2035 also match where published dates exist, and full-moon start and end times agree to within a minute.</p></div>
+      <div class="rule"><b>One correction</b><p>Holi 2026 is set to 4 March, the day colours were actually played because of the lunar eclipse on 3 March. It's in the past, so it doesn't affect any reminders.</p></div>
+      <div class="rule"><b>Please glance at your calendar</b><p>The Mahalakshmi website is blocked from my computer, so I couldn't open their printed pages directly. If you have the 2026 or 2027 calendar at home, compare a few dates. Any date can be corrected in the app or in the file.</p></div>
+    </div>
   </section>
 
   <!-- ================= TECH ================= -->
@@ -971,10 +1000,9 @@ erDiagram
       </div>
     </div>
     <div class="note">
-      <b>Four things I'd like you to know up front</b>
+      <b>Three things I'd like you to know up front</b>
       <ul class="plain">
-        <li><b>Eid dates</b> depend on the moon being sighted, so they can move by a day. The app will label them "expected", and you can correct them.</li>
-        <li><b>Regional festival dates:</b> some festivals (Sankranti, Janmashtami, Ugadi) fall on different days by region. I'll use the dates as observed in Karnataka unless you tell me otherwise.</li>
+        <li><b>Festival dates follow the Mahalakshmi calendar's system</b> (the Marathi almanac rules). Eid has been removed. See <a href="#festivals">Festival dates</a> for the full list and how it was checked.</li>
         <li><b>Google Calendar sync:</b> I recommend writing to the Google Calendar already on your phone. That needs no sign-in or Google developer setup and gives the same result. A direct sign-in is also possible but needs extra setup.</li>
         <li><b>Hindi and Kannada messages:</b> I'll write them the way people actually text. In Phase 4 I'll show you a sample of 20 to check before writing the rest.</li>
       </ul>
