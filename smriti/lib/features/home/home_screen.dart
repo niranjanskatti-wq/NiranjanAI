@@ -281,7 +281,7 @@ class HeroCard extends StatelessWidget {
                           ),
                           if (phrase != null) ...[
                             const SizedBox(height: 6),
-                            Badge2(item.milestone ? '✦ $phrase!' : phrase),
+                            Badge2(item.milestone ? '$phrase!' : phrase, sparkle: item.milestone),
                           ],
                         ],
                       ),

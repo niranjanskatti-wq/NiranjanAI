@@ -168,8 +168,9 @@ class _PersonView extends ConsumerWidget {
   Widget _kv(BuildContext context, String k, String v) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Row(children: [
-          Expanded(child: Text(k, style: context.text.bodyMedium?.copyWith(color: context.c.muted))),
-          Flexible(child: Text(v, textAlign: TextAlign.right, style: context.text.titleSmall)),
+          Text(k, style: context.text.bodyMedium?.copyWith(color: context.c.muted)),
+          const SizedBox(width: 16),
+          Expanded(child: Text(v, textAlign: TextAlign.right, style: context.text.titleSmall)),
         ]),
       );
 

@@ -130,11 +130,12 @@ class Stars extends StatelessWidget {
   }
 }
 
-/// Small gold pill, e.g. "✦ Turning 60!".
+/// Small gold pill, e.g. "Turning 60!" with an optional sparkle.
 class Badge2 extends StatelessWidget {
-  const Badge2(this.label, {super.key});
+  const Badge2(this.label, {super.key, this.sparkle = false});
 
   final String label;
+  final bool sparkle;
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +143,12 @@ class Badge2 extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       decoration: BoxDecoration(color: c.gold, borderRadius: BorderRadius.circular(999)),
-      child: Text(label,
-          style: TextStyle(
-              fontFamily: sans, fontSize: 11, fontWeight: FontWeight.w700, color: c.onGold, letterSpacing: 0.3)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        if (sparkle) ...[Icon(Icons.auto_awesome, size: 12, color: c.onGold), const SizedBox(width: 4)],
+        Text(label,
+            style: TextStyle(
+                fontFamily: sans, fontSize: 11, fontWeight: FontWeight.w700, color: c.onGold, letterSpacing: 0.3)),
+      ]),
     );
   }
 }
@@ -190,7 +194,7 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('✦', style: TextStyle(fontFamily: serif, fontSize: 44, color: c.goldText, height: 1)),
+          Icon(Icons.auto_awesome, size: 40, color: c.goldText),
           const SizedBox(height: 12),
           Text(title, style: context.text.headlineSmall, textAlign: TextAlign.center),
           const SizedBox(height: 6),

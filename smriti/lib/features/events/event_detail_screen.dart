@@ -84,7 +84,7 @@ class EventDetailScreen extends ConsumerWidget {
                         Text(fmtWeekday(item.date), style: context.text.headlineMedium),
                         if (item.yearsPhrase != null) ...[
                           const SizedBox(height: 6),
-                          Badge2(item.milestone ? '✦ ${item.yearsPhrase}!' : item.yearsPhrase!),
+                          Badge2(item.milestone ? '${item.yearsPhrase}!' : item.yearsPhrase!, sparkle: item.milestone),
                         ],
                         const SizedBox(height: 14),
                         if (item.isToday)

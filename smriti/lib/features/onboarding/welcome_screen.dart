@@ -97,7 +97,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
           children: [
-            Text('✦', style: TextStyle(fontFamily: serif, fontSize: 48, color: c.goldText, height: 1)),
+            Icon(Icons.auto_awesome, size: 44, color: c.goldText),
             const SizedBox(height: 12),
             Text('Smriti', style: context.text.displayLarge?.copyWith(fontSize: 56)),
             const SizedBox(height: 8),

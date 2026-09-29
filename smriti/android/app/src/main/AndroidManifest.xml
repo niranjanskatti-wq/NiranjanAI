@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Read-only: fill in names, photos, numbers and birthdays; keep numbers in sync. -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
-        android:label="smriti"
+        android:label="Smriti"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
