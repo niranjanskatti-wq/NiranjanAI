@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:go_router/go_router.dart';
 
+import '../lock/app_lock.dart';
+import '../widget/home_widget_service.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
@@ -77,7 +80,22 @@ class SettingsScreen extends ConsumerWidget {
           }),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('People')),
+          tile(Icons.workspaces_outline, 'Groups', 'Family, Office, College friends…', () => context.push('/groups')),
+          tile(Icons.card_giftcard_outlined, 'Gift planner', 'Ideas, budgets and what is still to buy', () => context.push('/gifts')),
           tile(Icons.inventory_2_outlined, 'Archived people', null, () => context.push('/archived')),
+          const SizedBox(height: 12),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Privacy & extras')),
+          const _LockSwitch(),
+          tile(Icons.event_available_outlined, 'Phone calendar', 'Copy dates into Google Calendar',
+              () => context.push('/calendar-sync')),
+          tile(Icons.widgets_outlined, 'Home-screen widget', 'The next dates, right on your home screen', () async {
+            final supported = await HomeWidget.isRequestPinWidgetSupported() ?? false;
+            if (supported) {
+              await HomeWidget.requestPinWidget(qualifiedAndroidName: HomeWidgetService.androidName);
+            } else if (context.mounted) {
+              showToast(context, 'Long-press your home screen, tap Widgets, then find Smriti');
+            }
+          }),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Backup & Excel')),
           tile(Icons.backup_outlined, 'Backup & restore', 'Automatic every week · Download/Smriti Backups',
@@ -95,6 +113,29 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _LockSwitch extends ConsumerWidget {
+  const _LockSwitch();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final on = ref.watch(appLockProvider).value ?? false;
+    return SwitchListTile(
+      secondary: const Icon(Icons.fingerprint_rounded),
+      title: const Text('Fingerprint lock'),
+      subtitle: const Text("Your fingerprint or the phone's PIN opens Smriti"),
+      value: on,
+      onChanged: (v) async {
+        if (!await AppLock.available()) {
+          if (context.mounted) showToast(context, 'Set up a fingerprint or screen lock on the phone first');
+          return;
+        }
+        final ok = await AppLock.unlock(reason: v ? 'Confirm to switch on the lock' : 'Confirm to switch off the lock');
+        if (ok) await ref.read(databaseProvider).setSetting('appLock', '$v');
+      },
     );
   }
 }

@@ -201,15 +201,30 @@ class _WishModeSetupScreenState extends ConsumerState<WishModeSetupScreen> {
   }
 }
 
-/// Optional group filter (groups arrive in Phase 7; hidden when there are none).
-final groupMemberIdsProvider = Provider.family<Set<int>?, int?>((ref, groupId) => null);
+/// Members of a group, or null for "no group filter".
+final groupMemberIdsProvider = Provider.family<Set<int>?, int?>((ref, groupId) {
+  if (groupId == null) return null;
+  return ref.watch(groupMembersProvider).value?[groupId] ?? const {};
+});
 
-class GroupFilter extends StatelessWidget {
+/// Group chips; hidden when there are no groups.
+class GroupFilter extends ConsumerWidget {
   const GroupFilter({super.key, required this.value, required this.onChanged});
 
   final int? value;
   final ValueChanged<int?> onChanged;
 
   @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final groups = ref.watch(groupsProvider).value ?? const [];
+    if (groups.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Wrap(spacing: 6, runSpacing: 6, children: [
+        ChoiceChip(label: const Text('Any group'), selected: value == null, onSelected: (_) => onChanged(null)),
+        for (final g in groups)
+          ChoiceChip(label: Text(g.name), selected: value == g.id, onSelected: (_) => onChanged(value == g.id ? null : g.id)),
+      ]),
+    );
+  }
 }

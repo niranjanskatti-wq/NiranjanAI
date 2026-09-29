@@ -168,14 +168,82 @@ class Repository {
         ..orderBy([(g) => OrderingTerm(expression: g.createdAt)]))
       .watch();
 
-  Future<void> addGift(int personId, String idea) =>
-      db.into(db.giftIdeas).insert(GiftIdeasCompanion.insert(personId: personId, idea: idea));
+  Stream<List<GiftIdea>> watchAllGifts() =>
+      (db.select(db.giftIdeas)..orderBy([(g) => OrderingTerm(expression: g.createdAt)])).watch();
+
+  Future<void> addGift(int personId, String idea, {int? budget, int? eventId}) => db.into(db.giftIdeas).insert(
+      GiftIdeasCompanion.insert(personId: personId, idea: idea, budget: Value(budget), eventId: Value(eventId)));
+
+  Future<void> updateGift(int id, {required String idea, int? budget, int? eventId, bool? purchased}) =>
+      (db.update(db.giftIdeas)..where((g) => g.id.equals(id))).write(GiftIdeasCompanion(
+        idea: Value(idea),
+        budget: Value(budget),
+        eventId: Value(eventId),
+        purchased: purchased == null ? const Value.absent() : Value(purchased),
+      ));
 
   Future<void> setGiftPurchased(int id, bool purchased) =>
       (db.update(db.giftIdeas)..where((g) => g.id.equals(id)))
           .write(GiftIdeasCompanion(purchased: Value(purchased)));
 
   Future<void> deleteGift(int id) => (db.delete(db.giftIdeas)..where((g) => g.id.equals(id))).go();
+
+  // ---------- groups ----------
+  Stream<List<PersonGroup>> watchGroups() =>
+      (db.select(db.groups)..orderBy([(g) => OrderingTerm(expression: g.name.lower())])).watch();
+
+  /// groupId → member person ids.
+  Stream<Map<int, Set<int>>> watchGroupMembers() => db.select(db.groupMembers).watch().map((rows) {
+        final out = <int, Set<int>>{};
+        for (final r in rows) {
+          (out[r.groupId] ??= {}).add(r.personId);
+        }
+        return out;
+      });
+
+  Future<int> addGroup(String name, {int color = 0}) =>
+      db.into(db.groups).insert(GroupsCompanion.insert(name: name, color: Value(color)));
+
+  Future<void> renameGroup(int id, String name) =>
+      (db.update(db.groups)..where((g) => g.id.equals(id))).write(GroupsCompanion(name: Value(name)));
+
+  Future<void> deleteGroup(int id) => (db.delete(db.groups)..where((g) => g.id.equals(id))).go();
+
+  Future<void> setGroupMembers(int groupId, Set<int> personIds) => db.transaction(() async {
+        await (db.delete(db.groupMembers)..where((m) => m.groupId.equals(groupId))).go();
+        for (final id in personIds) {
+          await db.into(db.groupMembers).insert(GroupMembersCompanion.insert(groupId: groupId, personId: id));
+        }
+      });
+
+  Future<void> setPersonGroups(int personId, Set<int> groupIds) => db.transaction(() async {
+        await (db.delete(db.groupMembers)..where((m) => m.personId.equals(personId))).go();
+        for (final id in groupIds) {
+          await db.into(db.groupMembers).insert(GroupMembersCompanion.insert(groupId: id, personId: personId));
+        }
+      });
+
+  /// Adds [personId] to the group called [name], making the group if needed.
+  Future<void> addToGroupNamed(int personId, String name) async {
+    final n = name.trim();
+    if (n.isEmpty) return;
+    final existing = await (db.select(db.groups)..where((g) => g.name.lower().equals(n.toLowerCase()))).getSingleOrNull();
+    final gid = existing?.id ?? await addGroup(n);
+    await db.into(db.groupMembers).insertOnConflictUpdate(GroupMembersCompanion.insert(groupId: gid, personId: personId));
+  }
+
+  /// personId → names of their groups.
+  Future<Map<int, List<String>>> groupNamesByPerson() async {
+    final q = db.select(db.groupMembers).join([innerJoin(db.groups, db.groups.id.equalsExp(db.groupMembers.groupId))]);
+    final out = <int, List<String>>{};
+    for (final r in await q.get()) {
+      (out[r.readTable(db.groupMembers).personId] ??= []).add(r.readTable(db.groups).name);
+    }
+    for (final l in out.values) {
+      l.sort();
+    }
+    return out;
+  }
 
   // ---------- wish history ----------
   Stream<List<WishLog>> watchWishLogs() => (db.select(db.wishLogs)

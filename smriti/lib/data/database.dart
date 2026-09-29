@@ -105,6 +105,29 @@ class GiftIdeas extends Table {
   TextColumn get idea => text()();
   BoolColumn get purchased => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  /// Planned spend in rupees.
+  IntColumn get budget => integer().nullable()();
+
+  /// Which occasion the gift is for.
+  IntColumn get eventId => integer().nullable().references(Events, #id, onDelete: KeyAction.setNull)();
+}
+
+/// Family, Office, College friends… A person can be in several.
+@DataClassName('PersonGroup')
+class Groups extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  IntColumn get color => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+class GroupMembers extends Table {
+  IntColumn get groupId => integer().references(Groups, #id, onDelete: KeyAction.cascade)();
+  IntColumn get personId => integer().references(People, #id, onDelete: KeyAction.cascade)();
+
+  @override
+  Set<Column> get primaryKey => {groupId, personId};
 }
 
 /// One-line notices such as "Chinnu's number changed in your contacts".
@@ -257,20 +280,27 @@ class Settings extends Table {
 
 @DriftDatabase(tables: [
   People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages,
-  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Settings,
+  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Groups, GroupMembers, Settings,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
         onUpgrade: (m, from, to) async {
+          // Skips a column that is already there, so a half-finished upgrade can be run again.
+          Future<void> addColumn(TableInfo<Table, dynamic> table, GeneratedColumn column) async {
+            final cols = await customSelect('PRAGMA table_info("${table.actualTableName}")').get();
+            if (cols.any((c) => c.read<String>('name') == column.name)) return;
+            await m.addColumn(table, column);
+          }
+
           if (from < 2) {
-            await m.addColumn(people, people.whatsappApp);
+            await addColumn(people, people.whatsappApp);
             await m.createTable(wishLogs);
           }
           if (from < 3) {
@@ -295,6 +325,12 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 6) {
             await m.createTable(photoMemories);
+          }
+          if (from < 7) {
+            await addColumn(giftIdeas, giftIdeas.budget);
+            await addColumn(giftIdeas, giftIdeas.eventId);
+            await m.createTable(groups);
+            await m.createTable(groupMembers);
           }
         },
         beforeOpen: (details) async {

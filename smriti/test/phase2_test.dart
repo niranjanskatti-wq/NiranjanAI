@@ -155,6 +155,20 @@ void main() {
     r.execute('ALTER TABLE people DROP COLUMN whatsapp_app');
     r.execute('DROP TABLE wish_logs');
     r.execute('DROP TABLE reminders');
+    for (final t in [
+      'user_messages', 'favourite_messages', 'festival_overrides', 'custom_festivals', 'wish_session_items',
+      'wish_sessions', 'photo_memories', 'group_members', '"groups"',
+    ]) {
+      r.execute('DROP TABLE $t');
+    }
+    // Phase 1 gift ideas had no budget or occasion.
+    r.execute('CREATE TABLE gift_old AS SELECT id, person_id, idea, purchased, created_at FROM gift_ideas');
+    r.execute('DROP TABLE gift_ideas');
+    r.execute('CREATE TABLE gift_ideas (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, person_id INTEGER NOT NULL '
+        'REFERENCES people (id) ON DELETE CASCADE, idea TEXT NOT NULL, purchased INTEGER NOT NULL DEFAULT 0, '
+        'created_at INTEGER NOT NULL DEFAULT (CAST(strftime(\'%s\', CURRENT_TIMESTAMP) AS INTEGER)))');
+    r.execute("INSERT INTO gift_ideas (person_id, idea) VALUES ($pid, 'Old gift idea')");
+    r.execute('DROP TABLE gift_old');
     r.execute('PRAGMA user_version = 1');
     r.close();
 
@@ -164,6 +178,12 @@ void main() {
     expect(people.single.whatsappApp, 'auto');
     await Repository(db).logWish(personId: people.single.id, method: 'call');
     expect((await db.select(db.wishLogs).get()).length, 1);
+    // Later tables and columns arrive too.
+    final gift = (await db.select(db.giftIdeas).get()).single;
+    expect((gift.idea, gift.budget, gift.eventId), ('Old gift idea', null, null));
+    await Repository(db).addGroup('Family');
+    await Repository(db).addGift(pid, 'New', budget: 500);
+    await db.into(db.photoMemories).insert(PhotoMemoriesCompanion.insert(personId: pid, year: 2025, path: 'x.jpg'));
     // Old events get default reminders: morning for people, 7 and 1 days before for others.
     final rem = await db.select(db.reminders).get();
     expect(rem.where((r) => r.kind == 'morning').length, 1);

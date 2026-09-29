@@ -100,6 +100,9 @@ class ImportService {
             for (final g in v('gift ideas').split(';').map((s) => s.trim()).where((s) => s.isNotEmpty)) {
               await ctx.repo.addGift(id, g);
             }
+            for (final g in v('group').split(RegExp(r'[,;]')).map((s) => s.trim()).where((s) => s.isNotEmpty)) {
+              await ctx.repo.addToGroupNamed(id, g);
+            }
           },
         ));
       }

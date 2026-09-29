@@ -38,6 +38,19 @@ final entryProvider =
 final giftsProvider =
     StreamProvider.family<List<GiftIdea>, int>((ref, id) => ref.watch(repoProvider).watchGifts(id));
 
+final allGiftsProvider = StreamProvider<List<GiftIdea>>((ref) => ref.watch(repoProvider).watchAllGifts());
+
+final groupsProvider = StreamProvider<List<PersonGroup>>((ref) => ref.watch(repoProvider).watchGroups());
+
+/// groupId → member person ids.
+final groupMembersProvider = StreamProvider<Map<int, Set<int>>>((ref) => ref.watch(repoProvider).watchGroupMembers());
+
+/// Group ids a person belongs to.
+final personGroupIdsProvider = Provider.family<Set<int>, int>((ref, personId) {
+  final m = ref.watch(groupMembersProvider).value ?? const {};
+  return {for (final e in m.entries) if (e.value.contains(personId)) e.key};
+});
+
 final noticesProvider =
     StreamProvider<List<ContactNotice>>((ref) => ref.watch(repoProvider).watchUnseenNotices());
 

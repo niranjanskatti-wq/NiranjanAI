@@ -8,6 +8,7 @@ import '../backup/backup_service.dart';
 import '../../data/database.dart';
 import '../../data/repository.dart';
 import '../festivals/festival_alarms.dart';
+import '../widget/home_widget_service.dart';
 import 'alarm_planner.dart';
 import 'notification_service.dart';
 import 'reminder_model.dart';
@@ -99,6 +100,7 @@ void backgroundDispatcher() {
     final db = AppDatabase();
     try {
       await AlarmScheduler.syncNow(db);
+      await HomeWidgetService.refreshFrom(db);
       await BackupService(db).autoIfDue();
     } finally {
       await db.close();

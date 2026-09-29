@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodChannel
  * Shows over the lock screen only while the midnight alarm is on screen,
  * so the rest of Smriti never appears over a locked phone.
  */
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterFragmentActivity() {
     private val channelName = "smriti/window"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +53,27 @@ class MainActivity : FlutterActivity() {
                 "manufacturer" -> result.success(Build.MANUFACTURER ?: "")
                 "sdkInt" -> result.success(Build.VERSION.SDK_INT)
                 else -> result.notImplemented()
+            }
+        }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "smriti/calendar").setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "calendars" -> result.success(PhoneCalendar.calendars(contentResolver))
+                    "upsert" -> {
+                        @Suppress("UNCHECKED_CAST")
+                        result.success(PhoneCalendar.upsert(contentResolver, call.arguments as Map<String, Any?>))
+                    }
+                    "delete" -> {
+                        @Suppress("UNCHECKED_CAST")
+                        PhoneCalendar.delete(contentResolver, (call.arguments as List<Number>).map { it.toLong() })
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (e: SecurityException) {
+                result.error("permission", e.message, null)
+            } catch (e: Exception) {
+                result.error("failed", e.message, null)
             }
         }
     }

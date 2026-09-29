@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../gifts/gifts.dart';
+import '../groups/groups_screen.dart';
 import '../memories/memories.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
@@ -118,7 +120,11 @@ class _PersonView extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            _GiftCard(personId: p.id, gifts: gifts),
+            if (!p.isMe) ...[
+              PersonGroupsCard(person: p),
+              const SizedBox(height: 12),
+            ],
+            GiftCard(personId: p.id, gifts: gifts, entries: entries),
             const SizedBox(height: 12),
             MemoriesCard(person: p),
             if (!p.isMe) ...[
@@ -235,67 +241,3 @@ class _EventLine extends StatelessWidget {
   }
 }
 
-class _GiftCard extends ConsumerWidget {
-  const _GiftCard({required this.personId, required this.gifts});
-
-  final int personId;
-  final List<GiftIdea> gifts;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final c = context.c;
-    final repo = ref.read(repoProvider);
-    return InfoCard(
-      title: 'Gift ideas',
-      trailing: TextButton.icon(
-        onPressed: () async {
-          final t = TextEditingController();
-          final idea = await showDialog<String>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text('Gift idea'),
-              content: TextField(
-                controller: t,
-                autofocus: true,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(hintText: 'e.g. Mysore Pak from Guru Sweets'),
-                onSubmitted: (v) => Navigator.pop(ctx, v),
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-                TextButton(onPressed: () => Navigator.pop(ctx, t.text), child: const Text('Add')),
-              ],
-            ),
-          );
-          if (idea != null && idea.trim().isNotEmpty) await repo.addGift(personId, idea.trim());
-        },
-        icon: const Icon(Icons.add_rounded, size: 18),
-        label: const Text('Add'),
-      ),
-      children: [
-        if (gifts.isEmpty) Text('Jot down ideas as you think of them.', style: context.text.bodyMedium),
-        for (final g in gifts)
-          Row(children: [
-            Checkbox(
-              value: g.purchased,
-              onChanged: (v) => repo.setGiftPurchased(g.id, v ?? false),
-            ),
-            Expanded(
-              child: Text(
-                g.idea,
-                style: context.text.bodyMedium?.copyWith(
-                  decoration: g.purchased ? TextDecoration.lineThrough : null,
-                  color: g.purchased ? c.muted : c.text,
-                ),
-              ),
-            ),
-            IconButton(
-              tooltip: 'Remove',
-              onPressed: () => repo.deleteGift(g.id),
-              icon: Icon(Icons.close_rounded, size: 18, color: c.muted),
-            ),
-          ]),
-      ],
-    );
-  }
-}

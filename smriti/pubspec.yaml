@@ -57,7 +57,8 @@ dependencies:
   archive: ^3.6.1
   file_picker: ^13.1.0
   gal: ^2.3.3
-
+  local_auth: ^3.0.2
+  home_widget: ^0.10.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

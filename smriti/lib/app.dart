@@ -4,10 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/tokens.dart';
+import 'core/util/occurrence.dart';
 import 'data/providers.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/backup/backup_service.dart';
 import 'features/calendar/calendar_screen.dart';
+import 'features/calendar_sync/calendar_sync.dart';
+import 'features/calendar_sync/calendar_sync_screen.dart';
 import 'features/cards/card_screen.dart';
 import 'features/export/export_screen.dart';
 import 'features/export/import_screen.dart';
@@ -18,7 +21,11 @@ import 'features/events/event_detail_screen.dart';
 import 'features/events/event_form_screen.dart';
 import 'features/festivals/festival_model.dart';
 import 'features/festivals/festivals_screen.dart';
+import 'features/gifts/gifts.dart';
+import 'features/groups/groups_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/lock/app_lock.dart';
+import 'features/widget/home_widget_service.dart';
 import 'features/memories/memories.dart';
 import 'features/wishmode/wish_mode_runner.dart';
 import 'features/wishmode/wish_mode_setup.dart';
@@ -117,6 +124,10 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/thank-you', builder: (_, _) => const ThankYouScreen()),
         GoRoute(path: '/festivals', builder: (_, _) => const FestivalsScreen()),
         GoRoute(path: '/card', builder: (_, state) => CardStudioScreen(request: state.extra! as CardRequest)),
+        GoRoute(path: '/calendar-sync', builder: (_, _) => const CalendarSyncScreen()),
+        GoRoute(path: '/gifts', builder: (_, _) => const GiftPlannerScreen()),
+        GoRoute(path: '/groups', builder: (_, _) => const GroupsScreen()),
+        GoRoute(path: '/group/:id', builder: (_, state) => GroupScreen(id: int.parse(state.pathParameters['id']!))),
         GoRoute(path: '/export', builder: (_, _) => const ExportScreen()),
         GoRoute(path: '/import', builder: (_, _) => const ImportScreen()),
         GoRoute(path: '/backup', builder: (_, _) => const BackupScreen()),
@@ -178,6 +189,14 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ContactSync(ref.read(repoProvider)).run();
     AlarmScheduler.syncSoon(ref.read(databaseProvider));
     if (NotificationService.supported) BackupService(ref.read(databaseProvider)).autoIfDue();
+    _publishWidget();
+    CalendarSync.syncSoon(ref.read(databaseProvider));
+  }
+
+  /// Refreshes the home-screen widget once the data has loaded.
+  void _publishWidget() {
+    if (!ref.read(entriesProvider).hasValue) return;
+    HomeWidgetService.publish(ref.read(allEntriesProvider), ref.read(todayProvider).value ?? Day.today());
   }
 
   /// Opens the right screen for a tapped notification or its button.
@@ -228,6 +247,8 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(allRemindersProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(wishedKeysProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(festivalsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
+    ref.listen(allEntriesProvider, (_, _) => _publishWidget());
+    ref.listen(entriesProvider, (_, _) => CalendarSync.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',
       debugShowCheckedModeBanner: false,
@@ -235,10 +256,14 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
       darkTheme: buildTheme(Brightness.dark),
       themeMode: mode,
       routerConfig: _router,
-      builder: (context, child) => Stack(children: [
-        ?child,
-        const Align(alignment: Alignment.bottomCenter, child: WishedChip()),
-      ]),
+      builder: (context, child) => LockGate(
+        routeChanges: _router!.routerDelegate,
+        isAlarm: () => _router!.routerDelegate.currentConfiguration.uri.path.startsWith('/alarm'),
+        child: Stack(children: [
+          ?child,
+          const Align(alignment: Alignment.bottomCenter, child: WishedChip()),
+        ]),
+      ),
     );
   }
 }

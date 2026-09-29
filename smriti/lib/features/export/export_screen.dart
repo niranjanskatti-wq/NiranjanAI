@@ -22,7 +22,7 @@ Future<void> saveBytes(BuildContext context, Uint8List bytes, String name, Strin
 Future<void> shareBytes(Uint8List bytes, String name, String mime) =>
     SharePlus.instance.share(ShareParams(files: [XFile.fromData(bytes, name: name, mimeType: mime)], fileNameOverrides: [name]));
 
-enum _Who { everyone, people, stars }
+enum _Who { everyone, people, stars, group }
 
 /// Export all events to a neatly formatted Excel file.
 class ExportScreen extends ConsumerStatefulWidget {
@@ -36,6 +36,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   _Who _who = _Who.everyone;
   final _people = <int>{};
   int _stars = 4;
+  int? _group;
   int? _month;
   EventType? _type;
   bool _numbers = true, _notes = true, _busy = false;
@@ -48,6 +49,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
     final bytes = await ExportService(ref.read(databaseProvider), groupNames: await loadGroupNames(ref)).build(ExportOptions(
       personIds: _who == _Who.people ? {..._people} : null,
       minStars: _who == _Who.stars ? _stars : 0,
+      groupPersonIds: _who == _Who.group && _group != null ? (ref.read(groupMembersProvider).value?[_group] ?? const {}) : null,
       month: _month,
       types: _type == null ? null : {_type!},
       includeNumbers: _numbers,
@@ -64,6 +66,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   Widget build(BuildContext context) {
     final c = context.c;
     final people = ref.watch(peopleProvider).value ?? const [];
+    final groups = ref.watch(groupsProvider).value ?? const [];
     return Scaffold(
       appBar: AppBar(title: const Text('Export to Excel')),
       body: ListView(
@@ -73,7 +76,12 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               'It opens in Excel, Google Sheets and WPS Office.', style: context.text.bodySmall),
           const SectionLabel('Who'),
           Wrap(spacing: 6, runSpacing: 6, children: [
-            for (final (w, label) in [(_Who.everyone, 'Everyone'), (_Who.people, 'Choose people'), (_Who.stars, 'By stars')])
+            for (final (w, label) in [
+              (_Who.everyone, 'Everyone'),
+              (_Who.people, 'Choose people'),
+              (_Who.stars, 'By stars'),
+              if (groups.isNotEmpty) (_Who.group, 'By group'),
+            ])
               ChoiceChip(
                 label: Text(label),
                 selected: _who == w,
@@ -87,6 +95,14 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               Text('At least', style: context.text.bodyMedium),
               Stars(value: _stars, size: 26, onChanged: (v) => setState(() => _stars = v)),
             ]),
+          if (_who == _Who.group)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Wrap(spacing: 6, runSpacing: 6, children: [
+                for (final g in groups)
+                  ChoiceChip(label: Text(g.name), selected: _group == g.id, onSelected: (_) => setState(() => _group = g.id)),
+              ]),
+            ),
           if (_who == _Who.people)
             for (final p in people)
               CheckboxListTile(
@@ -170,7 +186,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: FilledButton(
-            onPressed: _busy || (_who == _Who.people && _people.isEmpty) ? null : _build,
+            onPressed: _busy || (_who == _Who.people && _people.isEmpty) || (_who == _Who.group && _group == null) ? null : _build,
             child: Text(_busy ? 'Making the file…' : (_bytes == null ? 'Export' : 'Export again')),
           ),
         ),
@@ -179,5 +195,5 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   }
 }
 
-/// personId → group names; filled in by Phase 7 groups.
-Future<Map<int, List<String>>> Function(WidgetRef ref) loadGroupNames = (_) async => const {};
+/// personId → group names.
+Future<Map<int, List<String>>> loadGroupNames(WidgetRef ref) => ref.read(repoProvider).groupNamesByPerson();

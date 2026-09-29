@@ -25,6 +25,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   PeopleSort _sort = PeopleSort.name;
   Relationship? _relation;
   int _minStars = 0;
+  int? _group;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,9 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
     final people = ref.watch(peopleProvider);
     final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
     final today = ref.watch(todayProvider).value ?? Day.today();
+    final groups = ref.watch(groupsProvider).value ?? const <PersonGroup>[];
+    final members = ref.watch(groupMembersProvider).value ?? const <int, Set<int>>{};
+    if (_group != null && !groups.any((g) => g.id == _group)) _group = null;
 
     // Next date per person, for sorting and the subtitle.
     final next = <int, Upcoming>{};
@@ -52,6 +56,8 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
             itemBuilder: (_) => const [
               PopupMenuItem(value: '/import/contacts', child: Text('Add many from contacts')),
               PopupMenuItem(value: '/import/birthdays', child: Text('Import birthdays from contacts')),
+              PopupMenuItem(value: '/groups', child: Text('Groups')),
+              PopupMenuItem(value: '/gifts', child: Text('Gift planner')),
               PopupMenuItem(value: '/not-wished', child: Text('Not wished in 12+ months')),
               PopupMenuItem(value: '/archived', child: Text('Archived people')),
             ],
@@ -80,7 +86,10 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
             );
           }
           var list = all
-              .where((p) => (_relation == null || p.relation == _relation) && p.stars >= _minStars)
+              .where((p) =>
+                  (_relation == null || p.relation == _relation) &&
+                  p.stars >= _minStars &&
+                  (_group == null || (members[_group] ?? const {}).contains(p.id)))
               .toList();
           switch (_sort) {
             case PeopleSort.name:
@@ -125,6 +134,14 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
                     active: _minStars > 0,
                     items: {0: 'Any stars', for (var i = 5; i >= 1; i--) i: '$i★ and up'},
                     onSelected: (v) => setState(() => _minStars = v),
+                  ),
+                  const SizedBox(width: 6),
+                  _menuChip<int?>(
+                    icon: Icons.workspaces_outline,
+                    label: _group == null ? 'All groups' : groups.firstWhere((g) => g.id == _group).name,
+                    active: _group != null,
+                    items: {null: 'All groups', for (final g in groups) g.id: g.name, -1: 'Manage groups…'},
+                    onSelected: (v) => v == -1 ? context.push('/groups') : setState(() => _group = v),
                   ),
                 ],
               ),
