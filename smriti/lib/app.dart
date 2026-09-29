@@ -12,6 +12,9 @@ import 'features/contacts/import_birthdays_screen.dart';
 import 'features/events/event_detail_screen.dart';
 import 'features/events/event_form_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/messages/event_message_screen.dart';
+import 'features/messages/library_screen.dart';
+import 'features/messages/thank_you_screen.dart';
 import 'features/reminders/alarm_scheduler.dart';
 import 'features/reminders/alarm_screen.dart';
 import 'features/reminders/notification_service.dart';
@@ -41,6 +44,8 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
             StatefulShellBranch(
                 routes: [GoRoute(path: '/calendar', builder: (_, _) => const CalendarScreen())]),
             StatefulShellBranch(routes: [GoRoute(path: '/people', builder: (_, _) => const PeopleScreen())]),
+            StatefulShellBranch(
+                routes: [GoRoute(path: '/messages', builder: (_, _) => const LibraryScreen())]),
             StatefulShellBranch(
                 routes: [GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen())]),
           ],
@@ -95,6 +100,11 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
           ),
         ),
         GoRoute(path: '/reliability', builder: (_, _) => const ReliabilityScreen()),
+        GoRoute(path: '/thank-you', builder: (_, _) => const ThankYouScreen()),
+        GoRoute(
+          path: '/event/:id/message',
+          builder: (_, state) => EventMessageScreen(eventId: int.parse(state.pathParameters['id']!)),
+        ),
         GoRoute(
           path: '/event/:id/edit',
           builder: (_, state) => EventFormScreen(id: int.parse(state.pathParameters['id']!)),
@@ -220,6 +230,8 @@ class _Shell extends StatelessWidget {
                   label: 'Calendar'),
               NavigationDestination(
                   icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people_rounded), label: 'People'),
+              NavigationDestination(
+                  icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book_rounded), label: 'Messages'),
               NavigationDestination(
                   icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings_rounded), label: 'Settings'),
             ],

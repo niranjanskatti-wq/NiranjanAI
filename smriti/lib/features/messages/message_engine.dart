@@ -229,10 +229,13 @@ class MessageLibrary {
     Set<String> alreadySent = const {},
     String? festivalId,
     List<MessageTemplate> extra = const [],
+    Set<String> hidden = const {},
+    Set<String> favourites = const {},
   }) {
     for (final occ in occasions) {
       final found = [...extra, ...all]
           .where((t) =>
+              !hidden.contains(t.id) &&
               t.lang == lang &&
               t.occasion == occ &&
               (occ != Occasion.festival || t.festival == null || t.festival == festivalId) &&
@@ -244,7 +247,8 @@ class MessageLibrary {
           (alreadySent.contains(t.id) || alreadySent.contains(ctx.fill(t.text)) ? 0 : 100) +
           (occ == Occasion.festival && t.festival == festivalId ? 10 : 0) +
           t.fit(ctx.relation) * 5 +
-          (t.custom ? 1 : 0);
+          (favourites.contains(t.id) ? 8 : 0) +
+          (t.custom ? 4 : 0);
       found.sort((a, b) => score(b).compareTo(score(a)));
       return found;
     }

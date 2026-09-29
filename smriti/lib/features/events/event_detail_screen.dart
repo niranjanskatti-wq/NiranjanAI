@@ -149,6 +149,22 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     onTap: () => context.push('/event/$id/reminders'),
                   ),
                 ),
+                if (canWish(e)) ...[
+                  const SizedBox(height: 12),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.edit_note_rounded, color: c.goldText),
+                      title: const Text('Prepared message'),
+                      subtitle: Text(
+                        ev.draftMessage ?? 'Write or pick the message now; Share will use it on the day',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => context.push('/event/$id/message'),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 InfoCard(title: 'Details', children: [
                   _kv(context, 'Date', fmtEventDate(day: ev.day, month: ev.month, year: ev.year, monthly: e.repeat == Repeat.monthly)),

@@ -1,0 +1,1440 @@
+{
+ "language": "hi",
+ "about": "Smriti message library. Edit freely: change text, add lines, or remove them. Placeholders: {name} {nickname} {relation} {age} {age_th} {years_married} {years_th} {couple_names} {festival} {my_name}.",
+ "messages": [
+  {
+   "id": "hi.birthday.001",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "जन्मदिन मुबारक हो {nickname}! आज मैं जो कुछ भी हूँ, आपकी वजह से हूँ। आप हमेशा ऐसे ही मुस्कुराते रहिए ❤️🙏"
+  },
+  {
+   "id": "hi.birthday.002",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "blessing",
+   "text": "हैप्पी बर्थडे {nickname}! भगवान आपको हमेशा स्वस्थ और खुश रखे। आपका आशीर्वाद यूँ ही बना रहे 🙏"
+  },
+  {
+   "id": "hi.birthday.003",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन की ढेर सारी शुभकामनाएं {nickname}! लव यू ❤️"
+  },
+  {
+   "id": "hi.birthday.004",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे {nickname}! इतने सालों से मुझे झेलने के लिए थैंक यू, आसान नहीं था, पता है 😄❤️"
+  },
+  {
+   "id": "hi.birthday.005",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "आपके बिना कुछ भी अधूरा है {nickname}। जन्मदिन मुबारक हो, आप बहुत लंबी उम्र जिएं 🙏❤️"
+  },
+  {
+   "id": "hi.birthday.006",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "हैप्पी बर्थडे जान! तुम्हारे साथ हर दिन खास है, और आज तो सबसे खास ❤️"
+  },
+  {
+   "id": "hi.birthday.007",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे! मेरे कंबल और मेरे दिल, दोनों पर कब्ज़ा जमाने वाले इंसान को 😄❤️"
+  },
+  {
+   "id": "hi.birthday.008",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "हैप्पी बर्थडे मेरी जान ❤️ आज का दिन सिर्फ तुम्हारा है"
+  },
+  {
+   "id": "hi.birthday.009",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "तुम हो तो ज़िंदगी आसान लगती है। जन्मदिन मुबारक हो, हमेशा ऐसे ही साथ रहना ❤️"
+  },
+  {
+   "id": "hi.birthday.010",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "भगवान का शुक्र है कि तुम मेरी ज़िंदगी में हो। हैप्पी बर्थडे {nickname} ❤️"
+  },
+  {
+   "id": "hi.birthday.011",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "blessing",
+   "text": "जन्मदिन मुबारक हो बेटा! भगवान तुम्हें हमेशा खुश और कामयाब रखे 🙏"
+  },
+  {
+   "id": "hi.birthday.012",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "emotional",
+   "text": "हैप्पी बर्थडे {nickname}! तुम्हें बड़ा होते देखना मेरी ज़िंदगी की सबसे बड़ी खुशी है ❤️"
+  },
+  {
+   "id": "hi.birthday.013",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे {nickname}! कितने भी बड़े हो जाओ, मेरे लिए तो बच्चे ही रहोगे 😄"
+  },
+  {
+   "id": "hi.birthday.014",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन की ढेर सारी बधाई {nickname}! खूब मज़े करो 🎉"
+  },
+  {
+   "id": "hi.birthday.015",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "blessing",
+   "text": "खुश रहो, आगे बढ़ो और हमेशा अच्छे इंसान बने रहो। हैप्पी बर्थडे {nickname} 🙏"
+  },
+  {
+   "id": "hi.birthday.016",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे {nickname}! लड़ाई भी तुझसे, मस्ती भी तुझसे 😄 खूब खुश रह!"
+  },
+  {
+   "id": "hi.birthday.017",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "जन्मदिन मुबारक हो {nickname}! तू मेरा पहला दोस्त है और हमेशा रहेगा ❤️"
+  },
+  {
+   "id": "hi.birthday.018",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "हैप्पी बर्थडे {nickname}! पार्टी कब मिलेगी? 😉🎉"
+  },
+  {
+   "id": "hi.birthday.019",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "जन्मदिन मुबारक! मम्मी-पापा का फेवरेट आज भी मैं ही हूँ, बस आज के लिए तुझे दे दिया 😄"
+  },
+  {
+   "id": "hi.birthday.020",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "blessing",
+   "text": "हैप्पी बर्थडे {nickname}! इस साल तेरे सारे सपने पूरे हों 🙏"
+  },
+  {
+   "id": "hi.birthday.021",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "जन्मदिन मुबारक हो {nickname}! आपका आशीर्वाद हमेशा हमारे साथ रहे। भगवान आपको लंबी और स्वस्थ उम्र दे 🙏"
+  },
+  {
+   "id": "hi.birthday.022",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "हैप्पी बर्थडे {nickname}! आपकी कहानियाँ और आपके हाथ का खाना मेरी सबसे प्यारी यादें हैं ❤️"
+  },
+  {
+   "id": "hi.birthday.023",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन की बहुत-बहुत बधाई {nickname}! अपना ध्यान रखिए 🙏"
+  },
+  {
+   "id": "hi.birthday.024",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "आप हमारे घर की जान हैं। जन्मदिन मुबारक हो, हमेशा स्वस्थ रहिए 🙏"
+  },
+  {
+   "id": "hi.birthday.025",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे {nickname}! आज भी सबसे ज़्यादा प्यार और सबसे ज़्यादा लड्डू आप ही देते हैं 😄❤️"
+  },
+  {
+   "id": "hi.birthday.026",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "blessing",
+   "text": "जन्मदिन की हार्दिक शुभकामनाएं {nickname}! भगवान आपको सदा स्वस्थ और खुश रखे 🙏"
+  },
+  {
+   "id": "hi.birthday.027",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन मुबारक हो {nickname}! आपका दिन शानदार हो 🎂"
+  },
+  {
+   "id": "hi.birthday.028",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "emotional",
+   "text": "हैप्पी बर्थडे {nickname}! हमेशा अपने बच्चों जैसा प्यार देने के लिए शुक्रिया 🙏"
+  },
+  {
+   "id": "hi.birthday.029",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "formal",
+   "text": "आपको जन्मदिन की हार्दिक बधाई। आने वाला वर्ष आपके लिए सुख और समृद्धि लाए।"
+  },
+  {
+   "id": "hi.birthday.030",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे {nickname}! हर फंक्शन की जान तो आप ही हो 😄"
+  },
+  {
+   "id": "hi.birthday.031",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "short",
+   "text": "हैप्पी बर्थडे {nickname}! खूब केक खाओ और मज़े करो 🎂🎉"
+  },
+  {
+   "id": "hi.birthday.032",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "blessing",
+   "text": "जन्मदिन मुबारक हो {nickname}! खूब पढ़ो, खूब खेलो और हमेशा खुश रहो 🙏"
+  },
+  {
+   "id": "hi.birthday.033",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे {nickname}! आज जितना चाहो उतना केक खाओ, बस मम्मी को मत बताना 😄"
+  },
+  {
+   "id": "hi.birthday.034",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "emotional",
+   "text": "हैप्पी बर्थडे {nickname}! कल तक गोद में थे और आज इतने बड़े हो गए ❤️"
+  },
+  {
+   "id": "hi.birthday.035",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन की ढेर सारी शुभकामनाएं {nickname}! 🥳"
+  },
+  {
+   "id": "hi.birthday.036",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "short",
+   "text": "हैप्पी बर्थडे {nickname}! खूब मज़े कर 🎉"
+  },
+  {
+   "id": "hi.birthday.037",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे! याद है हर शादी में हम साथ में पकड़े जाते थे? 😄"
+  },
+  {
+   "id": "hi.birthday.038",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "emotional",
+   "text": "जन्मदिन मुबारक हो {nickname}! कज़िन कम, दोस्त ज़्यादा हो तुम ❤️"
+  },
+  {
+   "id": "hi.birthday.039",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "blessing",
+   "text": "हैप्पी बर्थडे {nickname}! खूब तरक्की करो और खुश रहो 🙏"
+  },
+  {
+   "id": "hi.birthday.040",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन मुबारक! ट्रीट पक्की है {nickname} 😉"
+  },
+  {
+   "id": "hi.birthday.041",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "short",
+   "text": "हैप्पी बर्थडे {nickname}! साल भर ऐसे ही मस्ती करते रहो 🎉"
+  },
+  {
+   "id": "hi.birthday.042",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे यार! उम्र बढ़ रही है, अक्ल कब बढ़ेगी? 😄🎂"
+  },
+  {
+   "id": "hi.birthday.043",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "emotional",
+   "text": "जन्मदिन मुबारक हो {nickname}! हर मुश्किल में साथ देने के लिए शुक्रिया यार ❤️"
+  },
+  {
+   "id": "hi.birthday.044",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी बर्थडे! पार्टी नहीं दी तो दोस्ती खत्म 😄🎉"
+  },
+  {
+   "id": "hi.birthday.045",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "poetic",
+   "text": "कुछ दोस्त परिवार बन जाते हैं, तुम उनमें से एक हो। हैप्पी बर्थडे {nickname} ❤️"
+  },
+  {
+   "id": "hi.birthday.046",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "blessing",
+   "text": "जन्मदिन मुबारक हो {nickname}! भगवान तुम्हारी हर ख्वाहिश पूरी करे 🙏"
+  },
+  {
+   "id": "hi.birthday.047",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "जन्मदिन की हार्दिक शुभकामनाएं {name} जी। आने वाला वर्ष आपके लिए सफलता और खुशियाँ लाए।"
+  },
+  {
+   "id": "hi.birthday.048",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "short",
+   "text": "हैप्पी बर्थडे {name}! आपका दिन शानदार रहे 🎉"
+  },
+  {
+   "id": "hi.birthday.049",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "आपको जन्मदिन की बहुत-बहुत बधाई। आपके साथ काम करना हमेशा अच्छा लगता है।"
+  },
+  {
+   "id": "hi.birthday.050",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "जन्मदिन मुबारक हो {name} जी। स्वस्थ रहें, खुश रहें।"
+  },
+  {
+   "id": "hi.birthday.051",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन की ढेर सारी शुभकामनाएं {nickname}! खुश रहो हमेशा 🎂"
+  },
+  {
+   "id": "hi.birthday.052",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "हैप्पी बर्थडे {nickname}! भगवान आपको हर खुशी दे 🙏"
+  },
+  {
+   "id": "hi.birthday.053",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "जन्मदिन मुबारक हो {nickname}! 🎉"
+  },
+  {
+   "id": "hi.milestone_birthday.001",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "{age}वें जन्मदिन की ढेर सारी बधाई {nickname}! क्या शानदार सफ़र रहा है, आगे और भी सुंदर हो 🎉"
+  },
+  {
+   "id": "hi.milestone_birthday.002",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "parent",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "{age} साल का प्यार और आशीर्वाद! जन्मदिन मुबारक हो {nickname}, भगवान आपको लंबी उम्र दे 🙏"
+  },
+  {
+   "id": "hi.milestone_birthday.003",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "{age} के हो गए! पर दिल तो अभी भी बच्चा है 😄 हैप्पी बर्थडे {nickname}"
+  },
+  {
+   "id": "hi.milestone_birthday.004",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "young",
+    "child"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी {age}वाँ बर्थडे {nickname}! अब तो बड़े हो गए… लगभग 😄"
+  },
+  {
+   "id": "hi.anniversary.001",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "हैप्पी एनिवर्सरी जान! हर हँसी, हर मुश्किल और हर छोटे पल के लिए शुक्रिया ❤️"
+  },
+  {
+   "id": "hi.anniversary.002",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "शादी की सालगिरह मुबारक! अगर फिर से चुनना हो, तो भी जवाब तुम ही हो ❤️"
+  },
+  {
+   "id": "hi.anniversary.003",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी एनिवर्सरी! {years_married} साल से मेरे खर्राटे झेलने के लिए सलाम है 😄❤️"
+  },
+  {
+   "id": "hi.anniversary.004",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "{years_married} साल, एक घर, अनगिनत यादें। हैप्पी एनिवर्सरी मेरी जान ❤️"
+  },
+  {
+   "id": "hi.anniversary.005",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "हैप्पी एनिवर्सरी! हर साल और ज़्यादा प्यार ❤️"
+  },
+  {
+   "id": "hi.anniversary.006",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "तुमसे शादी करना मेरी ज़िंदगी का सबसे अच्छा फैसला है। हैप्पी एनिवर्सरी ❤️"
+  },
+  {
+   "id": "hi.couple_anniversary.001",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "शादी की सालगिरह की हार्दिक शुभकामनाएं! आपकी जोड़ी हमेशा सलामत रहे 💐"
+  },
+  {
+   "id": "hi.couple_anniversary.002",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "हैप्पी एनिवर्सरी {couple_names}! 🎉"
+  },
+  {
+   "id": "hi.couple_anniversary.003",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "दो दिल, एक सफ़र। आप दोनों को सालगिरह मुबारक 💕"
+  },
+  {
+   "id": "hi.couple_anniversary.004",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी एनिवर्सरी! आप दोनों को देखकर लगता है सच्चा प्यार भी होता है और सब्र भी 😄"
+  },
+  {
+   "id": "hi.couple_anniversary.005",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "शादी की {years_married}वीं सालगिरह मुबारक! आप दोनों हमेशा स्वस्थ और साथ रहें 🙏"
+  },
+  {
+   "id": "hi.couple_anniversary.006",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "आपका प्यार ही हमारे परिवार की नींव है। हैप्पी एनिवर्सरी ❤️🙏"
+  },
+  {
+   "id": "hi.couple_anniversary.007",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "short",
+   "text": "दुनिया की सबसे प्यारी जोड़ी को हैप्पी एनिवर्सरी 💐"
+  },
+  {
+   "id": "hi.couple_anniversary.008",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी एनिवर्सरी! आज भी सबकी फेवरेट जोड़ी तुम्हारी ही है 😄❤️"
+  },
+  {
+   "id": "hi.work_anniversary.001",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "कार्य वर्षगांठ की हार्दिक बधाई {name} जी! आपकी मेहनत सबके लिए प्रेरणा है।"
+  },
+  {
+   "id": "hi.work_anniversary.002",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "वर्क एनिवर्सरी मुबारक हो {nickname}! ऐसे ही आगे बढ़ते रहो 👏"
+  },
+  {
+   "id": "hi.work_anniversary.003",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "वर्क एनिवर्सरी मुबारक! एक और साल मीटिंग्स में ज़िंदा रहने के लिए 😄"
+  },
+  {
+   "id": "hi.engagement.001",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "सगाई की बहुत-बहुत बधाई {nickname}! 💍"
+  },
+  {
+   "id": "hi.engagement.002",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "सगाई मुबारक हो! आप दोनों का आने वाला जीवन खुशियों से भरा रहे 🙏"
+  },
+  {
+   "id": "hi.engagement.003",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "सगाई मुबारक! अब असली शादी की तैयारी और फैमिली ग्रुप की बहस शुरू 😄"
+  },
+  {
+   "id": "hi.congratulations.001",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "बहुत-बहुत बधाई {nickname}! तुम पर गर्व है 🎉"
+  },
+  {
+   "id": "hi.congratulations.002",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "मेहनत रंग लाई! बधाई हो {nickname}, बहुत खुशी हुई ❤️"
+  },
+  {
+   "id": "hi.congratulations.003",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "बधाई हो {nickname}! पार्टी कब है? 😄🎉"
+  },
+  {
+   "id": "hi.congratulations.004",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "इस उपलब्धि पर हार्दिक बधाई {name} जी।"
+  },
+  {
+   "id": "hi.congratulations.005",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "बधाई हो! ऐसे ही आगे बढ़ते रहो, भगवान तुम्हें और तरक्की दे 🙏"
+  },
+  {
+   "id": "hi.belated.001",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "देर से ही सही, जन्मदिन की ढेर सारी शुभकामनाएं {nickname}! 🎂"
+  },
+  {
+   "id": "hi.belated.002",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "बिलेटेड हैप्पी बर्थडे! लेट नहीं, बस तुम्हारा जश्न थोड़ा लंबा कर दिया 😄"
+  },
+  {
+   "id": "hi.belated.003",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "माफ़ करना {nickname}, तुम्हारा खास दिन याद नहीं रहा। पर दुआएँ वही हैं ❤️"
+  },
+  {
+   "id": "hi.belated.004",
+   "occasion": "belated",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "देर से बधाई के लिए माफ़ी {nickname}, आपका आशीर्वाद बनाए रखिए 🙏"
+  },
+  {
+   "id": "hi.belated.005",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "बिलेटेड विशेज़ {nickname}! उम्मीद है दिन बहुत अच्छा गया 🌸"
+  },
+  {
+   "id": "hi.thank_you.001",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "शुभकामनाओं के लिए बहुत-बहुत धन्यवाद! 🙏😊"
+  },
+  {
+   "id": "hi.thank_you.002",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "आपकी शुभकामनाओं ने मेरा दिन खास बना दिया। दिल से शुक्रिया ❤️"
+  },
+  {
+   "id": "hi.thank_you.003",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "थैंक यू! उम्र तो बढ़ गई, पर आप जैसे दोस्तों की वजह से दिल जवान है 😄"
+  },
+  {
+   "id": "hi.thank_you.004",
+   "occasion": "thank_you",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "आपके आशीर्वाद के लिए धन्यवाद! हमेशा ऐसे ही साथ रहिए 🙏"
+  },
+  {
+   "id": "hi.thank_you.005",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "याद रखने के लिए थैंक यू! 😊"
+  },
+  {
+   "id": "hi.thank_you.006",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "आपकी शुभकामनाओं के लिए हार्दिक धन्यवाद।"
+  },
+  {
+   "id": "hi.general.001",
+   "occasion": "general",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "आपको ढेर सारी शुभकामनाएं {nickname}! 😊"
+  },
+  {
+   "id": "hi.festival.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "{festival} की हार्दिक शुभकामनाएं! आपके घर में सुख-समृद्धि बनी रहे 🙏"
+  },
+  {
+   "id": "hi.festival.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "आपको और आपके परिवार को {festival} मुबारक! 🌸"
+  },
+  {
+   "id": "hi.festival.new_year.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "नया साल मुबारक हो {nickname}! 🎉",
+   "festival": "new_year"
+  },
+  {
+   "id": "hi.festival.new_year.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "नए साल की हार्दिक शुभकामनाएं! यह साल आपके लिए खुशियाँ और सेहत लाए 🙏",
+   "festival": "new_year"
+  },
+  {
+   "id": "hi.festival.new_year.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी न्यू ईयर! इस बार के रेज़ोल्यूशन कम से कम फरवरी तक चलें 😄",
+   "festival": "new_year"
+  },
+  {
+   "id": "hi.festival.new_year.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "मेरे साल का हिस्सा बनने के लिए शुक्रिया {nickname}। नया साल मुबारक ❤️",
+   "festival": "new_year"
+  },
+  {
+   "id": "hi.festival.makar_sankranti.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "मकर संक्रांति की हार्दिक शुभकामनाएं! तिल-गुड़ की तरह जीवन मीठा रहे ☀️",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "hi.festival.makar_sankranti.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी संक्रांति! पतंग ऊँची उड़ाओ और टेंशन नीचे रखो 😄🪁",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "hi.festival.makar_sankranti.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "तिल-गुड़ लो, मीठा-मीठा बोलो! हैप्पी संक्रांति 😊",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "hi.festival.republic_day.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "गणतंत्र दिवस की हार्दिक शुभकामनाएं! जय हिंद 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "hi.festival.republic_day.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "संविधान पर गर्व, देश पर गर्व। गणतंत्र दिवस मुबारक 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "hi.festival.republic_day.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "आपको गणतंत्र दिवस की हार्दिक शुभकामनाएं।",
+   "festival": "republic_day"
+  },
+  {
+   "id": "hi.festival.holi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "होली मुबारक {nickname}! ज़िंदगी यूँ ही रंगीन रहे 🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "hi.festival.holi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "बुरा न मानो, होली है! रंग तैयार हैं, बच के रहना 😄🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "hi.festival.holi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "रंगों के त्योहार की ढेर सारी शुभकामनाएं! आपके जीवन में खुशियों के रंग भरे रहें 🌈",
+   "festival": "holi"
+  },
+  {
+   "id": "hi.festival.holi.004",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "होली की हार्दिक शुभकामनाएं! आप हमेशा स्वस्थ और खुश रहें 🙏",
+   "festival": "holi"
+  },
+  {
+   "id": "hi.festival.ugadi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "उगादी और गुड़ी पड़वा की हार्दिक शुभकामनाएं! नया साल मंगलमय हो 🙏",
+   "festival": "ugadi"
+  },
+  {
+   "id": "hi.festival.ugadi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "नीम-गुड़ की तरह, इस साल में थोड़ा सब कुछ हो — पर मिठास ज़्यादा 🌿",
+   "festival": "ugadi"
+  },
+  {
+   "id": "hi.festival.ugadi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "नव वर्ष की शुभकामनाएं {nickname}! 🌸",
+   "festival": "ugadi"
+  },
+  {
+   "id": "hi.festival.ram_navami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "राम नवमी की हार्दिक शुभकामनाएं! प्रभु श्रीराम आपको सुख-शांति दें 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "hi.festival.ram_navami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "जय श्री राम! राम नवमी मुबारक 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "hi.festival.ram_navami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "आपको और आपके परिवार को राम नवमी की शुभकामनाएं।",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "hi.festival.raksha_bandhan.001",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "रक्षाबंधन मुबारक! कितनी भी दूर रहें, तू हमेशा मेरा सबसे पक्का दोस्त रहेगा ❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "hi.festival.raksha_bandhan.002",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी राखी! राखी तो बंध गई, अब गिफ्ट कहाँ है? 😄🎁",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "hi.festival.raksha_bandhan.003",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "रक्षाबंधन की ढेर सारी शुभकामनाएं {nickname}! 🧵❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "hi.festival.raksha_bandhan.004",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "blessing",
+   "text": "हैप्पी राखी! हमारा रिश्ता हमेशा ऐसे ही मज़बूत रहे 🙏",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "hi.festival.raksha_bandhan.005",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "इस राखी तेरी बहुत याद आ रही है {nickname}। ढेर सारा प्यार ❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "hi.festival.independence_day.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "स्वतंत्रता दिवस की हार्दिक शुभकामनाएं! जय हिंद 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "hi.festival.independence_day.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "आज़ादी दिलाने वालों को नमन। हैप्पी इंडिपेंडेंस डे 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "hi.festival.independence_day.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "आपको स्वतंत्रता दिवस की हार्दिक बधाई।",
+   "festival": "independence_day"
+  },
+  {
+   "id": "hi.festival.krishna_janmashtami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "जन्माष्टमी की हार्दिक शुभकामनाएं! कान्हा आपके जीवन में प्रेम और खुशियाँ भरें 🙏🪈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "hi.festival.krishna_janmashtami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "जय श्री कृष्ण! जन्माष्टमी मुबारक 🪈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "hi.festival.krishna_janmashtami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी जन्माष्टमी! माखन खूब मिले और डाँट बिल्कुल नहीं 😄",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "hi.festival.ganesh_chaturthi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "गणेश चतुर्थी की हार्दिक शुभकामनाएं! बप्पा आपके सारे विघ्न दूर करें 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "hi.festival.ganesh_chaturthi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "गणपति बप्पा मोरया! 🙏🌺",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "hi.festival.ganesh_chaturthi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी गणेश चतुर्थी! ज़िंदगी बप्पा के मोदक जैसी मीठी रहे, और उतने ही मोदक भी 😄",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "hi.festival.ganesh_chaturthi.004",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "गणेश चतुर्थी की शुभकामनाएं! बप्पा आपको हमेशा स्वस्थ रखें 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "hi.festival.vijayadashami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "विजयादशमी की हार्दिक शुभकामनाएं! बुराई पर अच्छाई की जीत हमेशा हो 🙏",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "hi.festival.vijayadashami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "हैप्पी दशहरा {nickname}! 🌼",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "hi.festival.vijayadashami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी दशहरा! तुम्हारी सारी टेंशन रावण की तरह जल जाए 😄🔥",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "hi.festival.diwali_lakshmi_puja.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "दीपावली की हार्दिक शुभकामनाएं! माँ लक्ष्मी आपके घर सुख-समृद्धि लाएं 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "hi.festival.diwali_lakshmi_puja.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "हैप्पी दिवाली {nickname}! 🪔✨",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "hi.festival.diwali_lakshmi_puja.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी दिवाली! मिठाई ज़्यादा, कैलोरी कम 😄🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "hi.festival.diwali_lakshmi_puja.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "दीयों की रोशनी से घर जगमगाए और मिठास से दिल। शुभ दीपावली 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "hi.festival.diwali_lakshmi_puja.005",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "शुभ दीपावली! आपका आशीर्वाद हमेशा साथ रहे 🙏🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "hi.festival.diwali_lakshmi_puja.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "आपको और आपके परिवार को दीपावली की हार्दिक शुभकामनाएं।",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "hi.festival.christmas.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "मेरी क्रिसमस {nickname}! 🎄",
+   "festival": "christmas"
+  },
+  {
+   "id": "hi.festival.christmas.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "क्रिसमस की ढेर सारी शुभकामनाएं! आपका जीवन प्रेम और शांति से भरा रहे 🎄",
+   "festival": "christmas"
+  },
+  {
+   "id": "hi.festival.maha_shivaratri.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "महाशिवरात्रि की हार्दिक शुभकामनाएं! हर हर महादेव 🙏",
+   "festival": "maha_shivaratri"
+  },
+  {
+   "id": "hi.festival.hanuman_jayanti.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "हनुमान जयंती की शुभकामनाएं! बजरंगबली आपको बल और बुद्धि दें 🙏",
+   "festival": "hanuman_jayanti"
+  },
+  {
+   "id": "hi.festival.akshaya_tritiya.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "अक्षय तृतीया की शुभकामनाएं! आपकी खुशियाँ कभी कम न हों ✨",
+   "festival": "akshaya_tritiya"
+  },
+  {
+   "id": "hi.festival.guru_purnima.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "गुरु पूर्णिमा की शुभकामनाएं! आपकी सीख के लिए दिल से धन्यवाद 🙏",
+   "festival": "guru_purnima"
+  },
+  {
+   "id": "hi.festival.bhai_dooj.001",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "भाई दूज की शुभकामनाएं {nickname}! भगवान तुम्हें लंबी उम्र दे ❤️🙏",
+   "festival": "bhai_dooj"
+  },
+  {
+   "id": "hi.festival.bhai_dooj.002",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "हैप्पी भाई दूज! टीका हो गया, मिठाई खा ली, अब गिफ्ट 😄🎁",
+   "festival": "bhai_dooj"
+  },
+  {
+   "id": "hi.festival.dhanteras.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "धनतेरस की हार्दिक शुभकामनाएं! घर में सुख-समृद्धि बनी रहे ✨",
+   "festival": "dhanteras"
+  },
+  {
+   "id": "hi.festival.navratri_begins.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "नवरात्रि की हार्दिक शुभकामनाएं! माँ दुर्गा आपकी हर मनोकामना पूरी करें 🙏",
+   "festival": "navratri_begins"
+  },
+  {
+   "id": "hi.festival.gandhi_jayanti.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "गांधी जयंती पर बापू को नमन। सत्य और अहिंसा का मार्ग हमेशा दिखाता रहे 🕊️",
+   "festival": "gandhi_jayanti"
+  }
+ ]
+}

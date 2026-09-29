@@ -132,6 +132,32 @@ class Reminders extends Table {
   BoolColumn get enabled => boolean().withDefault(const Constant(true))();
 }
 
+/// Messages the user wrote, or edited copies of built-in ones ([baseId]).
+class UserMessages extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get occasion => text()();
+
+  /// Comma-separated relation names or families, or "any".
+  TextColumn get relations => text().withDefault(const Constant('any'))();
+  TextColumn get tone => text().withDefault(const Constant('short'))();
+  TextColumn get lang => text().withDefault(const Constant('en'))();
+  TextColumn get festival => text().nullable()();
+  TextColumn get body => text()();
+
+  /// Built-in message this replaces, if it is an edit.
+  TextColumn get baseId => text().nullable()();
+  BoolColumn get favourite => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+/// Built-in messages marked as favourite.
+class FavouriteMessages extends Table {
+  TextColumn get templateId => text()();
+
+  @override
+  Set<Column> get primaryKey => {templateId};
+}
+
 /// Every call or share, and whether the event was marked as wished.
 class WishLogs extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -164,12 +190,12 @@ class Settings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, Settings])
+@DriftDatabase(tables: [People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages, Settings])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -188,6 +214,10 @@ class AppDatabase extends _$AppDatabase {
             await customStatement(
                 "INSERT INTO reminders (event_id, kind, days_before, minute_of_day, enabled) "
                 "SELECT id, 'daysBefore', d, 540, 1 FROM events, (SELECT 7 AS d UNION SELECT 1) WHERE kind = 'other'");
+          }
+          if (from < 4) {
+            await m.createTable(userMessages);
+            await m.createTable(favouriteMessages);
           }
         },
         beforeOpen: (details) async {

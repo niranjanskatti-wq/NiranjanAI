@@ -4347,6 +4347,767 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   }
 }
 
+class $UserMessagesTable extends UserMessages
+    with TableInfo<$UserMessagesTable, UserMessage> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserMessagesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _occasionMeta = const VerificationMeta(
+    'occasion',
+  );
+  @override
+  late final GeneratedColumn<String> occasion = GeneratedColumn<String>(
+    'occasion',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _relationsMeta = const VerificationMeta(
+    'relations',
+  );
+  @override
+  late final GeneratedColumn<String> relations = GeneratedColumn<String>(
+    'relations',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('any'),
+  );
+  static const VerificationMeta _toneMeta = const VerificationMeta('tone');
+  @override
+  late final GeneratedColumn<String> tone = GeneratedColumn<String>(
+    'tone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('short'),
+  );
+  static const VerificationMeta _langMeta = const VerificationMeta('lang');
+  @override
+  late final GeneratedColumn<String> lang = GeneratedColumn<String>(
+    'lang',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('en'),
+  );
+  static const VerificationMeta _festivalMeta = const VerificationMeta(
+    'festival',
+  );
+  @override
+  late final GeneratedColumn<String> festival = GeneratedColumn<String>(
+    'festival',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _baseIdMeta = const VerificationMeta('baseId');
+  @override
+  late final GeneratedColumn<String> baseId = GeneratedColumn<String>(
+    'base_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _favouriteMeta = const VerificationMeta(
+    'favourite',
+  );
+  @override
+  late final GeneratedColumn<bool> favourite = GeneratedColumn<bool>(
+    'favourite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("favourite" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    occasion,
+    relations,
+    tone,
+    lang,
+    festival,
+    body,
+    baseId,
+    favourite,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_messages';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserMessage> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('occasion')) {
+      context.handle(
+        _occasionMeta,
+        occasion.isAcceptableOrUnknown(data['occasion']!, _occasionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_occasionMeta);
+    }
+    if (data.containsKey('relations')) {
+      context.handle(
+        _relationsMeta,
+        relations.isAcceptableOrUnknown(data['relations']!, _relationsMeta),
+      );
+    }
+    if (data.containsKey('tone')) {
+      context.handle(
+        _toneMeta,
+        tone.isAcceptableOrUnknown(data['tone']!, _toneMeta),
+      );
+    }
+    if (data.containsKey('lang')) {
+      context.handle(
+        _langMeta,
+        lang.isAcceptableOrUnknown(data['lang']!, _langMeta),
+      );
+    }
+    if (data.containsKey('festival')) {
+      context.handle(
+        _festivalMeta,
+        festival.isAcceptableOrUnknown(data['festival']!, _festivalMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('base_id')) {
+      context.handle(
+        _baseIdMeta,
+        baseId.isAcceptableOrUnknown(data['base_id']!, _baseIdMeta),
+      );
+    }
+    if (data.containsKey('favourite')) {
+      context.handle(
+        _favouriteMeta,
+        favourite.isAcceptableOrUnknown(data['favourite']!, _favouriteMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserMessage map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserMessage(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      occasion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occasion'],
+      )!,
+      relations: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relations'],
+      )!,
+      tone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tone'],
+      )!,
+      lang: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lang'],
+      )!,
+      festival: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}festival'],
+      ),
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      baseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}base_id'],
+      ),
+      favourite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}favourite'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $UserMessagesTable createAlias(String alias) {
+    return $UserMessagesTable(attachedDatabase, alias);
+  }
+}
+
+class UserMessage extends DataClass implements Insertable<UserMessage> {
+  final int id;
+  final String occasion;
+
+  /// Comma-separated relation names or families, or "any".
+  final String relations;
+  final String tone;
+  final String lang;
+  final String? festival;
+  final String body;
+
+  /// Built-in message this replaces, if it is an edit.
+  final String? baseId;
+  final bool favourite;
+  final DateTime createdAt;
+  const UserMessage({
+    required this.id,
+    required this.occasion,
+    required this.relations,
+    required this.tone,
+    required this.lang,
+    this.festival,
+    required this.body,
+    this.baseId,
+    required this.favourite,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['occasion'] = Variable<String>(occasion);
+    map['relations'] = Variable<String>(relations);
+    map['tone'] = Variable<String>(tone);
+    map['lang'] = Variable<String>(lang);
+    if (!nullToAbsent || festival != null) {
+      map['festival'] = Variable<String>(festival);
+    }
+    map['body'] = Variable<String>(body);
+    if (!nullToAbsent || baseId != null) {
+      map['base_id'] = Variable<String>(baseId);
+    }
+    map['favourite'] = Variable<bool>(favourite);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  UserMessagesCompanion toCompanion(bool nullToAbsent) {
+    return UserMessagesCompanion(
+      id: Value(id),
+      occasion: Value(occasion),
+      relations: Value(relations),
+      tone: Value(tone),
+      lang: Value(lang),
+      festival: festival == null && nullToAbsent
+          ? const Value.absent()
+          : Value(festival),
+      body: Value(body),
+      baseId: baseId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(baseId),
+      favourite: Value(favourite),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory UserMessage.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserMessage(
+      id: serializer.fromJson<int>(json['id']),
+      occasion: serializer.fromJson<String>(json['occasion']),
+      relations: serializer.fromJson<String>(json['relations']),
+      tone: serializer.fromJson<String>(json['tone']),
+      lang: serializer.fromJson<String>(json['lang']),
+      festival: serializer.fromJson<String?>(json['festival']),
+      body: serializer.fromJson<String>(json['body']),
+      baseId: serializer.fromJson<String?>(json['baseId']),
+      favourite: serializer.fromJson<bool>(json['favourite']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'occasion': serializer.toJson<String>(occasion),
+      'relations': serializer.toJson<String>(relations),
+      'tone': serializer.toJson<String>(tone),
+      'lang': serializer.toJson<String>(lang),
+      'festival': serializer.toJson<String?>(festival),
+      'body': serializer.toJson<String>(body),
+      'baseId': serializer.toJson<String?>(baseId),
+      'favourite': serializer.toJson<bool>(favourite),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  UserMessage copyWith({
+    int? id,
+    String? occasion,
+    String? relations,
+    String? tone,
+    String? lang,
+    Value<String?> festival = const Value.absent(),
+    String? body,
+    Value<String?> baseId = const Value.absent(),
+    bool? favourite,
+    DateTime? createdAt,
+  }) => UserMessage(
+    id: id ?? this.id,
+    occasion: occasion ?? this.occasion,
+    relations: relations ?? this.relations,
+    tone: tone ?? this.tone,
+    lang: lang ?? this.lang,
+    festival: festival.present ? festival.value : this.festival,
+    body: body ?? this.body,
+    baseId: baseId.present ? baseId.value : this.baseId,
+    favourite: favourite ?? this.favourite,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  UserMessage copyWithCompanion(UserMessagesCompanion data) {
+    return UserMessage(
+      id: data.id.present ? data.id.value : this.id,
+      occasion: data.occasion.present ? data.occasion.value : this.occasion,
+      relations: data.relations.present ? data.relations.value : this.relations,
+      tone: data.tone.present ? data.tone.value : this.tone,
+      lang: data.lang.present ? data.lang.value : this.lang,
+      festival: data.festival.present ? data.festival.value : this.festival,
+      body: data.body.present ? data.body.value : this.body,
+      baseId: data.baseId.present ? data.baseId.value : this.baseId,
+      favourite: data.favourite.present ? data.favourite.value : this.favourite,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserMessage(')
+          ..write('id: $id, ')
+          ..write('occasion: $occasion, ')
+          ..write('relations: $relations, ')
+          ..write('tone: $tone, ')
+          ..write('lang: $lang, ')
+          ..write('festival: $festival, ')
+          ..write('body: $body, ')
+          ..write('baseId: $baseId, ')
+          ..write('favourite: $favourite, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    occasion,
+    relations,
+    tone,
+    lang,
+    festival,
+    body,
+    baseId,
+    favourite,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserMessage &&
+          other.id == this.id &&
+          other.occasion == this.occasion &&
+          other.relations == this.relations &&
+          other.tone == this.tone &&
+          other.lang == this.lang &&
+          other.festival == this.festival &&
+          other.body == this.body &&
+          other.baseId == this.baseId &&
+          other.favourite == this.favourite &&
+          other.createdAt == this.createdAt);
+}
+
+class UserMessagesCompanion extends UpdateCompanion<UserMessage> {
+  final Value<int> id;
+  final Value<String> occasion;
+  final Value<String> relations;
+  final Value<String> tone;
+  final Value<String> lang;
+  final Value<String?> festival;
+  final Value<String> body;
+  final Value<String?> baseId;
+  final Value<bool> favourite;
+  final Value<DateTime> createdAt;
+  const UserMessagesCompanion({
+    this.id = const Value.absent(),
+    this.occasion = const Value.absent(),
+    this.relations = const Value.absent(),
+    this.tone = const Value.absent(),
+    this.lang = const Value.absent(),
+    this.festival = const Value.absent(),
+    this.body = const Value.absent(),
+    this.baseId = const Value.absent(),
+    this.favourite = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  UserMessagesCompanion.insert({
+    this.id = const Value.absent(),
+    required String occasion,
+    this.relations = const Value.absent(),
+    this.tone = const Value.absent(),
+    this.lang = const Value.absent(),
+    this.festival = const Value.absent(),
+    required String body,
+    this.baseId = const Value.absent(),
+    this.favourite = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : occasion = Value(occasion),
+       body = Value(body);
+  static Insertable<UserMessage> custom({
+    Expression<int>? id,
+    Expression<String>? occasion,
+    Expression<String>? relations,
+    Expression<String>? tone,
+    Expression<String>? lang,
+    Expression<String>? festival,
+    Expression<String>? body,
+    Expression<String>? baseId,
+    Expression<bool>? favourite,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (occasion != null) 'occasion': occasion,
+      if (relations != null) 'relations': relations,
+      if (tone != null) 'tone': tone,
+      if (lang != null) 'lang': lang,
+      if (festival != null) 'festival': festival,
+      if (body != null) 'body': body,
+      if (baseId != null) 'base_id': baseId,
+      if (favourite != null) 'favourite': favourite,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  UserMessagesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? occasion,
+    Value<String>? relations,
+    Value<String>? tone,
+    Value<String>? lang,
+    Value<String?>? festival,
+    Value<String>? body,
+    Value<String?>? baseId,
+    Value<bool>? favourite,
+    Value<DateTime>? createdAt,
+  }) {
+    return UserMessagesCompanion(
+      id: id ?? this.id,
+      occasion: occasion ?? this.occasion,
+      relations: relations ?? this.relations,
+      tone: tone ?? this.tone,
+      lang: lang ?? this.lang,
+      festival: festival ?? this.festival,
+      body: body ?? this.body,
+      baseId: baseId ?? this.baseId,
+      favourite: favourite ?? this.favourite,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (occasion.present) {
+      map['occasion'] = Variable<String>(occasion.value);
+    }
+    if (relations.present) {
+      map['relations'] = Variable<String>(relations.value);
+    }
+    if (tone.present) {
+      map['tone'] = Variable<String>(tone.value);
+    }
+    if (lang.present) {
+      map['lang'] = Variable<String>(lang.value);
+    }
+    if (festival.present) {
+      map['festival'] = Variable<String>(festival.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (baseId.present) {
+      map['base_id'] = Variable<String>(baseId.value);
+    }
+    if (favourite.present) {
+      map['favourite'] = Variable<bool>(favourite.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserMessagesCompanion(')
+          ..write('id: $id, ')
+          ..write('occasion: $occasion, ')
+          ..write('relations: $relations, ')
+          ..write('tone: $tone, ')
+          ..write('lang: $lang, ')
+          ..write('festival: $festival, ')
+          ..write('body: $body, ')
+          ..write('baseId: $baseId, ')
+          ..write('favourite: $favourite, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FavouriteMessagesTable extends FavouriteMessages
+    with TableInfo<$FavouriteMessagesTable, FavouriteMessage> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FavouriteMessagesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<String> templateId = GeneratedColumn<String>(
+    'template_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [templateId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'favourite_messages';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FavouriteMessage> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_templateIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {templateId};
+  @override
+  FavouriteMessage map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FavouriteMessage(
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_id'],
+      )!,
+    );
+  }
+
+  @override
+  $FavouriteMessagesTable createAlias(String alias) {
+    return $FavouriteMessagesTable(attachedDatabase, alias);
+  }
+}
+
+class FavouriteMessage extends DataClass
+    implements Insertable<FavouriteMessage> {
+  final String templateId;
+  const FavouriteMessage({required this.templateId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['template_id'] = Variable<String>(templateId);
+    return map;
+  }
+
+  FavouriteMessagesCompanion toCompanion(bool nullToAbsent) {
+    return FavouriteMessagesCompanion(templateId: Value(templateId));
+  }
+
+  factory FavouriteMessage.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FavouriteMessage(
+      templateId: serializer.fromJson<String>(json['templateId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'templateId': serializer.toJson<String>(templateId),
+    };
+  }
+
+  FavouriteMessage copyWith({String? templateId}) =>
+      FavouriteMessage(templateId: templateId ?? this.templateId);
+  FavouriteMessage copyWithCompanion(FavouriteMessagesCompanion data) {
+    return FavouriteMessage(
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FavouriteMessage(')
+          ..write('templateId: $templateId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => templateId.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FavouriteMessage && other.templateId == this.templateId);
+}
+
+class FavouriteMessagesCompanion extends UpdateCompanion<FavouriteMessage> {
+  final Value<String> templateId;
+  final Value<int> rowid;
+  const FavouriteMessagesCompanion({
+    this.templateId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FavouriteMessagesCompanion.insert({
+    required String templateId,
+    this.rowid = const Value.absent(),
+  }) : templateId = Value(templateId);
+  static Insertable<FavouriteMessage> custom({
+    Expression<String>? templateId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (templateId != null) 'template_id': templateId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FavouriteMessagesCompanion copyWith({
+    Value<String>? templateId,
+    Value<int>? rowid,
+  }) {
+    return FavouriteMessagesCompanion(
+      templateId: templateId ?? this.templateId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (templateId.present) {
+      map['template_id'] = Variable<String>(templateId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FavouriteMessagesCompanion(')
+          ..write('templateId: $templateId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -4562,6 +5323,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ContactNoticesTable contactNotices = $ContactNoticesTable(this);
   late final $WishLogsTable wishLogs = $WishLogsTable(this);
   late final $RemindersTable reminders = $RemindersTable(this);
+  late final $UserMessagesTable userMessages = $UserMessagesTable(this);
+  late final $FavouriteMessagesTable favouriteMessages =
+      $FavouriteMessagesTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -4575,6 +5339,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     contactNotices,
     wishLogs,
     reminders,
+    userMessages,
+    favouriteMessages,
     settings,
   ];
   @override
@@ -8145,6 +8911,452 @@ typedef $$RemindersTableProcessedTableManager =
       Reminder,
       PrefetchHooks Function({bool eventId})
     >;
+typedef $$UserMessagesTableCreateCompanionBuilder =
+    UserMessagesCompanion Function({
+      Value<int> id,
+      required String occasion,
+      Value<String> relations,
+      Value<String> tone,
+      Value<String> lang,
+      Value<String?> festival,
+      required String body,
+      Value<String?> baseId,
+      Value<bool> favourite,
+      Value<DateTime> createdAt,
+    });
+typedef $$UserMessagesTableUpdateCompanionBuilder =
+    UserMessagesCompanion Function({
+      Value<int> id,
+      Value<String> occasion,
+      Value<String> relations,
+      Value<String> tone,
+      Value<String> lang,
+      Value<String?> festival,
+      Value<String> body,
+      Value<String?> baseId,
+      Value<bool> favourite,
+      Value<DateTime> createdAt,
+    });
+
+class $$UserMessagesTableFilterComposer
+    extends Composer<_$AppDatabase, $UserMessagesTable> {
+  $$UserMessagesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occasion => $composableBuilder(
+    column: $table.occasion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relations => $composableBuilder(
+    column: $table.relations,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tone => $composableBuilder(
+    column: $table.tone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lang => $composableBuilder(
+    column: $table.lang,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get festival => $composableBuilder(
+    column: $table.festival,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get baseId => $composableBuilder(
+    column: $table.baseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get favourite => $composableBuilder(
+    column: $table.favourite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserMessagesTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserMessagesTable> {
+  $$UserMessagesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occasion => $composableBuilder(
+    column: $table.occasion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get relations => $composableBuilder(
+    column: $table.relations,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tone => $composableBuilder(
+    column: $table.tone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lang => $composableBuilder(
+    column: $table.lang,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get festival => $composableBuilder(
+    column: $table.festival,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get baseId => $composableBuilder(
+    column: $table.baseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get favourite => $composableBuilder(
+    column: $table.favourite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserMessagesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserMessagesTable> {
+  $$UserMessagesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get occasion =>
+      $composableBuilder(column: $table.occasion, builder: (column) => column);
+
+  GeneratedColumn<String> get relations =>
+      $composableBuilder(column: $table.relations, builder: (column) => column);
+
+  GeneratedColumn<String> get tone =>
+      $composableBuilder(column: $table.tone, builder: (column) => column);
+
+  GeneratedColumn<String> get lang =>
+      $composableBuilder(column: $table.lang, builder: (column) => column);
+
+  GeneratedColumn<String> get festival =>
+      $composableBuilder(column: $table.festival, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get baseId =>
+      $composableBuilder(column: $table.baseId, builder: (column) => column);
+
+  GeneratedColumn<bool> get favourite =>
+      $composableBuilder(column: $table.favourite, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$UserMessagesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserMessagesTable,
+          UserMessage,
+          $$UserMessagesTableFilterComposer,
+          $$UserMessagesTableOrderingComposer,
+          $$UserMessagesTableAnnotationComposer,
+          $$UserMessagesTableCreateCompanionBuilder,
+          $$UserMessagesTableUpdateCompanionBuilder,
+          (
+            UserMessage,
+            BaseReferences<_$AppDatabase, $UserMessagesTable, UserMessage>,
+          ),
+          UserMessage,
+          PrefetchHooks Function()
+        > {
+  $$UserMessagesTableTableManager(_$AppDatabase db, $UserMessagesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserMessagesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserMessagesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserMessagesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> occasion = const Value.absent(),
+                Value<String> relations = const Value.absent(),
+                Value<String> tone = const Value.absent(),
+                Value<String> lang = const Value.absent(),
+                Value<String?> festival = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String?> baseId = const Value.absent(),
+                Value<bool> favourite = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => UserMessagesCompanion(
+                id: id,
+                occasion: occasion,
+                relations: relations,
+                tone: tone,
+                lang: lang,
+                festival: festival,
+                body: body,
+                baseId: baseId,
+                favourite: favourite,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String occasion,
+                Value<String> relations = const Value.absent(),
+                Value<String> tone = const Value.absent(),
+                Value<String> lang = const Value.absent(),
+                Value<String?> festival = const Value.absent(),
+                required String body,
+                Value<String?> baseId = const Value.absent(),
+                Value<bool> favourite = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => UserMessagesCompanion.insert(
+                id: id,
+                occasion: occasion,
+                relations: relations,
+                tone: tone,
+                lang: lang,
+                festival: festival,
+                body: body,
+                baseId: baseId,
+                favourite: favourite,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$UserMessagesTable, UserMessage>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $UserMessagesTable,
+                    UserMessage
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserMessagesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserMessagesTable,
+      UserMessage,
+      $$UserMessagesTableFilterComposer,
+      $$UserMessagesTableOrderingComposer,
+      $$UserMessagesTableAnnotationComposer,
+      $$UserMessagesTableCreateCompanionBuilder,
+      $$UserMessagesTableUpdateCompanionBuilder,
+      (
+        UserMessage,
+        BaseReferences<_$AppDatabase, $UserMessagesTable, UserMessage>,
+      ),
+      UserMessage,
+      PrefetchHooks Function()
+    >;
+typedef $$FavouriteMessagesTableCreateCompanionBuilder =
+    FavouriteMessagesCompanion Function({
+      required String templateId,
+      Value<int> rowid,
+    });
+typedef $$FavouriteMessagesTableUpdateCompanionBuilder =
+    FavouriteMessagesCompanion Function({
+      Value<String> templateId,
+      Value<int> rowid,
+    });
+
+class $$FavouriteMessagesTableFilterComposer
+    extends Composer<_$AppDatabase, $FavouriteMessagesTable> {
+  $$FavouriteMessagesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FavouriteMessagesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FavouriteMessagesTable> {
+  $$FavouriteMessagesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FavouriteMessagesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FavouriteMessagesTable> {
+  $$FavouriteMessagesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => column,
+  );
+}
+
+class $$FavouriteMessagesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FavouriteMessagesTable,
+          FavouriteMessage,
+          $$FavouriteMessagesTableFilterComposer,
+          $$FavouriteMessagesTableOrderingComposer,
+          $$FavouriteMessagesTableAnnotationComposer,
+          $$FavouriteMessagesTableCreateCompanionBuilder,
+          $$FavouriteMessagesTableUpdateCompanionBuilder,
+          (
+            FavouriteMessage,
+            BaseReferences<
+              _$AppDatabase,
+              $FavouriteMessagesTable,
+              FavouriteMessage
+            >,
+          ),
+          FavouriteMessage,
+          PrefetchHooks Function()
+        > {
+  $$FavouriteMessagesTableTableManager(
+    _$AppDatabase db,
+    $FavouriteMessagesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FavouriteMessagesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FavouriteMessagesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FavouriteMessagesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> templateId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FavouriteMessagesCompanion(
+                templateId: templateId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String templateId,
+                Value<int> rowid = const Value.absent(),
+              }) => FavouriteMessagesCompanion.insert(
+                templateId: templateId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FavouriteMessagesTable, FavouriteMessage>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FavouriteMessagesTable,
+                    FavouriteMessage
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FavouriteMessagesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FavouriteMessagesTable,
+      FavouriteMessage,
+      $$FavouriteMessagesTableFilterComposer,
+      $$FavouriteMessagesTableOrderingComposer,
+      $$FavouriteMessagesTableAnnotationComposer,
+      $$FavouriteMessagesTableCreateCompanionBuilder,
+      $$FavouriteMessagesTableUpdateCompanionBuilder,
+      (
+        FavouriteMessage,
+        BaseReferences<
+          _$AppDatabase,
+          $FavouriteMessagesTable,
+          FavouriteMessage
+        >,
+      ),
+      FavouriteMessage,
+      PrefetchHooks Function()
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -8297,6 +9509,10 @@ class $AppDatabaseManager {
       $$WishLogsTableTableManager(_db, _db.wishLogs);
   $$RemindersTableTableManager get reminders =>
       $$RemindersTableTableManager(_db, _db.reminders);
+  $$UserMessagesTableTableManager get userMessages =>
+      $$UserMessagesTableTableManager(_db, _db.userMessages);
+  $$FavouriteMessagesTableTableManager get favouriteMessages =>
+      $$FavouriteMessagesTableTableManager(_db, _db.favouriteMessages);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
 }

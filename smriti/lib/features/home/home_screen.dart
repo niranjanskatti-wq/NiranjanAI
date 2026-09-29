@@ -152,6 +152,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                         ),
                       )
                     else ...[
+                      if (todays.any((u) => u.entry.isMine && u.entry.type == EventType.birthday))
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                            child: _NoticeCard(
+                              message: "It's your birthday! 🎉 Tap for ready thank-you replies to everyone who wished you.",
+                              onOpen: () => context.push('/thank-you'),
+                              onDismiss: () {},
+                            ),
+                          ),
+                        ),
                       if (todays.length > 1)
                         SliverToBoxAdapter(child: _TodayBanner(items: todays)),
                       if (hero != null)

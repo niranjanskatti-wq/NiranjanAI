@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +11,7 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../messages/message_engine.dart';
+import '../messages/message_store.dart';
 import 'wish_service.dart';
 
 /// Preferred message language, remembered in settings.
@@ -117,6 +120,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
 
   Future<void> _loadSuggestions({bool keepText = false}) async {
     final lib = await MessageLibrary.load();
+    final prefs = await MessagePrefs.load(ref.read(databaseProvider));
     final repo = ref.read(repoProvider);
     final me = await repo.getMe();
     final logs = _to == null ? const <WishLog>[] : await repo.wishLogsFor(_to!.id);
@@ -127,6 +131,9 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
       ctx: ctx,
       alreadySent: sentKeys(logs),
       festivalId: t.festivalId,
+      extra: prefs.extra,
+      hidden: prefs.hidden,
+      favourites: prefs.favourites,
     );
     if (!mounted) return;
     setState(() {
@@ -148,6 +155,21 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
       _index = (_index + 1) % _suggestions.length;
       _templateId = _suggestions[_index].id;
       _text = _ctx(me).fill(_suggestions[_index].text);
+    });
+  }
+
+  /// A fitting message picked at random from the best unsent ones.
+  Future<void> _surprise() async {
+    if (_suggestions.isEmpty) return;
+    final me = await ref.read(repoProvider).getMe();
+    final pool = min(6, _suggestions.length);
+    var i = Random().nextInt(pool);
+    if (pool > 1 && i == _index) i = (i + 1) % pool;
+    setState(() {
+      _fromDraft = false;
+      _index = i;
+      _templateId = _suggestions[i].id;
+      _text = _ctx(me).fill(_suggestions[i].text);
     });
   }
 
@@ -354,9 +376,14 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
                 TextButton.icon(
                   onPressed: _suggestions.length > 1 ? _next : null,
                   icon: const Icon(Icons.refresh_rounded, size: 18),
-                  label: const Text('Change message'),
+                  label: const Text('Change'),
                 ),
                 TextButton.icon(onPressed: _edit, icon: const Icon(Icons.edit_outlined, size: 18), label: const Text('Edit')),
+                IconButton(
+                  tooltip: 'Surprise me',
+                  onPressed: _suggestions.length > 1 ? _surprise : null,
+                  icon: Icon(Icons.auto_awesome, color: c.goldText),
+                ),
                 const Spacer(),
                 PopupMenuButton<Lang>(
                   tooltip: 'Language',
@@ -366,7 +393,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
                   child: Padding(
                     padding: const EdgeInsets.all(8),
                     child: Row(children: [
-                      Text(_lang.label, style: context.text.titleSmall?.copyWith(color: c.muted)),
+                      Text(_lang.short, style: context.text.titleSmall?.copyWith(color: c.muted)),
                       Icon(Icons.arrow_drop_down_rounded, color: c.muted),
                     ]),
                   ),

@@ -78,7 +78,7 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
-              'Message library · '
+              ''
               'Festivals & Wish Mode · Excel export and backup · Widget and app lock',
               style: context.text.bodySmall,
             ),

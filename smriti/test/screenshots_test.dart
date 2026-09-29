@@ -126,5 +126,6 @@ void main() {
   testWidgets('profile', (t) async => shoot(t, await seed(theme: 'light'), 'profile_light', route: '/person/2'));
   testWidgets('event', (t) async => shoot(t, await seed(), 'event_dark', route: '/event/3'));
   testWidgets('share sheet', (t) async => shoot(t, await seed(), 'share_dark', tap: 'Share'));
+  testWidgets('messages', (t) async => shoot(t, await seed(theme: 'light'), 'messages_light', route: '/messages'));
   testWidgets('calendar', (t) async => shoot(t, await seed(), 'calendar_dark', route: '/calendar'));
 }

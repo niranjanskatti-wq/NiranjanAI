@@ -5,7 +5,7 @@ Design review: `docs/design-review.html` · Screenshots: `test/screenshots/`
 
 ## Current status
 Building all phases in a row (your choice), testing everything on the phone at the end.
-**Phase 3 · Reminders & alarms** — built.
+**Phase 4 · Message library** — built.
 
 ## Done
 ### Phase 0 · Design (approved)
@@ -78,8 +78,26 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Bell icon on events with reminders · banner on Home if notifications are turned off
 - 49 automatic tests (includes 11 for alarm timing, time zones, belated nudge, monthly summary, limits)
 
+### Phase 4 · Message library
+- 655 messages: 352 English, 151 Hindi, 152 Kannada, in `assets/messages/en.json`, `hi.json`, `kn.json`
+  (editable). Organised by occasion (birthday, milestone birthday, anniversary, couple anniversary,
+  work anniversary, engagement, congratulations, belated, festival, thank you, general), relationship
+  family, tone (emotional, funny, short & sweet, formal, poetic, blessing) and language
+- At least 15 birthday messages for every relationship family and 10+ for every festival that is on
+  by default. Hindi and Kannada written in everyday texting style, gender-neutral where the sender
+  or receiver could be anyone
+- Messages tab: filter by occasion, relationship, tone, favourites, my messages; search; copy;
+  favourite; edit (your edited copy replaces the original everywhere); "Write my own" with
+  tap-to-insert placeholders and a live preview
+- Prepared message per event (event page): pick from suggestions, "Surprise me", edit, save —
+  Share uses it automatically on the day
+- "Surprise me" in the Share sheet: a fitting message not yet sent to that person
+- Your birthday: a banner on Home opens ready thank-you replies in English, Hindi or Kannada to send
+  by WhatsApp, SMS or Copy
+- 55 automatic tests (message coverage per relationship, occasion, language and festival)
+
 ## Pending
-- Phase 4: Messages · Phase 5: Festivals & Wish Mode
+- Phase 5: Festivals & Wish Mode
 - Phase 6: Excel, backup, cards, photo memories · Phase 7: Widget, gifts planner, groups, lock
 - Phase 8: Polish and full phone test
 - Festivals screen (Phase 5): edit any date, switch festivals on/off, add your own, reset an edit
