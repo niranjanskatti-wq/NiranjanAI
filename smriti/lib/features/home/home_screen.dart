@@ -13,6 +13,7 @@ import '../../widgets/add_sheet.dart';
 import '../../widgets/common.dart';
 import '../../widgets/countdown.dart';
 import '../../widgets/event_row.dart';
+import '../reminders/notification_service.dart';
 import '../wish/wish_buttons.dart';
 
 enum TimeFilter { today, week, month, all }
@@ -26,7 +27,26 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObserver {
+  bool _notifOff = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _checkNotif();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState s) {
+    if (s == AppLifecycleState.resumed) _checkNotif();
+  }
+
+  Future<void> _checkNotif() async {
+    final on = await NotificationService.notificationsEnabled();
+    if (mounted && on == _notifOff) setState(() => _notifOff = !on);
+  }
+
   TimeFilter _time = TimeFilter.all;
   KindFilter _kind = KindFilter.all;
   final _confetti = ConfettiController(duration: const Duration(seconds: 2));
@@ -34,6 +54,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _confetti.dispose();
     super.dispose();
   }
@@ -88,6 +109,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 return CustomScrollView(
                   slivers: [
                     SliverToBoxAdapter(child: _Header(name: me?.shortName)),
+                    if (_notifOff && items.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                          child: _NoticeCard(
+                            message: 'Reminders are off. Tap to turn on notifications so you never miss a day.',
+                            onOpen: () async {
+                              await NotificationService.requestNotifications();
+                              _checkNotif();
+                            },
+                            onDismiss: () => setState(() => _notifOff = false),
+                          ),
+                        ),
+                      ),
                     for (final n in notices)
                       SliverToBoxAdapter(
                         child: Padding(

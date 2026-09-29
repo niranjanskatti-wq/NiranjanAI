@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Keep notification sounds and icons when the release build shrinks resources. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/*,@drawable/ic_stat_smriti,@mipmap/ic_launcher" />

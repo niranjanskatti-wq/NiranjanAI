@@ -116,6 +116,22 @@ class ContactNotices extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
+/// One reminder switched on for an event.
+class Reminders extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get eventId => integer().references(Events, #id, onDelete: KeyAction.cascade)();
+
+  /// midnight, morning, custom, daysBefore, gift.
+  TextColumn get kind => text()();
+
+  /// 0 = on the day.
+  IntColumn get daysBefore => integer().withDefault(const Constant(0))();
+
+  /// Time of day in minutes after midnight (480 = 8:00 AM).
+  IntColumn get minuteOfDay => integer().withDefault(const Constant(480))();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+}
+
 /// Every call or share, and whether the event was marked as wished.
 class WishLogs extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -148,12 +164,12 @@ class Settings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Settings])
+@DriftDatabase(tables: [People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, Settings])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -162,6 +178,16 @@ class AppDatabase extends _$AppDatabase {
           if (from < 2) {
             await m.addColumn(people, people.whatsappApp);
             await m.createTable(wishLogs);
+          }
+          if (from < 3) {
+            await m.createTable(reminders);
+            // Events made before reminders existed get the default morning reminder.
+            await customStatement(
+                "INSERT INTO reminders (event_id, kind, days_before, minute_of_day, enabled) "
+                "SELECT id, 'morning', 0, 480, 1 FROM events WHERE kind != 'other'");
+            await customStatement(
+                "INSERT INTO reminders (event_id, kind, days_before, minute_of_day, enabled) "
+                "SELECT id, 'daysBefore', d, 540, 1 FROM events, (SELECT 7 AS d UNION SELECT 1) WHERE kind = 'other'");
           }
         },
         beforeOpen: (details) async {

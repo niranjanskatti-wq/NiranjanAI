@@ -12,6 +12,11 @@ import 'features/contacts/import_birthdays_screen.dart';
 import 'features/events/event_detail_screen.dart';
 import 'features/events/event_form_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/reminders/alarm_scheduler.dart';
+import 'features/reminders/alarm_screen.dart';
+import 'features/reminders/notification_service.dart';
+import 'features/reminders/reliability_screen.dart';
+import 'features/reminders/reminders_screen.dart';
 import 'features/wish/not_wished_screen.dart';
 import 'features/wish/wish_buttons.dart';
 import 'features/onboarding/welcome_screen.dart';
@@ -71,8 +76,25 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         ),
         GoRoute(
           path: '/event/:id',
-          builder: (_, state) => EventDetailScreen(id: int.parse(state.pathParameters['id']!)),
+          builder: (_, state) => EventDetailScreen(
+            id: int.parse(state.pathParameters['id']!),
+            action: state.uri.queryParameters['action'],
+            date: state.uri.queryParameters['date'],
+          ),
         ),
+        GoRoute(
+          path: '/event/:id/reminders',
+          builder: (_, state) => RemindersScreen(eventId: int.parse(state.pathParameters['id']!)),
+        ),
+        GoRoute(
+          path: '/alarm',
+          builder: (_, state) => AlarmScreen(
+            eventId: int.tryParse(state.uri.queryParameters['event'] ?? ''),
+            date: state.uri.queryParameters['date'],
+            payload: state.extra as Map<String, dynamic>?,
+          ),
+        ),
+        GoRoute(path: '/reliability', builder: (_, _) => const ReliabilityScreen()),
         GoRoute(
           path: '/event/:id/edit',
           builder: (_, state) => EventFormScreen(id: int.parse(state.pathParameters['id']!)),
@@ -95,11 +117,13 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
+    NotificationService.taps.addListener(_onTap);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    NotificationService.taps.removeListener(_onTap);
     super.dispose();
   }
 
@@ -108,8 +132,36 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     if (state == AppLifecycleState.resumed) _sync();
   }
 
-  /// Keeps linked people's numbers in step with the phone's contacts.
-  void _sync() => ContactSync(ref.read(repoProvider)).run();
+  /// Keeps contacts and scheduled alarms in step with the data.
+  void _sync() {
+    ContactSync(ref.read(repoProvider)).run();
+    AlarmScheduler.syncSoon(ref.read(databaseProvider));
+  }
+
+  /// Opens the right screen for a tapped notification or its button.
+  void _onTap() {
+    final t = NotificationService.taps.value;
+    final router = _router;
+    if (t == null || router == null) return;
+    NotificationService.taps.value = null;
+    final id = t.eventId;
+    final date = t.date == null ? '' : '&date=${t.date}';
+    if (t.action == 'call' && id != null) {
+      router.push('/event/$id?action=call$date');
+    } else if (t.action == 'wish' && id != null) {
+      router.push('/event/$id?action=${t.kind == 'bel' ? 'belated' : 'wish'}$date');
+    } else if (t.kind == 'mid') {
+      router.push('/alarm?${id == null ? '' : 'event=$id'}$date', extra: t.data);
+    } else if (t.kind == 'bel' && id != null) {
+      router.push('/event/$id?action=belated$date');
+    } else if (t.kind == 'month') {
+      router.go('/calendar');
+    } else if (t.kind == 'fest') {
+      router.push('/festivals');
+    } else if (id != null) {
+      router.push('/event/$id');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +176,14 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
         home: const Scaffold(body: SizedBox.shrink()),
       );
     }
-    _router ??= buildRouter(onboarded.requireValue);
+    if (_router == null) {
+      _router = buildRouter(onboarded.requireValue);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _onTap());
+    }
+    // Any change to events, reminders or wishes reschedules the alarms.
+    ref.listen(entriesProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
+    ref.listen(allRemindersProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
+    ref.listen(wishedKeysProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',
       debugShowCheckedModeBanner: false,

@@ -6,6 +6,7 @@ import '../../core/theme/tokens.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../contacts/contact_sync.dart';
+import '../reminders/reminder_settings.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -57,6 +58,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
+          const ReminderSettingsSection(),
+          const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Contacts')),
           tile(Icons.group_add_outlined, 'Add many from contacts', 'Tick several people, then add their dates',
               () => context.push('/import/contacts')),
@@ -75,7 +78,7 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
-              'Call & Share · Reminders and the midnight alarm · Message library · '
+              'Message library · '
               'Festivals & Wish Mode · Excel export and backup · Widget and app lock',
               style: context.text.bodySmall,
             ),

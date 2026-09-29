@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../features/reminders/reminder_model.dart';
 import 'database.dart';
 import 'enums.dart';
 import 'models.dart';
@@ -84,9 +85,17 @@ class Repository {
   }
 
   /// Creates or updates an event and sets its people (primary first).
+  /// New events get the default reminders from Settings.
   Future<int> saveEvent({int? id, required EventsCompanion data, required List<int> personIds}) =>
       db.transaction(() async {
         final eventId = id ?? await db.into(db.events).insert(data);
+        if (id == null) {
+          final other = data.kind.present && data.kind.value == EventKind.other.name;
+          final specs = other
+              ? decodeSpecs(await db.getSetting('defaultOtherReminders'), defaultOtherReminders)
+              : decodeSpecs(await db.getSetting('defaultPersonReminders'), defaultPersonReminders);
+          await _writeReminders(eventId, specs);
+        }
         if (id != null) {
           await (db.update(db.events)..where((e) => e.id.equals(id))).write(data);
         }
@@ -112,6 +121,46 @@ class Repository {
           db.events.day.equals(day));
     return (await q.get()).isNotEmpty;
   }
+
+  // ---------- reminders ----------
+  Stream<List<Reminder>> watchReminders(int eventId) =>
+      (db.select(db.reminders)..where((r) => r.eventId.equals(eventId))).watch();
+
+  Stream<List<Reminder>> watchAllReminders() => db.select(db.reminders).watch();
+
+  Future<List<Reminder>> allReminders() => db.select(db.reminders).get();
+
+  Future<List<ReminderSpec>> remindersFor(int eventId) async =>
+      (await (db.select(db.reminders)..where((r) => r.eventId.equals(eventId))).get())
+          .map(ReminderSpec.fromRow)
+          .toList();
+
+  Future<void> _writeReminders(int eventId, List<ReminderSpec> specs) async {
+    await (db.delete(db.reminders)..where((r) => r.eventId.equals(eventId))).go();
+    for (final s in specs) {
+      await db.into(db.reminders).insert(RemindersCompanion.insert(
+            eventId: eventId,
+            kind: s.kind.name,
+            daysBefore: Value(s.daysBefore),
+            minuteOfDay: Value(s.minute),
+            enabled: Value(s.enabled),
+          ));
+    }
+  }
+
+  Future<void> setReminders(int eventId, List<ReminderSpec> specs) =>
+      db.transaction(() => _writeReminders(eventId, specs));
+
+  /// Copies [specs] to many events at once ("Apply these reminders to…").
+  Future<void> setRemindersForMany(Iterable<int> eventIds, List<ReminderSpec> specs) =>
+      db.transaction(() async {
+        for (final id in eventIds) {
+          await _writeReminders(id, specs);
+        }
+      });
+
+  Future<void> updateEvent(int id, EventsCompanion data) =>
+      (db.update(db.events)..where((e) => e.id.equals(id))).write(data);
 
   // ---------- gift ideas ----------
   Stream<List<GiftIdea>> watchGifts(int personId) => (db.select(db.giftIdeas)

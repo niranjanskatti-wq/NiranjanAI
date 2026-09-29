@@ -5,7 +5,7 @@ Design review: `docs/design-review.html` · Screenshots: `test/screenshots/`
 
 ## Current status
 Building all phases in a row (your choice), testing everything on the phone at the end.
-**Phase 2 · Call, Share, Send wishes to, wish history** — built.
+**Phase 3 · Reminders & alarms** — built.
 
 ## Done
 ### Phase 0 · Design (approved)
@@ -55,14 +55,36 @@ Building all phases in a row (your choice), testing everything on the phone at t
   {years_th} {couple_names} {festival} {my_name}; avoids repeating messages already sent
 - Starter English messages (full library comes in Phase 4) · 39 automatic tests
 
+### Phase 3 · Reminders & alarms
+- Reminders page per event (one page, simple switches and times): midnight alarm, morning
+  reminder, another time on the day, any number of days-before reminders (each with its own time),
+  gift reminder, belated nudge, sound. Shortcuts: "Apply these reminders to…" (everyone or chosen
+  people with the same kind of event) and "Copy reminders from another person"
+- Midnight alarm: full screen even on the lock screen at 11:59:50 PM with a 10-second tick-tock and
+  a chime at 12:00, confetti, big Call and Send wish, Snooze 10 min / 1 hour / morning, Dismiss.
+  The app only shows over the lock screen for the alarm itself.
+- Time zones: "My midnight" or "their midnight" for people abroad (daylight saving handled)
+- Original sounds (made for Smriti, royalty-free): tick-tock, soft bell, temple bell, chime,
+  birthday tune, vibration only — with a preview
+- Notification buttons: Call and Send Wish (open the app straight into the call or share sheet),
+  Snooze on the midnight alarm
+- Belated nudge the next morning when an event wasn't marked as wished
+- Monthly summary on the 1st at 9 AM listing that month's dates; tap opens the calendar
+- Defaults for new events in Settings (morning reminder for people; 7 and 1 days before for
+  important dates) · morning time setting · monthly summary switch · test alarm in 1 minute
+- Reliability: exact alarms, reschedule after restart and app updates, background refresh twice a
+  day, up to 450 alarms kept scheduled a year ahead · "Make alarms reliable" guide with steps for
+  Xiaomi, Samsung, Vivo, Oppo, Realme, OnePlus, Motorola, Pixel, Honor and Huawei
+- Bell icon on events with reminders · banner on Home if notifications are turned off
+- 49 automatic tests (includes 11 for alarm timing, time zones, belated nudge, monthly summary, limits)
+
 ## Pending
-- Phase 3: Reminders and alarms · Phase 4: Messages · Phase 5: Festivals & Wish Mode
+- Phase 4: Messages · Phase 5: Festivals & Wish Mode
 - Phase 6: Excel, backup, cards, photo memories · Phase 7: Widget, gifts planner, groups, lock
 - Phase 8: Polish and full phone test
 - Festivals screen (Phase 5): edit any date, switch festivals on/off, add your own, reset an edit
 
 ## Known issues
-- Call and Share buttons are not in this build yet (Phase 2); the hero card says so.
 - The two signing secrets must be added on GitHub before the build you keep using. A build made
   without them uses a temporary key, and switching keys later means uninstalling the app once.
 - Mahalakshmi calendar websites were blocked from the build computer; festival dates were verified

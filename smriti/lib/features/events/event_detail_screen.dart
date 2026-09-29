@@ -10,15 +10,50 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../../widgets/countdown.dart';
+import '../reminders/reminder_model.dart';
+import '../reminders/reminders_screen.dart';
+import '../wish/share_sheet.dart';
 import '../wish/wish_buttons.dart';
+import '../wish/wish_service.dart';
 
-class EventDetailScreen extends ConsumerWidget {
-  const EventDetailScreen({super.key, required this.id});
+class EventDetailScreen extends ConsumerStatefulWidget {
+  const EventDetailScreen({super.key, required this.id, this.action, this.date});
 
   final int id;
 
+  /// From a notification button: call, wish or belated.
+  final String? action;
+  final String? date;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
+  bool _actionDone = false;
+
+  int get id => widget.id;
+
+  void _runAction(EventEntry e, Day fallback) {
+    if (_actionDone || widget.action == null || !canWish(e)) return;
+    _actionDone = true;
+    final parts = widget.date?.split('-');
+    final day = parts != null && parts.length == 3
+        ? Day(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]))
+        : fallback;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final t = await targetFor(ref, e, day, belated: widget.action == 'belated');
+      if (!mounted) return;
+      if (widget.action == 'call') {
+        await callTarget(context, ref, t);
+      } else {
+        await showShareSheet(context, ref, t);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final c = context.c;
     final entry = ref.watch(entryProvider(id));
     final today = ref.watch(todayProvider).value ?? Day.today();
@@ -28,6 +63,7 @@ class EventDetailScreen extends ConsumerWidget {
       data: (e) {
         if (e == null) return Scaffold(appBar: AppBar(), body: const Center(child: Text('This event was deleted.')));
         final next = e.nextFrom(today);
+        _runAction(e, next ?? today);
         final item = next == null ? null : Upcoming(e, next, today.daysUntil(next));
         final ev = e.event;
         return Scaffold(
@@ -103,6 +139,16 @@ class EventDetailScreen extends ConsumerWidget {
                       ]),
                     ),
                   ),
+                const SizedBox(height: 12),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.notifications_active_outlined, color: c.goldText),
+                    title: const Text('Reminders'),
+                    subtitle: Text(describeSpecs(ref.watch(remindersForProvider(id)).value ?? const [])),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.push('/event/$id/reminders'),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 InfoCard(title: 'Details', children: [
                   _kv(context, 'Date', fmtEventDate(day: ev.day, month: ev.month, year: ev.year, monthly: e.repeat == Repeat.monthly)),

@@ -145,11 +145,16 @@ void main() {
     final file = File('${dir.path}/db.sqlite');
     // Make a current database, then turn it back into the Phase 1 (v1) shape.
     var db = AppDatabase(NativeDatabase(file));
-    await Repository(db).insertPerson(PeopleCompanion.insert(name: 'Old friend'));
+    final pid = await Repository(db).insertPerson(PeopleCompanion.insert(name: 'Old friend'));
+    await Repository(db).saveEvent(
+        data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: 5, month: 5), personIds: [pid]);
+    await Repository(db)
+        .saveEvent(data: EventsCompanion.insert(kind: 'other', type: 'rent', day: 1, month: 1), personIds: []);
     await db.close();
     final r = raw.sqlite3.open(file.path);
     r.execute('ALTER TABLE people DROP COLUMN whatsapp_app');
     r.execute('DROP TABLE wish_logs');
+    r.execute('DROP TABLE reminders');
     r.execute('PRAGMA user_version = 1');
     r.close();
 
@@ -159,6 +164,10 @@ void main() {
     expect(people.single.whatsappApp, 'auto');
     await Repository(db).logWish(personId: people.single.id, method: 'call');
     expect((await db.select(db.wishLogs).get()).length, 1);
+    // Old events get default reminders: morning for people, 7 and 1 days before for others.
+    final rem = await db.select(db.reminders).get();
+    expect(rem.where((r) => r.kind == 'morning').length, 1);
+    expect(rem.where((r) => r.kind == 'daysBefore').map((r) => r.daysBefore).toSet(), {1, 7});
     await db.close();
     await dir.delete(recursive: true);
   });

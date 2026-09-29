@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/theme/tokens.dart';
 import '../core/util/format.dart';
 import '../data/enums.dart';
 import '../data/models.dart';
+import '../features/reminders/reminders_screen.dart';
 import '../features/wish/wish_buttons.dart';
 import 'common.dart';
 
 /// One line in the upcoming list: avatar, name, what and when, stars, days left.
-class UpcomingRow extends StatelessWidget {
+class UpcomingRow extends ConsumerWidget {
   const UpcomingRow({super.key, required this.item, this.belated = false});
 
   final Upcoming item;
   final bool belated;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final e = item.entry;
+    final bell = (ref.watch(allRemindersProvider).value?[e.event.id] ?? const []).any((s) => s.enabled);
     final sub = [
       if (e.kind != EventKind.other) e.relationLine,
       e.typeLabel,
@@ -50,6 +53,7 @@ class UpcomingRow extends StatelessWidget {
                             style: context.text.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
                       ),
                       if (item.milestone) ...[const SizedBox(width: 6), Icon(Icons.auto_awesome, size: 14, color: c.gold)],
+                      if (bell) ...[const SizedBox(width: 6), Icon(Icons.notifications_none_rounded, size: 14, color: c.muted)],
                     ]),
                     const SizedBox(height: 2),
                     Text(sub, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
