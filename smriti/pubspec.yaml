@@ -103,3 +103,8 @@ flutter:
         - asset: assets/fonts/NotoSansKannada-600.ttf
           weight: 600
 
+
+# permission_handler_android 14.x needs Android compile SDK 37, which this
+# Flutter release's Android build tools don't support yet. Stay on 13.x.
+dependency_overrides:
+  permission_handler_android: 13.0.1
