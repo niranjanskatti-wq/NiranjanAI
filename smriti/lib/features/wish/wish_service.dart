@@ -86,9 +86,12 @@ extension on WhatsappApp {
 
 /// Talks to the phone: dialler, WhatsApp, SMS, clipboard, share menu.
 class WishService {
-  WishService(this.ref);
+  /// In Wish Mode ([wishMode]) every send counts as wished straight away and
+  /// no "Mark as wished?" chip is shown.
+  WishService(this.ref, {this.wishMode = false});
 
   final WidgetRef ref;
+  final bool wishMode;
 
   static String _digits(String n) => n.replaceAll(RegExp(r'\D'), '');
 
@@ -101,7 +104,9 @@ class WishService {
           method: method,
           message: message,
           templateId: templateId,
+          confirmed: wishMode,
         );
+    if (wishMode) return;
     ref.read(pendingWishProvider.notifier).set(PendingWish(
           label: t.entry?.title ?? to?.shortName ?? '',
           eventId: t.entry?.event.id,

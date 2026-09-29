@@ -158,6 +158,61 @@ class FavouriteMessages extends Table {
   Set<Column> get primaryKey => {templateId};
 }
 
+/// Your changes to a built-in festival (assets/festivals/festivals.json).
+class FestivalOverrides extends Table {
+  TextColumn get festivalId => text()();
+  BoolColumn get enabled => boolean().nullable()();
+  TextColumn get name => text().nullable()();
+
+  /// JSON map of year → "yyyy-mm-dd" for dates you corrected.
+  TextColumn get dates => text().nullable()();
+
+  /// Comma-separated relations to suggest in Wish Mode.
+  TextColumn get suggest => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {festivalId};
+}
+
+/// Festivals and special days you added yourself.
+class CustomFestivals extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+
+  /// Same date every year (month/day), or specific dates in [dates].
+  IntColumn get month => integer().nullable()();
+  IntColumn get day => integer().nullable()();
+  TextColumn get dates => text().nullable()();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+  TextColumn get suggest => text().withDefault(const Constant(''))();
+}
+
+/// A Wish Mode run that can be paused and continued.
+class WishSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+
+  /// Festival key ("b:diwali_lakshmi_puja" / "c:3"), or null for "Today".
+  TextColumn get festivalId => text().nullable()();
+  TextColumn get occasionDate => text()();
+  BoolColumn get finished => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+class WishSessionItems extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get sessionId => integer().references(WishSessions, #id, onDelete: KeyAction.cascade)();
+  IntColumn get personId => integer().references(People, #id, onDelete: KeyAction.cascade)();
+
+  /// For "Today" sessions: the event being wished.
+  IntColumn get eventId => integer().nullable()();
+  IntColumn get position => integer()();
+
+  /// pending, wished, skipped.
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  TextColumn get message => text().nullable()();
+}
+
 /// Every call or share, and whether the event was marked as wished.
 class WishLogs extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -190,12 +245,15 @@ class Settings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages, Settings])
+@DriftDatabase(tables: [
+  People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages,
+  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, Settings,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -218,6 +276,12 @@ class AppDatabase extends _$AppDatabase {
           if (from < 4) {
             await m.createTable(userMessages);
             await m.createTable(favouriteMessages);
+          }
+          if (from < 5) {
+            await m.createTable(festivalOverrides);
+            await m.createTable(customFestivals);
+            await m.createTable(wishSessions);
+            await m.createTable(wishSessionItems);
           }
         },
         beforeOpen: (details) async {

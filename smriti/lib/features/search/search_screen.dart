@@ -8,6 +8,7 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../../widgets/event_row.dart';
+import '../festivals/festival_model.dart';
 
 /// Search people by name, nickname or relationship, and events by title or type.
 class SearchScreen extends ConsumerStatefulWidget {
@@ -23,7 +24,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final people = ref.watch(peopleProvider).value ?? const [];
-    final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
+    final entries = ref.watch(allEntriesProvider);
     final today = ref.watch(todayProvider).value ?? Day.today();
     final q = _q.toLowerCase();
 

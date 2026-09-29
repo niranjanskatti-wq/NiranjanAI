@@ -19,6 +19,7 @@ class PlannedAlarm {
     required this.sound,
     this.eventId,
     this.date,
+    this.festivalKey,
     this.fullScreen = false,
     this.wishActions = false,
   });
@@ -32,6 +33,7 @@ class PlannedAlarm {
   final AlarmSound sound;
   final int? eventId;
   final Day? date;
+  final String? festivalKey;
   final bool fullScreen, wishActions;
 
   /// Everything needed to rebuild the notification later (snooze, tap).
@@ -39,6 +41,7 @@ class PlannedAlarm {
         'k': kind,
         'e': ?eventId,
         'd': ?date?.toString(),
+        'fk': ?festivalKey,
         't': title,
         'b': body,
         's': sound.name,
@@ -106,7 +109,7 @@ List<PlannedAlarm> planAlarms(
     final specs = (input.reminders[e.event.id] ?? const []).where((s) => s.enabled).toList();
     final sound = AlarmSound.parse(e.event.sound);
     final person = e.people.where((p) => !p.isMe).firstOrNull;
-    final wishable = e.kind != EventKind.other && !e.isMine && e.people.isNotEmpty;
+    final wishable = (e.kind == EventKind.person || e.kind == EventKind.couple) && !e.isMine && e.people.isNotEmpty;
 
     // Every occurrence in the window (monthly events have several).
     var from = today.addDays(-1);

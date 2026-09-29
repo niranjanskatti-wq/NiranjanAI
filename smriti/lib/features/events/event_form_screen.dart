@@ -77,7 +77,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       _type = switch (_kind) {
         EventKind.person => EventType.parse(widget.initialType ?? EventType.birthday.name),
         EventKind.couple => EventType.weddingAnniversary,
-        EventKind.other => EventType.insurance,
+        EventKind.other || EventKind.festival => EventType.insurance,
       };
       if (_kind == EventKind.other) {
         _stars = 3;
@@ -100,7 +100,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   List<EventType> get _types => switch (_kind) {
         EventKind.person => EventType.personTypes,
         EventKind.couple => EventType.coupleTypes,
-        EventKind.other => EventType.otherTypes,
+        EventKind.other || EventKind.festival => EventType.otherTypes,
       };
 
   Future<void> _pickSendTo() async {
@@ -168,7 +168,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     final ids = switch (_kind) {
       EventKind.person => [_people[0]!.id],
       EventKind.couple => [_people[0]!.id, _people[1]!.id],
-      EventKind.other => <int>[],
+      EventKind.other || EventKind.festival => <int>[],
     };
     final id = await ref.read(repoProvider).saveEvent(id: widget.id, data: data, personIds: ids);
     HapticFeedback.lightImpact();
@@ -196,7 +196,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     final heading = switch (_kind) {
       EventKind.person => _isEdit ? 'Edit event' : 'Add event',
       EventKind.couple => _isEdit ? 'Edit couple event' : 'Couple event',
-      EventKind.other => _isEdit ? 'Edit important date' : 'Important date',
+      EventKind.other || EventKind.festival => _isEdit ? 'Edit important date' : 'Important date',
     };
     final isFeb29 = _date?.day == 29 && _date?.month == 2;
 

@@ -19,7 +19,8 @@ Future<void> _act(BuildContext context, WidgetRef ref, Future<WishTarget> Functi
 }
 
 /// Whether Call and Share make sense for this event.
-bool canWish(EventEntry e) => e.kind != EventKind.other && !e.isMine && e.people.isNotEmpty;
+bool canWish(EventEntry e) =>
+    (e.kind == EventKind.person || e.kind == EventKind.couple) && !e.isMine && e.people.isNotEmpty;
 
 /// Big Call + Share buttons (hero card, event detail).
 class CallShareButtons extends ConsumerWidget {

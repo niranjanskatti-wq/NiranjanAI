@@ -119,3 +119,27 @@ class ReminderSettingsSection extends ConsumerWidget {
     ]);
   }
 }
+
+/// Festival reminder switches for Settings.
+class FestivalReminderSwitches extends ConsumerWidget {
+  const FestivalReminderSwitches({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.read(databaseProvider);
+    final onDay = ref.watch(_settingProvider('festivalReminders')).value != 'false';
+    final before = ref.watch(_settingProvider('festivalDayBefore')).value == 'true';
+    return Column(children: [
+      SwitchListTile(
+        title: const Text('Remind me on festival mornings'),
+        value: onDay,
+        onChanged: (v) => db.setSetting('festivalReminders', '$v'),
+      ),
+      SwitchListTile(
+        title: const Text('Also the evening before'),
+        value: before,
+        onChanged: onDay ? (v) => db.setSetting('festivalDayBefore', '$v') : null,
+      ),
+    ]);
+  }
+}

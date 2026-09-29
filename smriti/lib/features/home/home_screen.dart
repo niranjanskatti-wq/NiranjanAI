@@ -14,11 +14,14 @@ import '../../widgets/common.dart';
 import '../../widgets/countdown.dart';
 import '../../widgets/event_row.dart';
 import '../reminders/notification_service.dart';
+import '../festivals/festival_model.dart';
+import '../festivals/festival_route.dart';
 import '../wish/wish_buttons.dart';
+import '../wishmode/wish_mode_repo.dart';
 
 enum TimeFilter { today, week, month, all }
 
-enum KindFilter { all, people, important }
+enum KindFilter { all, people, festivals, important }
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -68,7 +71,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
     };
     final kindOk = switch (_kind) {
       KindFilter.all => true,
-      KindFilter.people => u.entry.kind != EventKind.other,
+      KindFilter.people => u.entry.kind == EventKind.person || u.entry.kind == EventKind.couple,
+      KindFilter.festivals => u.entry.kind == EventKind.festival,
       KindFilter.important => u.entry.kind == EventKind.other,
     };
     return timeOk && kindOk;
@@ -77,7 +81,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final upcoming = ref.watch(upcomingProvider);
+    final all = ref.watch(entriesProvider).whenData((_) => ref.watch(allEntriesProvider));
+    final upcoming = all.whenData((list) => computeUpcoming(list, ref.watch(todayProvider).value ?? Day.today()));
+    final sessions = ref.watch(openSessionsProvider).value ?? const [];
     final today = ref.watch(todayProvider).value ?? Day.today();
     final me = ref.watch(meProvider).value;
     final notices = ref.watch(noticesProvider).value ?? const [];
@@ -137,9 +143,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                           ),
                         ),
                       ),
-                    if (items.isEmpty)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
+                    if (items.every((u) => u.entry.kind == EventKind.festival))
+                      SliverToBoxAdapter(
                         child: Center(
                           child: EmptyState(
                             title: 'No one here yet',
@@ -150,8 +155,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                             onSecondary: () => context.push('/person/new'),
                           ),
                         ),
-                      )
-                    else ...[
+                      ),
+                    if (items.isNotEmpty) ...[
                       if (todays.any((u) => u.entry.isMine && u.entry.type == EventType.birthday))
                         SliverToBoxAdapter(
                           child: Padding(
@@ -160,6 +165,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                               message: "It's your birthday! 🎉 Tap for ready thank-you replies to everyone who wished you.",
                               onOpen: () => context.push('/thank-you'),
                               onDismiss: () {},
+                            ),
+                          ),
+                        ),
+                      for (final s in sessions)
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                            child: _NoticeCard(
+                              message: 'Continue ${s.session.title}: ${s.done} of ${s.total} done',
+                              onOpen: () => context.push('/wish-mode/${s.session.id}'),
+                              onDismiss: () => WishModeRepo(ref.read(databaseProvider)).finish(s.session.id),
                             ),
                           ),
                         ),
@@ -250,6 +266,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
           chip('All', TimeFilter.all, _time, (v) => _time = v),
           const SizedBox(width: 10),
           chip('People', KindFilter.people, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
+          chip('Festivals', KindFilter.festivals, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
           chip('Important dates', KindFilter.important, _kind, (v) => _kind = _kind == v ? KindFilter.all : v),
         ],
       ),
@@ -318,7 +335,7 @@ class HeroCard extends StatelessWidget {
         type: MaterialType.transparency,
         child: InkWell(
           borderRadius: BorderRadius.circular(Radii.card + 4),
-          onTap: () => context.push('/event/${e.event.id}'),
+          onTap: () => openEntry(context, e),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -372,6 +389,13 @@ class HeroCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 if (canWish(e))
                   CallShareButtons(entry: e, date: item.date)
+                else if (e is FestivalEntry)
+                  FilledButton.icon(
+                    onPressed: () =>
+                        context.push('/wish-mode/new?festival=${Uri.encodeQueryComponent(e.festival.key)}'),
+                    icon: const Icon(Icons.auto_awesome),
+                    label: Text('Start Wish Mode · ${relativeDays(item.daysLeft)}'),
+                  )
                 else
                   Text(relativeDays(item.daysLeft), textAlign: TextAlign.center, style: context.text.bodySmall),
               ],
@@ -422,6 +446,12 @@ class _TodayBanner extends StatelessWidget {
                   if (canWish(u.entry)) MiniCallShare(entry: u.entry, date: u.date),
                 ]),
               ),
+            const SizedBox(height: 8),
+            FilledButton.icon(
+              onPressed: () => context.push('/wish-mode/new'),
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('Start Wish Mode'),
+            ),
           ],
         ),
       ),

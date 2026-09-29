@@ -53,6 +53,7 @@ class EventEntry {
   String get title {
     switch (kind) {
       case EventKind.other:
+      case EventKind.festival:
         return (event.title?.trim().isNotEmpty ?? false) ? event.title!.trim() : typeLabel;
       case EventKind.couple:
         return people.map((p) => p.isMe ? 'You' : p.shortName).join(' & ');
@@ -65,6 +66,7 @@ class EventEntry {
 
   /// Relationship line, e.g. "Father" or "Uncle & Aunt".
   String get relationLine {
+    if (kind == EventKind.festival) return '';
     if (kind == EventKind.other) return typeLabel;
     if (isMine) return 'You';
     return people.map((p) => p.isMe ? 'You' : p.relationLabel).toSet().join(' & ');

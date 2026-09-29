@@ -42,7 +42,8 @@ enum Relationship {
 enum EventKind {
   person,
   couple,
-  other;
+  other,
+  festival;
 
   static EventKind parse(String? v) =>
       EventKind.values.firstWhere((k) => k.name == v, orElse: () => EventKind.person);
@@ -66,7 +67,8 @@ enum EventType {
   policy('Policy Renewal', Icons.description_outlined, EventGroup.important),
   rent('Rent', Icons.home_outlined, EventGroup.important),
   subscription('Subscription', Icons.autorenew, EventGroup.important),
-  otherDate('Other', Icons.event_note_outlined, EventGroup.important);
+  otherDate('Other', Icons.event_note_outlined, EventGroup.important),
+  festival('Festival', Icons.celebration_outlined, EventGroup.festival);
 
   const EventType(this.label, this.icon, this.group);
   final String label;
@@ -81,6 +83,8 @@ enum EventType {
   static List<EventType> get coupleTypes => [weddingAnniversary, engagement, firstMeeting, custom];
   static List<EventType> get otherTypes =>
       values.where((t) => t.group == EventGroup.important).toList();
+
+  bool get isFestival => this == festival;
 
   bool get isAnniversaryLike => group == EventGroup.anniversary;
 }

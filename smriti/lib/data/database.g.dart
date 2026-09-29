@@ -5108,6 +5108,1684 @@ class FavouriteMessagesCompanion extends UpdateCompanion<FavouriteMessage> {
   }
 }
 
+class $FestivalOverridesTable extends FestivalOverrides
+    with TableInfo<$FestivalOverridesTable, FestivalOverride> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FestivalOverridesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _festivalIdMeta = const VerificationMeta(
+    'festivalId',
+  );
+  @override
+  late final GeneratedColumn<String> festivalId = GeneratedColumn<String>(
+    'festival_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _datesMeta = const VerificationMeta('dates');
+  @override
+  late final GeneratedColumn<String> dates = GeneratedColumn<String>(
+    'dates',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _suggestMeta = const VerificationMeta(
+    'suggest',
+  );
+  @override
+  late final GeneratedColumn<String> suggest = GeneratedColumn<String>(
+    'suggest',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    festivalId,
+    enabled,
+    name,
+    dates,
+    suggest,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'festival_overrides';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FestivalOverride> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('festival_id')) {
+      context.handle(
+        _festivalIdMeta,
+        festivalId.isAcceptableOrUnknown(data['festival_id']!, _festivalIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_festivalIdMeta);
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('dates')) {
+      context.handle(
+        _datesMeta,
+        dates.isAcceptableOrUnknown(data['dates']!, _datesMeta),
+      );
+    }
+    if (data.containsKey('suggest')) {
+      context.handle(
+        _suggestMeta,
+        suggest.isAcceptableOrUnknown(data['suggest']!, _suggestMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {festivalId};
+  @override
+  FestivalOverride map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FestivalOverride(
+      festivalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}festival_id'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      ),
+      dates: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dates'],
+      ),
+      suggest: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}suggest'],
+      ),
+    );
+  }
+
+  @override
+  $FestivalOverridesTable createAlias(String alias) {
+    return $FestivalOverridesTable(attachedDatabase, alias);
+  }
+}
+
+class FestivalOverride extends DataClass
+    implements Insertable<FestivalOverride> {
+  final String festivalId;
+  final bool? enabled;
+  final String? name;
+
+  /// JSON map of year → "yyyy-mm-dd" for dates you corrected.
+  final String? dates;
+
+  /// Comma-separated relations to suggest in Wish Mode.
+  final String? suggest;
+  const FestivalOverride({
+    required this.festivalId,
+    this.enabled,
+    this.name,
+    this.dates,
+    this.suggest,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['festival_id'] = Variable<String>(festivalId);
+    if (!nullToAbsent || enabled != null) {
+      map['enabled'] = Variable<bool>(enabled);
+    }
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || dates != null) {
+      map['dates'] = Variable<String>(dates);
+    }
+    if (!nullToAbsent || suggest != null) {
+      map['suggest'] = Variable<String>(suggest);
+    }
+    return map;
+  }
+
+  FestivalOverridesCompanion toCompanion(bool nullToAbsent) {
+    return FestivalOverridesCompanion(
+      festivalId: Value(festivalId),
+      enabled: enabled == null && nullToAbsent
+          ? const Value.absent()
+          : Value(enabled),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      dates: dates == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dates),
+      suggest: suggest == null && nullToAbsent
+          ? const Value.absent()
+          : Value(suggest),
+    );
+  }
+
+  factory FestivalOverride.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FestivalOverride(
+      festivalId: serializer.fromJson<String>(json['festivalId']),
+      enabled: serializer.fromJson<bool?>(json['enabled']),
+      name: serializer.fromJson<String?>(json['name']),
+      dates: serializer.fromJson<String?>(json['dates']),
+      suggest: serializer.fromJson<String?>(json['suggest']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'festivalId': serializer.toJson<String>(festivalId),
+      'enabled': serializer.toJson<bool?>(enabled),
+      'name': serializer.toJson<String?>(name),
+      'dates': serializer.toJson<String?>(dates),
+      'suggest': serializer.toJson<String?>(suggest),
+    };
+  }
+
+  FestivalOverride copyWith({
+    String? festivalId,
+    Value<bool?> enabled = const Value.absent(),
+    Value<String?> name = const Value.absent(),
+    Value<String?> dates = const Value.absent(),
+    Value<String?> suggest = const Value.absent(),
+  }) => FestivalOverride(
+    festivalId: festivalId ?? this.festivalId,
+    enabled: enabled.present ? enabled.value : this.enabled,
+    name: name.present ? name.value : this.name,
+    dates: dates.present ? dates.value : this.dates,
+    suggest: suggest.present ? suggest.value : this.suggest,
+  );
+  FestivalOverride copyWithCompanion(FestivalOverridesCompanion data) {
+    return FestivalOverride(
+      festivalId: data.festivalId.present
+          ? data.festivalId.value
+          : this.festivalId,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      name: data.name.present ? data.name.value : this.name,
+      dates: data.dates.present ? data.dates.value : this.dates,
+      suggest: data.suggest.present ? data.suggest.value : this.suggest,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FestivalOverride(')
+          ..write('festivalId: $festivalId, ')
+          ..write('enabled: $enabled, ')
+          ..write('name: $name, ')
+          ..write('dates: $dates, ')
+          ..write('suggest: $suggest')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(festivalId, enabled, name, dates, suggest);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FestivalOverride &&
+          other.festivalId == this.festivalId &&
+          other.enabled == this.enabled &&
+          other.name == this.name &&
+          other.dates == this.dates &&
+          other.suggest == this.suggest);
+}
+
+class FestivalOverridesCompanion extends UpdateCompanion<FestivalOverride> {
+  final Value<String> festivalId;
+  final Value<bool?> enabled;
+  final Value<String?> name;
+  final Value<String?> dates;
+  final Value<String?> suggest;
+  final Value<int> rowid;
+  const FestivalOverridesCompanion({
+    this.festivalId = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dates = const Value.absent(),
+    this.suggest = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FestivalOverridesCompanion.insert({
+    required String festivalId,
+    this.enabled = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dates = const Value.absent(),
+    this.suggest = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : festivalId = Value(festivalId);
+  static Insertable<FestivalOverride> custom({
+    Expression<String>? festivalId,
+    Expression<bool>? enabled,
+    Expression<String>? name,
+    Expression<String>? dates,
+    Expression<String>? suggest,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (festivalId != null) 'festival_id': festivalId,
+      if (enabled != null) 'enabled': enabled,
+      if (name != null) 'name': name,
+      if (dates != null) 'dates': dates,
+      if (suggest != null) 'suggest': suggest,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FestivalOverridesCompanion copyWith({
+    Value<String>? festivalId,
+    Value<bool?>? enabled,
+    Value<String?>? name,
+    Value<String?>? dates,
+    Value<String?>? suggest,
+    Value<int>? rowid,
+  }) {
+    return FestivalOverridesCompanion(
+      festivalId: festivalId ?? this.festivalId,
+      enabled: enabled ?? this.enabled,
+      name: name ?? this.name,
+      dates: dates ?? this.dates,
+      suggest: suggest ?? this.suggest,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (festivalId.present) {
+      map['festival_id'] = Variable<String>(festivalId.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (dates.present) {
+      map['dates'] = Variable<String>(dates.value);
+    }
+    if (suggest.present) {
+      map['suggest'] = Variable<String>(suggest.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FestivalOverridesCompanion(')
+          ..write('festivalId: $festivalId, ')
+          ..write('enabled: $enabled, ')
+          ..write('name: $name, ')
+          ..write('dates: $dates, ')
+          ..write('suggest: $suggest, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CustomFestivalsTable extends CustomFestivals
+    with TableInfo<$CustomFestivalsTable, CustomFestival> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CustomFestivalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  @override
+  late final GeneratedColumn<int> month = GeneratedColumn<int>(
+    'month',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<int> day = GeneratedColumn<int>(
+    'day',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _datesMeta = const VerificationMeta('dates');
+  @override
+  late final GeneratedColumn<String> dates = GeneratedColumn<String>(
+    'dates',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _suggestMeta = const VerificationMeta(
+    'suggest',
+  );
+  @override
+  late final GeneratedColumn<String> suggest = GeneratedColumn<String>(
+    'suggest',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    month,
+    day,
+    dates,
+    enabled,
+    suggest,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'custom_festivals';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CustomFestival> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('month')) {
+      context.handle(
+        _monthMeta,
+        month.isAcceptableOrUnknown(data['month']!, _monthMeta),
+      );
+    }
+    if (data.containsKey('day')) {
+      context.handle(
+        _dayMeta,
+        day.isAcceptableOrUnknown(data['day']!, _dayMeta),
+      );
+    }
+    if (data.containsKey('dates')) {
+      context.handle(
+        _datesMeta,
+        dates.isAcceptableOrUnknown(data['dates']!, _datesMeta),
+      );
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('suggest')) {
+      context.handle(
+        _suggestMeta,
+        suggest.isAcceptableOrUnknown(data['suggest']!, _suggestMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CustomFestival map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CustomFestival(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      month: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}month'],
+      ),
+      day: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}day'],
+      ),
+      dates: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dates'],
+      ),
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      suggest: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}suggest'],
+      )!,
+    );
+  }
+
+  @override
+  $CustomFestivalsTable createAlias(String alias) {
+    return $CustomFestivalsTable(attachedDatabase, alias);
+  }
+}
+
+class CustomFestival extends DataClass implements Insertable<CustomFestival> {
+  final int id;
+  final String name;
+
+  /// Same date every year (month/day), or specific dates in [dates].
+  final int? month;
+  final int? day;
+  final String? dates;
+  final bool enabled;
+  final String suggest;
+  const CustomFestival({
+    required this.id,
+    required this.name,
+    this.month,
+    this.day,
+    this.dates,
+    required this.enabled,
+    required this.suggest,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || month != null) {
+      map['month'] = Variable<int>(month);
+    }
+    if (!nullToAbsent || day != null) {
+      map['day'] = Variable<int>(day);
+    }
+    if (!nullToAbsent || dates != null) {
+      map['dates'] = Variable<String>(dates);
+    }
+    map['enabled'] = Variable<bool>(enabled);
+    map['suggest'] = Variable<String>(suggest);
+    return map;
+  }
+
+  CustomFestivalsCompanion toCompanion(bool nullToAbsent) {
+    return CustomFestivalsCompanion(
+      id: Value(id),
+      name: Value(name),
+      month: month == null && nullToAbsent
+          ? const Value.absent()
+          : Value(month),
+      day: day == null && nullToAbsent ? const Value.absent() : Value(day),
+      dates: dates == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dates),
+      enabled: Value(enabled),
+      suggest: Value(suggest),
+    );
+  }
+
+  factory CustomFestival.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CustomFestival(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      month: serializer.fromJson<int?>(json['month']),
+      day: serializer.fromJson<int?>(json['day']),
+      dates: serializer.fromJson<String?>(json['dates']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      suggest: serializer.fromJson<String>(json['suggest']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'month': serializer.toJson<int?>(month),
+      'day': serializer.toJson<int?>(day),
+      'dates': serializer.toJson<String?>(dates),
+      'enabled': serializer.toJson<bool>(enabled),
+      'suggest': serializer.toJson<String>(suggest),
+    };
+  }
+
+  CustomFestival copyWith({
+    int? id,
+    String? name,
+    Value<int?> month = const Value.absent(),
+    Value<int?> day = const Value.absent(),
+    Value<String?> dates = const Value.absent(),
+    bool? enabled,
+    String? suggest,
+  }) => CustomFestival(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    month: month.present ? month.value : this.month,
+    day: day.present ? day.value : this.day,
+    dates: dates.present ? dates.value : this.dates,
+    enabled: enabled ?? this.enabled,
+    suggest: suggest ?? this.suggest,
+  );
+  CustomFestival copyWithCompanion(CustomFestivalsCompanion data) {
+    return CustomFestival(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      month: data.month.present ? data.month.value : this.month,
+      day: data.day.present ? data.day.value : this.day,
+      dates: data.dates.present ? data.dates.value : this.dates,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      suggest: data.suggest.present ? data.suggest.value : this.suggest,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomFestival(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('month: $month, ')
+          ..write('day: $day, ')
+          ..write('dates: $dates, ')
+          ..write('enabled: $enabled, ')
+          ..write('suggest: $suggest')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, month, day, dates, enabled, suggest);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CustomFestival &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.month == this.month &&
+          other.day == this.day &&
+          other.dates == this.dates &&
+          other.enabled == this.enabled &&
+          other.suggest == this.suggest);
+}
+
+class CustomFestivalsCompanion extends UpdateCompanion<CustomFestival> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int?> month;
+  final Value<int?> day;
+  final Value<String?> dates;
+  final Value<bool> enabled;
+  final Value<String> suggest;
+  const CustomFestivalsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.month = const Value.absent(),
+    this.day = const Value.absent(),
+    this.dates = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.suggest = const Value.absent(),
+  });
+  CustomFestivalsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.month = const Value.absent(),
+    this.day = const Value.absent(),
+    this.dates = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.suggest = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<CustomFestival> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? month,
+    Expression<int>? day,
+    Expression<String>? dates,
+    Expression<bool>? enabled,
+    Expression<String>? suggest,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (month != null) 'month': month,
+      if (day != null) 'day': day,
+      if (dates != null) 'dates': dates,
+      if (enabled != null) 'enabled': enabled,
+      if (suggest != null) 'suggest': suggest,
+    });
+  }
+
+  CustomFestivalsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int?>? month,
+    Value<int?>? day,
+    Value<String?>? dates,
+    Value<bool>? enabled,
+    Value<String>? suggest,
+  }) {
+    return CustomFestivalsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      month: month ?? this.month,
+      day: day ?? this.day,
+      dates: dates ?? this.dates,
+      enabled: enabled ?? this.enabled,
+      suggest: suggest ?? this.suggest,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (month.present) {
+      map['month'] = Variable<int>(month.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<int>(day.value);
+    }
+    if (dates.present) {
+      map['dates'] = Variable<String>(dates.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (suggest.present) {
+      map['suggest'] = Variable<String>(suggest.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CustomFestivalsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('month: $month, ')
+          ..write('day: $day, ')
+          ..write('dates: $dates, ')
+          ..write('enabled: $enabled, ')
+          ..write('suggest: $suggest')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WishSessionsTable extends WishSessions
+    with TableInfo<$WishSessionsTable, WishSession> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WishSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _festivalIdMeta = const VerificationMeta(
+    'festivalId',
+  );
+  @override
+  late final GeneratedColumn<String> festivalId = GeneratedColumn<String>(
+    'festival_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occasionDateMeta = const VerificationMeta(
+    'occasionDate',
+  );
+  @override
+  late final GeneratedColumn<String> occasionDate = GeneratedColumn<String>(
+    'occasion_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _finishedMeta = const VerificationMeta(
+    'finished',
+  );
+  @override
+  late final GeneratedColumn<bool> finished = GeneratedColumn<bool>(
+    'finished',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("finished" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    title,
+    festivalId,
+    occasionDate,
+    finished,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wish_sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WishSession> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('festival_id')) {
+      context.handle(
+        _festivalIdMeta,
+        festivalId.isAcceptableOrUnknown(data['festival_id']!, _festivalIdMeta),
+      );
+    }
+    if (data.containsKey('occasion_date')) {
+      context.handle(
+        _occasionDateMeta,
+        occasionDate.isAcceptableOrUnknown(
+          data['occasion_date']!,
+          _occasionDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_occasionDateMeta);
+    }
+    if (data.containsKey('finished')) {
+      context.handle(
+        _finishedMeta,
+        finished.isAcceptableOrUnknown(data['finished']!, _finishedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WishSession map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WishSession(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      festivalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}festival_id'],
+      ),
+      occasionDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occasion_date'],
+      )!,
+      finished: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}finished'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WishSessionsTable createAlias(String alias) {
+    return $WishSessionsTable(attachedDatabase, alias);
+  }
+}
+
+class WishSession extends DataClass implements Insertable<WishSession> {
+  final int id;
+  final String title;
+
+  /// Festival key ("b:diwali_lakshmi_puja" / "c:3"), or null for "Today".
+  final String? festivalId;
+  final String occasionDate;
+  final bool finished;
+  final DateTime createdAt;
+  const WishSession({
+    required this.id,
+    required this.title,
+    this.festivalId,
+    required this.occasionDate,
+    required this.finished,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || festivalId != null) {
+      map['festival_id'] = Variable<String>(festivalId);
+    }
+    map['occasion_date'] = Variable<String>(occasionDate);
+    map['finished'] = Variable<bool>(finished);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  WishSessionsCompanion toCompanion(bool nullToAbsent) {
+    return WishSessionsCompanion(
+      id: Value(id),
+      title: Value(title),
+      festivalId: festivalId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(festivalId),
+      occasionDate: Value(occasionDate),
+      finished: Value(finished),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory WishSession.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WishSession(
+      id: serializer.fromJson<int>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      festivalId: serializer.fromJson<String?>(json['festivalId']),
+      occasionDate: serializer.fromJson<String>(json['occasionDate']),
+      finished: serializer.fromJson<bool>(json['finished']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'title': serializer.toJson<String>(title),
+      'festivalId': serializer.toJson<String?>(festivalId),
+      'occasionDate': serializer.toJson<String>(occasionDate),
+      'finished': serializer.toJson<bool>(finished),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  WishSession copyWith({
+    int? id,
+    String? title,
+    Value<String?> festivalId = const Value.absent(),
+    String? occasionDate,
+    bool? finished,
+    DateTime? createdAt,
+  }) => WishSession(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    festivalId: festivalId.present ? festivalId.value : this.festivalId,
+    occasionDate: occasionDate ?? this.occasionDate,
+    finished: finished ?? this.finished,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  WishSession copyWithCompanion(WishSessionsCompanion data) {
+    return WishSession(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      festivalId: data.festivalId.present
+          ? data.festivalId.value
+          : this.festivalId,
+      occasionDate: data.occasionDate.present
+          ? data.occasionDate.value
+          : this.occasionDate,
+      finished: data.finished.present ? data.finished.value : this.finished,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishSession(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('festivalId: $festivalId, ')
+          ..write('occasionDate: $occasionDate, ')
+          ..write('finished: $finished, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, title, festivalId, occasionDate, finished, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WishSession &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.festivalId == this.festivalId &&
+          other.occasionDate == this.occasionDate &&
+          other.finished == this.finished &&
+          other.createdAt == this.createdAt);
+}
+
+class WishSessionsCompanion extends UpdateCompanion<WishSession> {
+  final Value<int> id;
+  final Value<String> title;
+  final Value<String?> festivalId;
+  final Value<String> occasionDate;
+  final Value<bool> finished;
+  final Value<DateTime> createdAt;
+  const WishSessionsCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.festivalId = const Value.absent(),
+    this.occasionDate = const Value.absent(),
+    this.finished = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  WishSessionsCompanion.insert({
+    this.id = const Value.absent(),
+    required String title,
+    this.festivalId = const Value.absent(),
+    required String occasionDate,
+    this.finished = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : title = Value(title),
+       occasionDate = Value(occasionDate);
+  static Insertable<WishSession> custom({
+    Expression<int>? id,
+    Expression<String>? title,
+    Expression<String>? festivalId,
+    Expression<String>? occasionDate,
+    Expression<bool>? finished,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (festivalId != null) 'festival_id': festivalId,
+      if (occasionDate != null) 'occasion_date': occasionDate,
+      if (finished != null) 'finished': finished,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  WishSessionsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? title,
+    Value<String?>? festivalId,
+    Value<String>? occasionDate,
+    Value<bool>? finished,
+    Value<DateTime>? createdAt,
+  }) {
+    return WishSessionsCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      festivalId: festivalId ?? this.festivalId,
+      occasionDate: occasionDate ?? this.occasionDate,
+      finished: finished ?? this.finished,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (festivalId.present) {
+      map['festival_id'] = Variable<String>(festivalId.value);
+    }
+    if (occasionDate.present) {
+      map['occasion_date'] = Variable<String>(occasionDate.value);
+    }
+    if (finished.present) {
+      map['finished'] = Variable<bool>(finished.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('festivalId: $festivalId, ')
+          ..write('occasionDate: $occasionDate, ')
+          ..write('finished: $finished, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WishSessionItemsTable extends WishSessionItems
+    with TableInfo<$WishSessionItemsTable, WishSessionItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WishSessionItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<int> sessionId = GeneratedColumn<int>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES wish_sessions (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _personIdMeta = const VerificationMeta(
+    'personId',
+  );
+  @override
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+    'person_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES people (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _eventIdMeta = const VerificationMeta(
+    'eventId',
+  );
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+    'event_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _messageMeta = const VerificationMeta(
+    'message',
+  );
+  @override
+  late final GeneratedColumn<String> message = GeneratedColumn<String>(
+    'message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    personId,
+    eventId,
+    position,
+    status,
+    message,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wish_session_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WishSessionItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('person_id')) {
+      context.handle(
+        _personIdMeta,
+        personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_personIdMeta);
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(
+        _eventIdMeta,
+        eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('message')) {
+      context.handle(
+        _messageMeta,
+        message.isAcceptableOrUnknown(data['message']!, _messageMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WishSessionItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WishSessionItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}session_id'],
+      )!,
+      personId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}person_id'],
+      )!,
+      eventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}event_id'],
+      ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      message: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}message'],
+      ),
+    );
+  }
+
+  @override
+  $WishSessionItemsTable createAlias(String alias) {
+    return $WishSessionItemsTable(attachedDatabase, alias);
+  }
+}
+
+class WishSessionItem extends DataClass implements Insertable<WishSessionItem> {
+  final int id;
+  final int sessionId;
+  final int personId;
+
+  /// For "Today" sessions: the event being wished.
+  final int? eventId;
+  final int position;
+
+  /// pending, wished, skipped.
+  final String status;
+  final String? message;
+  const WishSessionItem({
+    required this.id,
+    required this.sessionId,
+    required this.personId,
+    this.eventId,
+    required this.position,
+    required this.status,
+    this.message,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['session_id'] = Variable<int>(sessionId);
+    map['person_id'] = Variable<int>(personId);
+    if (!nullToAbsent || eventId != null) {
+      map['event_id'] = Variable<int>(eventId);
+    }
+    map['position'] = Variable<int>(position);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || message != null) {
+      map['message'] = Variable<String>(message);
+    }
+    return map;
+  }
+
+  WishSessionItemsCompanion toCompanion(bool nullToAbsent) {
+    return WishSessionItemsCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      personId: Value(personId),
+      eventId: eventId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventId),
+      position: Value(position),
+      status: Value(status),
+      message: message == null && nullToAbsent
+          ? const Value.absent()
+          : Value(message),
+    );
+  }
+
+  factory WishSessionItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WishSessionItem(
+      id: serializer.fromJson<int>(json['id']),
+      sessionId: serializer.fromJson<int>(json['sessionId']),
+      personId: serializer.fromJson<int>(json['personId']),
+      eventId: serializer.fromJson<int?>(json['eventId']),
+      position: serializer.fromJson<int>(json['position']),
+      status: serializer.fromJson<String>(json['status']),
+      message: serializer.fromJson<String?>(json['message']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'sessionId': serializer.toJson<int>(sessionId),
+      'personId': serializer.toJson<int>(personId),
+      'eventId': serializer.toJson<int?>(eventId),
+      'position': serializer.toJson<int>(position),
+      'status': serializer.toJson<String>(status),
+      'message': serializer.toJson<String?>(message),
+    };
+  }
+
+  WishSessionItem copyWith({
+    int? id,
+    int? sessionId,
+    int? personId,
+    Value<int?> eventId = const Value.absent(),
+    int? position,
+    String? status,
+    Value<String?> message = const Value.absent(),
+  }) => WishSessionItem(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    personId: personId ?? this.personId,
+    eventId: eventId.present ? eventId.value : this.eventId,
+    position: position ?? this.position,
+    status: status ?? this.status,
+    message: message.present ? message.value : this.message,
+  );
+  WishSessionItem copyWithCompanion(WishSessionItemsCompanion data) {
+    return WishSessionItem(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      personId: data.personId.present ? data.personId.value : this.personId,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      position: data.position.present ? data.position.value : this.position,
+      status: data.status.present ? data.status.value : this.status,
+      message: data.message.present ? data.message.value : this.message,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishSessionItem(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('position: $position, ')
+          ..write('status: $status, ')
+          ..write('message: $message')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, sessionId, personId, eventId, position, status, message);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WishSessionItem &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.personId == this.personId &&
+          other.eventId == this.eventId &&
+          other.position == this.position &&
+          other.status == this.status &&
+          other.message == this.message);
+}
+
+class WishSessionItemsCompanion extends UpdateCompanion<WishSessionItem> {
+  final Value<int> id;
+  final Value<int> sessionId;
+  final Value<int> personId;
+  final Value<int?> eventId;
+  final Value<int> position;
+  final Value<String> status;
+  final Value<String?> message;
+  const WishSessionItemsCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.personId = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.status = const Value.absent(),
+    this.message = const Value.absent(),
+  });
+  WishSessionItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required int sessionId,
+    required int personId,
+    this.eventId = const Value.absent(),
+    required int position,
+    this.status = const Value.absent(),
+    this.message = const Value.absent(),
+  }) : sessionId = Value(sessionId),
+       personId = Value(personId),
+       position = Value(position);
+  static Insertable<WishSessionItem> custom({
+    Expression<int>? id,
+    Expression<int>? sessionId,
+    Expression<int>? personId,
+    Expression<int>? eventId,
+    Expression<int>? position,
+    Expression<String>? status,
+    Expression<String>? message,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (personId != null) 'person_id': personId,
+      if (eventId != null) 'event_id': eventId,
+      if (position != null) 'position': position,
+      if (status != null) 'status': status,
+      if (message != null) 'message': message,
+    });
+  }
+
+  WishSessionItemsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? sessionId,
+    Value<int>? personId,
+    Value<int?>? eventId,
+    Value<int>? position,
+    Value<String>? status,
+    Value<String?>? message,
+  }) {
+    return WishSessionItemsCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      personId: personId ?? this.personId,
+      eventId: eventId ?? this.eventId,
+      position: position ?? this.position,
+      status: status ?? this.status,
+      message: message ?? this.message,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<int>(sessionId.value);
+    }
+    if (personId.present) {
+      map['person_id'] = Variable<int>(personId.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (message.present) {
+      map['message'] = Variable<String>(message.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishSessionItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('position: $position, ')
+          ..write('status: $status, ')
+          ..write('message: $message')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -5326,6 +7004,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UserMessagesTable userMessages = $UserMessagesTable(this);
   late final $FavouriteMessagesTable favouriteMessages =
       $FavouriteMessagesTable(this);
+  late final $FestivalOverridesTable festivalOverrides =
+      $FestivalOverridesTable(this);
+  late final $CustomFestivalsTable customFestivals = $CustomFestivalsTable(
+    this,
+  );
+  late final $WishSessionsTable wishSessions = $WishSessionsTable(this);
+  late final $WishSessionItemsTable wishSessionItems = $WishSessionItemsTable(
+    this,
+  );
   late final $SettingsTable settings = $SettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -5341,6 +7028,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     reminders,
     userMessages,
     favouriteMessages,
+    festivalOverrides,
+    customFestivals,
+    wishSessions,
+    wishSessionItems,
     settings,
   ];
   @override
@@ -5393,6 +7084,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('reminders', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'wish_sessions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('wish_session_items', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'people',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('wish_session_items', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -5522,6 +7227,26 @@ final class $$PeopleTableReferences
     ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_wishLogsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$WishSessionItemsTable, List<WishSessionItem>>
+  _wishSessionItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.wishSessionItems,
+    aliasName: 'people__id__wish_session_items__person_id',
+  );
+
+  $$WishSessionItemsTableProcessedTableManager get wishSessionItemsRefs {
+    final manager = $$WishSessionItemsTableTableManager(
+      $_db,
+      $_db.wishSessionItems,
+    ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _wishSessionItemsRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -5748,6 +7473,31 @@ class $$PeopleTableFilterComposer
           }) => $$WishLogsTableFilterComposer(
             $db: $db,
             $table: $db.wishLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> wishSessionItemsRefs(
+    Expression<bool> Function($$WishSessionItemsTableFilterComposer f) f,
+  ) {
+    final $$WishSessionItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishSessionItems,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishSessionItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.wishSessionItems,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6088,6 +7838,31 @@ class $$PeopleTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> wishSessionItemsRefs<T extends Object>(
+    Expression<T> Function($$WishSessionItemsTableAnnotationComposer a) f,
+  ) {
+    final $$WishSessionItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishSessionItems,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishSessionItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.wishSessionItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PeopleTableTableManager
@@ -6108,6 +7883,7 @@ class $$PeopleTableTableManager
             bool giftIdeasRefs,
             bool contactNoticesRefs,
             bool wishLogsRefs,
+            bool wishSessionItemsRefs,
           })
         > {
   $$PeopleTableTableManager(_$AppDatabase db, $PeopleTable table)
@@ -6239,6 +8015,7 @@ class $$PeopleTableTableManager
                 giftIdeasRefs = false,
                 contactNoticesRefs = false,
                 wishLogsRefs = false,
+                wishSessionItemsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -6247,6 +8024,7 @@ class $$PeopleTableTableManager
                     if (giftIdeasRefs) db.giftIdeas,
                     if (contactNoticesRefs) db.contactNotices,
                     if (wishLogsRefs) db.wishLogs,
+                    if (wishSessionItemsRefs) db.wishSessionItems,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -6335,6 +8113,27 @@ class $$PeopleTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (wishSessionItemsRefs)
+                        await $_getPrefetchedData<
+                          Person,
+                          $PeopleTable,
+                          WishSessionItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PeopleTableReferences
+                              ._wishSessionItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PeopleTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).wishSessionItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.personId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6360,6 +8159,7 @@ typedef $$PeopleTableProcessedTableManager =
         bool giftIdeasRefs,
         bool contactNoticesRefs,
         bool wishLogsRefs,
+        bool wishSessionItemsRefs,
       })
     >;
 typedef $$EventsTableCreateCompanionBuilder = EventsCompanion Function({
@@ -9357,6 +11157,1237 @@ typedef $$FavouriteMessagesTableProcessedTableManager =
       FavouriteMessage,
       PrefetchHooks Function()
     >;
+typedef $$FestivalOverridesTableCreateCompanionBuilder =
+    FestivalOverridesCompanion Function({
+      required String festivalId,
+      Value<bool?> enabled,
+      Value<String?> name,
+      Value<String?> dates,
+      Value<String?> suggest,
+      Value<int> rowid,
+    });
+typedef $$FestivalOverridesTableUpdateCompanionBuilder =
+    FestivalOverridesCompanion Function({
+      Value<String> festivalId,
+      Value<bool?> enabled,
+      Value<String?> name,
+      Value<String?> dates,
+      Value<String?> suggest,
+      Value<int> rowid,
+    });
+
+class $$FestivalOverridesTableFilterComposer
+    extends Composer<_$AppDatabase, $FestivalOverridesTable> {
+  $$FestivalOverridesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dates => $composableBuilder(
+    column: $table.dates,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get suggest => $composableBuilder(
+    column: $table.suggest,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FestivalOverridesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FestivalOverridesTable> {
+  $$FestivalOverridesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dates => $composableBuilder(
+    column: $table.dates,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get suggest => $composableBuilder(
+    column: $table.suggest,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FestivalOverridesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FestivalOverridesTable> {
+  $$FestivalOverridesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get dates =>
+      $composableBuilder(column: $table.dates, builder: (column) => column);
+
+  GeneratedColumn<String> get suggest =>
+      $composableBuilder(column: $table.suggest, builder: (column) => column);
+}
+
+class $$FestivalOverridesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FestivalOverridesTable,
+          FestivalOverride,
+          $$FestivalOverridesTableFilterComposer,
+          $$FestivalOverridesTableOrderingComposer,
+          $$FestivalOverridesTableAnnotationComposer,
+          $$FestivalOverridesTableCreateCompanionBuilder,
+          $$FestivalOverridesTableUpdateCompanionBuilder,
+          (
+            FestivalOverride,
+            BaseReferences<
+              _$AppDatabase,
+              $FestivalOverridesTable,
+              FestivalOverride
+            >,
+          ),
+          FestivalOverride,
+          PrefetchHooks Function()
+        > {
+  $$FestivalOverridesTableTableManager(
+    _$AppDatabase db,
+    $FestivalOverridesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FestivalOverridesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FestivalOverridesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FestivalOverridesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> festivalId = const Value.absent(),
+                Value<bool?> enabled = const Value.absent(),
+                Value<String?> name = const Value.absent(),
+                Value<String?> dates = const Value.absent(),
+                Value<String?> suggest = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FestivalOverridesCompanion(
+                festivalId: festivalId,
+                enabled: enabled,
+                name: name,
+                dates: dates,
+                suggest: suggest,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String festivalId,
+                Value<bool?> enabled = const Value.absent(),
+                Value<String?> name = const Value.absent(),
+                Value<String?> dates = const Value.absent(),
+                Value<String?> suggest = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FestivalOverridesCompanion.insert(
+                festivalId: festivalId,
+                enabled: enabled,
+                name: name,
+                dates: dates,
+                suggest: suggest,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FestivalOverridesTable, FestivalOverride>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FestivalOverridesTable,
+                    FestivalOverride
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FestivalOverridesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FestivalOverridesTable,
+      FestivalOverride,
+      $$FestivalOverridesTableFilterComposer,
+      $$FestivalOverridesTableOrderingComposer,
+      $$FestivalOverridesTableAnnotationComposer,
+      $$FestivalOverridesTableCreateCompanionBuilder,
+      $$FestivalOverridesTableUpdateCompanionBuilder,
+      (
+        FestivalOverride,
+        BaseReferences<
+          _$AppDatabase,
+          $FestivalOverridesTable,
+          FestivalOverride
+        >,
+      ),
+      FestivalOverride,
+      PrefetchHooks Function()
+    >;
+typedef $$CustomFestivalsTableCreateCompanionBuilder =
+    CustomFestivalsCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<int?> month,
+      Value<int?> day,
+      Value<String?> dates,
+      Value<bool> enabled,
+      Value<String> suggest,
+    });
+typedef $$CustomFestivalsTableUpdateCompanionBuilder =
+    CustomFestivalsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<int?> month,
+      Value<int?> day,
+      Value<String?> dates,
+      Value<bool> enabled,
+      Value<String> suggest,
+    });
+
+class $$CustomFestivalsTableFilterComposer
+    extends Composer<_$AppDatabase, $CustomFestivalsTable> {
+  $$CustomFestivalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dates => $composableBuilder(
+    column: $table.dates,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get suggest => $composableBuilder(
+    column: $table.suggest,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CustomFestivalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CustomFestivalsTable> {
+  $$CustomFestivalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dates => $composableBuilder(
+    column: $table.dates,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get suggest => $composableBuilder(
+    column: $table.suggest,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CustomFestivalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CustomFestivalsTable> {
+  $$CustomFestivalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get month =>
+      $composableBuilder(column: $table.month, builder: (column) => column);
+
+  GeneratedColumn<int> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<String> get dates =>
+      $composableBuilder(column: $table.dates, builder: (column) => column);
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  GeneratedColumn<String> get suggest =>
+      $composableBuilder(column: $table.suggest, builder: (column) => column);
+}
+
+class $$CustomFestivalsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CustomFestivalsTable,
+          CustomFestival,
+          $$CustomFestivalsTableFilterComposer,
+          $$CustomFestivalsTableOrderingComposer,
+          $$CustomFestivalsTableAnnotationComposer,
+          $$CustomFestivalsTableCreateCompanionBuilder,
+          $$CustomFestivalsTableUpdateCompanionBuilder,
+          (
+            CustomFestival,
+            BaseReferences<
+              _$AppDatabase,
+              $CustomFestivalsTable,
+              CustomFestival
+            >,
+          ),
+          CustomFestival,
+          PrefetchHooks Function()
+        > {
+  $$CustomFestivalsTableTableManager(
+    _$AppDatabase db,
+    $CustomFestivalsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CustomFestivalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CustomFestivalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CustomFestivalsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int?> month = const Value.absent(),
+                Value<int?> day = const Value.absent(),
+                Value<String?> dates = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+                Value<String> suggest = const Value.absent(),
+              }) => CustomFestivalsCompanion(
+                id: id,
+                name: name,
+                month: month,
+                day: day,
+                dates: dates,
+                enabled: enabled,
+                suggest: suggest,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<int?> month = const Value.absent(),
+                Value<int?> day = const Value.absent(),
+                Value<String?> dates = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+                Value<String> suggest = const Value.absent(),
+              }) => CustomFestivalsCompanion.insert(
+                id: id,
+                name: name,
+                month: month,
+                day: day,
+                dates: dates,
+                enabled: enabled,
+                suggest: suggest,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CustomFestivalsTable, CustomFestival>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CustomFestivalsTable,
+                    CustomFestival
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CustomFestivalsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CustomFestivalsTable,
+      CustomFestival,
+      $$CustomFestivalsTableFilterComposer,
+      $$CustomFestivalsTableOrderingComposer,
+      $$CustomFestivalsTableAnnotationComposer,
+      $$CustomFestivalsTableCreateCompanionBuilder,
+      $$CustomFestivalsTableUpdateCompanionBuilder,
+      (
+        CustomFestival,
+        BaseReferences<_$AppDatabase, $CustomFestivalsTable, CustomFestival>,
+      ),
+      CustomFestival,
+      PrefetchHooks Function()
+    >;
+typedef $$WishSessionsTableCreateCompanionBuilder =
+    WishSessionsCompanion Function({
+      Value<int> id,
+      required String title,
+      Value<String?> festivalId,
+      required String occasionDate,
+      Value<bool> finished,
+      Value<DateTime> createdAt,
+    });
+typedef $$WishSessionsTableUpdateCompanionBuilder =
+    WishSessionsCompanion Function({
+      Value<int> id,
+      Value<String> title,
+      Value<String?> festivalId,
+      Value<String> occasionDate,
+      Value<bool> finished,
+      Value<DateTime> createdAt,
+    });
+
+final class $$WishSessionsTableReferences
+    extends BaseReferences<_$AppDatabase, $WishSessionsTable, WishSession> {
+  $$WishSessionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$WishSessionItemsTable, List<WishSessionItem>>
+  _wishSessionItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.wishSessionItems,
+    aliasName: 'wish_sessions__id__wish_session_items__session_id',
+  );
+
+  $$WishSessionItemsTableProcessedTableManager get wishSessionItemsRefs {
+    final manager = $$WishSessionItemsTableTableManager(
+      $_db,
+      $_db.wishSessionItems,
+    ).filter((f) => f.sessionId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _wishSessionItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$WishSessionsTableFilterComposer
+    extends Composer<_$AppDatabase, $WishSessionsTable> {
+  $$WishSessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occasionDate => $composableBuilder(
+    column: $table.occasionDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get finished => $composableBuilder(
+    column: $table.finished,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> wishSessionItemsRefs(
+    Expression<bool> Function($$WishSessionItemsTableFilterComposer f) f,
+  ) {
+    final $$WishSessionItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishSessionItems,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishSessionItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.wishSessionItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$WishSessionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WishSessionsTable> {
+  $$WishSessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occasionDate => $composableBuilder(
+    column: $table.occasionDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get finished => $composableBuilder(
+    column: $table.finished,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WishSessionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WishSessionsTable> {
+  $$WishSessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get festivalId => $composableBuilder(
+    column: $table.festivalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occasionDate => $composableBuilder(
+    column: $table.occasionDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get finished =>
+      $composableBuilder(column: $table.finished, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> wishSessionItemsRefs<T extends Object>(
+    Expression<T> Function($$WishSessionItemsTableAnnotationComposer a) f,
+  ) {
+    final $$WishSessionItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.wishSessionItems,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishSessionItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.wishSessionItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$WishSessionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WishSessionsTable,
+          WishSession,
+          $$WishSessionsTableFilterComposer,
+          $$WishSessionsTableOrderingComposer,
+          $$WishSessionsTableAnnotationComposer,
+          $$WishSessionsTableCreateCompanionBuilder,
+          $$WishSessionsTableUpdateCompanionBuilder,
+          (WishSession, $$WishSessionsTableReferences),
+          WishSession,
+          PrefetchHooks Function({bool wishSessionItemsRefs})
+        > {
+  $$WishSessionsTableTableManager(_$AppDatabase db, $WishSessionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WishSessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WishSessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WishSessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> festivalId = const Value.absent(),
+                Value<String> occasionDate = const Value.absent(),
+                Value<bool> finished = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => WishSessionsCompanion(
+                id: id,
+                title: title,
+                festivalId: festivalId,
+                occasionDate: occasionDate,
+                finished: finished,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String title,
+                Value<String?> festivalId = const Value.absent(),
+                required String occasionDate,
+                Value<bool> finished = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => WishSessionsCompanion.insert(
+                id: id,
+                title: title,
+                festivalId: festivalId,
+                occasionDate: occasionDate,
+                finished: finished,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WishSessionsTable, WishSession>(table),
+                  $$WishSessionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({wishSessionItemsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (wishSessionItemsRefs) db.wishSessionItems,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (wishSessionItemsRefs)
+                    await $_getPrefetchedData<
+                      WishSession,
+                      $WishSessionsTable,
+                      WishSessionItem
+                    >(
+                      currentTable: table,
+                      referencedTable: $$WishSessionsTableReferences
+                          ._wishSessionItemsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$WishSessionsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).wishSessionItemsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.sessionId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$WishSessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WishSessionsTable,
+      WishSession,
+      $$WishSessionsTableFilterComposer,
+      $$WishSessionsTableOrderingComposer,
+      $$WishSessionsTableAnnotationComposer,
+      $$WishSessionsTableCreateCompanionBuilder,
+      $$WishSessionsTableUpdateCompanionBuilder,
+      (WishSession, $$WishSessionsTableReferences),
+      WishSession,
+      PrefetchHooks Function({bool wishSessionItemsRefs})
+    >;
+typedef $$WishSessionItemsTableCreateCompanionBuilder =
+    WishSessionItemsCompanion Function({
+      Value<int> id,
+      required int sessionId,
+      required int personId,
+      Value<int?> eventId,
+      required int position,
+      Value<String> status,
+      Value<String?> message,
+    });
+typedef $$WishSessionItemsTableUpdateCompanionBuilder =
+    WishSessionItemsCompanion Function({
+      Value<int> id,
+      Value<int> sessionId,
+      Value<int> personId,
+      Value<int?> eventId,
+      Value<int> position,
+      Value<String> status,
+      Value<String?> message,
+    });
+
+final class $$WishSessionItemsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $WishSessionItemsTable, WishSessionItem> {
+  $$WishSessionItemsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $WishSessionsTable _sessionIdTable(_$AppDatabase db) => db.wishSessions
+      .createAlias('wish_session_items__session_id__wish_sessions__id');
+
+  $$WishSessionsTableProcessedTableManager get sessionId {
+    final $_column = $_itemColumn<int>('session_id')!;
+
+    final manager = $$WishSessionsTableTableManager(
+      $_db,
+      $_db.wishSessions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $PeopleTable _personIdTable(_$AppDatabase db) =>
+      db.people.createAlias('wish_session_items__person_id__people__id');
+
+  $$PeopleTableProcessedTableManager get personId {
+    final $_column = $_itemColumn<int>('person_id')!;
+
+    final manager = $$PeopleTableTableManager(
+      $_db,
+      $_db.people,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_personIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$WishSessionItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $WishSessionItemsTable> {
+  $$WishSessionItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get eventId => $composableBuilder(
+    column: $table.eventId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$WishSessionsTableFilterComposer get sessionId {
+    final $$WishSessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.wishSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishSessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.wishSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PeopleTableFilterComposer get personId {
+    final $$PeopleTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableFilterComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WishSessionItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WishSessionItemsTable> {
+  $$WishSessionItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get eventId => $composableBuilder(
+    column: $table.eventId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$WishSessionsTableOrderingComposer get sessionId {
+    final $$WishSessionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.wishSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishSessionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.wishSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PeopleTableOrderingComposer get personId {
+    final $$PeopleTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableOrderingComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WishSessionItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WishSessionItemsTable> {
+  $$WishSessionItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get eventId =>
+      $composableBuilder(column: $table.eventId, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get message =>
+      $composableBuilder(column: $table.message, builder: (column) => column);
+
+  $$WishSessionsTableAnnotationComposer get sessionId {
+    final $$WishSessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.wishSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$WishSessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.wishSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PeopleTableAnnotationComposer get personId {
+    final $$PeopleTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableAnnotationComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$WishSessionItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WishSessionItemsTable,
+          WishSessionItem,
+          $$WishSessionItemsTableFilterComposer,
+          $$WishSessionItemsTableOrderingComposer,
+          $$WishSessionItemsTableAnnotationComposer,
+          $$WishSessionItemsTableCreateCompanionBuilder,
+          $$WishSessionItemsTableUpdateCompanionBuilder,
+          (WishSessionItem, $$WishSessionItemsTableReferences),
+          WishSessionItem,
+          PrefetchHooks Function({bool sessionId, bool personId})
+        > {
+  $$WishSessionItemsTableTableManager(
+    _$AppDatabase db,
+    $WishSessionItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WishSessionItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WishSessionItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WishSessionItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> sessionId = const Value.absent(),
+                Value<int> personId = const Value.absent(),
+                Value<int?> eventId = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> message = const Value.absent(),
+              }) => WishSessionItemsCompanion(
+                id: id,
+                sessionId: sessionId,
+                personId: personId,
+                eventId: eventId,
+                position: position,
+                status: status,
+                message: message,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int sessionId,
+                required int personId,
+                Value<int?> eventId = const Value.absent(),
+                required int position,
+                Value<String> status = const Value.absent(),
+                Value<String?> message = const Value.absent(),
+              }) => WishSessionItemsCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                personId: personId,
+                eventId: eventId,
+                position: position,
+                status: status,
+                message: message,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WishSessionItemsTable, WishSessionItem>(table),
+                  $$WishSessionItemsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sessionId = false, personId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sessionId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.sessionId,
+                        referencedTable: $$WishSessionItemsTableReferences
+                            ._sessionIdTable(db),
+                        referencedColumn: $$WishSessionItemsTableReferences
+                            ._sessionIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (personId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.personId,
+                        referencedTable: $$WishSessionItemsTableReferences
+                            ._personIdTable(db),
+                        referencedColumn: $$WishSessionItemsTableReferences
+                            ._personIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$WishSessionItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WishSessionItemsTable,
+      WishSessionItem,
+      $$WishSessionItemsTableFilterComposer,
+      $$WishSessionItemsTableOrderingComposer,
+      $$WishSessionItemsTableAnnotationComposer,
+      $$WishSessionItemsTableCreateCompanionBuilder,
+      $$WishSessionItemsTableUpdateCompanionBuilder,
+      (WishSessionItem, $$WishSessionItemsTableReferences),
+      WishSessionItem,
+      PrefetchHooks Function({bool sessionId, bool personId})
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -9513,6 +12544,14 @@ class $AppDatabaseManager {
       $$UserMessagesTableTableManager(_db, _db.userMessages);
   $$FavouriteMessagesTableTableManager get favouriteMessages =>
       $$FavouriteMessagesTableTableManager(_db, _db.favouriteMessages);
+  $$FestivalOverridesTableTableManager get festivalOverrides =>
+      $$FestivalOverridesTableTableManager(_db, _db.festivalOverrides);
+  $$CustomFestivalsTableTableManager get customFestivals =>
+      $$CustomFestivalsTableTableManager(_db, _db.customFestivals);
+  $$WishSessionsTableTableManager get wishSessions =>
+      $$WishSessionsTableTableManager(_db, _db.wishSessions);
+  $$WishSessionItemsTableTableManager get wishSessionItems =>
+      $$WishSessionItemsTableTableManager(_db, _db.wishSessionItems);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
 }

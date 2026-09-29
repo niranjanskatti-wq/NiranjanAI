@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../core/theme/tokens.dart';
 import '../core/util/format.dart';
 import '../data/enums.dart';
 import '../data/models.dart';
+import '../features/festivals/festival_route.dart';
 import '../features/reminders/reminders_screen.dart';
 import '../features/wish/wish_buttons.dart';
 import 'common.dart';
@@ -23,7 +23,7 @@ class UpcomingRow extends ConsumerWidget {
     final e = item.entry;
     final bell = (ref.watch(allRemindersProvider).value?[e.event.id] ?? const []).any((s) => s.enabled);
     final sub = [
-      if (e.kind != EventKind.other) e.relationLine,
+      if (e.relationLine.isNotEmpty && e.kind != EventKind.other) e.relationLine,
       e.typeLabel,
       fmtDayMonth(item.date),
       ?item.yearsPhrase,
@@ -36,7 +36,7 @@ class UpcomingRow extends ConsumerWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => context.push('/event/${e.event.id}'),
+        onTap: () => openEntry(context, e),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 10, 14, 10),
           child: Row(
@@ -57,7 +57,7 @@ class UpcomingRow extends ConsumerWidget {
                     ]),
                     const SizedBox(height: 2),
                     Text(sub, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    if (e.kind != EventKind.other) ...[
+                    if (e.kind == EventKind.person || e.kind == EventKind.couple) ...[
                       const SizedBox(height: 3),
                       Stars(value: e.stars, size: 11),
                     ],

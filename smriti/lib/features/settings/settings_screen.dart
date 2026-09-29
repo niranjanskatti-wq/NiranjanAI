@@ -58,6 +58,11 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Festivals')),
+          tile(Icons.celebration_outlined, 'Festivals', 'Switch on or off, edit dates, add your own',
+              () => context.push('/festivals')),
+          const FestivalReminderSwitches(),
+          const SizedBox(height: 12),
           const ReminderSettingsSection(),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Contacts')),
@@ -78,8 +83,7 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
-              ''
-              'Festivals & Wish Mode · Excel export and backup · Widget and app lock',
+              'Excel export and backup · Greeting cards · Widget and app lock',
               style: context.text.bodySmall,
             ),
           ),

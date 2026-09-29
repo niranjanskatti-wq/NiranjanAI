@@ -11,7 +11,11 @@ import 'features/contacts/contact_sync.dart';
 import 'features/contacts/import_birthdays_screen.dart';
 import 'features/events/event_detail_screen.dart';
 import 'features/events/event_form_screen.dart';
+import 'features/festivals/festival_model.dart';
+import 'features/festivals/festivals_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/wishmode/wish_mode_runner.dart';
+import 'features/wishmode/wish_mode_setup.dart';
 import 'features/messages/event_message_screen.dart';
 import 'features/messages/library_screen.dart';
 import 'features/messages/thank_you_screen.dart';
@@ -101,6 +105,19 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         ),
         GoRoute(path: '/reliability', builder: (_, _) => const ReliabilityScreen()),
         GoRoute(path: '/thank-you', builder: (_, _) => const ThankYouScreen()),
+        GoRoute(path: '/festivals', builder: (_, _) => const FestivalsScreen()),
+        GoRoute(
+          path: '/festival',
+          builder: (_, state) => FestivalScreen(festivalKey: state.uri.queryParameters['key'] ?? ''),
+        ),
+        GoRoute(
+          path: '/wish-mode/new',
+          builder: (_, state) => WishModeSetupScreen(festivalKey: state.uri.queryParameters['festival']),
+        ),
+        GoRoute(
+          path: '/wish-mode/:id',
+          builder: (_, state) => WishModeRunner(sessionId: int.parse(state.pathParameters['id']!)),
+        ),
         GoRoute(
           path: '/event/:id/message',
           builder: (_, state) => EventMessageScreen(eventId: int.parse(state.pathParameters['id']!)),
@@ -167,7 +184,8 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     } else if (t.kind == 'month') {
       router.go('/calendar');
     } else if (t.kind == 'fest') {
-      router.push('/festivals');
+      final key = t.festivalKey;
+      router.push(key == null ? '/festivals' : '/festival?key=${Uri.encodeQueryComponent(key)}');
     } else if (id != null) {
       router.push('/event/$id');
     }
@@ -194,6 +212,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(entriesProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(allRemindersProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(wishedKeysProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
+    ref.listen(festivalsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',
       debugShowCheckedModeBanner: false,

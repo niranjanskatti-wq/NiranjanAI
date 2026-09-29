@@ -7,6 +7,7 @@ import '../../core/util/occurrence.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/event_row.dart';
+import '../festivals/festival_model.dart';
 
 /// Month grid with coloured dots for each event; tap a day to see its events.
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -42,7 +43,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
+    final entries = ref.watch(allEntriesProvider);
     final today = ref.watch(todayProvider).value ?? Day.today();
     final byDay = _byDay(entries, today);
     final daysCount = daysInMonth(_month.year, _month.month);

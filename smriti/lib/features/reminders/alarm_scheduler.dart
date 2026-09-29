@@ -6,6 +6,7 @@ import 'package:workmanager/workmanager.dart';
 
 import '../../data/database.dart';
 import '../../data/repository.dart';
+import '../festivals/festival_alarms.dart';
 import 'alarm_planner.dart';
 import 'notification_service.dart';
 import 'reminder_model.dart';
@@ -93,6 +94,7 @@ class AlarmScheduler {
 void backgroundDispatcher() {
   Workmanager().executeTask((task, input) async {
     await NotificationService.initTimeZones();
+    if (AlarmScheduler.extraSources.isEmpty) AlarmScheduler.extraSources.add(festivalAlarms);
     final db = AppDatabase();
     try {
       await AlarmScheduler.syncNow(db);

@@ -5,7 +5,7 @@ Design review: `docs/design-review.html` · Screenshots: `test/screenshots/`
 
 ## Current status
 Building all phases in a row (your choice), testing everything on the phone at the end.
-**Phase 4 · Message library** — built.
+**Phase 5 · Festivals & Wish Mode** — built.
 
 ## Done
 ### Phase 0 · Design (approved)
@@ -96,11 +96,25 @@ Building all phases in a row (your choice), testing everything on the phone at t
   by WhatsApp, SMS or Copy
 - 55 automatic tests (message coverage per relationship, occasion, language and festival)
 
+### Phase 5 · Festivals & Wish Mode
+- Festivals screen (Settings › Festivals): all 29 festivals with an on/off switch and next date;
+  "Add my own festival" (same date every year, or dates that change each year)
+- Festival page: next date, "Start Wish Mode", switch on/off, rename, change the date for any year
+  (changed dates in bold, "Reset" puts back the calendar date), who to suggest in Wish Mode
+  (e.g. siblings for Raksha Bandhan), delete your own festivals
+- Switched-on festivals appear on Home with a countdown (and a Festivals filter), in the calendar and
+  in search; festival reminder on the morning of the day (and optionally the evening before)
+- Wish Mode for festivals: choose who (suggested relations, by stars, everyone, or pick people),
+  then one person at a time with photo, name and a ready message in your language; WhatsApp, Text,
+  Copy, Call, Change, Edit, Skip, Next; "12 of 40 wished" progress; Pause and continue from Home
+- Wish Mode for today: "Start Wish Mode" on the Today banner goes through everyone celebrating today
+- Sending from Wish Mode counts as wished straight away
+- 61 automatic tests (festival dates, edits and resets, your own festivals, festival reminders,
+  pausing and continuing Wish Mode)
+
 ## Pending
-- Phase 5: Festivals & Wish Mode
 - Phase 6: Excel, backup, cards, photo memories · Phase 7: Widget, gifts planner, groups, lock
 - Phase 8: Polish and full phone test
-- Festivals screen (Phase 5): edit any date, switch festivals on/off, add your own, reset an edit
 
 ## Known issues
 - The two signing secrets must be added on GitHub before the build you keep using. A build made

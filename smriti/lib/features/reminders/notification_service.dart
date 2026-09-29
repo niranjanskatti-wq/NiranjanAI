@@ -21,6 +21,7 @@ class NotificationTap {
 
   String get kind => data['k'] as String? ?? '';
   int? get eventId => (data['e'] as num?)?.toInt();
+  String? get festivalKey => data['fk'] as String?;
   String? get date => data['d'] as String?;
 }
 

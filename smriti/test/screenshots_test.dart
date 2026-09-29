@@ -99,11 +99,13 @@ void main() {
       child: const SmritiApp(),
     ));
     for (var i = 0; i < 5; i++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 40)));
       await tester.pump(const Duration(milliseconds: 100));
     }
     if (route != null) {
       tester.element(find.byType(Scaffold).first).push(route);
-      for (var i = 0; i < 8; i++) {
+      for (var i = 0; i < 25; i++) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 40)));
         await tester.pump(const Duration(milliseconds: 100));
       }
     }
@@ -127,5 +129,16 @@ void main() {
   testWidgets('event', (t) async => shoot(t, await seed(), 'event_dark', route: '/event/3'));
   testWidgets('share sheet', (t) async => shoot(t, await seed(), 'share_dark', tap: 'Share'));
   testWidgets('messages', (t) async => shoot(t, await seed(theme: 'light'), 'messages_light', route: '/messages'));
+  testWidgets('festivals', (t) async => shoot(t, await seed(), 'festivals_dark', route: '/festivals'));
+  testWidgets('wish mode', (t) async {
+    final db = await seed(theme: 'light');
+    await db.into(db.wishSessions).insert(WishSessionsCompanion.insert(
+        title: 'Diwali wishes', festivalId: const Value('b:diwali_lakshmi_puja'), occasionDate: '2026-11-08'));
+    for (var i = 2; i <= 6; i++) {
+      await db.into(db.wishSessionItems).insert(WishSessionItemsCompanion.insert(
+          sessionId: 1, personId: i, position: i, status: Value(i == 2 ? 'wished' : 'pending')));
+    }
+    await shoot(t, db, 'wishmode_light', route: '/wish-mode/1');
+  });
   testWidgets('calendar', (t) async => shoot(t, await seed(), 'calendar_dark', route: '/calendar'));
 }
