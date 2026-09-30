@@ -3,6 +3,8 @@ package com.niranjan.smriti
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
@@ -18,12 +20,22 @@ import java.util.Locale
  * hasn't been opened for a while.
  */
 abstract class SmritiWidgetBase : HomeWidgetProvider() {
-    protected data class Item(val title: String, val label: String, val date: Calendar, val days: Int)
+    protected data class Item(
+        val title: String,
+        val label: String,
+        val date: Calendar,
+        val days: Int,
+        val key: String = "",
+        val day: String = "",
+    )
     protected data class Row(val root: Int, val days: Int, val name: Int, val label: Int)
 
     protected abstract val layout: Int
 
     protected abstract fun fill(views: RemoteViews, items: List<Item>)
+
+    /** Called before [fill] on each update, for widgets that need more saved data. */
+    protected open fun prepare(context: Context, widgetData: SharedPreferences) {}
 
     override fun onUpdate(
         context: Context,
@@ -32,6 +44,7 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
         widgetData: SharedPreferences,
     ) {
         val items = upcoming(widgetData.getString("items", null))
+        prepare(context, widgetData)
         for (id in appWidgetIds) {
             val views = RemoteViews(context.packageName, layout)
             views.setOnClickPendingIntent(
@@ -105,7 +118,7 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
                 }
                 // Half a day of slack keeps daylight-saving shifts from changing the count.
                 val days = ((date.timeInMillis - today.timeInMillis + 43_200_000L) / 86_400_000L).toInt()
-                if (days >= 0) out.add(Item(o.optString("t"), o.optString("l"), date, days))
+                if (days >= 0) out.add(Item(o.optString("t"), o.optString("l"), date, days, o.optString("k"), o.getString("d")))
             }
         } catch (_: Exception) {
             return emptyList()
@@ -170,5 +183,93 @@ class SmritiListWidget : SmritiWidgetBase() {
     override fun fill(views: RemoteViews, items: List<Item>) {
         showEmpty(views, items.isEmpty())
         fillRows(views, rows, items)
+    }
+}
+
+/**
+ * "Today": who is celebrating today. The border shines while anyone is
+ * still to be wished; tapping ✓ Done marks them wished and, once everyone
+ * is done, the shine stops. Quiet when there is nothing today.
+ */
+class SmritiTodayWidget : SmritiWidgetBase() {
+    override val layout = R.layout.smriti_widget_today
+
+    private data class TodayRow(val root: Int, val name: Int, val label: Int, val done: Int)
+
+    private val rows = listOf(
+        TodayRow(R.id.row1, R.id.row1_name, R.id.row1_label, R.id.row1_done),
+        TodayRow(R.id.row2, R.id.row2_name, R.id.row2_label, R.id.row2_done),
+        TodayRow(R.id.row3, R.id.row3_name, R.id.row3_label, R.id.row3_done),
+    )
+
+    private var context: Context? = null
+    private var done: Set<String> = emptySet()
+
+    override fun prepare(context: Context, widgetData: SharedPreferences) {
+        this.context = context
+        done = try {
+            val arr = JSONArray(widgetData.getString("done", "[]"))
+            (0 until arr.length()).map { arr.getString(it) }.toSet()
+        } catch (_: Exception) {
+            emptySet()
+        }
+    }
+
+    private fun link(context: Context, uri: String) =
+        HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java, Uri.parse(uri))
+
+    override fun fill(views: RemoteViews, items: List<Item>) {
+        val ctx = context ?: return
+        val today = items.filter { it.days == 0 }.take(3)
+        var left = 0
+        rows.forEachIndexed { i, row ->
+            val item = today.getOrNull(i)
+            if (item == null) {
+                views.setViewVisibility(row.root, View.GONE)
+                return@forEachIndexed
+            }
+            views.setViewVisibility(row.root, View.VISIBLE)
+            views.setTextViewText(row.name, item.title)
+            views.setTextViewText(row.label, item.label)
+            val key = Uri.encode(item.key)
+            views.setOnClickPendingIntent(row.name, link(ctx, "smriti://open?k=$key"))
+            views.setOnClickPendingIntent(row.label, link(ctx, "smriti://open?k=$key"))
+            if ("${item.key}|${item.day}" in done) {
+                views.setTextViewText(row.done, "✓ Wished")
+                views.setTextColor(row.done, Color.parseColor("#8FCB8F"))
+                views.setInt(row.done, "setBackgroundResource", 0)
+                views.setOnClickPendingIntent(row.done, link(ctx, "smriti://open?k=$key"))
+            } else {
+                left++
+                views.setTextViewText(row.done, "✓ Done")
+                views.setTextColor(row.done, Color.parseColor("#1E1C1A"))
+                views.setInt(row.done, "setBackgroundResource", R.drawable.widget_done_bg)
+                views.setOnClickPendingIntent(row.done, link(ctx, "smriti://done?k=$key&d=${item.day}"))
+            }
+        }
+
+        val shine = left > 0
+        views.setViewVisibility(R.id.glow, if (shine) View.VISIBLE else View.GONE)
+        views.setViewVisibility(R.id.calm, if (shine) View.GONE else View.VISIBLE)
+        views.setTextViewText(
+            R.id.status,
+            when {
+                today.isEmpty() -> ""
+                shine -> if (left == 1) "1 to wish" else "$left to wish"
+                else -> "All wished ✓"
+            },
+        )
+
+        if (today.isEmpty()) {
+            val next = items.firstOrNull()
+            views.setTextViewText(
+                R.id.empty,
+                if (next == null) "Nothing today"
+                else "Nothing today · Next: ${next.title} " + if (next.days == 1) "tomorrow" else "in ${next.days} days",
+            )
+            views.setViewVisibility(R.id.empty, View.VISIBLE)
+        } else {
+            views.setViewVisibility(R.id.empty, View.GONE)
+        }
     }
 }

@@ -230,6 +230,14 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Coming up (4×3): the next six dates as "days · name · occasion"
 - Add from Settings › Home-screen widgets, or long-press the home screen › Widgets › Smriti
 
+### "Today" widget that shines
+- Small (4×1, grows to fit up to 3 people): today's birthdays, anniversaries and other dates
+- The gold border pulses while anyone is still to be wished; nothing today = quiet border,
+  with "Next: … in N days"
+- Tap ✓ Done after you call or message: Smriti marks them wished (same as the Wished button
+  in the app) and the row shows "✓ Wished". When everyone is done the shine stops
+- Tap a name to open it in Smriti
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

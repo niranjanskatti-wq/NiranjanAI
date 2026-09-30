@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/tokens.dart';
@@ -190,12 +193,36 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
     NotificationService.taps.addListener(_onTap);
+    if (NotificationService.supported) {
+      HomeWidget.initiallyLaunchedFromHomeWidget().then(_onWidgetTap);
+      _widgetTaps = HomeWidget.widgetClicked.listen(_onWidgetTap);
+    }
+  }
+
+  StreamSubscription<Uri?>? _widgetTaps;
+  final _messenger = GlobalKey<ScaffoldMessengerState>();
+
+  /// "✓ Done" or a name tapped on the Today widget.
+  Future<void> _onWidgetTap(Uri? uri) async {
+    final to = await HomeWidgetService.handleTap(uri, ref.read(repoProvider));
+    if (to == null || !mounted) return;
+    if (to == 'done') {
+      _messenger.currentState?.showSnackBar(const SnackBar(content: Text('Marked as wished ✓')));
+      _publishWidget();
+      return;
+    }
+    // The router may not exist yet if the app was just started by this tap.
+    for (var i = 0; i < 20 && _router == null; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+    _router?.push(to);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     NotificationService.taps.removeListener(_onTap);
+    _widgetTaps?.cancel();
     super.dispose();
   }
 
@@ -216,7 +243,8 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
   /// Refreshes the home-screen widget once the data has loaded.
   void _publishWidget() {
     if (!ref.read(entriesProvider).hasValue) return;
-    HomeWidgetService.publish(ref.read(visibleEntriesProvider), ref.read(todayProvider).value ?? Day.today());
+    HomeWidgetService.publish(ref.read(visibleEntriesProvider), ref.read(todayProvider).value ?? Day.today(),
+        done: ref.read(wishedKeysProvider));
   }
 
   /// Opens the right screen for a tapped notification or its button.
@@ -272,6 +300,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(festivalsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(autoCallsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(visibleEntriesProvider, (_, _) => _publishWidget());
+    ref.listen(wishedKeysProvider, (_, _) => _publishWidget());
     ref.listen(entriesProvider, (_, _) => CalendarSync.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',
@@ -280,6 +309,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
       darkTheme: buildTheme(Brightness.dark),
       themeMode: mode,
       routerConfig: _router,
+      scaffoldMessengerKey: _messenger,
       builder: (context, child) => LockGate(
         routeChanges: _router!.routerDelegate,
         isAlarm: () {

@@ -6,4 +6,6 @@
     <string name="widget_countdown_desc">A big countdown to the next date</string>
     <string name="widget_list_name">Smriti · Coming up</string>
     <string name="widget_list_desc">The next six dates in a list</string>
+    <string name="widget_today_name">Smriti · Today</string>
+    <string name="widget_today_desc">Today\'s birthdays and anniversaries; glows until you mark each one done</string>
 </resources>
