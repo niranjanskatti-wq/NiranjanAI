@@ -146,8 +146,11 @@ Day? previousOccurrence({
 
 /// How many years an event is marking on [occurrence] (age for birthdays,
 /// years married for anniversaries). Null when the start year is unknown.
+/// A believable year of birth or marriage. Phones save "no year" as 1604 or 0.
+int? realYear(int? y) => y != null && y >= 1900 && y <= DateTime.now().year ? y : null;
+
 int? yearsOn(Day occurrence, int? startYear) {
-  if (startYear == null) return null;
+  if (startYear == null || startYear < 1900) return null;
   final n = occurrence.year - startYear;
   return n > 0 ? n : null;
 }

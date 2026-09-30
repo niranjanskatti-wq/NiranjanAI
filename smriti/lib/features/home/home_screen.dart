@@ -92,7 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
     final today = ref.watch(todayProvider).value ?? Day.today();
     final me = ref.watch(meProvider).value;
     final notices = ref.watch(noticesProvider).value ?? const [];
-    final missed = ref.watch(missedProvider);
+    final missed = (ref.watch(showMissedProvider).value ?? true) ? ref.watch(missedProvider) : const <Upcoming>[];
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -194,10 +194,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                           ),
                         ),
                       if (missed.isNotEmpty) ...[
-                        const SliverToBoxAdapter(
+                        SliverToBoxAdapter(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: SectionLabel('Missed this week'),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: SectionLabel(
+                              'Missed this week',
+                              trailing: TextButton(
+                                onPressed: () async {
+                                  await ref.read(databaseProvider).setSetting('showMissed', 'false');
+                                  if (context.mounted) {
+                                    showToast(context, 'Missed list hidden. Turn it back on with the filter button above.');
+                                  }
+                                },
+                                child: const Text('Hide'),
+                              ),
+                            ),
                           ),
                         ),
                         SliverPadding(
@@ -317,6 +328,10 @@ class _Header extends StatelessWidget {
   }
 }
 
+/// Whether Home shows "Missed this week".
+final showMissedProvider =
+    StreamProvider<bool>((ref) => ref.watch(databaseProvider).watchSetting('showMissed').map((v) => v != 'false'));
+
 /// "What to show" button on Home: switch festivals and other dates on or off.
 class ShowButton extends ConsumerWidget {
   const ShowButton({super.key});
@@ -326,7 +341,8 @@ class ShowButton extends ConsumerWidget {
     final c = context.c;
     final festivals = ref.watch(showFestivalsProvider).value ?? true;
     final important = ref.watch(showImportantProvider).value ?? true;
-    final filtered = !festivals || !important;
+    final missed = ref.watch(showMissedProvider).value ?? true;
+    final filtered = !festivals || !important || !missed;
     return Badge(
       isLabelVisible: filtered,
       backgroundColor: c.gold,
@@ -357,6 +373,7 @@ class _WhatToShowSheet extends ConsumerWidget {
     final db = ref.read(databaseProvider);
     final festivals = ref.watch(showFestivalsProvider).value ?? true;
     final important = ref.watch(showImportantProvider).value ?? true;
+    final missed = ref.watch(showMissedProvider).value ?? true;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
@@ -383,6 +400,13 @@ class _WhatToShowSheet extends ConsumerWidget {
             subtitle: const Text('Insurance, passport, rent…'),
             value: important,
             onChanged: (v) => db.setSetting('showImportant', '$v'),
+          ),
+          SwitchListTile(
+            secondary: Icon(Icons.history_rounded, color: c.muted),
+            title: const Text('Missed this week'),
+            subtitle: const Text('Dates from the last 7 days not yet wished'),
+            value: missed,
+            onChanged: (v) => db.setSetting('showMissed', '$v'),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

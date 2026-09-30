@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/util/occurrence.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
 import '../../data/database.dart';
@@ -73,7 +74,7 @@ class _BulkAddScreenState extends ConsumerState<BulkAddScreen> {
         contactId: Value(c.id),
         contactLookupKey: Value(c.lookupKey),
         photoPath: Value(photo),
-        birthYear: Value(d.birthday?.year),
+        birthYear: Value(realYear(d.birthday?.year)),
       ));
       if (d.birthday != null) {
         await repo.saveEvent(
@@ -204,7 +205,7 @@ class _BulkAddScreenState extends ConsumerState<BulkAddScreen> {
                     avatar: Icon(Icons.cake_outlined, size: 18, color: context.c.goldText),
                     label: Text(d.birthday == null
                         ? 'Add birthday'
-                        : fmtEventDate(day: d.birthday!.day, month: d.birthday!.month, year: d.birthday!.year)),
+                        : fmtEventDate(day: d.birthday!.day, month: d.birthday!.month, year: realYear(d.birthday!.year))),
                     onPressed: () async {
                       final b = await pickDate(context, initial: d.birthday, title: '${d.contact.name}\'s birthday');
                       if (b != null) setState(() => d.birthday = b);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../family/family.dart';
 import '../gifts/gifts.dart';
 import '../groups/groups_screen.dart';
 import '../memories/memories.dart';
@@ -132,6 +133,8 @@ class _PersonView extends ConsumerWidget {
                   ),
               ],
             ),
+            const SizedBox(height: 12),
+            FamilyCard(person: p),
             const SizedBox(height: 12),
             if (!p.isMe) ...[
               PersonGroupsCard(person: p),

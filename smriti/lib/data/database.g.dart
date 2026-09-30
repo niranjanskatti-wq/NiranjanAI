@@ -7799,6 +7799,314 @@ class GroupMembersCompanion extends UpdateCompanion<GroupMember> {
   }
 }
 
+class $FamilyLinksTable extends FamilyLinks
+    with TableInfo<$FamilyLinksTable, FamilyLink> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FamilyLinksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _personIdMeta = const VerificationMeta(
+    'personId',
+  );
+  @override
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+    'person_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES people (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _relativeIdMeta = const VerificationMeta(
+    'relativeId',
+  );
+  @override
+  late final GeneratedColumn<int> relativeId = GeneratedColumn<int>(
+    'relative_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES people (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _relationMeta = const VerificationMeta(
+    'relation',
+  );
+  @override
+  late final GeneratedColumn<String> relation = GeneratedColumn<String>(
+    'relation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, personId, relativeId, relation];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'family_links';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FamilyLink> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('person_id')) {
+      context.handle(
+        _personIdMeta,
+        personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_personIdMeta);
+    }
+    if (data.containsKey('relative_id')) {
+      context.handle(
+        _relativeIdMeta,
+        relativeId.isAcceptableOrUnknown(data['relative_id']!, _relativeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_relativeIdMeta);
+    }
+    if (data.containsKey('relation')) {
+      context.handle(
+        _relationMeta,
+        relation.isAcceptableOrUnknown(data['relation']!, _relationMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_relationMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FamilyLink map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FamilyLink(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      personId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}person_id'],
+      )!,
+      relativeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}relative_id'],
+      )!,
+      relation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}relation'],
+      )!,
+    );
+  }
+
+  @override
+  $FamilyLinksTable createAlias(String alias) {
+    return $FamilyLinksTable(attachedDatabase, alias);
+  }
+}
+
+class FamilyLink extends DataClass implements Insertable<FamilyLink> {
+  final int id;
+  final int personId;
+  final int relativeId;
+  final String relation;
+  const FamilyLink({
+    required this.id,
+    required this.personId,
+    required this.relativeId,
+    required this.relation,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['person_id'] = Variable<int>(personId);
+    map['relative_id'] = Variable<int>(relativeId);
+    map['relation'] = Variable<String>(relation);
+    return map;
+  }
+
+  FamilyLinksCompanion toCompanion(bool nullToAbsent) {
+    return FamilyLinksCompanion(
+      id: Value(id),
+      personId: Value(personId),
+      relativeId: Value(relativeId),
+      relation: Value(relation),
+    );
+  }
+
+  factory FamilyLink.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FamilyLink(
+      id: serializer.fromJson<int>(json['id']),
+      personId: serializer.fromJson<int>(json['personId']),
+      relativeId: serializer.fromJson<int>(json['relativeId']),
+      relation: serializer.fromJson<String>(json['relation']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'personId': serializer.toJson<int>(personId),
+      'relativeId': serializer.toJson<int>(relativeId),
+      'relation': serializer.toJson<String>(relation),
+    };
+  }
+
+  FamilyLink copyWith({
+    int? id,
+    int? personId,
+    int? relativeId,
+    String? relation,
+  }) => FamilyLink(
+    id: id ?? this.id,
+    personId: personId ?? this.personId,
+    relativeId: relativeId ?? this.relativeId,
+    relation: relation ?? this.relation,
+  );
+  FamilyLink copyWithCompanion(FamilyLinksCompanion data) {
+    return FamilyLink(
+      id: data.id.present ? data.id.value : this.id,
+      personId: data.personId.present ? data.personId.value : this.personId,
+      relativeId: data.relativeId.present
+          ? data.relativeId.value
+          : this.relativeId,
+      relation: data.relation.present ? data.relation.value : this.relation,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyLink(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('relativeId: $relativeId, ')
+          ..write('relation: $relation')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, personId, relativeId, relation);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FamilyLink &&
+          other.id == this.id &&
+          other.personId == this.personId &&
+          other.relativeId == this.relativeId &&
+          other.relation == this.relation);
+}
+
+class FamilyLinksCompanion extends UpdateCompanion<FamilyLink> {
+  final Value<int> id;
+  final Value<int> personId;
+  final Value<int> relativeId;
+  final Value<String> relation;
+  const FamilyLinksCompanion({
+    this.id = const Value.absent(),
+    this.personId = const Value.absent(),
+    this.relativeId = const Value.absent(),
+    this.relation = const Value.absent(),
+  });
+  FamilyLinksCompanion.insert({
+    this.id = const Value.absent(),
+    required int personId,
+    required int relativeId,
+    required String relation,
+  }) : personId = Value(personId),
+       relativeId = Value(relativeId),
+       relation = Value(relation);
+  static Insertable<FamilyLink> custom({
+    Expression<int>? id,
+    Expression<int>? personId,
+    Expression<int>? relativeId,
+    Expression<String>? relation,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (personId != null) 'person_id': personId,
+      if (relativeId != null) 'relative_id': relativeId,
+      if (relation != null) 'relation': relation,
+    });
+  }
+
+  FamilyLinksCompanion copyWith({
+    Value<int>? id,
+    Value<int>? personId,
+    Value<int>? relativeId,
+    Value<String>? relation,
+  }) {
+    return FamilyLinksCompanion(
+      id: id ?? this.id,
+      personId: personId ?? this.personId,
+      relativeId: relativeId ?? this.relativeId,
+      relation: relation ?? this.relation,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (personId.present) {
+      map['person_id'] = Variable<int>(personId.value);
+    }
+    if (relativeId.present) {
+      map['relative_id'] = Variable<int>(relativeId.value);
+    }
+    if (relation.present) {
+      map['relation'] = Variable<String>(relation.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyLinksCompanion(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('relativeId: $relativeId, ')
+          ..write('relation: $relation')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -8029,6 +8337,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PhotoMemoriesTable photoMemories = $PhotoMemoriesTable(this);
   late final $GroupsTable groups = $GroupsTable(this);
   late final $GroupMembersTable groupMembers = $GroupMembersTable(this);
+  late final $FamilyLinksTable familyLinks = $FamilyLinksTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -8051,6 +8360,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     photoMemories,
     groups,
     groupMembers,
+    familyLinks,
     settings,
   ];
   @override
@@ -8145,6 +8455,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('group_members', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'people',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('family_links', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'people',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('family_links', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -14783,6 +15107,380 @@ typedef $$GroupMembersTableProcessedTableManager =
       GroupMember,
       PrefetchHooks Function({bool groupId, bool personId})
     >;
+typedef $$FamilyLinksTableCreateCompanionBuilder =
+    FamilyLinksCompanion Function({
+      Value<int> id,
+      required int personId,
+      required int relativeId,
+      required String relation,
+    });
+typedef $$FamilyLinksTableUpdateCompanionBuilder =
+    FamilyLinksCompanion Function({
+      Value<int> id,
+      Value<int> personId,
+      Value<int> relativeId,
+      Value<String> relation,
+    });
+
+final class $$FamilyLinksTableReferences
+    extends BaseReferences<_$AppDatabase, $FamilyLinksTable, FamilyLink> {
+  $$FamilyLinksTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $PeopleTable _personIdTable(_$AppDatabase db) =>
+      db.people.createAlias('family_links__person_id__people__id');
+
+  $$PeopleTableProcessedTableManager get personId {
+    final $_column = $_itemColumn<int>('person_id')!;
+
+    final manager = $$PeopleTableTableManager(
+      $_db,
+      $_db.people,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_personIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $PeopleTable _relativeIdTable(_$AppDatabase db) =>
+      db.people.createAlias('family_links__relative_id__people__id');
+
+  $$PeopleTableProcessedTableManager get relativeId {
+    final $_column = $_itemColumn<int>('relative_id')!;
+
+    final manager = $$PeopleTableTableManager(
+      $_db,
+      $_db.people,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_relativeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$FamilyLinksTableFilterComposer
+    extends Composer<_$AppDatabase, $FamilyLinksTable> {
+  $$FamilyLinksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get relation => $composableBuilder(
+    column: $table.relation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PeopleTableFilterComposer get personId {
+    final $$PeopleTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableFilterComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PeopleTableFilterComposer get relativeId {
+    final $$PeopleTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.relativeId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableFilterComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FamilyLinksTableOrderingComposer
+    extends Composer<_$AppDatabase, $FamilyLinksTable> {
+  $$FamilyLinksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get relation => $composableBuilder(
+    column: $table.relation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PeopleTableOrderingComposer get personId {
+    final $$PeopleTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableOrderingComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PeopleTableOrderingComposer get relativeId {
+    final $$PeopleTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.relativeId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableOrderingComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FamilyLinksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FamilyLinksTable> {
+  $$FamilyLinksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get relation =>
+      $composableBuilder(column: $table.relation, builder: (column) => column);
+
+  $$PeopleTableAnnotationComposer get personId {
+    final $$PeopleTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableAnnotationComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PeopleTableAnnotationComposer get relativeId {
+    final $$PeopleTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.relativeId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableAnnotationComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FamilyLinksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FamilyLinksTable,
+          FamilyLink,
+          $$FamilyLinksTableFilterComposer,
+          $$FamilyLinksTableOrderingComposer,
+          $$FamilyLinksTableAnnotationComposer,
+          $$FamilyLinksTableCreateCompanionBuilder,
+          $$FamilyLinksTableUpdateCompanionBuilder,
+          (FamilyLink, $$FamilyLinksTableReferences),
+          FamilyLink,
+          PrefetchHooks Function({bool personId, bool relativeId})
+        > {
+  $$FamilyLinksTableTableManager(_$AppDatabase db, $FamilyLinksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FamilyLinksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FamilyLinksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FamilyLinksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> personId = const Value.absent(),
+                Value<int> relativeId = const Value.absent(),
+                Value<String> relation = const Value.absent(),
+              }) => FamilyLinksCompanion(
+                id: id,
+                personId: personId,
+                relativeId: relativeId,
+                relation: relation,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int personId,
+                required int relativeId,
+                required String relation,
+              }) => FamilyLinksCompanion.insert(
+                id: id,
+                personId: personId,
+                relativeId: relativeId,
+                relation: relation,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FamilyLinksTable, FamilyLink>(table),
+                  $$FamilyLinksTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({personId = false, relativeId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (personId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.personId,
+                        referencedTable: $$FamilyLinksTableReferences
+                            ._personIdTable(db),
+                        referencedColumn: $$FamilyLinksTableReferences
+                            ._personIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (relativeId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.relativeId,
+                        referencedTable: $$FamilyLinksTableReferences
+                            ._relativeIdTable(db),
+                        referencedColumn: $$FamilyLinksTableReferences
+                            ._relativeIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$FamilyLinksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FamilyLinksTable,
+      FamilyLink,
+      $$FamilyLinksTableFilterComposer,
+      $$FamilyLinksTableOrderingComposer,
+      $$FamilyLinksTableAnnotationComposer,
+      $$FamilyLinksTableCreateCompanionBuilder,
+      $$FamilyLinksTableUpdateCompanionBuilder,
+      (FamilyLink, $$FamilyLinksTableReferences),
+      FamilyLink,
+      PrefetchHooks Function({bool personId, bool relativeId})
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -14953,6 +15651,8 @@ class $AppDatabaseManager {
       $$GroupsTableTableManager(_db, _db.groups);
   $$GroupMembersTableTableManager get groupMembers =>
       $$GroupMembersTableTableManager(_db, _db.groupMembers);
+  $$FamilyLinksTableTableManager get familyLinks =>
+      $$FamilyLinksTableTableManager(_db, _db.familyLinks);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
 }

@@ -180,6 +180,20 @@ Building all phases in a row (your choice), testing everything on the phone at t
   Smriti are left out. New people are linked to the matching phone contact by name
 - 80 automatic tests
 
+### Fixes from your phone screenshots, and the family tree
+- Ages hidden as "Turning …": phones save birthdays without a year as 1604, which Smriti read as
+  "Turning 422". Years before 1900 are now treated as unknown (existing ones cleaned up on update)
+- Home rows: Call/Share stacked on the right, and the label and age wrap to a new line instead of
+  being cut off, so "Turning 61" / "25 years" always shows in full
+- Missed this week: a "Wished ✓" button on each row; anything you started from Smriti (call or
+  message) counts; "Hide" on the heading, or the switch in the filter button, hides the section
+- Family tree: a Family card on every profile. Add husband/wife, father, mother, son, daughter,
+  brother, sister, grandparents, grandchildren, in-laws, uncle, aunt, nephew, niece, cousin.
+  Each link is saved both ways (add Appa as your father and you appear as his son/child), brothers
+  and sisters are found through shared parents, and "See family tree" shows everyone by generation.
+  Adding people to your own family also sets their relationship to you (no more Mom as "Friend")
+- 86 automatic tests
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

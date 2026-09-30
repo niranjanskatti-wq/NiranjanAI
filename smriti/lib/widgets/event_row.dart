@@ -5,6 +5,7 @@ import '../core/theme/tokens.dart';
 import '../core/util/format.dart';
 import '../data/enums.dart';
 import '../data/models.dart';
+import '../data/providers.dart';
 import '../features/festivals/festival_route.dart';
 import '../features/reminders/reminders_screen.dart';
 import '../features/wish/wish_buttons.dart';
@@ -78,33 +79,21 @@ class UpcomingRow extends ConsumerWidget {
                               ],
                             ]),
                             const SizedBox(height: 4),
-                            // Kind and age get their own line so the age is never cut off.
-                            Row(children: [
+                            // Kind and age wrap onto a new line rather than ever being cut off.
+                            Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
                               KindPill(entry: e),
-                              if (age != null) ...[
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    age,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontFamily: sans,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                      color: item.milestone ? c.goldText : c.text,
-                                    ),
+                              if (age != null)
+                                Text(
+                                  age,
+                                  style: TextStyle(
+                                    fontFamily: sans,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                    color: item.milestone ? c.goldText : c.text,
                                   ),
-                                ),
-                              ] else if (e.type == EventType.birthday && e.kind == EventKind.person) ...[
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: Text('No birth year',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: context.text.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
-                                ),
-                              ],
+                                )
+                              else if (e.type == EventType.birthday && e.kind == EventKind.person)
+                                Text('No birth year', style: context.text.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
                             ]),
                             const SizedBox(height: 4),
                             Text(details, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -113,12 +102,34 @@ class UpcomingRow extends ConsumerWidget {
                       ),
                       if (canWish(e)) ...[
                         const SizedBox(width: 6),
-                        MiniCallShare(entry: e, date: item.date, belated: belated),
+                        MiniCallShare(entry: e, date: item.date, belated: belated, vertical: true),
                       ],
                       const SizedBox(width: 10),
                       belated
-                          ? Text('${-item.daysLeft}d ago',
-                              style: context.text.bodySmall?.copyWith(fontWeight: FontWeight.w700))
+                          ? Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
+                              Text('${-item.daysLeft}d ago',
+                                  style: context.text.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+                              const SizedBox(height: 6),
+                              // Wished outside Smriti? One tap takes it off the Missed list.
+                              InkWell(
+                                borderRadius: BorderRadius.circular(999),
+                                onTap: () => ref
+                                    .read(repoProvider)
+                                    .markWished(eventId: e.event.id, occasionDate: item.date.toString(), personId: e.primary?.id),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(999),
+                                    border: Border.all(color: c.call),
+                                  ),
+                                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                    Icon(Icons.check_rounded, size: 14, color: c.call),
+                                    const SizedBox(width: 3),
+                                    Text('Wished', style: context.text.labelSmall?.copyWith(color: c.call)),
+                                  ]),
+                                ),
+                              ),
+                            ])
                           : _DaysLeft(days: item.daysLeft, color: festival ? saffron : null),
                     ],
                   ),

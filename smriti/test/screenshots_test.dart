@@ -18,6 +18,7 @@ import 'package:smriti/data/database.dart';
 import 'package:smriti/data/providers.dart';
 import 'package:smriti/data/repository.dart';
 import 'package:smriti/features/cards/card_screen.dart';
+import 'package:smriti/features/family/family.dart';
 import 'package:smriti/features/cards/card_templates.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 
@@ -160,6 +161,25 @@ void main() {
     await db.setSetting('showFestivals', 'false');
     await db.setSetting('showImportant', 'false');
     await shoot(t, db, 'home_people_only_dark', scroll: 500);
+  });
+  testWidgets('family tree', (t) async {
+    final db = await seed();
+    final r = Repository(db);
+    Future<Person> p(int id) async => (await r.allPeople()).firstWhere((x) => x.id == id);
+    final fam = FamilyRepo(db);
+    final me = await p(1);
+    await fam.link(me, await p(2), FamilyRel.father);
+    await fam.link(me, await p(6), FamilyRel.mother);
+    await fam.link(me, await p(3), FamilyRel.niece);
+    final wife = await r.insertPerson(PeopleCompanion.insert(name: 'Deepa'));
+    await fam.link(me, await p(wife), FamilyRel.wife);
+    final son = await r.insertPerson(PeopleCompanion.insert(name: 'Aarav'));
+    await fam.link(me, await p(son), FamilyRel.son);
+    final gm = await r.insertPerson(PeopleCompanion.insert(name: 'Kamala Katti', nickname: const Value('Ajji')));
+    await fam.link(me, await p(gm), FamilyRel.grandmother);
+    final sis = await r.insertPerson(PeopleCompanion.insert(name: 'Ria Katti'));
+    await fam.link(await p(2), await p(sis), FamilyRel.daughter);
+    await shoot(t, db, 'family_tree_dark', route: '/person/1/family');
   });
   testWidgets('settings', (t) async => shoot(t, await seed(), 'settings_dark', route: '/settings', scroll: 900));
   testWidgets('profile lower', (t) async => shoot(t, await seed(), 'profile_lower_dark', route: '/person/2', scroll: 700));

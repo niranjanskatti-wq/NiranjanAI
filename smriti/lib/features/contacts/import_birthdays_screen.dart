@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/util/occurrence.dart';
 import '../../core/util/format.dart';
 import '../../data/database.dart';
 import '../../data/enums.dart';
@@ -84,7 +85,7 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
           contactId: Value(f.contact.id),
           contactLookupKey: Value(f.contact.lookupKey),
           photoPath: Value(photo == null ? null : await savePhotoBytes(photo)),
-          birthYear: Value(f.type == EventType.birthday ? f.year : null),
+          birthYear: Value(f.type == EventType.birthday ? realYear(f.year) : null),
         ));
         created[f.contact.id] = personId;
       }
@@ -94,7 +95,7 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
           type: f.type.name,
           day: f.day,
           month: f.month,
-          year: Value(f.type == EventType.birthday ? null : f.year),
+          year: Value(f.type == EventType.birthday ? null : realYear(f.year)),
         ),
         personIds: [personId],
       );
@@ -133,7 +134,7 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
                       itemCount: found.length,
                       itemBuilder: (_, i) {
                         final f = found[i];
-                        final date = fmtEventDate(day: f.day, month: f.month, year: f.year);
+                        final date = fmtEventDate(day: f.day, month: f.month, year: realYear(f.year));
                         final note = f.duplicate
                             ? 'Already saved in Smriti'
                             : f.existing != null

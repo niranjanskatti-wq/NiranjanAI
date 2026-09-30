@@ -94,8 +94,8 @@ class EventEntry {
   /// Year the counted thing started: the birth year for a birthday with no
   /// event year, otherwise the event's own year.
   int? get startYear {
-    if (event.year != null) return event.year;
-    if (type == EventType.birthday && kind == EventKind.person) return primary?.birthYear;
+    if (realYear(event.year) != null) return event.year;
+    if (type == EventType.birthday && kind == EventKind.person) return realYear(primary?.birthYear);
     return null;
   }
 

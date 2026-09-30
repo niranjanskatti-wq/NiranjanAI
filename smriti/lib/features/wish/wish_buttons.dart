@@ -62,11 +62,14 @@ class CallShareButtons extends ConsumerWidget {
 
 /// Small round Call and Share icons for list rows.
 class MiniCallShare extends ConsumerWidget {
-  const MiniCallShare({super.key, required this.entry, required this.date, this.belated = false});
+  const MiniCallShare({super.key, required this.entry, required this.date, this.belated = false, this.vertical = false});
 
   final EventEntry entry;
   final Day date;
   final bool belated;
+
+  /// Stacked, so list rows keep room for the name and age.
+  final bool vertical;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,13 +85,16 @@ class MiniCallShare extends ConsumerWidget {
             icon: Icon(icon, size: 17, color: color),
           ),
         );
-    return Row(mainAxisSize: MainAxisSize.min, children: [
+    final children = [
       btn(Icons.call_rounded, c.call, 'Call',
           () => _act(context, ref, () => targetFor(ref, entry, date, belated: belated), share: false)),
-      const SizedBox(width: 6),
+      const SizedBox(width: 6, height: 6),
       btn(Icons.send_rounded, c.goldText, 'Share',
           () => _act(context, ref, () => targetFor(ref, entry, date, belated: belated), share: true)),
-    ]);
+    ];
+    return vertical
+        ? Column(mainAxisSize: MainAxisSize.min, children: children)
+        : Row(mainAxisSize: MainAxisSize.min, children: children);
   }
 }
 
@@ -192,6 +198,11 @@ class WishedChip extends ConsumerWidget {
 final missedProvider = Provider<List<Upcoming>>((ref) {
   final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
   final wished = ref.watch(wishedKeysProvider);
+  // A call or message started from Smriti counts too, even if not confirmed.
+  final tried = {
+    for (final l in ref.watch(wishLogsProvider).value ?? const <WishLog>[])
+      if (l.occasionDate != null && l.eventId != null) '${l.eventId}|${l.occasionDate}',
+  };
   final today = ref.watch(todayProvider).value ?? Day.today();
   final out = <Upcoming>[];
   for (final e in entries) {
@@ -207,7 +218,7 @@ final missedProvider = Provider<List<Upcoming>>((ref) {
     if (prev == null) continue;
     final ago = prev.daysUntil(today);
     if (ago < 1 || ago > 7) continue;
-    if (wished.contains('${e.event.id}|$prev')) continue;
+    if (wished.contains('${e.event.id}|$prev') || tried.contains('${e.event.id}|$prev')) continue;
     out.add(Upcoming(e, prev, -ago));
   }
   out.sort((a, b) => b.date.compareTo(a.date));

@@ -113,6 +113,15 @@ class GiftIdeas extends Table {
   IntColumn get eventId => integer().nullable().references(Events, #id, onDelete: KeyAction.setNull)();
 }
 
+/// Family tree: [relativeId] is [personId]'s [relation] (father, wife, son…).
+/// Saved both ways, so each person's page can list their family.
+class FamilyLinks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get personId => integer().references(People, #id, onDelete: KeyAction.cascade)();
+  IntColumn get relativeId => integer().references(People, #id, onDelete: KeyAction.cascade)();
+  TextColumn get relation => text()();
+}
+
 /// Family, Office, College friends… A person can be in several.
 @DataClassName('PersonGroup')
 class Groups extends Table {
@@ -280,13 +289,13 @@ class Settings extends Table {
 
 @DriftDatabase(tables: [
   People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages,
-  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Groups, GroupMembers, Settings,
+  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Groups, GroupMembers, FamilyLinks, Settings,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -331,6 +340,12 @@ class AppDatabase extends _$AppDatabase {
             await addColumn(giftIdeas, giftIdeas.eventId);
             await m.createTable(groups);
             await m.createTable(groupMembers);
+          }
+          if (from < 8) {
+            await m.createTable(familyLinks);
+            // Phones store "no year" as 1604 or similar; those are not real years.
+            await customStatement('UPDATE events SET year = NULL WHERE year < 1900 AND repeat != \'once\'');
+            await customStatement('UPDATE people SET birth_year = NULL WHERE birth_year < 1900');
           }
         },
         beforeOpen: (details) async {

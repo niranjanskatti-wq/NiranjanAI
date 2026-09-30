@@ -22,6 +22,7 @@ import 'features/events/event_detail_screen.dart';
 import 'features/events/event_form_screen.dart';
 import 'features/festivals/festival_model.dart';
 import 'features/festivals/festivals_screen.dart';
+import 'features/family/family.dart';
 import 'features/gifts/gifts.dart';
 import 'features/groups/groups_screen.dart';
 import 'features/home/home_screen.dart';
@@ -82,6 +83,10 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(
           path: '/person/:id',
           builder: (_, state) => PersonScreen(id: int.parse(state.pathParameters['id']!)),
+        ),
+        GoRoute(
+          path: '/person/:id/family',
+          builder: (_, state) => FamilyTreeScreen(personId: int.parse(state.pathParameters['id']!)),
         ),
         GoRoute(
           path: '/person/:id/memories',
