@@ -32,15 +32,17 @@ class _EventMessageScreenState extends ConsumerState<EventMessageScreen> {
   MessageContext? _ctx;
   bool _loaded = false;
   AgeInWishes _ageWhere = AgeInWishes.start;
+  AgeLines _own = const AgeLines();
 
   /// A suggestion filled in, with "Happy 60th birthday" when that's switched on.
-  String _fill(MessageContext ctx, String text) => ctx.withAge(ctx.fill(text), _lang, _ageWhere);
+  String _fill(MessageContext ctx, String text) => ctx.withAge(ctx.fill(text), _lang, _ageWhere, _own);
 
   Future<void> _load(EventEntry e) async {
     _loaded = true;
     final db = ref.read(databaseProvider);
     _lang = Lang.parse(await db.getSetting('messageLang'));
     _ageWhere = AgeInWishes.parse(await db.getSetting('ageInWishes'));
+    _own = await AgeLines.load(db);
     _text.text = e.event.draftMessage ?? '';
     await _refresh(e);
   }

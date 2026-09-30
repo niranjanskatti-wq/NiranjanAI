@@ -38,6 +38,27 @@ void main() {
         reason: '160 is not 60');
   });
 
+  test('your own wording is used for everyone, with their age filled in', () {
+    const own = AgeLines(birthday: 'Many happy returns on your {age_th}, {nickname}! 🙏');
+    expect(bday.ageLine(Lang.en, own), 'Many happy returns on your 60th, Appa! 🙏');
+    expect(bday.ageLine(Lang.kn, own), 'Many happy returns on your 60th, Appa! 🙏', reason: 'your words in any language');
+    const other = MessageContext(nickname: 'Mama', age: 45, type: EventType.birthday);
+    final msg = other.withAge('Have a great day.', Lang.en, AgeInWishes.start, own);
+    expect(msg, 'Many happy returns on your 45th, Mama! 🙏\n\nHave a great day.');
+    expect(other.withoutAge(msg, Lang.en, own), 'Have a great day.');
+    expect(anniv.ageLine(Lang.en, own), 'Happy 25th anniversary! 25 beautiful years together 💞',
+        reason: 'no own anniversary line, so Smriti\'s');
+    const empty = AgeLines(birthday: '  ');
+    expect(bday.ageLine(Lang.en, empty), 'Happy 60th birthday, Appa! 🎂');
+  });
+
+  test('correcting the age swaps the line', () {
+    const wrong = MessageContext(nickname: 'Appa', age: 59, type: EventType.birthday);
+    final msg = wrong.withAge('Stay blessed.', Lang.en, AgeInWishes.start);
+    final fixed = bday.withAge(wrong.withoutAge(msg, Lang.en), Lang.en, AgeInWishes.start);
+    expect(fixed, 'Happy 60th birthday, Appa! 🎂\n\nStay blessed.');
+  });
+
   test('entering the age saves the birth year', () async {
     final db = AppDatabase(NativeDatabase.memory());
     final repo = Repository(db);

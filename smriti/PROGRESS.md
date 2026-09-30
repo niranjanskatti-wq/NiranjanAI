@@ -279,6 +279,8 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Year not known: "Add age" in the wish sheet, "+ Add age" on list rows, or "Enter age" in the date form
   works out and saves the birth/wedding year
 - Every birthday card shows the age ("Happy 45th Birthday"), not only milestones
+- Added automatically; edit by hand: "Correct age" in the wish sheet fixes a wrong age (and the saved year),
+  Settings › Wishes › Birthday/Anniversary line lets you write your own wording with {age_th}, {nickname}…
 
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:

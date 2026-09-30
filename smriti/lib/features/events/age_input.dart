@@ -10,8 +10,9 @@ import '../../data/repository.dart';
 
 /// Asks "How old is Appa turning?" (or years married) for a date whose year
 /// isn't saved. Returns the number, or null if cancelled.
-Future<int?> askYears(BuildContext context, {required bool birthday, required String name, required Day on}) async {
-  final ctrl = TextEditingController();
+Future<int?> askYears(BuildContext context,
+    {required bool birthday, required String name, required Day on, int? initial}) async {
+  final ctrl = TextEditingController(text: initial?.toString() ?? '');
   final value = await showDialog<int>(
     context: context,
     builder: (ctx) {

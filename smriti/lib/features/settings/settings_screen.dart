@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../autocall/auto_call.dart';
 import '../home/home_screen.dart';
 import '../lock/app_lock.dart';
-import '../messages/message_engine.dart' show AgeInWishes;
+import '../messages/message_engine.dart' show AgeInWishes, AgeLines, MessageContext;
 import '../wish/share_sheet.dart' show ageInWishesProvider;
 import '../widget/home_widget_service.dart';
 import '../widget/widget_glow.dart';
@@ -147,6 +147,8 @@ class SettingsScreen extends ConsumerWidget {
                 'You can still switch it off for one wish. Dates without a year show "Add age" when you wish.',
                 style: context.text.bodySmall?.copyWith(color: c.muted)),
           ),
+          const _AgeLineTile(birthday: true),
+          const _AgeLineTile(birthday: false),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Festivals')),
           tile(Icons.celebration_outlined, 'Festivals', 'Switch on or off, edit dates, add your own',
@@ -258,3 +260,71 @@ class _LockSwitch extends ConsumerWidget {
     );
   }
 }
+
+/// Your own wording for the age line; {age_th} and friends are filled in for each person.
+class _AgeLineTile extends ConsumerWidget {
+  const _AgeLineTile({required this.birthday});
+  final bool birthday;
+
+  String get _key => birthday ? 'ageLineBirthday' : 'ageLineAnniversary';
+  String get _default => birthday ? AgeLines.birthdayDefault : AgeLines.anniversaryDefault;
+
+  static const _sample = MessageContext(name: 'Ramesh', nickname: 'Appa', age: 60, yearsMarried: 25);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.read(databaseProvider);
+    final mine = ref.watch(_settingProvider(_key)).value;
+    final own = mine != null && mine.trim().isNotEmpty;
+    final text = own ? mine : _default;
+    return ListTile(
+      leading: Text(birthday ? '🎂' : '💞', style: const TextStyle(fontSize: 22)),
+      title: Text(birthday ? 'Birthday line' : 'Anniversary line'),
+      subtitle: Text('${_sample.fill(text)}${own ? '  · yours' : ''}'),
+      trailing: const Icon(Icons.edit_outlined),
+      onTap: () async {
+        final ctrl = TextEditingController(text: text);
+        final tags = birthday ? ['{age_th}', '{age}', '{nickname}'] : ['{years_th}', '{years_married}', '{couple_names}'];
+        final result = await showDialog<String>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(birthday ? 'Your birthday line' : 'Your anniversary line'),
+            content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              TextField(controller: ctrl, maxLines: 3, autofocus: true, textCapitalization: TextCapitalization.sentences),
+              const SizedBox(height: 8),
+              Text('Tap to insert:', style: Theme.of(ctx).textTheme.bodySmall),
+              Wrap(spacing: 6, children: [
+                for (final tag in tags)
+                  ActionChip(
+                    label: Text(switch (tag) {
+                      '{age_th}' => '60th',
+                      '{age}' => '60',
+                      '{nickname}' => 'name',
+                      '{years_th}' => '25th',
+                      '{years_married}' => '25',
+                      _ => 'couple names',
+                    }),
+                    onPressed: () {
+                      final sel = ctrl.selection;
+                      final at = sel.isValid ? sel.start : ctrl.text.length;
+                      ctrl.text = ctrl.text.replaceRange(at, sel.isValid ? sel.end : at, tag);
+                      ctrl.selection = TextSelection.collapsed(offset: at + tag.length);
+                    },
+                  ),
+              ]),
+            ]),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, ''), child: const Text('Use Smriti\'s')),
+              FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('Save')),
+            ],
+          ),
+        );
+        if (result == null) return;
+        // Empty means Smriti's own line.
+        await db.setSetting(_key, result == _default ? '' : result);
+      },
+    );
+  }
+}
+
+final _settingProvider = StreamProvider.family<String?, String>((ref, key) => ref.watch(databaseProvider).watchSetting(key));

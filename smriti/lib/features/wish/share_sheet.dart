@@ -91,6 +91,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
   /// Age line in the message: from the setting, switched per wish with the chip.
   AgeInWishes _ageWhere = AgeInWishes.start;
   bool _age = true;
+  AgeLines _own = const AgeLines();
 
   /// Age or years typed in here when the year wasn't saved.
   int? _years;
@@ -100,7 +101,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
   /// A suggestion filled in, with the age line when it's switched on.
   String _fill(MessageContext ctx, String text) {
     final filled = ctx.fill(text);
-    return _age ? ctx.withAge(filled, _lang, _ageWhere) : filled;
+    return _age ? ctx.withAge(filled, _lang, _ageWhere, _own) : filled;
   }
 
   @override
@@ -114,6 +115,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
     _lang = Lang.parse(await ref.read(databaseProvider).getSetting('messageLang'));
     _ageWhere = AgeInWishes.parse(await ref.read(databaseProvider).getSetting('ageInWishes'));
     _age = _ageWhere != AgeInWishes.off;
+    _own = await AgeLines.load(ref.read(databaseProvider));
     final draft = t.entry?.event.draftMessage;
     if (draft != null && draft.trim().isNotEmpty && !t.belated) {
       _text = draft;
@@ -263,9 +265,8 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
         ),
       );
     }
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: FilterChip(
+    return Row(children: [
+      FilterChip(
         avatar: Text(birthday ? '🎂' : '💞'),
         label: Text('Mention ${ordinal(years)}${birthday ? ' birthday' : ' anniversary'}'),
         selected: _age,
@@ -276,12 +277,17 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
           setState(() {
             _age = on;
             _text = on
-                ? ctx.withAge(_text, _lang, _ageWhere == AgeInWishes.off ? AgeInWishes.start : _ageWhere)
-                : ctx.withoutAge(_text, _lang);
+                ? ctx.withAge(_text, _lang, _ageWhere == AgeInWishes.off ? AgeInWishes.start : _ageWhere, _own)
+                : ctx.withoutAge(_text, _lang, _own);
           });
         },
       ),
-    );
+      TextButton.icon(
+        onPressed: _askAge,
+        icon: const Icon(Icons.edit_outlined, size: 16),
+        label: Text(birthday ? 'Correct age' : 'Correct years'),
+      ),
+    ]);
   }
 
   /// Asks how old they are turning (or years married) and saves the year.
@@ -289,17 +295,20 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
     final e = t.entry!;
     final birthday = e.type == EventType.birthday;
     final date = t.date;
-    final years = await askYears(context, birthday: birthday, name: e.title, on: date);
+    final years =
+        await askYears(context, birthday: birthday, name: e.title, on: date, initial: _years ?? t.years);
     if (years == null || !mounted) return;
     await saveYears(ref.read(repoProvider), e, years, date);
     final me = await ref.read(repoProvider).getMe();
+    // Take out the line with the old age before adding the new one.
+    final without = _ctx(me).withoutAge(_text, _lang, _own);
     setState(() {
       _years = years;
       _age = true;
       if (_ageWhere == AgeInWishes.off) _ageWhere = AgeInWishes.start;
     });
     final ctx = _ctx(me);
-    setState(() => _text = ctx.withAge(_text, _lang, _ageWhere));
+    setState(() => _text = ctx.withAge(without, _lang, _ageWhere, _own));
   }
 
   Future<void> _setLang(Lang l) async {

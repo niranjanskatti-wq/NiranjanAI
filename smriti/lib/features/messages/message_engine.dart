@@ -59,6 +59,19 @@ enum AgeInWishes {
   static AgeInWishes parse(String? v) => AgeInWishes.values.asNameMap()[v] ?? AgeInWishes.start;
 }
 
+/// Your own wording for the age line, with {age_th}, {age}, {years_th},
+/// {years_married}, {nickname} filled in. Null uses Smriti's line.
+class AgeLines {
+  const AgeLines({this.birthday, this.anniversary});
+  final String? birthday, anniversary;
+
+  static Future<AgeLines> load(AppDatabase db) async =>
+      AgeLines(birthday: await db.getSetting('ageLineBirthday'), anniversary: await db.getSetting('ageLineAnniversary'));
+
+  static const birthdayDefault = 'Happy {age_th} birthday, {nickname}! 🎂';
+  static const anniversaryDefault = 'Happy {years_th} anniversary! {years_married} beautiful years together 💞';
+}
+
 enum Tone {
   emotional('Emotional'),
   funny('Funny'),
@@ -157,9 +170,14 @@ class MessageContext {
 
   /// A warm opening line with the age or years, e.g. "Happy 60th birthday, Appa! 🎂".
   /// Null when the age isn't known.
-  String? ageLine(Lang lang) {
+  String? ageLine(Lang lang, [AgeLines own = const AgeLines()]) {
     final who = nickname ?? name;
     final a = age, y = yearsMarried;
+    // Your own wording from Settings › Wishes, with the age filled in.
+    final mine = a != null && a > 0
+        ? own.birthday
+        : (y != null && y > 0 && type != EventType.workAnniversary ? own.anniversary : null);
+    if (mine != null && mine.trim().isNotEmpty) return fill(mine.trim());
     if (a != null && a > 0) {
       return switch (lang) {
         Lang.en => 'Happy ${ordinal(a)} birthday${who == null ? '' : ', $who'}! 🎂',
@@ -186,8 +204,8 @@ class MessageContext {
 
   /// [text] with the age line added at the start or end, unless the message
   /// already mentions the number.
-  String withAge(String text, Lang lang, AgeInWishes where) {
-    final line = ageLine(lang);
+  String withAge(String text, Lang lang, AgeInWishes where, [AgeLines own = const AgeLines()]) {
+    final line = ageLine(lang, own);
     final n = age ?? yearsMarried;
     if (line == null || n == null || where == AgeInWishes.off) return text;
     if (RegExp('(^|[^0-9])$n([^0-9]|\$)').hasMatch(text)) return text;
@@ -197,8 +215,8 @@ class MessageContext {
   }
 
   /// [text] without the age line (when it was switched off).
-  String withoutAge(String text, Lang lang) {
-    final line = ageLine(lang);
+  String withoutAge(String text, Lang lang, [AgeLines own = const AgeLines()]) {
+    final line = ageLine(lang, own);
     if (line == null) return text;
     return text.replaceFirst('$line\n\n', '').replaceFirst('\n\n$line', '').replaceFirst(line, '').trim();
   }
