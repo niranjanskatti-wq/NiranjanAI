@@ -192,7 +192,7 @@ Building all phases in a row (your choice), testing everything on the phone at t
   Each link is saved both ways (add Appa as your father and you appear as his son/child), brothers
   and sisters are found through shared parents, and "See family tree" shows everyone by generation.
   Adding people to your own family also sets their relationship to you (no more Mom as "Friend")
-- 86 automatic tests
+- 83 automatic tests
 
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
