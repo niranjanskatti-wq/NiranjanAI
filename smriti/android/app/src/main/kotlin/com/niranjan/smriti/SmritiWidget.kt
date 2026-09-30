@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
+import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
@@ -35,6 +36,22 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
 
     protected abstract fun fill(views: RemoteViews, items: List<Item>)
 
+    /** Which text-size setting this widget follows (Settings › Widget size & flash). */
+    protected abstract val sizeKey: String
+
+    /** Every text on the widget with its normal size in sp, scaled by the setting. */
+    protected abstract val texts: Map<Int, Float>
+
+    /** Saved look: text size per widget, and the "big first date" switch. */
+    protected var look = JSONObject()
+
+    private fun scale() = when (look.optString(sizeKey, "m")) {
+        "xs" -> 0.75f
+        "s" -> 0.88f
+        "l" -> 1.2f
+        else -> 1f
+    }
+
     /** Called before [fill] on each update, for widgets that need more saved data. */
     protected open fun prepare(context: Context, widgetData: SharedPreferences) {}
 
@@ -45,7 +62,13 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
         widgetData: SharedPreferences,
     ) {
         val items = upcoming(widgetData.getString("items", null))
+        look = try {
+            JSONObject(widgetData.getString("look", "{}") ?: "{}")
+        } catch (_: Exception) {
+            JSONObject()
+        }
         prepare(context, widgetData)
+        val scale = scale()
         for (id in appWidgetIds) {
             val views = RemoteViews(context.packageName, layout)
             views.setOnClickPendingIntent(
@@ -53,6 +76,7 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
                 HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java),
             )
             fill(views, items)
+            for ((text, sp) in texts) views.setTextViewTextSize(text, TypedValue.COMPLEX_UNIT_SP, sp * scale)
             appWidgetManager.updateAppWidget(id, views)
         }
     }
@@ -131,6 +155,24 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
 /** "Next up": the next date with its countdown right beside the name, and three more below. */
 class SmritiWidget : SmritiWidgetBase() {
     override val layout = R.layout.smriti_widget
+    override val sizeKey = "next"
+    override val texts = mapOf(
+        R.id.header to 10f,
+        R.id.days to 22f,
+        R.id.days_unit to 10f,
+        R.id.title to 17f,
+        R.id.label to 12f,
+        R.id.row1_days to 12f,
+        R.id.row1_name to 13f,
+        R.id.row1_label to 12f,
+        R.id.row2_days to 12f,
+        R.id.row2_name to 13f,
+        R.id.row2_label to 12f,
+        R.id.row3_days to 12f,
+        R.id.row3_name to 13f,
+        R.id.row3_label to 12f,
+        R.id.empty to 13f,
+    )
 
     private val rows = listOf(
         Row(R.id.row1, R.id.row1_days, R.id.row1_name, R.id.row1_label),
@@ -145,6 +187,13 @@ class SmritiWidget : SmritiWidgetBase() {
             fillRows(views, rows, emptyList())
             return
         }
+        if (!look.optBoolean("nextBig", true)) {
+            // Compact: no big first date, just the list.
+            views.setViewVisibility(R.id.main, View.GONE)
+            views.setViewVisibility(R.id.divider, View.GONE)
+            fillRows(views, rows, items)
+            return
+        }
         setBigDays(views, first.days)
         views.setTextViewText(R.id.title, first.title)
         views.setTextViewText(R.id.label, "${first.label}\n${dateFormat.format(first.date.time)}")
@@ -157,6 +206,15 @@ class SmritiWidget : SmritiWidgetBase() {
 /** "Countdown": one big number with the name and occasion under it. */
 class SmritiCountdownWidget : SmritiWidgetBase() {
     override val layout = R.layout.smriti_widget_countdown
+    override val sizeKey = "countdown"
+    override val texts = mapOf(
+        R.id.header to 9f,
+        R.id.days to 44f,
+        R.id.days_unit to 11f,
+        R.id.title to 17f,
+        R.id.label to 11f,
+        R.id.empty to 12f,
+    )
 
     override fun fill(views: RemoteViews, items: List<Item>) {
         val first = items.firstOrNull()
@@ -171,6 +229,29 @@ class SmritiCountdownWidget : SmritiWidgetBase() {
 /** "Coming up": the next six dates, each as days · name · occasion. */
 class SmritiListWidget : SmritiWidgetBase() {
     override val layout = R.layout.smriti_widget_list
+    override val sizeKey = "list"
+    override val texts = mapOf(
+        R.id.header to 10f,
+        R.id.row1_days to 12f,
+        R.id.row1_name to 13f,
+        R.id.row1_label to 12f,
+        R.id.row2_days to 12f,
+        R.id.row2_name to 13f,
+        R.id.row2_label to 12f,
+        R.id.row3_days to 12f,
+        R.id.row3_name to 13f,
+        R.id.row3_label to 12f,
+        R.id.row4_days to 12f,
+        R.id.row4_name to 13f,
+        R.id.row4_label to 12f,
+        R.id.row5_days to 12f,
+        R.id.row5_name to 13f,
+        R.id.row5_label to 12f,
+        R.id.row6_days to 12f,
+        R.id.row6_name to 13f,
+        R.id.row6_label to 12f,
+        R.id.empty to 13f,
+    )
 
     private val rows = listOf(
         Row(R.id.row1, R.id.row1_days, R.id.row1_name, R.id.row1_label),
@@ -194,6 +275,21 @@ class SmritiListWidget : SmritiWidgetBase() {
  */
 class SmritiTodayWidget : SmritiWidgetBase() {
     override val layout = R.layout.smriti_widget_today
+    override val sizeKey = "today"
+    override val texts = mapOf(
+        R.id.header to 11f,
+        R.id.status to 13f,
+        R.id.row1_name to 18f,
+        R.id.row1_label to 14f,
+        R.id.row1_done to 14f,
+        R.id.row2_name to 18f,
+        R.id.row2_label to 14f,
+        R.id.row2_done to 14f,
+        R.id.row3_name to 18f,
+        R.id.row3_label to 14f,
+        R.id.row3_done to 14f,
+        R.id.empty to 15f,
+    )
 
     private data class TodayRow(val root: Int, val name: Int, val label: Int, val done: Int)
 

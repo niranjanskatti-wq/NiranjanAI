@@ -114,6 +114,59 @@ class WidgetGlow {
         ].join(' · ');
 }
 
+enum TextSize {
+  xs('Extra small', 0.75),
+  s('Small', 0.88),
+  m('Medium', 1),
+  l('Large', 1.2);
+
+  const TextSize(this.label, this.scale);
+  final String label;
+  final double scale;
+}
+
+/// Text size for each widget, and whether "Next up" shows its first date big.
+class WidgetLook {
+  const WidgetLook({this.sizes = const {}, this.nextBig = true});
+
+  /// Widget key (next, countdown, list, today) → text size; Medium when missing.
+  final Map<String, TextSize> sizes;
+  final bool nextBig;
+
+  static const widgets = {
+    'today': 'Today',
+    'next': 'Next up',
+    'countdown': 'Countdown',
+    'list': 'Coming up',
+  };
+
+  TextSize size(String key) => sizes[key] ?? TextSize.m;
+
+  WidgetLook withSize(String key, TextSize v) => WidgetLook(sizes: {...sizes, key: v}, nextBig: nextBig);
+
+  WidgetLook withNextBig(bool v) => WidgetLook(sizes: sizes, nextBig: v);
+
+  String toJson() => jsonEncode({for (final e in sizes.entries) e.key: e.value.name, 'nextBig': nextBig});
+
+  static WidgetLook parse(String? json) {
+    if (json == null || json.isEmpty) return const WidgetLook();
+    try {
+      final m = jsonDecode(json) as Map<String, dynamic>;
+      return WidgetLook(
+        sizes: {
+          for (final k in widgets.keys) k: ?TextSize.values.asNameMap()[m[k]],
+        },
+        nextBig: m['nextBig'] != false,
+      );
+    } catch (_) {
+      return const WidgetLook();
+    }
+  }
+}
+
+final widgetLookProvider = StreamProvider<WidgetLook>(
+    (ref) => ref.watch(databaseProvider).watchSetting('widgetLook').map(WidgetLook.parse));
+
 final widgetGlowProvider = StreamProvider<WidgetGlow>(
     (ref) => ref.watch(databaseProvider).watchSetting('widgetGlow').map(WidgetGlow.parse));
 
@@ -124,7 +177,9 @@ class WidgetGlowScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final g = ref.watch(widgetGlowProvider).value ?? const WidgetGlow();
+    final look = ref.watch(widgetLookProvider).value ?? const WidgetLook();
     void save(WidgetGlow v) => ref.read(databaseProvider).setSetting('widgetGlow', v.toJson());
+    void saveLook(WidgetLook v) => ref.read(databaseProvider).setSetting('widgetLook', v.toJson());
 
     Widget chips<T>(List<T> values, T selected, String Function(T) label, void Function(T) pick) => Wrap(
           spacing: 8,
@@ -136,15 +191,37 @@ class WidgetGlowScreen extends ConsumerWidget {
         );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Today widget flash')),
+      appBar: AppBar(title: const Text('Widget size & flash')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
+          const SectionLabel('Text size'),
+          const SizedBox(height: 4),
+          for (final e in WidgetLook.widgets.entries) ...[
+            Text(e.value, style: context.text.titleSmall),
+            const SizedBox(height: 6),
+            chips(TextSize.values, look.size(e.key), (s) => s.label, (s) => saveLook(look.withSize(e.key, s))),
+            const SizedBox(height: 12),
+          ],
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Next up: big first date'),
+            subtitle: Text(look.nextBig
+                ? 'The next date is shown large, with three more below'
+                : 'Small: all dates in a simple list'),
+            value: look.nextBig,
+            onChanged: (v) => saveLook(look.withNextBig(v)),
+          ),
+          Text('To make a widget itself bigger or smaller, long-press it on the home screen and drag its edges.',
+              style: context.text.bodySmall?.copyWith(color: context.c.muted)),
+          const SizedBox(height: 24),
+          const SectionLabel('Today widget flash'),
+          const SizedBox(height: 4),
           Text('The border shines while someone celebrating today is still to be wished, '
               'and stops once you tap ✓ Done for everyone.',
               style: context.text.bodyMedium?.copyWith(color: context.c.muted)),
           const SizedBox(height: 16),
-          GlowPreview(glow: g),
+          GlowPreview(glow: g, scale: look.size('today').scale),
           const SizedBox(height: 20),
           const SectionLabel('Ready-made'),
           for (final (name, help, p) in WidgetGlow.presets)
@@ -234,8 +311,9 @@ class _Dot extends StatelessWidget {
 
 /// A small copy of the Today widget showing the chosen border.
 class GlowPreview extends StatefulWidget {
-  const GlowPreview({super.key, required this.glow});
+  const GlowPreview({super.key, required this.glow, this.scale = 1});
   final WidgetGlow glow;
+  final double scale;
 
   @override
   State<GlowPreview> createState() => _GlowPreviewState();
@@ -282,6 +360,7 @@ class _GlowPreviewState extends State<GlowPreview> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     final g = widget.glow;
+    final k = widget.scale;
     return AnimatedBuilder(
       animation: _anim,
       builder: (context, child) {
@@ -301,25 +380,25 @@ class _GlowPreviewState extends State<GlowPreview> with SingleTickerProviderStat
       },
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Expanded(
+          Expanded(
             child: Text('SMRITI · TODAY',
                 style: TextStyle(
-                    color: Color(0xFFD6B26E), fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                    color: const Color(0xFFD6B26E), fontSize: 11 * k, fontWeight: FontWeight.bold, letterSpacing: 2)),
           ),
-          Text('1 to wish', style: TextStyle(color: g.color, fontSize: 15, fontWeight: FontWeight.bold)),
+          Text('1 to wish', style: TextStyle(color: g.color, fontSize: 13 * k, fontWeight: FontWeight.bold)),
         ]),
-        const SizedBox(height: 8),
+        SizedBox(height: 8 * k),
         Row(children: [
-          const Text('Shanta',
+          Text('Shanta',
               style: TextStyle(
-                  color: Color(0xFFF3ECDD), fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'serif')),
+                  color: const Color(0xFFF3ECDD), fontSize: 18 * k, fontWeight: FontWeight.bold, fontFamily: 'serif')),
           const SizedBox(width: 8),
-          const Expanded(child: Text('Birthday', style: TextStyle(color: Color(0xFFCFC6B6), fontSize: 16))),
+          Expanded(child: Text('Birthday', style: TextStyle(color: const Color(0xFFCFC6B6), fontSize: 14 * k))),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            padding: EdgeInsets.symmetric(horizontal: 12 * k, vertical: 5 * k),
             decoration: BoxDecoration(color: const Color(0xFFD6B26E), borderRadius: BorderRadius.circular(99)),
-            child: const Text('✓ Done',
-                style: TextStyle(color: Color(0xFF1E1C1A), fontSize: 16, fontWeight: FontWeight.bold)),
+            child: Text('✓ Done',
+                style: TextStyle(color: const Color(0xFF1E1C1A), fontSize: 14 * k, fontWeight: FontWeight.bold)),
           ),
         ]),
       ]),

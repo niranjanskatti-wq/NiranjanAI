@@ -42,7 +42,7 @@ class HomeWidgetService {
   /// widget stops glowing once all of today's are in it.
   /// [glow]: how the Today widget's border shines ([WidgetGlow.toJson]).
   static Future<void> publish(List<EventEntry> entries, Day today,
-      {Set<String> done = const {}, String? glow}) async {
+      {Set<String> done = const {}, String? glow, String? look}) async {
     if (!NotificationService.supported) return;
     try {
       final from = today.addDays(-2).toString();
@@ -50,6 +50,7 @@ class HomeWidgetService {
       await HomeWidget.saveWidgetData<String>(
           'done', jsonEncode([for (final k in done) if (k.split('|').last.compareTo(from) >= 0) k]));
       await HomeWidget.saveWidgetData<String>('glow', glow ?? const WidgetGlow().toJson());
+      await HomeWidget.saveWidgetData<String>('look', look ?? const WidgetLook().toJson());
       for (final name in styles.keys) {
         await HomeWidget.updateWidget(qualifiedAndroidName: name);
       }
@@ -70,7 +71,8 @@ class HomeWidgetService {
         if (l.confirmed && l.occasionDate != null) '${l.eventId ?? l.festivalId}|${l.occasionDate}',
     };
     final glow = WidgetGlow.parse(await db.getSetting('widgetGlow')).toJson();
-    await publish(done: done, glow: glow, [
+    final look = WidgetLook.parse(await db.getSetting('widgetLook')).toJson();
+    await publish(done: done, glow: glow, look: look, [
       ...entries.where((e) => visibleKind(e, festivals: showFestivals, important: showImportant)),
       for (var i = 0; i < festivals.length; i++) FestivalEntry(festivals[i], -(i + 1)),
     ], Day.today());

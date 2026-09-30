@@ -85,13 +85,14 @@
             android:orientation="horizontal">
 
             <TextView
+        android:id="@+id/header"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:letterSpacing="0.15"
                 android:text="SMRITI · TODAY"
                 android:textColor="#D6B26E"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -99,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#F2C46D"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -120,7 +121,7 @@
                 android:maxLines="1"
                 android:maxWidth="190dp"
                 android:textColor="#F3ECDD"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -132,7 +133,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="#CFC6B6"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/row1_done"
@@ -140,13 +141,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/widget_done_bg"
-                android:paddingStart="14dp"
-                android:paddingTop="7dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="7dp"
+                android:paddingStart="12dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="5dp"
                 android:text="✓ Done"
                 android:textColor="#1E1C1A"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -167,7 +168,7 @@
                 android:maxLines="1"
                 android:maxWidth="190dp"
                 android:textColor="#F3ECDD"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -179,7 +180,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="#CFC6B6"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/row2_done"
@@ -187,13 +188,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/widget_done_bg"
-                android:paddingStart="14dp"
-                android:paddingTop="7dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="7dp"
+                android:paddingStart="12dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="5dp"
                 android:text="✓ Done"
                 android:textColor="#1E1C1A"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -214,7 +215,7 @@
                 android:maxLines="1"
                 android:maxWidth="190dp"
                 android:textColor="#F3ECDD"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -226,7 +227,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="#CFC6B6"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/row3_done"
@@ -234,13 +235,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/widget_done_bg"
-                android:paddingStart="14dp"
-                android:paddingTop="7dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="7dp"
+                android:paddingStart="12dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="5dp"
                 android:text="✓ Done"
                 android:textColor="#1E1C1A"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -252,7 +253,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textColor="#CFC6B6"
-            android:textSize="17sp"
+            android:textSize="15sp"
             android:visibility="gone" />
     </LinearLayout>
 </FrameLayout>

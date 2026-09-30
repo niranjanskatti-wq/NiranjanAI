@@ -247,6 +247,13 @@ Building all phases in a row (your choice), testing everything on the phone at t
   - Or your own: colour (gold, red, orange, pink, purple, blue, green, white), style (pulse, blink,
     steady, off), speed (fast, medium, slow), border (thin, medium, thick)
 
+### Widget sizes
+- Settings › Widget size & flash › Text size: Extra small, Small, Medium or Large for each widget
+  (Today, Next up, Countdown, Coming up)
+- Next up: "big first date" switch; off shows just a simple list
+- Smaller default text: Today names 18 (Large = the old 22), Next up's first date 17 with a smaller days box
+- Widgets can be shrunk further by long-press › drag the edges
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

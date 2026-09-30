@@ -128,8 +128,9 @@ class SettingsScreen extends ConsumerWidget {
             );
             if (name != null) await HomeWidget.requestPinWidget(qualifiedAndroidName: name);
           }),
-          tile(Icons.flare_rounded, 'Today widget flash',
-              (ref.watch(widgetGlowProvider).value ?? const WidgetGlow()).summary, () => context.push('/widget-glow')),
+          tile(Icons.flare_rounded, 'Widget size & flash',
+              'Text size · flash: ${(ref.watch(widgetGlowProvider).value ?? const WidgetGlow()).summary}',
+              () => context.push('/widget-glow')),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Backup & Excel')),
           tile(Icons.backup_outlined, 'Backup & restore', 'Automatic every week · Download/Smriti Backups',

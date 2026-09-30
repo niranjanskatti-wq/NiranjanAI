@@ -26,6 +26,15 @@ void main() {
     expect(WidgetGlow.presets.first.$3.summary, 'Very urgent · blink · fast');
   });
 
+  test('text sizes and the compact Next up are saved', () {
+    expect(WidgetLook.parse(null).size('today'), TextSize.m);
+    expect(WidgetLook.parse(null).nextBig, isTrue);
+    final look = const WidgetLook().withSize('next', TextSize.xs).withSize('today', TextSize.s).withNextBig(false);
+    final back = WidgetLook.parse(look.toJson());
+    expect((back.size('next'), back.size('today'), back.size('list'), back.nextBig), (TextSize.xs, TextSize.s, TextSize.m, false));
+    expect(WidgetLook.parse('{"next":"huge"}').size('next'), TextSize.m);
+  });
+
   test('widget taps: Done marks as wished, a name opens its page', () async {
     final db = AppDatabase(NativeDatabase.memory());
     final repo = Repository(db);
@@ -49,6 +58,10 @@ void main() {
       child: MaterialApp(theme: buildTheme(Brightness.dark), home: const WidgetGlowScreen()),
     ));
     await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.text('Extra small').first);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(WidgetLook.parse(await db.getSetting('widgetLook')).size('today'), TextSize.xs);
+    await tester.scrollUntilVisible(find.text('Very urgent'), 200);
     expect(find.text('1 to wish'), findsOneWidget);
     await tester.tap(find.text('Very urgent'));
     await tester.pump(const Duration(milliseconds: 100));

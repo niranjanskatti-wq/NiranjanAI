@@ -250,7 +250,8 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
   void _publishWidget() {
     if (!ref.read(entriesProvider).hasValue) return;
     HomeWidgetService.publish(ref.read(visibleEntriesProvider), ref.read(todayProvider).value ?? Day.today(),
-        done: ref.read(wishedKeysProvider), glow: ref.read(widgetGlowProvider).value?.toJson());
+        done: ref.read(wishedKeysProvider), glow: ref.read(widgetGlowProvider).value?.toJson(),
+        look: ref.read(widgetLookProvider).value?.toJson());
   }
 
   /// Opens the right screen for a tapped notification or its button.
@@ -308,6 +309,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(visibleEntriesProvider, (_, _) => _publishWidget());
     ref.listen(wishedKeysProvider, (_, _) => _publishWidget());
     ref.listen(widgetGlowProvider, (_, _) => _publishWidget());
+    ref.listen(widgetLookProvider, (_, _) => _publishWidget());
     ref.listen(entriesProvider, (_, _) => CalendarSync.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',
