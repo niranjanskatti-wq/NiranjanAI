@@ -45,6 +45,24 @@ jobs:
       - name: Run tests
         run: flutter test --exclude-tags screenshots
 
+      # One signing key for every build, so each new APK installs as an update
+      # over the last one and keeps the app's data. It lives in the Actions cache
+      # (private to this repository, never in the code). The two secrets, if
+      # ever added, take priority.
+      - name: Restore the build signing key
+        id: buildkey
+        uses: actions/cache@v4
+        with:
+          path: smriti/android/app/smriti-build.jks
+          key: smriti-build-signing-key-v1
+
+      - name: Create the build signing key (first build only)
+        if: steps.buildkey.outputs.cache-hit != 'true'
+        run: |
+          keytool -genkeypair -keystore android/app/smriti-build.jks -alias smriti \
+            -storepass smriti-build -keypass smriti-build -keyalg RSA -keysize 2048 \
+            -validity 36500 -dname "CN=Smriti, O=Personal"
+
       - name: Prepare signing key
         env:
           KEYSTORE_B64: ${{ secrets.SMRITI_KEYSTORE_B64 }}
@@ -56,9 +74,12 @@ jobs:
               "$KEY_PASSWORD" "$KEY_PASSWORD" > android/key.properties
             echo "SIGNING=your private key" >> "$GITHUB_ENV"
           else
-            echo "::warning::SMRITI_KEYSTORE_B64 / SMRITI_KEY_PASSWORD secrets are not set; using a temporary test key."
-            echo "SIGNING=a temporary test key (add the signing secrets before real use)" >> "$GITHUB_ENV"
+            printf "storeFile=smriti-build.jks\nstorePassword=smriti-build\nkeyAlias=smriti\nkeyPassword=smriti-build\n" \
+              > android/key.properties
+            echo "SIGNING=the saved build key (installs as an update over earlier builds signed the same way)" >> "$GITHUB_ENV"
           fi
+          keytool -list -v -keystore android/app/$(grep storeFile android/key.properties | cut -d= -f2) \
+            -storepass "$(grep storePassword android/key.properties | cut -d= -f2)" | grep -m1 "SHA256:" || true
 
       - name: Build APK
         run: flutter build apk --release --build-number=${{ github.run_number }}

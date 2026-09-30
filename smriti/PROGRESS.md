@@ -241,8 +241,11 @@ Tell me anything that looks wrong or that you want changed; changes are easy fro
 - Your phone test (checklist above), then any changes you want
 
 ## Known issues
-- The two signing secrets must be added on GitHub before the build you keep using. A build made
-  without them uses a temporary key, and switching keys later means uninstalling the app once.
+- Builds are now signed with one saved build key (kept privately in GitHub's build cache), so each
+  new build installs as an update and keeps your data. Uninstall once when moving from build 17 or
+  earlier. The key is kept as long as there is at least one build a week; after a longer pause a
+  new key is made and one more uninstall is needed (back up first). Adding the two signing
+  secrets on GitHub removes that limit.
 - Mahalakshmi calendar websites were blocked from the build computer; festival dates were verified
   by calculation and other published lists. Worth comparing a few with the printed calendar.
 
