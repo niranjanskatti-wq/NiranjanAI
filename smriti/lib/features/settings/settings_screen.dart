@@ -269,7 +269,7 @@ class _AgeLineTile extends ConsumerWidget {
   String get _key => birthday ? 'ageLineBirthday' : 'ageLineAnniversary';
   String get _default => birthday ? AgeLines.birthdayDefault : AgeLines.anniversaryDefault;
 
-  static const _sample = MessageContext(name: 'Ramesh', nickname: 'Appa', age: 60, yearsMarried: 25);
+  static const _sample = MessageContext(name: '‹name›', nickname: '‹name›', age: 60, yearsMarried: 25);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

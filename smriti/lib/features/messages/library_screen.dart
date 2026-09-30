@@ -24,16 +24,16 @@ const relationFilters = <String, String>{
   'work': 'Work',
 };
 
-/// Sample values so placeholders read naturally while browsing.
+/// Shown while browsing: blanks where each person's real name goes when you wish.
 const sampleContext = MessageContext(
-  name: 'Ravi',
-  nickname: 'Ravi',
+  name: '‹name›',
+  nickname: '‹name›',
   relation: Relationship.friend,
   age: 60,
   yearsMarried: 25,
-  coupleNames: 'Ravi & Priya',
-  festival: 'Diwali',
-  myName: 'Niranjan',
+  coupleNames: '‹name› & ‹name›',
+  festival: '‹festival›',
+  myName: '‹your name›',
 );
 
 class LibraryScreen extends ConsumerStatefulWidget {
@@ -177,7 +177,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           child: Row(children: [
             Text('${list.length} messages', style: context.text.bodySmall),
             const Spacer(),
-            Text('Names shown as examples', style: context.text.bodySmall),
+            Flexible(
+              child: Text('‹name› becomes the real name when you wish',
+                  textAlign: TextAlign.end, style: context.text.bodySmall),
+            ),
           ]),
         ),
         Expanded(
