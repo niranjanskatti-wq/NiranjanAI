@@ -194,6 +194,19 @@ Building all phases in a row (your choice), testing everything on the phone at t
   Adding people to your own family also sets their relationship to you (no more Mom as "Friend")
 - 83 automatic tests
 
+### Calendar adding, edit/remove, and duplicate checks
+- Calendar: tap a date, then "Add" (or long-press a date) to add a birthday, anniversary or other
+  date right there: type a name (new people are created, saved people are suggested), optional year
+  and relation. "More options" opens the full form with the date filled in
+- Calendar list: ⋮ on each date to Edit or Remove it (festivals: change date or turn off)
+- Import birthdays from contacts: double contacts (same name or number) are left out, and when a
+  contact has a birthday and anniversary on the same day Smriti asks which to keep
+- People › ⋮ › Check for duplicates (also in Settings): fix people saved twice (merge keeps all their
+  dates, gifts and history) and same-day birthday/anniversary pairs; Home shows a note once if any
+- Birth year from contacts now shows when editing a birthday, and stays the same in both places;
+  gold-bordered rows say "Milestone"
+- 86 automatic tests
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

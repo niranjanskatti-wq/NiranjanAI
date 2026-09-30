@@ -15,9 +15,13 @@ import '../../widgets/common.dart';
 import '../../widgets/pickers.dart';
 
 class EventFormScreen extends ConsumerStatefulWidget {
-  const EventFormScreen({super.key, this.id, this.initialKind, this.personId, this.initialType});
+  const EventFormScreen(
+      {super.key, this.id, this.initialKind, this.personId, this.initialType, this.initialDay, this.initialMonth});
 
   final int? id;
+
+  /// Pre-filled date, e.g. when adding from a day on the calendar.
+  final int? initialDay, initialMonth;
   final String? initialKind;
   final int? personId;
   final String? initialType;
@@ -76,6 +80,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       }
     } else {
       _kind = EventKind.parse(widget.initialKind);
+      if (widget.initialDay != null && widget.initialMonth != null) {
+        _date = DateParts(widget.initialDay!, widget.initialMonth!, null);
+      }
       if (widget.personId != null) _people[0] = await repo.getPerson(widget.personId!);
       _type = switch (_kind) {
         EventKind.person => EventType.parse(widget.initialType ?? EventType.birthday.name),

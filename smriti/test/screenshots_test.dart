@@ -98,7 +98,7 @@ void main() {
   }
 
   Future<void> shoot(WidgetTester tester, AppDatabase db, String name,
-      {String? route, Object? extra, String? tap, double scroll = 0}) async {
+      {String? route, Object? extra, String? tap, String? tap2, double scroll = 0}) async {
     tester.view.physicalSize = const Size(1080, 2280);
     tester.view.devicePixelRatio = 2.75;
     addTearDown(tester.view.reset);
@@ -119,6 +119,13 @@ void main() {
     }
     if (tap != null) {
       await tester.tap(find.text(tap).first);
+      for (var i = 0; i < 10; i++) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+    if (tap2 != null) {
+      await tester.tap(find.text(tap2).last);
       for (var i = 0; i < 10; i++) {
         await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
         await tester.pump(const Duration(milliseconds: 100));
@@ -180,6 +187,14 @@ void main() {
     final sis = await r.insertPerson(PeopleCompanion.insert(name: 'Ria Katti'));
     await fam.link(await p(2), await p(sis), FamilyRel.daughter);
     await shoot(t, db, 'family_tree_dark', route: '/person/1/family');
+  });
+  testWidgets('calendar day', (t) async {
+    final d = Day.today().addDays(17);
+    await shoot(t, await seed(), 'calendar_day_dark', route: '/calendar', tap: '${d.day}');
+  });
+  testWidgets('calendar quick add', (t) async {
+    final d = Day.today().addDays(17);
+    await shoot(t, await seed(), 'calendar_add_dark', route: '/calendar', tap: '${d.day}', tap2: 'Add');
   });
   testWidgets('settings', (t) async => shoot(t, await seed(), 'settings_dark', route: '/settings', scroll: 900));
   testWidgets('profile lower', (t) async => shoot(t, await seed(), 'profile_lower_dark', route: '/person/2', scroll: 700));

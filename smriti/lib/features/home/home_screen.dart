@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../contacts/duplicates.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
 import '../../core/util/occurrence.dart';
 import '../../data/enums.dart';
+import '../../data/database.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/add_sheet.dart';
@@ -92,6 +94,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
     final today = ref.watch(todayProvider).value ?? Day.today();
     final me = ref.watch(meProvider).value;
     final notices = ref.watch(noticesProvider).value ?? const [];
+    final dupCount = ref.watch(duplicateCountProvider);
+    final dupSeen = ref.watch(dupNoticeSeenProvider).value;
     final missed = (ref.watch(showMissedProvider).value ?? true) ? ref.watch(missedProvider) : const <Upcoming>[];
 
     return Scaffold(
@@ -131,6 +135,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                               _checkNotif();
                             },
                             onDismiss: () => setState(() => _notifOff = false),
+                          ),
+                        ),
+                      ),
+                    if (dupCount > 0 && dupSeen != '$dupCount')
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                          child: _NoticeCard(
+                            message: dupCount == 1
+                                ? '1 possible duplicate found (someone saved twice, or birthday and anniversary on the same day). Tap to check.'
+                                : '$dupCount possible duplicates found (people saved twice, or birthday and anniversary on the same day). Tap to check.',
+                            onOpen: () => context.push('/duplicates'),
+                            onDismiss: () => ref.read(databaseProvider).setSetting('dupNoticeSeen', '$dupCount'),
                           ),
                         ),
                       ),
@@ -327,6 +344,16 @@ class _Header extends StatelessWidget {
     );
   }
 }
+
+/// How many possible duplicates there are, for a one-time note on Home.
+final duplicateCountProvider = Provider<int>((ref) {
+  final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
+  final people = ref.watch(peopleProvider).value ?? const <Person>[];
+  return Duplicates.sameDay(entries).length + Duplicates.people(people, entries).length;
+});
+
+final dupNoticeSeenProvider =
+    StreamProvider<String?>((ref) => ref.watch(databaseProvider).watchSetting('dupNoticeSeen'));
 
 /// Whether Home shows "Missed this week".
 final showMissedProvider =

@@ -78,6 +78,8 @@ class SettingsScreen extends ConsumerWidget {
               () => context.push('/import/birthdays')),
           tile(Icons.event_note_outlined, 'Import from Google Calendar', 'Birthdays, anniversaries and dates saved there',
               () => context.push('/import/calendar')),
+          tile(Icons.content_copy_outlined, 'Check for duplicates', 'People saved twice, birthday and anniversary on the same day',
+              () => context.push('/duplicates')),
           tile(Icons.sync_rounded, 'Check contacts for changed numbers', 'Also happens each time you open Smriti',
               () async {
             await ContactSync(ref.read(repoProvider)).run();

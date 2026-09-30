@@ -17,6 +17,7 @@ import 'features/export/export_screen.dart';
 import 'features/export/import_screen.dart';
 import 'features/contacts/bulk_add_screen.dart';
 import 'features/contacts/contact_sync.dart';
+import 'features/contacts/duplicates_screen.dart';
 import 'features/contacts/import_birthdays_screen.dart';
 import 'features/events/event_detail_screen.dart';
 import 'features/events/event_form_screen.dart';
@@ -74,6 +75,7 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/archived', builder: (_, _) => const ArchivedScreen()),
         GoRoute(path: '/not-wished', builder: (_, _) => const NotWishedScreen()),
         GoRoute(path: '/import/contacts', builder: (_, _) => const BulkAddScreen()),
+        GoRoute(path: '/duplicates', builder: (_, _) => const DuplicatesScreen()),
         GoRoute(path: '/import/calendar', builder: (_, _) => const CalendarImportScreen()),
         GoRoute(path: '/import/birthdays', builder: (_, _) => const ImportBirthdaysScreen()),
         GoRoute(
@@ -104,6 +106,8 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
               initialKind: q['kind'],
               personId: int.tryParse(q['person'] ?? ''),
               initialType: q['type'],
+              initialDay: int.tryParse(q['day'] ?? ''),
+              initialMonth: int.tryParse(q['month'] ?? ''),
             );
           },
         ),

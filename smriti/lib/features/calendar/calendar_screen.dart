@@ -8,7 +8,9 @@ import '../../core/util/occurrence.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/event_row.dart';
+import '../../widgets/common.dart';
 import '../festivals/festival_model.dart';
+import 'quick_add.dart';
 
 /// Month grid with coloured dots for each event; tap a day to see its events.
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -103,6 +105,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () => setState(() => _selected = isSel ? null : d),
+                onLongPress: () {
+                  setState(() => _selected = d);
+                  showQuickAdd(context, d);
+                },
                 child: Container(
                   margin: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
@@ -138,10 +144,23 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             },
           ),
           const SizedBox(height: 16),
-          Text(
-            selected == null ? 'This month' : fmtWeekday(selected),
-            style: context.text.headlineSmall,
-          ),
+          Row(children: [
+            Expanded(
+              child: Text(
+                selected == null ? 'This month' : fmtWeekday(selected),
+                style: context.text.headlineSmall,
+              ),
+            ),
+            if (selected != null)
+              FilledButton.tonalIcon(
+                onPressed: () => showQuickAdd(context, selected),
+                icon: const Icon(Icons.add_rounded),
+                label: const Text('Add'),
+              ),
+          ]),
+          if (selected == null)
+            Text('Tap a date to see it or add someone. Long-press a date to add straight away.',
+                style: context.text.bodySmall),
           const SizedBox(height: 8),
           if (shown.isEmpty)
             Padding(
@@ -149,9 +168,60 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               child: Text(selected == null ? 'Nothing this month.' : 'Nothing on this day.',
                   style: context.text.bodyMedium?.copyWith(color: c.muted)),
             ),
-          for (final u in shown) Padding(padding: const EdgeInsets.only(bottom: 8), child: UpcomingRow(item: u)),
+          for (final u in shown)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(children: [
+                Expanded(child: UpcomingRow(item: u)),
+                _ItemMenu(item: u),
+              ]),
+            ),
         ],
       ),
+    );
+  }
+}
+
+/// Edit or remove a date from the calendar list.
+class _ItemMenu extends ConsumerWidget {
+  const _ItemMenu({required this.item});
+
+  final Upcoming item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final e = item.entry;
+    final festival = e is FestivalEntry;
+    return PopupMenuButton<String>(
+      tooltip: 'Edit or remove',
+      icon: Icon(Icons.more_vert_rounded, color: context.c.muted),
+      onSelected: (v) async {
+        if (v == 'edit') {
+          context.push(festival ? '/festival?key=${Uri.encodeQueryComponent(e.festival.key)}' : '/event/${e.event.id}/edit');
+          return;
+        }
+        final what = festival ? e.title : '${e.title} · ${e.typeLabel}';
+        final ok = await confirm(
+          context,
+          title: festival ? 'Turn off $what?' : 'Remove $what?',
+          message: festival
+              ? 'It will no longer show or remind you. Turn it back on any time in Settings › Festivals.'
+              : 'This date and its reminders are deleted. The person stays in Smriti.',
+          action: festival ? 'Turn off' : 'Remove',
+          danger: true,
+        );
+        if (!ok) return;
+        if (festival) {
+          await FestivalRepo(ref.read(databaseProvider)).setEnabled(e.festival, false);
+        } else {
+          await ref.read(repoProvider).deleteEvent(e.event.id);
+        }
+        if (context.mounted) showToast(context, festival ? 'Festival turned off' : 'Removed');
+      },
+      itemBuilder: (_) => [
+        PopupMenuItem(value: 'edit', child: Text(festival ? 'Change date' : 'Edit')),
+        PopupMenuItem(value: 'remove', child: Text(festival ? 'Turn off festival' : 'Remove')),
+      ],
     );
   }
 }
