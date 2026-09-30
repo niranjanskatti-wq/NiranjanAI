@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../autocall/auto_call.dart';
 import '../cards/card_screen.dart';
 import '../messages/message_engine.dart';
 import '../wish/suggest.dart';
@@ -167,6 +168,28 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                       onTap: () => context.push('/event/$id/message'),
                     ),
                   ),
+                  if (ref.watch(autoCallOnProvider).value ?? false)
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.phone_forwarded_rounded, color: c.call),
+                        title: const Text('Auto call'),
+                        subtitle: Text(() {
+                          final a = (ref.watch(autoCallsProvider).value ?? const [])
+                              .where((a) => a.eventId == ev.id)
+                              .firstOrNull;
+                          return a == null
+                              ? 'Ring and ask “Call now?” at a set time on the day'
+                              : 'On the day at ${fmtMinute(a.minuteOfDay)}${a.speaker ? ' · speaker' : ''}${a.enabled ? '' : ' · off'}';
+                        }()),
+                        trailing: const Icon(Icons.chevron_right_rounded),
+                        onTap: () {
+                          final a = (ref.read(autoCallsProvider).value ?? const [])
+                              .where((a) => a.eventId == ev.id)
+                              .firstOrNull;
+                          scheduleAutoCall(context, ref, event: e, person: e.people.firstOrNull, existing: a);
+                        },
+                      ),
+                    ),
                   Card(
                     child: ListTile(
                       leading: Icon(Icons.image_outlined, color: c.goldText),

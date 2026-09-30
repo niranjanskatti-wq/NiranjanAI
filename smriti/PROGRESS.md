@@ -214,6 +214,15 @@ Building all phases in a row (your choice), testing everything on the phone at t
   "Not a couple" hides the suggestion for good. Home's tidy-up note counts these too
 - 87 automatic tests
 
+### Auto call
+- Settings › Auto call (off until you switch it on; asks for the Phone permission)
+- Set a call per person: on their birthday/anniversary every year, or once on a date, at any time,
+  with speaker on or off (from Settings › Scheduled calls, or Auto call on any event page)
+- At that time the phone rings and vibrates with a full-screen "Call Appa now?" (also over the
+  lock screen). Yes places the call (starting on speaker if chosen); No does nothing. The
+  notification also has "Yes, call now" / "No" buttons. Optional: call by itself after 10 seconds
+- 88 automatic tests
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

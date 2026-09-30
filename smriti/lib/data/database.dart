@@ -122,6 +122,21 @@ class FamilyLinks extends Table {
   TextColumn get relation => text()();
 }
 
+/// A call Smriti offers to place at a set time: every time an event comes round
+/// ([eventId]), or once on [date] (yyyy-mm-dd).
+class AutoCalls extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get personId => integer().references(People, #id, onDelete: KeyAction.cascade)();
+  IntColumn get eventId => integer().nullable().references(Events, #id, onDelete: KeyAction.cascade)();
+  TextColumn get date => text().nullable()();
+  IntColumn get minuteOfDay => integer()();
+  BoolColumn get speaker => boolean().withDefault(const Constant(true))();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+
+  /// Number to ring; empty means the person's saved number.
+  TextColumn get number => text().nullable()();
+}
+
 /// Family, Office, College friends… A person can be in several.
 @DataClassName('PersonGroup')
 class Groups extends Table {
@@ -289,13 +304,13 @@ class Settings extends Table {
 
 @DriftDatabase(tables: [
   People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages,
-  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Groups, GroupMembers, FamilyLinks, Settings,
+  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Groups, GroupMembers, FamilyLinks, AutoCalls, Settings,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -346,6 +361,9 @@ class AppDatabase extends _$AppDatabase {
             // Phones store "no year" as 1604 or similar; those are not real years.
             await customStatement('UPDATE events SET year = NULL WHERE year < 1900 AND repeat != \'once\'');
             await customStatement('UPDATE people SET birth_year = NULL WHERE birth_year < 1900');
+          }
+          if (from < 9) {
+            await m.createTable(autoCalls);
           }
         },
         beforeOpen: (details) async {

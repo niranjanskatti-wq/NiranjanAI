@@ -196,6 +196,10 @@ void main() {
     final d = Day.today().addDays(17);
     await shoot(t, await seed(), 'calendar_add_dark', route: '/calendar', tap: '${d.day}', tap2: 'Add');
   });
+  testWidgets('auto call prompt', (t) async => shoot(t, await seed(), 'autocall_dark',
+      route: '/autocall',
+      extra: const {'k': 'call', 'n': '+919845012345', 'nm': 'Appa', 'sp': true, 'cd': true,
+        'b': 'Birthday · Appa · +91 98450 12345 · on speaker'}));
   testWidgets('settings', (t) async => shoot(t, await seed(), 'settings_dark', route: '/settings', scroll: 900));
   testWidgets('profile lower', (t) async => shoot(t, await seed(), 'profile_lower_dark', route: '/person/2', scroll: 700));
   testWidgets('gift planner', (t) async => shoot(t, await seed(theme: 'light'), 'gifts_light', route: '/gifts'));

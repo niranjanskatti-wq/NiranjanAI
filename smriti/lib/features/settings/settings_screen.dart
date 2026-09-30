@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:go_router/go_router.dart';
 
+import '../autocall/auto_call.dart';
 import '../home/home_screen.dart';
 import '../lock/app_lock.dart';
 import '../widget/home_widget_service.dart';
@@ -90,6 +91,8 @@ class SettingsScreen extends ConsumerWidget {
           tile(Icons.workspaces_outline, 'Groups', 'Family, Office, College friends…', () => context.push('/groups')),
           tile(Icons.card_giftcard_outlined, 'Gift planner', 'Ideas, budgets and what is still to buy', () => context.push('/gifts')),
           tile(Icons.inventory_2_outlined, 'Archived people', null, () => context.push('/archived')),
+          const SizedBox(height: 12),
+          const AutoCallSettings(),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Privacy & extras')),
           const _LockSwitch(),

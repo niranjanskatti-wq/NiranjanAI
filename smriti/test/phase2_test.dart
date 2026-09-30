@@ -157,7 +157,7 @@ void main() {
     r.execute('DROP TABLE reminders');
     for (final t in [
       'user_messages', 'favourite_messages', 'festival_overrides', 'custom_festivals', 'wish_session_items',
-      'wish_sessions', 'photo_memories', 'group_members', '"groups"', 'family_links',
+      'wish_sessions', 'photo_memories', 'group_members', '"groups"', 'family_links', 'auto_calls',
     ]) {
       r.execute('DROP TABLE $t');
     }

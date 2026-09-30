@@ -1,6 +1,12 @@
 package com.niranjan.smriti
 
 import android.content.Intent
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
+import android.net.Uri
+import android.os.Handler
+import android.os.Looper
+import android.telecom.TelecomManager
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
@@ -27,7 +33,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun applyAlarmFlags(intent: Intent?) {
         val payload = intent?.getStringExtra("payload") ?: return
-        if (payload.contains("\"k\":\"mid\"")) setLockScreen(true)
+        if (payload.contains("\"k\":\"mid\"") || payload.contains("\"k\":\"call\"")) setLockScreen(true)
     }
 
     private fun setLockScreen(on: Boolean) {
@@ -42,6 +48,43 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
+    /**
+     * Rings [number] straight away (needs the phone permission), asking the
+     * dialer to start on speaker, and switching the speaker on again once the
+     * call is up for dialers that ignore the request.
+     */
+    private fun placeCall(number: String, speaker: Boolean): Boolean {
+        return try {
+            val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", number, null)).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra(TelecomManager.EXTRA_START_CALL_WITH_SPEAKERPHONE, speaker)
+            }
+            startActivity(intent)
+            if (speaker) {
+                val audio = getSystemService(AUDIO_SERVICE) as AudioManager
+                val handler = Handler(Looper.getMainLooper())
+                for (delay in listOf(1500L, 3500L)) {
+                    handler.postDelayed({
+                        try {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                audio.availableCommunicationDevices
+                                    .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
+                                    ?.let { audio.setCommunicationDevice(it) }
+                            } else {
+                                @Suppress("DEPRECATION")
+                                audio.isSpeakerphoneOn = true
+                            }
+                        } catch (_: Exception) {
+                        }
+                    }, delay)
+                }
+            }
+            true
+        } catch (e: SecurityException) {
+            false
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName).setMethodCallHandler { call, result ->
@@ -52,6 +95,11 @@ class MainActivity : FlutterFragmentActivity() {
                 }
                 "manufacturer" -> result.success(Build.MANUFACTURER ?: "")
                 "sdkInt" -> result.success(Build.VERSION.SDK_INT)
+                "placeCall" -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val a = call.arguments as Map<String, Any?>
+                    result.success(placeCall(a["number"] as String, a["speaker"] as Boolean? ?: false))
+                }
                 else -> result.notImplemented()
             }
         }

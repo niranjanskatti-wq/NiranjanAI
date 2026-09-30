@@ -22,12 +22,14 @@ class PlannedAlarm {
     this.festivalKey,
     this.fullScreen = false,
     this.wishActions = false,
+    this.extra = const {},
   });
 
   final int id;
   final tz.TZDateTime when;
 
-  /// mid (midnight alarm), rem (reminder), bel (belated nudge), month (monthly summary), fest (festival).
+  /// mid (midnight alarm), rem (reminder), bel (belated nudge), month (monthly summary), fest (festival),
+  /// call (auto call prompt).
   final String kind;
   final String title, body;
   final AlarmSound sound;
@@ -35,6 +37,9 @@ class PlannedAlarm {
   final Day? date;
   final String? festivalKey;
   final bool fullScreen, wishActions;
+
+  /// More details for the payload (e.g. who to call).
+  final Map<String, Object?> extra;
 
   /// Everything needed to rebuild the notification later (snooze, tap).
   String get payload => jsonEncode({
@@ -48,6 +53,7 @@ class PlannedAlarm {
         'f': fullScreen,
         'a': wishActions,
         'w': when.millisecondsSinceEpoch,
+        ...extra,
       });
 }
 

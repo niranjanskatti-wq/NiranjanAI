@@ -3,6 +3,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- Call button dials directly (falls back to the dialler if not allowed). -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <!-- Auto call: switch the call to speaker when asked. -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- Reminders and the midnight alarm: exact times, lock-screen alarm, survive restarts. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:workmanager/workmanager.dart';
 
+import '../autocall/auto_call.dart';
 import '../backup/backup_service.dart';
 import '../../data/database.dart';
 import '../../data/repository.dart';
@@ -96,7 +97,7 @@ class AlarmScheduler {
 void backgroundDispatcher() {
   Workmanager().executeTask((task, input) async {
     await NotificationService.initTimeZones();
-    if (AlarmScheduler.extraSources.isEmpty) AlarmScheduler.extraSources.add(festivalAlarms);
+    if (AlarmScheduler.extraSources.isEmpty) AlarmScheduler.extraSources.addAll([festivalAlarms, autoCallAlarms]);
     final db = AppDatabase();
     try {
       await AlarmScheduler.syncNow(db);

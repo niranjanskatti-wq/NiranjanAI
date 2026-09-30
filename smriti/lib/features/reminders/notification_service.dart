@@ -72,6 +72,7 @@ class NotificationService {
       snooze(data, action);
       return;
     }
+    if (action == 'callno') return;
     taps.value = NotificationTap(data: data, action: action);
   }
 
@@ -93,6 +94,7 @@ class NotificationService {
     required String body,
     bool wishActions = false,
     bool snoozeActions = false,
+    bool callActions = false,
   }) {
     final file = sound.file.isEmpty ? null : (alarm ? 'midnight_${sound.file}' : sound.file);
     return AndroidNotificationDetails(
@@ -115,7 +117,9 @@ class NotificationService {
       actions: [
         if (wishActions) const AndroidNotificationAction('call', 'Call', showsUserInterface: true),
         if (wishActions) const AndroidNotificationAction('wish', 'Send Wish', showsUserInterface: true),
-        if (snoozeActions) const AndroidNotificationAction('snooze10', 'Snooze 10 min'),
+        if (callActions) const AndroidNotificationAction('callyes', 'Yes, call now', showsUserInterface: true),
+        if (callActions) const AndroidNotificationAction('callno', 'No', cancelNotification: true),
+        if (snoozeActions && !callActions) const AndroidNotificationAction('snooze10', 'Snooze 10 min'),
       ],
     );
   }
@@ -127,6 +131,7 @@ class NotificationService {
           body: a.body,
           wishActions: a.wishActions,
           snoozeActions: a.fullScreen,
+          callActions: a.kind == 'call',
         ),
       );
 

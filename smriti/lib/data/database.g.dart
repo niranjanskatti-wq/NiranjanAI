@@ -8107,6 +8107,520 @@ class FamilyLinksCompanion extends UpdateCompanion<FamilyLink> {
   }
 }
 
+class $AutoCallsTable extends AutoCalls
+    with TableInfo<$AutoCallsTable, AutoCall> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AutoCallsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _personIdMeta = const VerificationMeta(
+    'personId',
+  );
+  @override
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+    'person_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES people (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _eventIdMeta = const VerificationMeta(
+    'eventId',
+  );
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+    'event_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES events (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _minuteOfDayMeta = const VerificationMeta(
+    'minuteOfDay',
+  );
+  @override
+  late final GeneratedColumn<int> minuteOfDay = GeneratedColumn<int>(
+    'minute_of_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _speakerMeta = const VerificationMeta(
+    'speaker',
+  );
+  @override
+  late final GeneratedColumn<bool> speaker = GeneratedColumn<bool>(
+    'speaker',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("speaker" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _numberMeta = const VerificationMeta('number');
+  @override
+  late final GeneratedColumn<String> number = GeneratedColumn<String>(
+    'number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    personId,
+    eventId,
+    date,
+    minuteOfDay,
+    speaker,
+    enabled,
+    number,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'auto_calls';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AutoCall> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('person_id')) {
+      context.handle(
+        _personIdMeta,
+        personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_personIdMeta);
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(
+        _eventIdMeta,
+        eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta),
+      );
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    }
+    if (data.containsKey('minute_of_day')) {
+      context.handle(
+        _minuteOfDayMeta,
+        minuteOfDay.isAcceptableOrUnknown(
+          data['minute_of_day']!,
+          _minuteOfDayMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_minuteOfDayMeta);
+    }
+    if (data.containsKey('speaker')) {
+      context.handle(
+        _speakerMeta,
+        speaker.isAcceptableOrUnknown(data['speaker']!, _speakerMeta),
+      );
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('number')) {
+      context.handle(
+        _numberMeta,
+        number.isAcceptableOrUnknown(data['number']!, _numberMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AutoCall map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AutoCall(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      personId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}person_id'],
+      )!,
+      eventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}event_id'],
+      ),
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      ),
+      minuteOfDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}minute_of_day'],
+      )!,
+      speaker: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}speaker'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      number: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}number'],
+      ),
+    );
+  }
+
+  @override
+  $AutoCallsTable createAlias(String alias) {
+    return $AutoCallsTable(attachedDatabase, alias);
+  }
+}
+
+class AutoCall extends DataClass implements Insertable<AutoCall> {
+  final int id;
+  final int personId;
+  final int? eventId;
+  final String? date;
+  final int minuteOfDay;
+  final bool speaker;
+  final bool enabled;
+
+  /// Number to ring; empty means the person's saved number.
+  final String? number;
+  const AutoCall({
+    required this.id,
+    required this.personId,
+    this.eventId,
+    this.date,
+    required this.minuteOfDay,
+    required this.speaker,
+    required this.enabled,
+    this.number,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['person_id'] = Variable<int>(personId);
+    if (!nullToAbsent || eventId != null) {
+      map['event_id'] = Variable<int>(eventId);
+    }
+    if (!nullToAbsent || date != null) {
+      map['date'] = Variable<String>(date);
+    }
+    map['minute_of_day'] = Variable<int>(minuteOfDay);
+    map['speaker'] = Variable<bool>(speaker);
+    map['enabled'] = Variable<bool>(enabled);
+    if (!nullToAbsent || number != null) {
+      map['number'] = Variable<String>(number);
+    }
+    return map;
+  }
+
+  AutoCallsCompanion toCompanion(bool nullToAbsent) {
+    return AutoCallsCompanion(
+      id: Value(id),
+      personId: Value(personId),
+      eventId: eventId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventId),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+      minuteOfDay: Value(minuteOfDay),
+      speaker: Value(speaker),
+      enabled: Value(enabled),
+      number: number == null && nullToAbsent
+          ? const Value.absent()
+          : Value(number),
+    );
+  }
+
+  factory AutoCall.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AutoCall(
+      id: serializer.fromJson<int>(json['id']),
+      personId: serializer.fromJson<int>(json['personId']),
+      eventId: serializer.fromJson<int?>(json['eventId']),
+      date: serializer.fromJson<String?>(json['date']),
+      minuteOfDay: serializer.fromJson<int>(json['minuteOfDay']),
+      speaker: serializer.fromJson<bool>(json['speaker']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      number: serializer.fromJson<String?>(json['number']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'personId': serializer.toJson<int>(personId),
+      'eventId': serializer.toJson<int?>(eventId),
+      'date': serializer.toJson<String?>(date),
+      'minuteOfDay': serializer.toJson<int>(minuteOfDay),
+      'speaker': serializer.toJson<bool>(speaker),
+      'enabled': serializer.toJson<bool>(enabled),
+      'number': serializer.toJson<String?>(number),
+    };
+  }
+
+  AutoCall copyWith({
+    int? id,
+    int? personId,
+    Value<int?> eventId = const Value.absent(),
+    Value<String?> date = const Value.absent(),
+    int? minuteOfDay,
+    bool? speaker,
+    bool? enabled,
+    Value<String?> number = const Value.absent(),
+  }) => AutoCall(
+    id: id ?? this.id,
+    personId: personId ?? this.personId,
+    eventId: eventId.present ? eventId.value : this.eventId,
+    date: date.present ? date.value : this.date,
+    minuteOfDay: minuteOfDay ?? this.minuteOfDay,
+    speaker: speaker ?? this.speaker,
+    enabled: enabled ?? this.enabled,
+    number: number.present ? number.value : this.number,
+  );
+  AutoCall copyWithCompanion(AutoCallsCompanion data) {
+    return AutoCall(
+      id: data.id.present ? data.id.value : this.id,
+      personId: data.personId.present ? data.personId.value : this.personId,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      date: data.date.present ? data.date.value : this.date,
+      minuteOfDay: data.minuteOfDay.present
+          ? data.minuteOfDay.value
+          : this.minuteOfDay,
+      speaker: data.speaker.present ? data.speaker.value : this.speaker,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      number: data.number.present ? data.number.value : this.number,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AutoCall(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('minuteOfDay: $minuteOfDay, ')
+          ..write('speaker: $speaker, ')
+          ..write('enabled: $enabled, ')
+          ..write('number: $number')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    personId,
+    eventId,
+    date,
+    minuteOfDay,
+    speaker,
+    enabled,
+    number,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AutoCall &&
+          other.id == this.id &&
+          other.personId == this.personId &&
+          other.eventId == this.eventId &&
+          other.date == this.date &&
+          other.minuteOfDay == this.minuteOfDay &&
+          other.speaker == this.speaker &&
+          other.enabled == this.enabled &&
+          other.number == this.number);
+}
+
+class AutoCallsCompanion extends UpdateCompanion<AutoCall> {
+  final Value<int> id;
+  final Value<int> personId;
+  final Value<int?> eventId;
+  final Value<String?> date;
+  final Value<int> minuteOfDay;
+  final Value<bool> speaker;
+  final Value<bool> enabled;
+  final Value<String?> number;
+  const AutoCallsCompanion({
+    this.id = const Value.absent(),
+    this.personId = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.minuteOfDay = const Value.absent(),
+    this.speaker = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.number = const Value.absent(),
+  });
+  AutoCallsCompanion.insert({
+    this.id = const Value.absent(),
+    required int personId,
+    this.eventId = const Value.absent(),
+    this.date = const Value.absent(),
+    required int minuteOfDay,
+    this.speaker = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.number = const Value.absent(),
+  }) : personId = Value(personId),
+       minuteOfDay = Value(minuteOfDay);
+  static Insertable<AutoCall> custom({
+    Expression<int>? id,
+    Expression<int>? personId,
+    Expression<int>? eventId,
+    Expression<String>? date,
+    Expression<int>? minuteOfDay,
+    Expression<bool>? speaker,
+    Expression<bool>? enabled,
+    Expression<String>? number,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (personId != null) 'person_id': personId,
+      if (eventId != null) 'event_id': eventId,
+      if (date != null) 'date': date,
+      if (minuteOfDay != null) 'minute_of_day': minuteOfDay,
+      if (speaker != null) 'speaker': speaker,
+      if (enabled != null) 'enabled': enabled,
+      if (number != null) 'number': number,
+    });
+  }
+
+  AutoCallsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? personId,
+    Value<int?>? eventId,
+    Value<String?>? date,
+    Value<int>? minuteOfDay,
+    Value<bool>? speaker,
+    Value<bool>? enabled,
+    Value<String?>? number,
+  }) {
+    return AutoCallsCompanion(
+      id: id ?? this.id,
+      personId: personId ?? this.personId,
+      eventId: eventId ?? this.eventId,
+      date: date ?? this.date,
+      minuteOfDay: minuteOfDay ?? this.minuteOfDay,
+      speaker: speaker ?? this.speaker,
+      enabled: enabled ?? this.enabled,
+      number: number ?? this.number,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (personId.present) {
+      map['person_id'] = Variable<int>(personId.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (minuteOfDay.present) {
+      map['minute_of_day'] = Variable<int>(minuteOfDay.value);
+    }
+    if (speaker.present) {
+      map['speaker'] = Variable<bool>(speaker.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (number.present) {
+      map['number'] = Variable<String>(number.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AutoCallsCompanion(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('minuteOfDay: $minuteOfDay, ')
+          ..write('speaker: $speaker, ')
+          ..write('enabled: $enabled, ')
+          ..write('number: $number')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -8338,6 +8852,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $GroupsTable groups = $GroupsTable(this);
   late final $GroupMembersTable groupMembers = $GroupMembersTable(this);
   late final $FamilyLinksTable familyLinks = $FamilyLinksTable(this);
+  late final $AutoCallsTable autoCalls = $AutoCallsTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -8361,6 +8876,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     groups,
     groupMembers,
     familyLinks,
+    autoCalls,
     settings,
   ];
   @override
@@ -8469,6 +8985,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('family_links', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'people',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('auto_calls', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'events',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('auto_calls', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -8654,6 +9184,24 @@ final class $$PeopleTableReferences
     ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_groupMembersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$AutoCallsTable, List<AutoCall>>
+  _autoCallsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.autoCalls,
+    aliasName: 'people__id__auto_calls__person_id',
+  );
+
+  $$AutoCallsTableProcessedTableManager get autoCallsRefs {
+    final manager = $$AutoCallsTableTableManager(
+      $_db,
+      $_db.autoCalls,
+    ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_autoCallsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -8955,6 +9503,31 @@ class $$PeopleTableFilterComposer
           }) => $$GroupMembersTableFilterComposer(
             $db: $db,
             $table: $db.groupMembers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> autoCallsRefs(
+    Expression<bool> Function($$AutoCallsTableFilterComposer f) f,
+  ) {
+    final $$AutoCallsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.autoCalls,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AutoCallsTableFilterComposer(
+            $db: $db,
+            $table: $db.autoCalls,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -9370,6 +9943,31 @@ class $$PeopleTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> autoCallsRefs<T extends Object>(
+    Expression<T> Function($$AutoCallsTableAnnotationComposer a) f,
+  ) {
+    final $$AutoCallsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.autoCalls,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AutoCallsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.autoCalls,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PeopleTableTableManager
@@ -9393,6 +9991,7 @@ class $$PeopleTableTableManager
             bool wishSessionItemsRefs,
             bool photoMemoriesRefs,
             bool groupMembersRefs,
+            bool autoCallsRefs,
           })
         > {
   $$PeopleTableTableManager(_$AppDatabase db, $PeopleTable table)
@@ -9527,6 +10126,7 @@ class $$PeopleTableTableManager
                 wishSessionItemsRefs = false,
                 photoMemoriesRefs = false,
                 groupMembersRefs = false,
+                autoCallsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -9538,6 +10138,7 @@ class $$PeopleTableTableManager
                     if (wishSessionItemsRefs) db.wishSessionItems,
                     if (photoMemoriesRefs) db.photoMemories,
                     if (groupMembersRefs) db.groupMembers,
+                    if (autoCallsRefs) db.autoCalls,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -9689,6 +10290,27 @@ class $$PeopleTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (autoCallsRefs)
+                        await $_getPrefetchedData<
+                          Person,
+                          $PeopleTable,
+                          AutoCall
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PeopleTableReferences
+                              ._autoCallsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PeopleTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).autoCallsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.personId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -9717,6 +10339,7 @@ typedef $$PeopleTableProcessedTableManager =
         bool wishSessionItemsRefs,
         bool photoMemoriesRefs,
         bool groupMembersRefs,
+        bool autoCallsRefs,
       })
     >;
 typedef $$EventsTableCreateCompanionBuilder = EventsCompanion Function({
@@ -9832,6 +10455,24 @@ final class $$EventsTableReferences
     ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_remindersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$AutoCallsTable, List<AutoCall>>
+  _autoCallsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.autoCalls,
+    aliasName: 'events__id__auto_calls__event_id',
+  );
+
+  $$AutoCallsTableProcessedTableManager get autoCallsRefs {
+    final manager = $$AutoCallsTableTableManager(
+      $_db,
+      $_db.autoCalls,
+    ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_autoCallsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -10028,6 +10669,31 @@ class $$EventsTableFilterComposer
           }) => $$RemindersTableFilterComposer(
             $db: $db,
             $table: $db.reminders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> autoCallsRefs(
+    Expression<bool> Function($$AutoCallsTableFilterComposer f) f,
+  ) {
+    final $$AutoCallsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.autoCalls,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AutoCallsTableFilterComposer(
+            $db: $db,
+            $table: $db.autoCalls,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -10310,6 +10976,31 @@ class $$EventsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> autoCallsRefs<T extends Object>(
+    Expression<T> Function($$AutoCallsTableAnnotationComposer a) f,
+  ) {
+    final $$AutoCallsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.autoCalls,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AutoCallsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.autoCalls,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$EventsTableTableManager
@@ -10330,6 +11021,7 @@ class $$EventsTableTableManager
             bool giftIdeasRefs,
             bool wishLogsRefs,
             bool remindersRefs,
+            bool autoCallsRefs,
           })
         > {
   $$EventsTableTableManager(_$AppDatabase db, $EventsTable table)
@@ -10437,6 +11129,7 @@ class $$EventsTableTableManager
                 giftIdeasRefs = false,
                 wishLogsRefs = false,
                 remindersRefs = false,
+                autoCallsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -10445,6 +11138,7 @@ class $$EventsTableTableManager
                     if (giftIdeasRefs) db.giftIdeas,
                     if (wishLogsRefs) db.wishLogs,
                     if (remindersRefs) db.reminders,
+                    if (autoCallsRefs) db.autoCalls,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -10529,6 +11223,27 @@ class $$EventsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (autoCallsRefs)
+                        await $_getPrefetchedData<
+                          Event,
+                          $EventsTable,
+                          AutoCall
+                        >(
+                          currentTable: table,
+                          referencedTable: $$EventsTableReferences
+                              ._autoCallsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$EventsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).autoCallsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.eventId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -10554,6 +11269,7 @@ typedef $$EventsTableProcessedTableManager =
         bool giftIdeasRefs,
         bool wishLogsRefs,
         bool remindersRefs,
+        bool autoCallsRefs,
       })
     >;
 typedef $$EventPeopleTableCreateCompanionBuilder =
@@ -15481,6 +16197,456 @@ typedef $$FamilyLinksTableProcessedTableManager =
       FamilyLink,
       PrefetchHooks Function({bool personId, bool relativeId})
     >;
+typedef $$AutoCallsTableCreateCompanionBuilder = AutoCallsCompanion Function({
+  Value<int> id,
+  required int personId,
+  Value<int?> eventId,
+  Value<String?> date,
+  required int minuteOfDay,
+  Value<bool> speaker,
+  Value<bool> enabled,
+  Value<String?> number,
+});
+typedef $$AutoCallsTableUpdateCompanionBuilder = AutoCallsCompanion Function({
+  Value<int> id,
+  Value<int> personId,
+  Value<int?> eventId,
+  Value<String?> date,
+  Value<int> minuteOfDay,
+  Value<bool> speaker,
+  Value<bool> enabled,
+  Value<String?> number,
+});
+
+final class $$AutoCallsTableReferences
+    extends BaseReferences<_$AppDatabase, $AutoCallsTable, AutoCall> {
+  $$AutoCallsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $PeopleTable _personIdTable(_$AppDatabase db) =>
+      db.people.createAlias('auto_calls__person_id__people__id');
+
+  $$PeopleTableProcessedTableManager get personId {
+    final $_column = $_itemColumn<int>('person_id')!;
+
+    final manager = $$PeopleTableTableManager(
+      $_db,
+      $_db.people,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_personIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $EventsTable _eventIdTable(_$AppDatabase db) =>
+      db.events.createAlias('auto_calls__event_id__events__id');
+
+  $$EventsTableProcessedTableManager? get eventId {
+    final $_column = $_itemColumn<int>('event_id');
+    if ($_column == null) return null;
+    final manager = $$EventsTableTableManager(
+      $_db,
+      $_db.events,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$AutoCallsTableFilterComposer
+    extends Composer<_$AppDatabase, $AutoCallsTable> {
+  $$AutoCallsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minuteOfDay => $composableBuilder(
+    column: $table.minuteOfDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get speaker => $composableBuilder(
+    column: $table.speaker,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get number => $composableBuilder(
+    column: $table.number,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PeopleTableFilterComposer get personId {
+    final $$PeopleTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableFilterComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableFilterComposer get eventId {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AutoCallsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AutoCallsTable> {
+  $$AutoCallsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minuteOfDay => $composableBuilder(
+    column: $table.minuteOfDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get speaker => $composableBuilder(
+    column: $table.speaker,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get number => $composableBuilder(
+    column: $table.number,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PeopleTableOrderingComposer get personId {
+    final $$PeopleTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableOrderingComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableOrderingComposer get eventId {
+    final $$EventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AutoCallsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AutoCallsTable> {
+  $$AutoCallsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get minuteOfDay => $composableBuilder(
+    column: $table.minuteOfDay,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get speaker =>
+      $composableBuilder(column: $table.speaker, builder: (column) => column);
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  GeneratedColumn<String> get number =>
+      $composableBuilder(column: $table.number, builder: (column) => column);
+
+  $$PeopleTableAnnotationComposer get personId {
+    final $$PeopleTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableAnnotationComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableAnnotationComposer get eventId {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AutoCallsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AutoCallsTable,
+          AutoCall,
+          $$AutoCallsTableFilterComposer,
+          $$AutoCallsTableOrderingComposer,
+          $$AutoCallsTableAnnotationComposer,
+          $$AutoCallsTableCreateCompanionBuilder,
+          $$AutoCallsTableUpdateCompanionBuilder,
+          (AutoCall, $$AutoCallsTableReferences),
+          AutoCall,
+          PrefetchHooks Function({bool personId, bool eventId})
+        > {
+  $$AutoCallsTableTableManager(_$AppDatabase db, $AutoCallsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AutoCallsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AutoCallsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AutoCallsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> personId = const Value.absent(),
+                Value<int?> eventId = const Value.absent(),
+                Value<String?> date = const Value.absent(),
+                Value<int> minuteOfDay = const Value.absent(),
+                Value<bool> speaker = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+                Value<String?> number = const Value.absent(),
+              }) => AutoCallsCompanion(
+                id: id,
+                personId: personId,
+                eventId: eventId,
+                date: date,
+                minuteOfDay: minuteOfDay,
+                speaker: speaker,
+                enabled: enabled,
+                number: number,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int personId,
+                Value<int?> eventId = const Value.absent(),
+                Value<String?> date = const Value.absent(),
+                required int minuteOfDay,
+                Value<bool> speaker = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+                Value<String?> number = const Value.absent(),
+              }) => AutoCallsCompanion.insert(
+                id: id,
+                personId: personId,
+                eventId: eventId,
+                date: date,
+                minuteOfDay: minuteOfDay,
+                speaker: speaker,
+                enabled: enabled,
+                number: number,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AutoCallsTable, AutoCall>(table),
+                  $$AutoCallsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({personId = false, eventId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (personId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.personId,
+                        referencedTable: $$AutoCallsTableReferences
+                            ._personIdTable(db),
+                        referencedColumn: $$AutoCallsTableReferences
+                            ._personIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (eventId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.eventId,
+                        referencedTable: $$AutoCallsTableReferences
+                            ._eventIdTable(db),
+                        referencedColumn: $$AutoCallsTableReferences
+                            ._eventIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$AutoCallsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AutoCallsTable,
+      AutoCall,
+      $$AutoCallsTableFilterComposer,
+      $$AutoCallsTableOrderingComposer,
+      $$AutoCallsTableAnnotationComposer,
+      $$AutoCallsTableCreateCompanionBuilder,
+      $$AutoCallsTableUpdateCompanionBuilder,
+      (AutoCall, $$AutoCallsTableReferences),
+      AutoCall,
+      PrefetchHooks Function({bool personId, bool eventId})
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -15653,6 +16819,8 @@ class $AppDatabaseManager {
       $$GroupMembersTableTableManager(_db, _db.groupMembers);
   $$FamilyLinksTableTableManager get familyLinks =>
       $$FamilyLinksTableTableManager(_db, _db.familyLinks);
+  $$AutoCallsTableTableManager get autoCalls =>
+      $$AutoCallsTableTableManager(_db, _db.autoCalls);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
 }

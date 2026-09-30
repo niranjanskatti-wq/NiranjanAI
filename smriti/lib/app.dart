@@ -6,6 +6,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/tokens.dart';
 import 'core/util/occurrence.dart';
 import 'data/providers.dart';
+import 'features/autocall/auto_call.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/backup/backup_service.dart';
 import 'features/calendar/calendar_screen.dart';
@@ -75,6 +76,14 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/archived', builder: (_, _) => const ArchivedScreen()),
         GoRoute(path: '/not-wished', builder: (_, _) => const NotWishedScreen()),
         GoRoute(path: '/import/contacts', builder: (_, _) => const BulkAddScreen()),
+        GoRoute(path: '/auto-calls', builder: (_, _) => const AutoCallsScreen()),
+        GoRoute(
+          path: '/autocall',
+          builder: (_, state) => AutoCallPromptScreen(
+            data: (state.extra as Map<String, dynamic>?) ?? const {},
+            callNow: state.uri.queryParameters['now'] == '1',
+          ),
+        ),
         GoRoute(path: '/duplicates', builder: (_, _) => const DuplicatesScreen()),
         GoRoute(path: '/import/calendar', builder: (_, _) => const CalendarImportScreen()),
         GoRoute(path: '/import/birthdays', builder: (_, _) => const ImportBirthdaysScreen()),
@@ -218,7 +227,10 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     NotificationService.taps.value = null;
     final id = t.eventId;
     final date = t.date == null ? '' : '&date=${t.date}';
-    if (t.action == 'call' && id != null) {
+    if (t.kind == 'call') {
+      // Auto call: "Yes" on the notification calls at once; otherwise show the prompt.
+      router.push(t.action == 'callyes' ? '/autocall?now=1' : '/autocall', extra: t.data);
+    } else if (t.action == 'call' && id != null) {
       router.push('/event/$id?action=call$date');
     } else if (t.action == 'wish' && id != null) {
       router.push('/event/$id?action=${t.kind == 'bel' ? 'belated' : 'wish'}$date');
@@ -258,6 +270,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(allRemindersProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(wishedKeysProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(festivalsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
+    ref.listen(autoCallsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(visibleEntriesProvider, (_, _) => _publishWidget());
     ref.listen(entriesProvider, (_, _) => CalendarSync.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
@@ -269,7 +282,10 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
       routerConfig: _router,
       builder: (context, child) => LockGate(
         routeChanges: _router!.routerDelegate,
-        isAlarm: () => _router!.routerDelegate.currentConfiguration.uri.path.startsWith('/alarm'),
+        isAlarm: () {
+          final path = _router!.routerDelegate.currentConfiguration.uri.path;
+          return path.startsWith('/alarm') || path.startsWith('/autocall');
+        },
         child: Stack(children: [
           ?child,
           const Align(alignment: Alignment.bottomCenter, child: WishedChip()),
