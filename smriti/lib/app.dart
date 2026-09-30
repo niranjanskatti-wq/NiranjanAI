@@ -319,20 +319,28 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
       themeMode: mode,
       routerConfig: _router,
       scaffoldMessengerKey: _messenger,
-      builder: (context, child) => LockGate(
-        routeChanges: _router!.routerDelegate,
-        isAlarm: () {
-          final path = _router!.routerDelegate.currentConfiguration.uri.path;
-          return path.startsWith('/alarm') || path.startsWith('/autocall');
-        },
-        child: Stack(children: [
-          ?child,
-          const Align(alignment: Alignment.bottomCenter, child: WishedChip()),
-        ]),
+      builder: (context, child) => MediaQuery(
+        // Settings › Text size scales every screen, on top of the phone's font size.
+        data: MediaQuery.of(context).copyWith(
+            textScaler: _scaled(MediaQuery.textScalerOf(context), ref.watch(appTextSizeProvider).value?.scale ?? 1)),
+        child: LockGate(
+          routeChanges: _router!.routerDelegate,
+          isAlarm: () {
+            final path = _router!.routerDelegate.currentConfiguration.uri.path;
+            return path.startsWith('/alarm') || path.startsWith('/autocall');
+          },
+          child: Stack(children: [
+            ?child,
+            const Align(alignment: Alignment.bottomCenter, child: WishedChip()),
+          ]),
+        ),
       ),
     );
   }
 }
+
+TextScaler _scaled(TextScaler phone, double factor) =>
+    factor == 1 ? phone : TextScaler.linear((phone.scale(14) / 14) * factor);
 
 class _Shell extends StatelessWidget {
   const _Shell({required this.shell});

@@ -86,6 +86,28 @@ void main() {
     await unmount(tester);
   });
 
+  for (final size in [AppTextSize.xs, AppTextSize.xl]) {
+    testWidgets('home works with ${size.label.toLowerCase()} text', (tester) async {
+      final repo = Repository(db);
+      await db.setSetting('onboarded', 'true');
+      await db.setSetting('appTextSize', size.name);
+      await repo.insertPerson(PeopleCompanion.insert(name: 'Niranjan', isMe: const Value(true), relationship: const Value('self')));
+      final p = await repo.insertPerson(PeopleCompanion.insert(name: 'Bharti Katti', birthYear: const Value(1975)));
+      final soon = Day.today().addDays(3);
+      await repo.saveEvent(
+        data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: soon.day, month: soon.month),
+        personIds: [p],
+      );
+      await pumpApp(tester);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('Bharti Katti'), findsWidgets);
+      final scaler = MediaQuery.textScalerOf(tester.element(find.text('Bharti Katti').first));
+      expect(scaler.scale(10), closeTo(10 * size.scale, 0.01));
+      expect(tester.takeException(), isNull);
+      await unmount(tester);
+    });
+  }
+
   test('couple events show both names and years married', () async {
     final repo = Repository(db);
     final a = await repo.insertPerson(PeopleCompanion.insert(name: 'Ravi', relationship: const Value('uncle')));

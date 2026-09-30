@@ -254,6 +254,10 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Smaller default text: Today names 18 (Large = the old 22), Next up's first date 17 with a smaller days box
 - Widgets can be shrunk further by long-press › drag the edges
 
+### App text size
+- Settings › Appearance › Text size: XS, S, Normal, L, XL for Home and every page (on top of the
+  phone's own font size)
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

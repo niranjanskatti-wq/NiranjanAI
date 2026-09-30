@@ -63,6 +63,31 @@ class SettingsScreen extends ConsumerWidget {
               onSelectionChanged: (s) => db.setSetting('themeMode', s.first.name),
             ),
           ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text('Text size', style: context.text.titleSmall),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: SegmentedButton<AppTextSize>(
+              showSelectedIcon: false,
+              segments: [
+                for (final t in AppTextSize.values)
+                  ButtonSegment(value: t, label: Text(t.short, style: TextStyle(fontSize: 13 * t.scale))),
+              ],
+              selected: {ref.watch(appTextSizeProvider).value ?? AppTextSize.m},
+              onSelectionChanged: (s) => db.setSetting('appTextSize', s.first.name),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+            child: Text(
+                'Letters on Home and every other page: '
+                '${(ref.watch(appTextSizeProvider).value ?? AppTextSize.m).label.toLowerCase()}',
+                style: context.text.bodySmall?.copyWith(color: c.muted)),
+          ),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Festivals')),
           tile(Icons.celebration_outlined, 'Festivals', 'Switch on or off, edit dates, add your own',

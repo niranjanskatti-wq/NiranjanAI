@@ -90,6 +90,24 @@ final upcomingProvider = Provider<AsyncValue<List<Upcoming>>>((ref) {
   return entries.whenData((list) => computeUpcoming(list, today));
 });
 
+/// App text size, on top of the phone's own font size setting.
+enum AppTextSize {
+  xs('XS', 'Extra small', 0.82),
+  s('S', 'Small', 0.91),
+  m('M', 'Normal', 1),
+  l('L', 'Large', 1.12),
+  xl('XL', 'Extra large', 1.25);
+
+  const AppTextSize(this.short, this.label, this.scale);
+  final String short, label;
+  final double scale;
+}
+
+final appTextSizeProvider = StreamProvider<AppTextSize>((ref) => ref
+    .watch(databaseProvider)
+    .watchSetting('appTextSize')
+    .map((v) => AppTextSize.values.asNameMap()[v] ?? AppTextSize.m));
+
 final themeModeProvider = StreamProvider<ThemeMode>((ref) => ref
     .watch(databaseProvider)
     .watchSetting('themeMode')
