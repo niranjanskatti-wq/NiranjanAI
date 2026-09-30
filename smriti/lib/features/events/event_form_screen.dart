@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/util/occurrence.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
 import '../../data/database.dart';
@@ -60,7 +61,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         _type = entry.type;
         _repeat = entry.repeat;
         _feb29 = entry.feb29;
-        _date = DateParts(e.day, e.month, e.year);
+        // A birthday's year may be saved on the person (e.g. imported from contacts).
+        final personBirthday = entry.type == EventType.birthday && entry.kind == EventKind.person;
+        _date = DateParts(e.day, e.month, realYear(e.year) ?? (personBirthday ? realYear(entry.primary?.birthYear) : null));
         _stars = e.stars;
         _title.text = e.title ?? '';
         _customLabel.text = e.customLabel ?? '';
@@ -171,6 +174,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       EventKind.other || EventKind.festival => <int>[],
     };
     final id = await ref.read(repoProvider).saveEvent(id: widget.id, data: data, personIds: ids);
+    if (_kind == EventKind.person && _type == EventType.birthday) {
+      // Keep the person's birth year the same as this birthday's year.
+      await ref.read(repoProvider).setBirthYear(ids.first, realYear(d.year));
+    }
     HapticFeedback.lightImpact();
     if (!mounted) return;
     showToast(context, 'Saved');

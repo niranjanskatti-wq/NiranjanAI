@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/util/occurrence.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
 import '../../core/util/phone.dart';
@@ -79,7 +80,7 @@ class _PersonFormScreenState extends ConsumerState<PersonFormScreen> {
         _relation = p.relation;
         _customRel.text = p.customRelationship ?? '';
         _stars = p.stars;
-        _birthYear = p.birthYear;
+        _birthYear = realYear(p.birthYear);
         _timeZone = p.timeZone;
         _call.text = formatPhone(p.callNumber);
         _sameWhatsapp = p.whatsappNumber == null;
@@ -266,6 +267,7 @@ class _PersonFormScreenState extends ConsumerState<PersonFormScreen> {
     if (_isEdit) {
       id = widget.id!;
       await repo.updatePerson(id, data);
+      if (realYear(_existing?.birthYear) != _birthYear) await repo.setBirthYear(id, _birthYear);
     } else {
       id = await repo.insertPerson(data);
       final kind = EventKind.person.name;
@@ -276,6 +278,7 @@ class _PersonFormScreenState extends ConsumerState<PersonFormScreen> {
             type: EventType.birthday.name,
             day: _birthday!.day,
             month: _birthday!.month,
+            year: Value(_birthYear),
           ),
           personIds: [id],
         );

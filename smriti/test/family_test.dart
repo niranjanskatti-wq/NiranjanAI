@@ -72,4 +72,23 @@ void main() {
     expect(up.map((u) => u.ageText), everyElement(isNull));
     await db.close();
   });
+
+  test('birth year stays the same on the person and on their birthday', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final r = Repository(db);
+    // Imported from contacts: year on the person only.
+    final mom = await r.insertPerson(PeopleCompanion.insert(name: 'Mom', birthYear: const Value(1966)));
+    await r.saveEvent(data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: 19, month: 11), personIds: [mom]);
+    var e = (await r.watchEntries().first).single;
+    expect(e.startYear, 1966);
+
+    // Changing the year from either screen updates both places.
+    await r.setBirthYear(mom, 1967);
+    e = (await r.watchEntries().first).single;
+    expect((e.event.year, e.primary!.birthYear, e.startYear), (1967, 1967, 1967));
+    await r.setBirthYear(mom, null);
+    e = (await r.watchEntries().first).single;
+    expect((e.event.year, e.primary!.birthYear), (null, null));
+    await db.close();
+  });
 }

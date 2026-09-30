@@ -159,6 +159,19 @@ class Repository {
         }
       });
 
+  /// One birth year for a person: saved on the person and on their birthday dates,
+  /// so the profile and the date editor always show the same year.
+  Future<void> setBirthYear(int personId, int? year) => db.transaction(() async {
+        await (db.update(db.people)..where((p) => p.id.equals(personId))).write(PeopleCompanion(birthYear: Value(year)));
+        final ids = (await (db.select(db.eventPeople)..where((ep) => ep.personId.equals(personId))).get())
+            .map((ep) => ep.eventId)
+            .toList();
+        if (ids.isEmpty) return;
+        await (db.update(db.events)
+              ..where((e) => e.id.isIn(ids) & e.type.equals(EventType.birthday.name) & e.kind.equals(EventKind.person.name)))
+            .write(EventsCompanion(year: Value(year)));
+      });
+
   Future<void> updateEvent(int id, EventsCompanion data) =>
       (db.update(db.events)..where((e) => e.id.equals(id))).write(data);
 

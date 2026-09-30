@@ -69,10 +69,6 @@ class UpcomingRow extends ConsumerWidget {
                                 Icon(Icons.star_rounded, size: 13, color: c.gold),
                                 Text('${e.stars}', style: context.text.labelSmall?.copyWith(color: c.muted)),
                               ],
-                              if (item.milestone) ...[
-                                const SizedBox(width: 6),
-                                Icon(Icons.auto_awesome, size: 14, color: c.gold),
-                              ],
                               if (bell) ...[
                                 const SizedBox(width: 6),
                                 Icon(Icons.notifications_none_rounded, size: 14, color: c.muted),
@@ -94,6 +90,8 @@ class UpcomingRow extends ConsumerWidget {
                                 )
                               else if (e.type == EventType.birthday && e.kind == EventKind.person)
                                 Text('No birth year', style: context.text.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
+                              // Why the row has a gold border: a big birthday or anniversary.
+                              if (item.milestone) const Badge2('Milestone', sparkle: true),
                             ]),
                             const SizedBox(height: 4),
                             Text(details, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
