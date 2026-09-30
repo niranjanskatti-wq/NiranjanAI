@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show BooleanExpressionOperators, Value;
 
 import '../../core/util/occurrence.dart';
+import '../../core/util/phone.dart';
 import '../../data/database.dart';
 import '../../data/enums.dart';
 import '../../data/models.dart';
@@ -128,7 +129,7 @@ class Duplicates {
         String? reason;
         if (nameKey(a.name) == nameKey(b.name)) {
           reason = 'Same name';
-        } else if (a.callNumber != null && a.callNumber == b.callNumber) {
+        } else if (samePhone(a.callNumber, b.callNumber)) {
           reason = 'Same phone number';
         }
         if (reason == null) continue;
@@ -140,13 +141,94 @@ class Duplicates {
     return out;
   }
 
+  static String _dateKey(EventEntry e) =>
+      '${e.type.name}|${e.event.month}|${e.event.day}|${nameKey(e.event.customLabel ?? '')}|${nameKey(e.event.title ?? '')}';
+
+  /// Pairs that are certainly the same person: same number or same name, and
+  /// the same date saved for both (e.g. one contact imported twice).
+  static List<DuplicatePeople> certain(List<Person> people, List<EventEntry> entries) {
+    final dates = <int, Set<String>>{};
+    for (final e in entries.where((e) => e.kind == EventKind.person && e.people.length == 1)) {
+      (dates[e.people.single.id] ??= {}).add(_dateKey(e));
+    }
+    return Duplicates.people(people, entries)
+        .where((d) => (dates[d.keep.id] ?? const {}).intersection(dates[d.extra.id] ?? const {}).isNotEmpty)
+        .toList();
+  }
+
+  /// Copies of one date for the same people: returns the extra copies to remove.
+  /// The copy with the year (then the oldest) is kept.
+  static List<(EventEntry keep, EventEntry extra)> doubleDates(List<EventEntry> entries) {
+    final groups = <String, List<EventEntry>>{};
+    for (final e in entries.where((e) => e.people.isNotEmpty)) {
+      final ids = (e.people.map((p) => p.id).toList()..sort()).join(',');
+      (groups['$ids|${_dateKey(e)}'] ??= []).add(e);
+    }
+    final out = <(EventEntry, EventEntry)>[];
+    for (final list in groups.values.where((l) => l.length > 1)) {
+      list.sort((a, b) {
+        final ya = realYear(a.event.year) != null ? 0 : 1, yb = realYear(b.event.year) != null ? 0 : 1;
+        return ya != yb ? ya - yb : a.event.id - b.event.id;
+      });
+      for (final extra in list.skip(1)) {
+        out.add((list.first, extra));
+      }
+    }
+    return out;
+  }
+
+  /// Removes certain doubles on its own: the same person saved twice with the
+  /// same date, and the same date saved twice for one person. Returns how many
+  /// were removed. Unsure cases stay in the Duplicates screen.
+  Future<int> autoClean() async {
+    var removed = 0;
+    for (var pass = 0; pass < 20; pass++) {
+      final pairs = certain(await repo.allPeople(), await repo.watchEntries().first);
+      if (pairs.isEmpty) break;
+      for (final d in pairs) {
+        await merge(d.keep, d.extra);
+        removed++;
+      }
+    }
+    for (final (keep, extra) in doubleDates(await repo.watchEntries().first)) {
+      await db.transaction(() async {
+        await (db.update(db.wishLogs)..where((w) => w.eventId.equals(extra.event.id)))
+            .write(WishLogsCompanion(eventId: Value(keep.event.id)));
+        if (realYear(keep.event.year) == null && realYear(extra.event.year) != null) {
+          await repo.updateEvent(keep.event.id, EventsCompanion(year: Value(extra.event.year)));
+        }
+        await repo.deleteEvent(extra.event.id);
+      });
+      removed++;
+    }
+    return removed;
+  }
+
+  static bool _cleaning = false;
+
+  /// [autoClean] that never runs twice at once and never throws.
+  static Future<int> cleanSafely(AppDatabase db) async {
+    if (_cleaning) return 0;
+    _cleaning = true;
+    try {
+      return await Duplicates(db).autoClean();
+    } catch (_) {
+      return 0;
+    } finally {
+      _cleaning = false;
+    }
+  }
+
   /// Moves everything from [extra] onto [keep] (skipping dates [keep] already has), then removes [extra].
   Future<void> merge(Person keep, Person extra) => db.transaction(() async {
         final keepEntries = await repo.watchEntriesForPerson(keep.id).first;
         for (final e in await repo.watchEntriesForPerson(extra.id).first) {
-          final already = keepEntries.any(
-              (k) => k.type == e.type && k.event.day == e.event.day && k.event.month == e.event.month);
-          if (already && e.people.length == 1) {
+          final already = keepEntries
+              .where((k) => k.people.length == 1 && _dateKey(k) == _dateKey(e))
+              .firstOrNull;
+          if (already != null && e.people.length == 1) {
+            await (db.update(db.wishLogs)..where((w) => w.eventId.equals(e.event.id)))
+                .write(WishLogsCompanion(eventId: Value(already.event.id)));
             await repo.deleteEvent(e.event.id);
           } else if (e.people.any((p) => p.id == keep.id)) {
             // Both already on this event (e.g. a couple): just drop the extra copy.

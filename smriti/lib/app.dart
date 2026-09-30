@@ -21,6 +21,7 @@ import 'features/export/export_screen.dart';
 import 'features/export/import_screen.dart';
 import 'features/contacts/bulk_add_screen.dart';
 import 'features/contacts/contact_sync.dart';
+import 'features/contacts/duplicates.dart';
 import 'features/contacts/duplicates_screen.dart';
 import 'features/contacts/import_birthdays_screen.dart';
 import 'features/events/event_detail_screen.dart';
@@ -234,6 +235,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
   /// Keeps contacts and scheduled alarms in step with the data.
   void _sync() {
     ContactSync(ref.read(repoProvider)).run();
+    if (NotificationService.supported) Duplicates.cleanSafely(ref.read(databaseProvider));
     AlarmScheduler.syncSoon(ref.read(databaseProvider));
     if (NotificationService.supported) BackupService(ref.read(databaseProvider)).autoIfDue();
     _publishWidget();

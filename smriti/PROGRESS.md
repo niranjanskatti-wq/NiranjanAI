@@ -238,6 +238,16 @@ Building all phases in a row (your choice), testing everything on the phone at t
   in the app) and the row shows "✓ Wished". When everyone is done the shine stops
 - Tap a name to open it in Smriti
 
+### No doubled contacts
+- Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
+  - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one
+    person, keeping the photo, number, birth year, gifts and "wished" history
+  - the same date saved twice for one person → the extra copy is removed
+- Importing from contacts: one number gets only one birthday and one anniversary. A second name on the same
+  number is left unticked ("Same number as …"); tick it if it really is a different person
+- Same number with different dates (e.g. parents sharing one phone) is never deleted on its own; it shows
+  in Duplicates to merge or keep
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

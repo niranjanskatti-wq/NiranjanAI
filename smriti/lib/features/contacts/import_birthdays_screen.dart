@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/occurrence.dart';
 import '../../core/util/format.dart';
+import '../../core/util/phone.dart';
 import '../../data/database.dart';
 import '../../data/enums.dart';
 import '../../data/providers.dart';
@@ -30,7 +31,8 @@ class _Found {
   /// Birthday and anniversary saved on the same day for this contact.
   bool sameDay = false;
 
-  /// Another contact with the same name or number already has this date.
+  /// Why this is left out as a double (another contact with the same name
+  /// or number), shown under the name.
   String? copyOf;
 }
 
@@ -61,18 +63,30 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
     }
     final repo = ref.read(repoProvider);
     final people = await repo.allPeople();
+    final entries = await repo.watchEntries().first;
     final contacts = await ContactsHelper.all();
     final found = <_Found>[];
     for (final c in contacts) {
-      final numbers = c.numbers.map((n) => n.number).toSet();
       final existing = people.where((p) =>
           p.contactId == c.id ||
-          (p.callNumber != null && numbers.contains(p.callNumber)) ||
-          p.name.trim().toLowerCase() == c.name.trim().toLowerCase()).firstOrNull;
+          c.numbers.any((n) => samePhone(n.number, p.callNumber)) ||
+          nameKey(p.name) == nameKey(c.name)).firstOrNull;
       for (final (ev, type) in [(c.birthday, EventType.birthday), (c.anniversary, EventType.weddingAnniversary)]) {
         if (ev == null) continue;
         final dup = existing != null && await repo.hasEvent(existing.id, type, ev.month, ev.day);
-        found.add(_Found(c, type, ev.day, ev.month, ev.year, existing: existing, duplicate: dup));
+        final f = _Found(c, type, ev.day, ev.month, ev.year, existing: existing, duplicate: dup);
+        if (existing != null && !dup) {
+          // One number, one birthday (and one anniversary): the person already has another date.
+          final other = entries
+              .where((e) => e.type == type && e.people.length == 1 && e.people.single.id == existing.id)
+              .firstOrNull;
+          if (other != null) {
+            f.copyOf = '${existing.name} already has a ${type == EventType.birthday ? 'birthday' : 'wedding anniversary'} '
+                'on ${fmtEventDate(day: other.event.day, month: other.event.month)}';
+            f.selected = false;
+          }
+        }
+        found.add(f);
       }
     }
     _markProblems(found);
@@ -84,16 +98,19 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
 
   /// Finds double contacts and same-day birthday/anniversary pairs.
   void _markProblems(List<_Found> found) {
-    // Double contacts: same name or a shared number, with the same date.
+    // Double contacts: the same name with the same date, or one number with a
+    // second birthday (or anniversary) under another name.
     final seen = <String, _Found>{};
-    for (final f in found.where((f) => !f.duplicate)) {
+    for (final f in found.where((f) => !f.duplicate && f.copyOf == null)) {
       final keys = [
-        'n:${nameKey(f.contact.name)}',
+        'n:${nameKey(f.contact.name)}|${f.day}|${f.month}',
         for (final n in f.contact.numbers) 'p:${n.number}',
-      ].map((k) => '$k|${f.type.name}|${f.day}|${f.month}');
+      ].map((k) => '$k|${f.type.name}');
       final first = keys.map((k) => seen[k]).whereType<_Found>().where((o) => o.contact.id != f.contact.id).firstOrNull;
       if (first != null) {
-        f.copyOf = first.contact.name;
+        f.copyOf = first.day == f.day && first.month == f.month
+            ? 'Double contact of ${first.contact.name}'
+            : 'Same number as ${first.contact.name}, who has a different date';
         f.selected = false;
       } else {
         for (final k in keys) {
@@ -126,7 +143,7 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
                   '$copies ${copies == 1 ? 'date comes' : 'dates come'} from double contacts (same name or number). '
-                  'The extra copies are left out.'),
+                  'The extra copies are left out. You can still tick one if it really is a different person.'),
             ),
           if (clashes > 0)
             Text('$clashes ${clashes == 1 ? 'contact has' : 'contacts have'} a birthday and a wedding anniversary on the '
@@ -188,9 +205,11 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
       );
       count++;
     }
+    final cleaned = await Duplicates.cleanSafely(ref.read(databaseProvider));
     HapticFeedback.lightImpact();
     if (!mounted) return;
-    showToast(context, 'Imported $count date${count == 1 ? '' : 's'}');
+    showToast(context,
+        'Imported $count date${count == 1 ? '' : 's'}${cleaned > 0 ? ' · removed $cleaned double${cleaned == 1 ? '' : 's'}' : ''}');
     context.pop();
   }
 
@@ -225,7 +244,7 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
                         final note = f.duplicate
                             ? 'Already saved in Smriti'
                             : f.copyOf != null
-                                ? 'Double contact of ${f.copyOf}'
+                                ? f.copyOf!
                                 : f.existing != null
                                     ? 'Will be added to ${f.existing!.name}'
                                     : 'New person';
