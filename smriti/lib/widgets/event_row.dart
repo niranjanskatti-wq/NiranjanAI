@@ -6,6 +6,7 @@ import '../core/util/format.dart';
 import '../data/enums.dart';
 import '../data/models.dart';
 import '../data/providers.dart';
+import '../features/events/age_input.dart';
 import '../features/festivals/festival_route.dart';
 import '../features/reminders/reminders_screen.dart';
 import '../features/wish/wish_buttons.dart';
@@ -91,7 +92,16 @@ class UpcomingRow extends ConsumerWidget {
                                   ),
                                 )
                               else if (e.type == EventType.birthday && e.kind == EventKind.person)
-                                Text('No birth year', style: context.text.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(8),
+                                  onTap: () async {
+                                    final years = await askYears(context, birthday: true, name: e.title, on: item.date);
+                                    if (years != null) await saveYears(ref.read(repoProvider), e, years, item.date);
+                                  },
+                                  child: Text('+ Add age',
+                                      style: context.text.bodySmall
+                                          ?.copyWith(color: c.goldText, fontWeight: FontWeight.w700)),
+                                ),
                               // Why the row has a gold border: a big birthday or anniversary.
                               if (item.milestone) const Badge2('Milestone', sparkle: true),
                             ]),

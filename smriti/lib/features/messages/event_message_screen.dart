@@ -31,11 +31,16 @@ class _EventMessageScreenState extends ConsumerState<EventMessageScreen> {
   List<MessageTemplate> _suggestions = const [];
   MessageContext? _ctx;
   bool _loaded = false;
+  AgeInWishes _ageWhere = AgeInWishes.start;
+
+  /// A suggestion filled in, with "Happy 60th birthday" when that's switched on.
+  String _fill(MessageContext ctx, String text) => ctx.withAge(ctx.fill(text), _lang, _ageWhere);
 
   Future<void> _load(EventEntry e) async {
     _loaded = true;
     final db = ref.read(databaseProvider);
     _lang = Lang.parse(await db.getSetting('messageLang'));
+    _ageWhere = AgeInWishes.parse(await db.getSetting('ageInWishes'));
     _text.text = e.event.draftMessage ?? '';
     await _refresh(e);
   }
@@ -74,7 +79,7 @@ class _EventMessageScreenState extends ConsumerState<EventMessageScreen> {
     // Pick among the best unsent few so it feels fresh but still fitting.
     final pool = _suggestions.take(min(6, _suggestions.length)).toList();
     final pick = pool[Random().nextInt(pool.length)];
-    setState(() => _text.text = ctx.fill(pick.text));
+    setState(() => _text.text = _fill(ctx, pick.text));
     HapticFeedback.selectionClick();
   }
 
@@ -143,11 +148,11 @@ class _EventMessageScreenState extends ConsumerState<EventMessageScreen> {
                 child: Card(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(Radii.card),
-                    onTap: () => setState(() => _text.text = _ctx!.fill(t.text)),
+                    onTap: () => setState(() => _text.text = _fill(_ctx!, t.text)),
                     child: Padding(
                       padding: const EdgeInsets.all(14),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(_ctx!.fill(t.text), style: context.text.bodyMedium),
+                        Text(_fill(_ctx!, t.text), style: context.text.bodyMedium),
                         const SizedBox(height: 4),
                         Text('${t.tone.label}${t.custom ? ' · Mine' : ''} · tap to use', style: context.text.bodySmall),
                       ]),

@@ -13,6 +13,7 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../../widgets/pickers.dart';
+import 'age_input.dart';
 
 class EventFormScreen extends ConsumerStatefulWidget {
   const EventFormScreen(
@@ -203,6 +204,21 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     super.dispose();
   }
 
+  String _nameForAge() => _people[0]?.shortName ?? 'they';
+
+  /// Works out the year from the age they turn (or years married) on the next date.
+  Future<void> _enterAge() async {
+    final d = _date;
+    if (d == null) return;
+    final today = Day.today();
+    var on = resolveYearly(today.year, d.month, d.day, Feb29Rule.feb28);
+    if (on < today) on = resolveYearly(today.year + 1, d.month, d.day, Feb29Rule.feb28);
+    final years = await askYears(context,
+        birthday: _type == EventType.birthday, name: _nameForAge(), on: on);
+    if (years == null || !mounted) return;
+    setState(() => _date = DateParts(d.day, d.month, yearFor(years, on)));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) return const Scaffold();
@@ -277,12 +293,21 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             if (_date != null && _date!.year == null && _repeat != Repeat.once && _kind != EventKind.other)
               Padding(
                 padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
-                child: Text(
-                  _type == EventType.birthday
-                      ? 'Add the year to see "Turning 60!". You can also set a birth year on their profile.'
-                      : 'Add the year to see how many years it has been.',
-                  style: context.text.bodySmall,
-                ),
+                child: Row(children: [
+                  Expanded(
+                    child: Text(
+                      _type == EventType.birthday
+                          ? 'Add the year to see "Turning 60!" and say it in wishes.'
+                          : 'Add the year to see how many years it has been.',
+                      style: context.text.bodySmall,
+                    ),
+                  ),
+                  if (_type == EventType.birthday || _type.isAnniversaryLike)
+                    TextButton(
+                      onPressed: _enterAge,
+                      child: Text(_type == EventType.birthday ? "Don't know? Enter age" : 'Enter years'),
+                    ),
+                ]),
               ),
             const SizedBox(height: 16),
             const SectionLabel('Repeats'),

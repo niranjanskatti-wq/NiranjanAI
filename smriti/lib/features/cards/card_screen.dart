@@ -45,7 +45,7 @@ CardData cardDataFor(WishTarget t, {String message = '', Person? me, Person? to}
     switch (e.type) {
       case EventType.birthday:
         kind = t.milestone ? CardKind.milestone : CardKind.birthday;
-        headline = years != null && years > 0 && t.milestone ? 'Happy ${ordinal(years)} Birthday' : 'Happy Birthday';
+        headline = years != null && years > 0 ? 'Happy ${ordinal(years)} Birthday' : 'Happy Birthday';
       case EventType.weddingAnniversary || EventType.firstMeeting:
         kind = t.milestone ? CardKind.milestone : CardKind.anniversary;
         headline = years != null && years > 0 ? 'Happy ${ordinal(years)} Anniversary' : 'Happy Anniversary';

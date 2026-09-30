@@ -47,6 +47,18 @@ enum Occasion {
   static Occasion? parse(String v) => Occasion.values.where((o) => o.key == v).firstOrNull;
 }
 
+/// Where the "Happy 60th birthday" line goes in a wish.
+enum AgeInWishes {
+  start('At the start'),
+  end('At the end'),
+  off('Don\'t add');
+
+  const AgeInWishes(this.label);
+  final String label;
+
+  static AgeInWishes parse(String? v) => AgeInWishes.values.asNameMap()[v] ?? AgeInWishes.start;
+}
+
 enum Tone {
   emotional('Emotional'),
   funny('Funny'),
@@ -133,11 +145,63 @@ class MessageContext {
     this.coupleNames,
     this.festival,
     this.myName,
+    this.type,
   });
 
   final String? name, nickname, coupleNames, festival, myName;
   final Relationship? relation;
   final int? age, yearsMarried;
+
+  /// The occasion, used for the age line ("Happy 60th birthday").
+  final EventType? type;
+
+  /// A warm opening line with the age or years, e.g. "Happy 60th birthday, Appa! 🎂".
+  /// Null when the age isn't known.
+  String? ageLine(Lang lang) {
+    final who = nickname ?? name;
+    final a = age, y = yearsMarried;
+    if (a != null && a > 0) {
+      return switch (lang) {
+        Lang.en => 'Happy ${ordinal(a)} birthday${who == null ? '' : ', $who'}! 🎂',
+        Lang.hi => '${who == null ? '' : '$who, '}आपको $aवें जन्मदिन की हार्दिक शुभकामनाएँ! 🎂',
+        Lang.kn => '${who == null ? '' : '$who, '}$aನೇ ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! 🎂',
+      };
+    }
+    if (y != null && y > 0) {
+      if (type == EventType.workAnniversary) {
+        return switch (lang) {
+          Lang.en => 'Congratulations on $y ${y == 1 ? 'year' : 'years'}! 🎉',
+          Lang.hi => '$y साल पूरे होने पर हार्दिक बधाई! 🎉',
+          Lang.kn => '$y ವರ್ಷಗಳ ಸೇವೆಗೆ ಹಾರ್ದಿಕ ಅಭಿನಂದನೆಗಳು! 🎉',
+        };
+      }
+      return switch (lang) {
+        Lang.en => 'Happy ${ordinal(y)} anniversary! ${y == 1 ? 'One beautiful year' : '$y beautiful years'} together 💞',
+        Lang.hi => 'शादी की $yवीं सालगिरह मुबारक हो! $y खूबसूरत साल साथ 💞',
+        Lang.kn => '$yನೇ ವಿವಾಹ ವಾರ್ಷಿಕೋತ್ಸವದ ಶುಭಾಶಯಗಳು! $y ಸುಂದರ ವರ್ಷಗಳ ಜೊತೆ 💞',
+      };
+    }
+    return null;
+  }
+
+  /// [text] with the age line added at the start or end, unless the message
+  /// already mentions the number.
+  String withAge(String text, Lang lang, AgeInWishes where) {
+    final line = ageLine(lang);
+    final n = age ?? yearsMarried;
+    if (line == null || n == null || where == AgeInWishes.off) return text;
+    if (RegExp('(^|[^0-9])$n([^0-9]|\$)').hasMatch(text)) return text;
+    final t = text.trim();
+    if (t.isEmpty) return line;
+    return where == AgeInWishes.end ? '$t\n\n$line' : '$line\n\n$t';
+  }
+
+  /// [text] without the age line (when it was switched off).
+  String withoutAge(String text, Lang lang) {
+    final line = ageLine(lang);
+    if (line == null) return text;
+    return text.replaceFirst('$line\n\n', '').replaceFirst('\n\n$line', '').replaceFirst(line, '').trim();
+  }
 
   Map<String, String?> get values => {
         'name': name,
@@ -171,6 +235,7 @@ class MessageContext {
       coupleNames: entry.kind == EventKind.couple ? people.map((x) => x.shortName).join(' & ') : null,
       festival: festival,
       myName: me?.name.trim().split(RegExp(r'\s+')).first,
+      type: entry.type,
     );
   }
 }

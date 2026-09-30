@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../autocall/auto_call.dart';
 import '../home/home_screen.dart';
 import '../lock/app_lock.dart';
+import '../messages/message_engine.dart' show AgeInWishes;
+import '../wish/share_sheet.dart' show ageInWishesProvider;
 import '../widget/home_widget_service.dart';
 import '../widget/widget_glow.dart';
 import '../../core/theme/tokens.dart';
@@ -120,6 +122,29 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
             child: Text('Compact fits more dates on Home, Calendar and profiles.',
+                style: context.text.bodySmall?.copyWith(color: c.muted)),
+          ),
+          const SizedBox(height: 12),
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Wishes')),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text('Add the age or years to messages', style: context.text.titleSmall),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: SegmentedButton<AgeInWishes>(
+              showSelectedIcon: false,
+              segments: [for (final a in AgeInWishes.values) ButtonSegment(value: a, label: Text(a.label))],
+              selected: {ref.watch(ageInWishesProvider).value ?? AgeInWishes.start},
+              onSelectionChanged: (s) => db.setSetting('ageInWishes', s.first.name),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+            child: Text(
+                'e.g. "Happy 60th birthday, Appa! 🎂" or "Happy 25th anniversary! 25 beautiful years together 💞". '
+                'You can still switch it off for one wish. Dates without a year show "Add age" when you wish.',
                 style: context.text.bodySmall?.copyWith(color: c.muted)),
           ),
           const SizedBox(height: 12),

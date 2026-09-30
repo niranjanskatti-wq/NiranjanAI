@@ -272,6 +272,14 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - List rows: Compact / Normal (Home, Calendar, profiles)
 - Text size now Tiny (XXS) to Huge (XXL)
 
+### Age in wishes
+- Wishes can start (or end) with a warm line: "Happy 60th birthday, Appa! 🎂", "Happy 25th anniversary!
+  25 beautiful years together 💞", "Congratulations on 5 years! 🎉" (English, Hindi, Kannada)
+- Settings › Wishes: At the start / At the end / Don't add; a chip in the wish sheet switches it per wish
+- Year not known: "Add age" in the wish sheet, "+ Add age" on list rows, or "Enter age" in the date form
+  works out and saves the birth/wedding year
+- Every birthday card shows the age ("Happy 45th Birthday"), not only milestones
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

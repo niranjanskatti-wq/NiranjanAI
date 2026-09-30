@@ -6,12 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/tokens.dart';
+import '../../core/util/occurrence.dart';
 import '../../core/util/phone.dart';
 import '../../data/database.dart';
+import '../../data/enums.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../cards/card_screen.dart';
+import '../events/age_input.dart';
 import '../messages/message_engine.dart';
 import '../messages/message_store.dart';
 import 'wish_service.dart';
@@ -19,6 +22,10 @@ import 'wish_service.dart';
 /// Preferred message language, remembered in settings.
 final messageLangProvider = StreamProvider<Lang>(
     (ref) => ref.watch(databaseProvider).watchSetting('messageLang').map((v) => Lang.parse(v)));
+
+/// Where to put "Happy 60th birthday" in wishes (Settings › Messages).
+final ageInWishesProvider = StreamProvider<AgeInWishes>(
+    (ref) => ref.watch(databaseProvider).watchSetting('ageInWishes').map(AgeInWishes.parse));
 
 /// Call: picks the recipient if there are several, then dials.
 Future<void> callTarget(BuildContext context, WidgetRef ref, WishTarget t) async {
@@ -81,7 +88,20 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
   bool _loading = true;
   bool _fromDraft = false;
 
+  /// Age line in the message: from the setting, switched per wish with the chip.
+  AgeInWishes _ageWhere = AgeInWishes.start;
+  bool _age = true;
+
+  /// Age or years typed in here when the year wasn't saved.
+  int? _years;
+
   WishTarget get t => widget.target;
+
+  /// A suggestion filled in, with the age line when it's switched on.
+  String _fill(MessageContext ctx, String text) {
+    final filled = ctx.fill(text);
+    return _age ? ctx.withAge(filled, _lang, _ageWhere) : filled;
+  }
 
   @override
   void initState() {
@@ -92,6 +112,8 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
 
   Future<void> _init() async {
     _lang = Lang.parse(await ref.read(databaseProvider).getSetting('messageLang'));
+    _ageWhere = AgeInWishes.parse(await ref.read(databaseProvider).getSetting('ageInWishes'));
+    _age = _ageWhere != AgeInWishes.off;
     final draft = t.entry?.event.draftMessage;
     if (draft != null && draft.trim().isNotEmpty && !t.belated) {
       _text = draft;
@@ -102,7 +124,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
 
   MessageContext _ctx(Person? me) {
     if (t.entry != null) {
-      return MessageContext.forEntry(t.entry!, years: t.years, me: me, festival: t.festivalName);
+      return MessageContext.forEntry(t.entry!, years: _years ?? t.years, me: me, festival: t.festivalName);
     }
     final p = t.about ?? _to;
     return MessageContext(
@@ -143,7 +165,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
       _index = 0;
       if (!keepText) {
         _templateId = list.firstOrNull?.id;
-        _text = list.isEmpty ? fallbackMessage(ctx, _occasions.first) : ctx.fill(list.first.text);
+        _text = list.isEmpty ? _fill(ctx, fallbackMessage(ctx, _occasions.first)) : _fill(ctx, list.first.text);
       }
       _loading = false;
     });
@@ -156,7 +178,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
       _fromDraft = false;
       _index = (_index + 1) % _suggestions.length;
       _templateId = _suggestions[_index].id;
-      _text = _ctx(me).fill(_suggestions[_index].text);
+      _text = _fill(_ctx(me), _suggestions[_index].text);
     });
   }
 
@@ -171,7 +193,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
       _fromDraft = false;
       _index = i;
       _templateId = _suggestions[i].id;
-      _text = _ctx(me).fill(_suggestions[i].text);
+      _text = _fill(_ctx(me), _suggestions[i].text);
     });
   }
 
@@ -222,6 +244,62 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
           .write(EventsCompanion(draftMessage: Value(_text)));
       if (mounted) showToast(context, 'Saved for this event');
     }
+  }
+
+  /// "🎂 60th" to add or take out the age line, or "Add age" when the year isn't known.
+  Widget _ageChip(BuildContext context) {
+    final e = t.entry;
+    if (e == null || t.festivalId != null) return const SizedBox.shrink();
+    final birthday = e.type == EventType.birthday;
+    if (!birthday && !e.type.isAnniversaryLike) return const SizedBox.shrink();
+    final years = _years ?? t.years;
+    if (years == null || years <= 0) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: ActionChip(
+          avatar: const Icon(Icons.cake_outlined, size: 18),
+          label: Text(birthday ? 'Add age' : 'Add years married'),
+          onPressed: _askAge,
+        ),
+      );
+    }
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: FilterChip(
+        avatar: Text(birthday ? '🎂' : '💞'),
+        label: Text('Mention ${ordinal(years)}${birthday ? ' birthday' : ' anniversary'}'),
+        selected: _age,
+        showCheckmark: false,
+        onSelected: (on) async {
+          final me = await ref.read(repoProvider).getMe();
+          final ctx = _ctx(me);
+          setState(() {
+            _age = on;
+            _text = on
+                ? ctx.withAge(_text, _lang, _ageWhere == AgeInWishes.off ? AgeInWishes.start : _ageWhere)
+                : ctx.withoutAge(_text, _lang);
+          });
+        },
+      ),
+    );
+  }
+
+  /// Asks how old they are turning (or years married) and saves the year.
+  Future<void> _askAge() async {
+    final e = t.entry!;
+    final birthday = e.type == EventType.birthday;
+    final date = t.date;
+    final years = await askYears(context, birthday: birthday, name: e.title, on: date);
+    if (years == null || !mounted) return;
+    await saveYears(ref.read(repoProvider), e, years, date);
+    final me = await ref.read(repoProvider).getMe();
+    setState(() {
+      _years = years;
+      _age = true;
+      if (_ageWhere == AgeInWishes.off) _ageWhere = AgeInWishes.start;
+    });
+    final ctx = _ctx(me);
+    setState(() => _text = ctx.withAge(_text, _lang, _ageWhere));
   }
 
   Future<void> _setLang(Lang l) async {
@@ -412,6 +490,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
               ]),
               if (_fromDraft)
                 Text('Your saved message for this event', style: context.text.bodySmall),
+              if (!_loading) _ageChip(context),
               const SizedBox(height: 8),
               _BigOption(
                 color: const Color(0xFF25A35A),
