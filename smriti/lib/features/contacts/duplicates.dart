@@ -23,6 +23,18 @@ class DuplicatePeople {
   final String reason;
 }
 
+/// Single-person anniversaries that are really one couple's: two on the same day,
+/// or one where the person's husband or wife is known from the family tree.
+class CoupleSuggestion {
+  const CoupleSuggestion(this.first, this.second, this.firstEvent, this.secondEvent, this.reason);
+  final Person first, second;
+  final EventEntry firstEvent;
+
+  /// The partner's own copy, removed when combining (null if they had none).
+  final EventEntry? secondEvent;
+  final String reason;
+}
+
 class Duplicates {
   Duplicates(this.db) : repo = Repository(db);
 
@@ -46,6 +58,58 @@ class Duplicates {
     }
     return out;
   }
+
+  static bool _single(EventEntry e) =>
+      e.kind == EventKind.person && e.people.length == 1 && e.type == EventType.weddingAnniversary && !e.people.single.isMe;
+
+  /// [spouses]: personId → their husband/wife from the family tree.
+  static List<CoupleSuggestion> couples(List<EventEntry> entries, Map<int, Person> spouses) {
+    final singles = entries.where(_single).toList();
+    final out = <CoupleSuggestion>[];
+    final used = <int>{};
+    // 1. Husband/wife known and anniversaries on the same day (or only one of them has it).
+    for (final e in singles) {
+      final p = e.people.single;
+      final partner = spouses[p.id];
+      if (partner == null || used.contains(e.event.id)) continue;
+      final theirs = singles
+          .where((x) => x.people.single.id == partner.id && x.event.day == e.event.day && x.event.month == e.event.month)
+          .firstOrNull;
+      final partnerHasOther = entries.any((x) =>
+          x.type.isAnniversaryLike && x.people.any((q) => q.id == partner.id) && x.event.id != theirs?.event.id);
+      if (theirs == null && partnerHasOther) continue;
+      out.add(CoupleSuggestion(p, partner, e, theirs, '${partner.shortName} is ${p.shortName}’s husband or wife'));
+      used.add(e.event.id);
+      if (theirs != null) used.add(theirs.event.id);
+    }
+    // 2. Two single anniversaries on the same day.
+    for (var i = 0; i < singles.length; i++) {
+      for (var j = i + 1; j < singles.length; j++) {
+        final a = singles[i], b = singles[j];
+        if (used.contains(a.event.id) || used.contains(b.event.id)) continue;
+        if (a.event.day != b.event.day || a.event.month != b.event.month) continue;
+        if (a.people.single.id == b.people.single.id) continue;
+        out.add(CoupleSuggestion(a.people.single, b.people.single, a, b, 'Both have an anniversary on the same day'));
+        used.addAll([a.event.id, b.event.id]);
+      }
+    }
+    return out;
+  }
+
+  /// Turns [s.firstEvent] into one couple anniversary and removes the partner's copy.
+  Future<void> combine(CoupleSuggestion s) => db.transaction(() async {
+        final year = realYear(s.firstEvent.event.year) ?? realYear(s.secondEvent?.event.year);
+        await repo.updateEvent(
+            s.firstEvent.event.id, EventsCompanion(kind: Value(EventKind.couple.name), year: Value(year)));
+        await db.into(db.eventPeople).insertOnConflictUpdate(
+            EventPeopleCompanion.insert(eventId: s.firstEvent.event.id, personId: s.second.id, role: const Value(1)));
+        final other = s.secondEvent;
+        if (other != null) {
+          await (db.update(db.wishLogs)..where((w) => w.eventId.equals(other.event.id)))
+              .write(WishLogsCompanion(eventId: Value(s.firstEvent.event.id)));
+          await repo.deleteEvent(other.event.id);
+        }
+      });
 
   /// Pairs of people who are probably the same person. The one with more saved keeps.
   static List<DuplicatePeople> people(List<Person> people, List<EventEntry> entries) {

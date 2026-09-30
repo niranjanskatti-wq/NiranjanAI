@@ -74,4 +74,41 @@ void main() {
     expect(next.single.reason, 'Same phone number');
     await db.close();
   });
+
+  test('single anniversaries become one couple anniversary', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final r = Repository(db);
+    final mom = await r.insertPerson(PeopleCompanion.insert(name: 'Mom'));
+    final dad = await r.insertPerson(PeopleCompanion.insert(name: 'Dad'));
+    final ravi = await r.insertPerson(PeopleCompanion.insert(name: 'Ravi'));
+    final priya = await r.insertPerson(PeopleCompanion.insert(name: 'Priya'));
+    final solo = await r.insertPerson(PeopleCompanion.insert(name: 'Kavita'));
+    Future<int> anniv(int p, int d, int m, {int? year}) => r.saveEvent(
+        data: EventsCompanion.insert(kind: 'person', type: 'weddingAnniversary', day: d, month: m, year: Value(year)),
+        personIds: [p]);
+    await anniv(mom, 7, 5);
+    final dadEv = await anniv(dad, 7, 5, year: 1990);
+    await r.logWish(personId: dad, eventId: dadEv, occasionDate: '2026-05-07', method: 'call');
+    await anniv(ravi, 16, 10);
+    await anniv(solo, 1, 1);
+
+    var entries = await r.watchEntries().first;
+    final people = {for (final p in await r.allPeople()) p.id: p};
+    // Ravi's wife is Priya in the family tree; Priya has no anniversary saved.
+    final spouses = {ravi: people[priya]!, priya: people[ravi]!};
+    final found = Duplicates.couples(entries, spouses);
+    expect(found.map((x) => '${x.first.name}&${x.second.name}').toSet(), {'Ravi&Priya', 'Mom&Dad'});
+
+    for (final x in found) {
+      await Duplicates(db).combine(x);
+    }
+    entries = await r.watchEntries().first;
+    final couples = entries.where((e) => e.kind.name == 'couple').toList();
+    expect(couples.map((e) => e.title).toSet(), {'Mom & Dad', 'Ravi & Priya'});
+    expect(couples.firstWhere((e) => e.title == 'Mom & Dad').event.year, 1990, reason: "Dad's year is kept");
+    expect(entries.where((e) => e.type == EventType.weddingAnniversary).length, 3, reason: "Dad's copy is removed");
+    expect((await r.wishLogsFor(dad)).single.eventId, couples.firstWhere((e) => e.title == 'Mom & Dad').event.id);
+    expect(Duplicates.couples(entries, spouses), isEmpty);
+    await db.close();
+  });
 }

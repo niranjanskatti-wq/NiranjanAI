@@ -207,6 +207,13 @@ Building all phases in a row (your choice), testing everything on the phone at t
   gold-bordered rows say "Milestone"
 - 86 automatic tests
 
+### Join single anniversaries into one couple anniversary
+- Check for duplicates now also suggests "Mom & Dad" when both have their own anniversary on the
+  same day, or when one has an anniversary and their husband/wife is in the family tree.
+  "Make one couple anniversary" keeps the year and wish history and removes the extra copy;
+  "Not a couple" hides the suggestion for good. Home's tidy-up note counts these too
+- 87 automatic tests
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

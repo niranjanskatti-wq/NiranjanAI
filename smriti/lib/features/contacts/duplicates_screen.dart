@@ -9,6 +9,7 @@ import '../../data/database.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
+import '../family/family.dart';
 import 'duplicates.dart';
 
 /// Finds birthdays and anniversaries on the same day, and people saved twice,
@@ -23,6 +24,7 @@ class DuplicatesScreen extends ConsumerWidget {
     final people = ref.watch(peopleProvider).value ?? const <Person>[];
     final clashes = Duplicates.sameDay(entries);
     final doubles = Duplicates.people(people, entries);
+    final couples = ref.watch(coupleSuggestionsProvider);
     final repo = ref.read(repoProvider);
 
     Future<void> remove(EventEntry e, String what) async {
@@ -33,7 +35,7 @@ class DuplicatesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Check for duplicates')),
-      body: clashes.isEmpty && doubles.isEmpty
+      body: clashes.isEmpty && doubles.isEmpty && couples.isEmpty
           ? const Center(
               child: EmptyState(
                 title: 'All clear',
@@ -43,6 +45,57 @@ class DuplicatesScreen extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
               children: [
+                if (couples.isNotEmpty) ...[
+                  const SectionLabel('Anniversaries that could be one couple'),
+                  Text('One anniversary for both means one reminder and one card, like "Mom & Dad · 35 years".',
+                      style: context.text.bodySmall),
+                  const SizedBox(height: 8),
+                  for (final x in couples)
+                    Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                          Row(children: [
+                            SizedBox(width: 52, height: 40, child: Stack(children: [
+                              PersonAvatar(person: x.first, size: 34),
+                              Positioned(left: 18, top: 6, child: PersonAvatar(person: x.second, size: 34)),
+                            ])),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                Text('${x.first.shortName} & ${x.second.shortName}', style: context.text.titleMedium),
+                                Text(
+                                    '${fmtEventDate(day: x.firstEvent.event.day, month: x.firstEvent.event.month)} · ${x.reason}',
+                                    style: context.text.bodySmall),
+                              ]),
+                            ),
+                          ]),
+                          const SizedBox(height: 10),
+                          Wrap(spacing: 8, runSpacing: 8, children: [
+                            FilledButton.tonal(
+                              onPressed: () async {
+                                await Duplicates(ref.read(databaseProvider)).combine(x);
+                                HapticFeedback.lightImpact();
+                                if (context.mounted) {
+                                  showToast(context, 'Now one anniversary: ${x.first.shortName} & ${x.second.shortName}');
+                                }
+                              },
+                              child: const Text('Make one couple anniversary'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                final db = ref.read(databaseProvider);
+                                final skips = {...?(await db.getSetting('coupleSkips'))?.split(','), coupleKey(x)};
+                                await db.setSetting('coupleSkips', skips.where((k) => k.isNotEmpty).join(','));
+                              },
+                              child: const Text('Not a couple'),
+                            ),
+                          ]),
+                        ]),
+                      ),
+                    ),
+                ],
                 if (clashes.isNotEmpty) ...[
                   const SectionLabel('Birthday and anniversary on the same day'),
                   Text('Usually one of them was saved by mistake in contacts. Keep the right one.',
@@ -144,3 +197,15 @@ class DuplicatesScreen extends ConsumerWidget {
     return [if (p.callNumber != null) p.callNumber!, if (dates.isNotEmpty) dates else 'No dates'].join(' · ');
   }
 }
+
+/// Remembers "Not a couple" answers.
+String coupleKey(CoupleSuggestion x) => '${x.firstEvent.event.id}-${x.second.id}';
+
+final coupleSuggestionsProvider = Provider<List<CoupleSuggestion>>((ref) {
+  final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
+  final skips = (ref.watch(_coupleSkipsProvider).value ?? '').split(',').toSet();
+  return Duplicates.couples(entries, ref.watch(spouseMapProvider)).where((x) => !skips.contains(coupleKey(x))).toList();
+});
+
+final _coupleSkipsProvider =
+    StreamProvider<String?>((ref) => ref.watch(databaseProvider).watchSetting('coupleSkips'));

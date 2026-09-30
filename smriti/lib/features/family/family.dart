@@ -210,6 +210,18 @@ final familyLinksProvider = StreamProvider<List<FamilyLink>>((ref) {
   return db.select(db.familyLinks).watch();
 });
 
+/// personId → their husband/wife, from the family tree.
+final spouseMapProvider = Provider<Map<int, Person>>((ref) {
+  final links = ref.watch(familyLinksProvider).value ?? const <FamilyLink>[];
+  final people = {for (final p in [...?ref.watch(peopleProvider).value]) p.id: p};
+  final me = ref.watch(meProvider).value;
+  if (me != null) people[me.id] = me;
+  return {
+    for (final l in links)
+      if ((FamilyRel.parse(l.relation)?.isSpouse ?? false) && people[l.relativeId] != null) l.personId: people[l.relativeId]!,
+  };
+});
+
 final relativesProvider = Provider.family<List<Relative>, int>((ref, personId) {
   final links = ref.watch(familyLinksProvider).value ?? const [];
   final people = {

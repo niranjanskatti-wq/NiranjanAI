@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../contacts/duplicates.dart';
+import '../contacts/duplicates_screen.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
 import '../../core/util/occurrence.dart';
@@ -144,8 +145,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
                           child: _NoticeCard(
                             message: dupCount == 1
-                                ? '1 possible duplicate found (someone saved twice, or birthday and anniversary on the same day). Tap to check.'
-                                : '$dupCount possible duplicates found (people saved twice, or birthday and anniversary on the same day). Tap to check.',
+                                ? '1 thing to tidy up: someone saved twice, a same-day birthday and anniversary, or an anniversary that could be a couple’s. Tap to check.'
+                                : '$dupCount things to tidy up: people saved twice, same-day birthdays and anniversaries, or anniversaries that could be a couple’s. Tap to check.',
                             onOpen: () => context.push('/duplicates'),
                             onDismiss: () => ref.read(databaseProvider).setSetting('dupNoticeSeen', '$dupCount'),
                           ),
@@ -349,7 +350,9 @@ class _Header extends StatelessWidget {
 final duplicateCountProvider = Provider<int>((ref) {
   final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
   final people = ref.watch(peopleProvider).value ?? const <Person>[];
-  return Duplicates.sameDay(entries).length + Duplicates.people(people, entries).length;
+  return Duplicates.sameDay(entries).length +
+      Duplicates.people(people, entries).length +
+      ref.watch(coupleSuggestionsProvider).length;
 });
 
 final dupNoticeSeenProvider =
