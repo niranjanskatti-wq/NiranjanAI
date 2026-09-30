@@ -238,6 +238,15 @@ Building all phases in a row (your choice), testing everything on the phone at t
   in the app) and the row shows "✓ Wished". When everyone is done the shine stops
 - Tap a name to open it in Smriti
 
+### Today widget: bigger text, flash settings
+- Names 22sp, occasion and Done button 16sp (was 16/12)
+- Fixed: tapping ✓ Done or a name no longer shows "Page Not Found"
+- Settings › Today widget flash (with a live preview):
+  - Ready-made: Very urgent (fast red blink), High priority (quick orange pulse), Normal (gold pulse),
+    Low priority (slow blue pulse), Calm (steady gold), Off
+  - Or your own: colour (gold, red, orange, pink, purple, blue, green, white), style (pulse, blink,
+    steady, off), speed (fast, medium, slow), border (thin, medium, thick)
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

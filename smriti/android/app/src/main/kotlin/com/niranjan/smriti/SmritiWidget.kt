@@ -10,6 +10,7 @@ import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -202,11 +203,26 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         TodayRow(R.id.row3, R.id.row3_name, R.id.row3_label, R.id.row3_done),
     )
 
+    /** How the border shines, from Settings › Today widget flash. */
+    private data class Glow(val color: Int, val style: String, val speed: Int, val width: String)
+
     private var context: Context? = null
     private var done: Set<String> = emptySet()
+    private var glow = Glow(Color.parseColor("#E7B75A"), "pulse", 900, "mid")
 
     override fun prepare(context: Context, widgetData: SharedPreferences) {
         this.context = context
+        glow = try {
+            val o = JSONObject(widgetData.getString("glow", "{}") ?: "{}")
+            Glow(
+                Color.parseColor(o.optString("c", "#E7B75A")),
+                o.optString("s", "pulse"),
+                o.optInt("v", 900).coerceIn(200, 5000),
+                o.optString("w", "mid"),
+            )
+        } catch (_: Exception) {
+            Glow(Color.parseColor("#E7B75A"), "pulse", 900, "mid")
+        }
         done = try {
             val arr = JSONArray(widgetData.getString("done", "[]"))
             (0 until arr.length()).map { arr.getString(it) }.toSet()
@@ -249,8 +265,8 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         }
 
         val shine = left > 0
-        views.setViewVisibility(R.id.glow, if (shine) View.VISIBLE else View.GONE)
-        views.setViewVisibility(R.id.calm, if (shine) View.GONE else View.VISIBLE)
+        showGlow(views, if (shine) glow.style else "off")
+        views.setTextColor(R.id.status, if (shine) glow.color else Color.parseColor("#8FCB8F"))
         views.setTextViewText(
             R.id.status,
             when {
@@ -271,5 +287,23 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         } else {
             views.setViewVisibility(R.id.empty, View.GONE)
         }
+    }
+
+    private fun showGlow(views: RemoteViews, style: String) {
+        val ring = when (glow.width) {
+            "thin" -> R.drawable.widget_ring_thin
+            "thick" -> R.drawable.widget_ring_thick
+            else -> R.drawable.widget_ring_mid
+        }
+        for (id in listOf(R.id.pulse_on, R.id.pulse_off, R.id.blink_on, R.id.glow_steady)) {
+            views.setImageViewResource(id, ring)
+            views.setInt(id, "setColorFilter", glow.color)
+        }
+        views.setInt(R.id.pulse_off, "setImageAlpha", 50)
+        views.setInt(R.id.glow_pulse, "setFlipInterval", glow.speed)
+        views.setInt(R.id.glow_blink, "setFlipInterval", glow.speed)
+        views.setViewVisibility(R.id.glow_pulse, if (style == "pulse") View.VISIBLE else View.GONE)
+        views.setViewVisibility(R.id.glow_blink, if (style == "blink") View.VISIBLE else View.GONE)
+        views.setViewVisibility(R.id.glow_steady, if (style == "steady") View.VISIBLE else View.GONE)
     }
 }

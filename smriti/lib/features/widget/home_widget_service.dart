@@ -9,6 +9,7 @@ import '../../data/models.dart';
 import '../../data/repository.dart';
 import '../festivals/festival_model.dart';
 import '../reminders/notification_service.dart';
+import 'widget_glow.dart';
 
 /// Feeds the home-screen widgets. The widgets work out "today / in 3 days"
 /// themselves from the dates, so they stay right even when Smriti isn't opened.
@@ -39,13 +40,16 @@ class HomeWidgetService {
 
   /// [done]: "key|yyyy-mm-dd" of dates already marked as wished; the Today
   /// widget stops glowing once all of today's are in it.
-  static Future<void> publish(List<EventEntry> entries, Day today, {Set<String> done = const {}}) async {
+  /// [glow]: how the Today widget's border shines ([WidgetGlow.toJson]).
+  static Future<void> publish(List<EventEntry> entries, Day today,
+      {Set<String> done = const {}, String? glow}) async {
     if (!NotificationService.supported) return;
     try {
       final from = today.addDays(-2).toString();
       await HomeWidget.saveWidgetData<String>('items', jsonEncode(items(entries, today)));
       await HomeWidget.saveWidgetData<String>(
           'done', jsonEncode([for (final k in done) if (k.split('|').last.compareTo(from) >= 0) k]));
+      await HomeWidget.saveWidgetData<String>('glow', glow ?? const WidgetGlow().toJson());
       for (final name in styles.keys) {
         await HomeWidget.updateWidget(qualifiedAndroidName: name);
       }
@@ -65,7 +69,8 @@ class HomeWidgetService {
       for (final l in await db.select(db.wishLogs).get())
         if (l.confirmed && l.occasionDate != null) '${l.eventId ?? l.festivalId}|${l.occasionDate}',
     };
-    await publish(done: done, [
+    final glow = WidgetGlow.parse(await db.getSetting('widgetGlow')).toJson();
+    await publish(done: done, glow: glow, [
       ...entries.where((e) => visibleKind(e, festivals: showFestivals, important: showImportant)),
       for (var i = 0; i < festivals.length; i++) FestivalEntry(festivals[i], -(i + 1)),
     ], Day.today());

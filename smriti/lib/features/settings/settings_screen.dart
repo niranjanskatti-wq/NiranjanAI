@@ -7,6 +7,7 @@ import '../autocall/auto_call.dart';
 import '../home/home_screen.dart';
 import '../lock/app_lock.dart';
 import '../widget/home_widget_service.dart';
+import '../widget/widget_glow.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
@@ -98,7 +99,7 @@ class SettingsScreen extends ConsumerWidget {
           const _LockSwitch(),
           tile(Icons.event_available_outlined, 'Phone calendar', 'Copy dates into Google Calendar',
               () => context.push('/calendar-sync')),
-          tile(Icons.widgets_outlined, 'Home-screen widgets', 'Next up, Countdown or Coming up', () async {
+          tile(Icons.widgets_outlined, 'Home-screen widgets', 'Next up, Countdown, Coming up or Today', () async {
             final supported = await HomeWidget.isRequestPinWidgetSupported() ?? false;
             if (!context.mounted) return;
             if (!supported) {
@@ -127,6 +128,8 @@ class SettingsScreen extends ConsumerWidget {
             );
             if (name != null) await HomeWidget.requestPinWidget(qualifiedAndroidName: name);
           }),
+          tile(Icons.flare_rounded, 'Today widget flash',
+              (ref.watch(widgetGlowProvider).value ?? const WidgetGlow()).summary, () => context.push('/widget-glow')),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Backup & Excel')),
           tile(Icons.backup_outlined, 'Backup & restore', 'Automatic every week · Download/Smriti Backups',

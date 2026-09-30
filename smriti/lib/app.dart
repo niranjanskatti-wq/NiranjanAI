@@ -34,6 +34,7 @@ import 'features/groups/groups_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/lock/app_lock.dart';
 import 'features/widget/home_widget_service.dart';
+import 'features/widget/widget_glow.dart';
 import 'features/memories/memories.dart';
 import 'features/wishmode/wish_mode_runner.dart';
 import 'features/wishmode/wish_mode_setup.dart';
@@ -60,6 +61,8 @@ final _rootKey = GlobalKey<NavigatorState>();
 GoRouter buildRouter(bool onboarded) => GoRouter(
       navigatorKey: _rootKey,
       initialLocation: onboarded ? '/home' : '/welcome',
+      // Links from the Today widget are handled in _onWidgetTap, never as pages.
+      redirect: (_, state) => state.uri.scheme == 'smriti' ? (onboarded ? '/home' : '/welcome') : null,
       routes: [
         GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
         StatefulShellRoute.indexedStack(
@@ -89,6 +92,7 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
           ),
         ),
         GoRoute(path: '/duplicates', builder: (_, _) => const DuplicatesScreen()),
+        GoRoute(path: '/widget-glow', builder: (_, _) => const WidgetGlowScreen()),
         GoRoute(path: '/import/calendar', builder: (_, _) => const CalendarImportScreen()),
         GoRoute(path: '/import/birthdays', builder: (_, _) => const ImportBirthdaysScreen()),
         GoRoute(
@@ -246,7 +250,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
   void _publishWidget() {
     if (!ref.read(entriesProvider).hasValue) return;
     HomeWidgetService.publish(ref.read(visibleEntriesProvider), ref.read(todayProvider).value ?? Day.today(),
-        done: ref.read(wishedKeysProvider));
+        done: ref.read(wishedKeysProvider), glow: ref.read(widgetGlowProvider).value?.toJson());
   }
 
   /// Opens the right screen for a tapped notification or its button.
@@ -303,6 +307,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(autoCallsProvider, (_, _) => AlarmScheduler.syncSoon(ref.read(databaseProvider)));
     ref.listen(visibleEntriesProvider, (_, _) => _publishWidget());
     ref.listen(wishedKeysProvider, (_, _) => _publishWidget());
+    ref.listen(widgetGlowProvider, (_, _) => _publishWidget());
     ref.listen(entriesProvider, (_, _) => CalendarSync.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',
