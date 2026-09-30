@@ -63,12 +63,24 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <!-- Home-screen widget -->
-        <receiver android:name=".SmritiWidget" android:exported="true">
+        <!-- Home-screen widgets -->
+        <receiver android:name=".SmritiWidget" android:exported="true" android:label="@string/widget_next_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/smriti_widget_info" />
+        </receiver>
+        <receiver android:name=".SmritiCountdownWidget" android:exported="true" android:label="@string/widget_countdown_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/smriti_widget_countdown_info" />
+        </receiver>
+        <receiver android:name=".SmritiListWidget" android:exported="true" android:label="@string/widget_list_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/smriti_widget_list_info" />
         </receiver>
     </application>
     <!-- Required to query activities that can process text, see:

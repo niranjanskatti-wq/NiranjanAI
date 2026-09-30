@@ -223,6 +223,13 @@ Building all phases in a row (your choice), testing everything on the phone at t
   notification also has "Yes, call now" / "No" buttons. Optional: call by itself after 10 seconds
 - 88 automatic tests
 
+### Widgets redesigned, three styles
+- Next up (4×2): the days box sits right beside the name, then three more dates with the days
+  on the left of each row
+- Countdown (2×2): one big number with the name and occasion under it
+- Coming up (4×3): the next six dates as "days · name · occasion"
+- Add from Settings › Home-screen widgets, or long-press the home screen › Widgets › Smriti
+
 ## Phone test checklist (do these once the app is on your phone)
 1. Open Smriti, enter your name, allow notifications and contacts when asked.
 2. Settings › Reminders: follow "Make alarms reliable" for your phone brand (battery settings).

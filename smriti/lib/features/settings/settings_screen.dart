@@ -98,13 +98,34 @@ class SettingsScreen extends ConsumerWidget {
           const _LockSwitch(),
           tile(Icons.event_available_outlined, 'Phone calendar', 'Copy dates into Google Calendar',
               () => context.push('/calendar-sync')),
-          tile(Icons.widgets_outlined, 'Home-screen widget', 'The next dates, right on your home screen', () async {
+          tile(Icons.widgets_outlined, 'Home-screen widgets', 'Next up, Countdown or Coming up', () async {
             final supported = await HomeWidget.isRequestPinWidgetSupported() ?? false;
-            if (supported) {
-              await HomeWidget.requestPinWidget(qualifiedAndroidName: HomeWidgetService.androidName);
-            } else if (context.mounted) {
+            if (!context.mounted) return;
+            if (!supported) {
               showToast(context, 'Long-press your home screen, tap Widgets, then find Smriti');
+              return;
             }
+            final name = await showModalBottomSheet<String>(
+              context: context,
+              useRootNavigator: true,
+              builder: (ctx) => SafeArea(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                    child: Text('Add a widget', style: ctx.text.titleLarge),
+                  ),
+                  for (final e in HomeWidgetService.styles.entries)
+                    ListTile(
+                      leading: const Icon(Icons.widgets_outlined),
+                      title: Text(e.value.$1),
+                      subtitle: Text(e.value.$2),
+                      onTap: () => Navigator.pop(ctx, e.key),
+                    ),
+                  const SizedBox(height: 8),
+                ]),
+              ),
+            );
+            if (name != null) await HomeWidget.requestPinWidget(qualifiedAndroidName: name);
           }),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Backup & Excel')),

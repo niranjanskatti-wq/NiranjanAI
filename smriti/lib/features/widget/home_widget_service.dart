@@ -15,6 +15,13 @@ import '../reminders/notification_service.dart';
 class HomeWidgetService {
   static const androidName = 'com.niranjan.smriti.SmritiWidget';
 
+  /// Every widget style, with its name in the picker.
+  static const styles = {
+    'com.niranjan.smriti.SmritiWidget': ('Next up', 'The next date with its countdown, and three more'),
+    'com.niranjan.smriti.SmritiCountdownWidget': ('Countdown', 'Small: a big countdown to the next date'),
+    'com.niranjan.smriti.SmritiListWidget': ('Coming up', 'Tall: the next six dates in a list'),
+  };
+
   /// The next few dates, oldest first, as the widget reads them.
   static List<Map<String, String>> items(List<EventEntry> entries, Day today, {int count = 15}) => [
         for (final u in computeUpcoming(entries, today).where((u) => u.daysLeft <= 366).take(count))
@@ -29,7 +36,9 @@ class HomeWidgetService {
     if (!NotificationService.supported) return;
     try {
       await HomeWidget.saveWidgetData<String>('items', jsonEncode(items(entries, today)));
-      await HomeWidget.updateWidget(qualifiedAndroidName: androidName);
+      for (final name in styles.keys) {
+        await HomeWidget.updateWidget(qualifiedAndroidName: name);
+      }
     } catch (e) {
       debugPrint('Widget update failed: $e');
     }
