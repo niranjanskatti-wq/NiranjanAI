@@ -26,6 +26,8 @@ class UpcomingRow extends ConsumerWidget {
     final festival = e.kind == EventKind.festival;
     final saffron = groupColor(EventGroup.festival);
     final age = item.ageText;
+    final compact = ref.watch(rowSizeProvider).value == RowSize.compact;
+    final gap = compact ? 2.0 : 4.0;
     final details = [
       if (e.relationLine.isNotEmpty && (e.kind == EventKind.person || e.kind == EventKind.couple)) e.relationLine,
       fmtWeekday(item.date),
@@ -49,11 +51,11 @@ class UpcomingRow extends ConsumerWidget {
               if (festival) Container(width: 4, color: saffron),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(festival ? 8 : 12, 10, 14, 10),
+                  padding: EdgeInsets.fromLTRB(festival ? 8 : 12, compact ? 6 : 10, 14, compact ? 6 : 10),
                   child: Row(
                     children: [
-                      EventAvatar(entry: e, size: 44),
-                      const SizedBox(width: 12),
+                      EventAvatar(entry: e, size: compact ? 34 : 44),
+                      SizedBox(width: compact ? 10 : 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +76,7 @@ class UpcomingRow extends ConsumerWidget {
                                 Icon(Icons.notifications_none_rounded, size: 14, color: c.muted),
                               ],
                             ]),
-                            const SizedBox(height: 4),
+                            SizedBox(height: gap),
                             // Kind and age wrap onto a new line rather than ever being cut off.
                             Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
                               KindPill(entry: e),
@@ -93,7 +95,7 @@ class UpcomingRow extends ConsumerWidget {
                               // Why the row has a gold border: a big birthday or anniversary.
                               if (item.milestone) const Badge2('Milestone', sparkle: true),
                             ]),
-                            const SizedBox(height: 4),
+                            SizedBox(height: gap),
                             Text(details, style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
                           ],
                         ),

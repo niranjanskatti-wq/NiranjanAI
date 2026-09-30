@@ -121,6 +121,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                   }
                 }
                 final hero = items.firstOrNull;
+                final heroSize = ref.watch(heroSizeProvider).value ?? HeroSize.big;
+                void setHero(HeroSize v) => ref.read(databaseProvider).setSetting('homeHero', v.name);
                 final list = items.where((u) => _matches(u, today)).toList();
                 return CustomScrollView(
                   slivers: [
@@ -204,11 +206,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                         ),
                       if (todays.length > 1)
                         SliverToBoxAdapter(child: _TodayBanner(items: todays)),
-                      if (hero != null)
+                      if (hero != null && heroSize != HeroSize.hidden)
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                            child: HeroCard(item: hero),
+                            child: heroSize == HeroSize.big
+                                ? HeroCard(item: hero, onResize: () => setHero(HeroSize.small))
+                                : _SmallHero(item: hero, onResize: () => setHero(HeroSize.big)),
                           ),
                         ),
                       if (missed.isNotEmpty) ...[
@@ -454,9 +458,12 @@ class _WhatToShowSheet extends ConsumerWidget {
 
 /// Large card for the next event, with a live countdown.
 class HeroCard extends StatelessWidget {
-  const HeroCard({super.key, required this.item});
+  const HeroCard({super.key, required this.item, this.onResize});
 
   final Upcoming item;
+
+  /// Shows a small button to shrink the card.
+  final VoidCallback? onResize;
 
   @override
   Widget build(BuildContext context) {
@@ -497,8 +504,19 @@ class HeroCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(e.title,
-                              style: context.text.headlineLarge, maxLines: 2, overflow: TextOverflow.ellipsis),
+                          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Expanded(
+                              child: Text(e.title,
+                                  style: context.text.headlineLarge, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            ),
+                            if (onResize != null)
+                              IconButton(
+                                tooltip: 'Make smaller',
+                                visualDensity: VisualDensity.compact,
+                                onPressed: onResize,
+                                icon: Icon(Icons.unfold_less_rounded, color: c.muted),
+                              ),
+                          ]),
                           const SizedBox(height: 6),
                           Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
                             KindPill(entry: e, large: true),
@@ -549,6 +567,54 @@ class HeroCard extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The top card made small: one line with the next date and its countdown.
+class _SmallHero extends StatelessWidget {
+  const _SmallHero({required this.item, required this.onResize});
+
+  final Upcoming item;
+  final VoidCallback onResize;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final e = item.entry;
+    final phrase = item.yearsPhrase;
+    return Material(
+      color: c.raised,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: item.milestone || item.isToday ? c.gold : c.line),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => openEntry(context, e),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
+          child: Row(children: [
+            EventAvatar(entry: e, size: 40),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('NEXT UP', style: context.text.labelSmall?.copyWith(color: c.goldText, letterSpacing: 1.5)),
+                Text(e.title, style: context.text.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text([?phrase, fmtWeekday(item.date)].join(' · '),
+                    style: context.text.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+              ]),
+            ),
+            Text(item.isToday ? 'Today 🎉' : relativeDays(item.daysLeft),
+                style: context.text.titleSmall?.copyWith(color: c.goldText, fontWeight: FontWeight.w800)),
+            IconButton(
+              tooltip: 'Make bigger',
+              onPressed: onResize,
+              icon: Icon(Icons.unfold_more_rounded, color: c.muted),
+            ),
+          ]),
         ),
       ),
     );

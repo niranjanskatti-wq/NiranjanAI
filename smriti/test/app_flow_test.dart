@@ -108,6 +108,34 @@ void main() {
     });
   }
 
+  testWidgets('home top card can be made small, hidden and big again', (tester) async {
+    final repo = Repository(db);
+    await db.setSetting('onboarded', 'true');
+    await repo.insertPerson(PeopleCompanion.insert(name: 'Niranjan', isMe: const Value(true), relationship: const Value('self')));
+    final p = await repo.insertPerson(PeopleCompanion.insert(name: 'Shanta Katti', birthYear: const Value(1966)));
+    final soon = Day.today().addDays(3);
+    await repo.saveEvent(
+      data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: soon.day, month: soon.month),
+      personIds: [p],
+    );
+    await db.setSetting('rowSize', 'compact');
+    await pumpApp(tester);
+    expect(find.text('DAYS'), findsOneWidget, reason: 'big card with countdown');
+    await tester.tap(find.byTooltip('Make smaller'));
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(await db.getSetting('homeHero'), 'small');
+    expect(find.text('NEXT UP'), findsOneWidget);
+    expect(find.text('DAYS'), findsNothing);
+    await db.setSetting('homeHero', 'hidden');
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('NEXT UP'), findsNothing);
+    expect(find.text('Shanta Katti'), findsOneWidget, reason: 'still in the list');
+    expect(tester.takeException(), isNull);
+    await unmount(tester);
+  });
+
   test('couple events show both names and years married', () async {
     final repo = Repository(db);
     final a = await repo.insertPerson(PeopleCompanion.insert(name: 'Ravi', relationship: const Value('uncle')));

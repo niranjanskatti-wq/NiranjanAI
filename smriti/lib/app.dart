@@ -10,6 +10,7 @@ import 'core/theme/tokens.dart';
 import 'core/util/occurrence.dart';
 import 'data/providers.dart';
 import 'features/autocall/auto_call.dart';
+import 'features/business/business_calendar.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/backup/backup_service.dart';
 import 'features/calendar/calendar_screen.dart';
@@ -93,6 +94,7 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         ),
         GoRoute(path: '/duplicates', builder: (_, _) => const DuplicatesScreen()),
         GoRoute(path: '/widget-glow', builder: (_, _) => const WidgetGlowScreen()),
+        GoRoute(path: '/business', builder: (_, _) => const BusinessCalendarScreen()),
         GoRoute(path: '/import/calendar', builder: (_, _) => const CalendarImportScreen()),
         GoRoute(path: '/import/birthdays', builder: (_, _) => const ImportBirthdaysScreen()),
         GoRoute(

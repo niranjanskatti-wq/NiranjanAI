@@ -92,11 +92,13 @@ final upcomingProvider = Provider<AsyncValue<List<Upcoming>>>((ref) {
 
 /// App text size, on top of the phone's own font size setting.
 enum AppTextSize {
+  xxs('XXS', 'Tiny', 0.72),
   xs('XS', 'Extra small', 0.82),
   s('S', 'Small', 0.91),
   m('M', 'Normal', 1),
   l('L', 'Large', 1.12),
-  xl('XL', 'Extra large', 1.25);
+  xl('XL', 'Extra large', 1.25),
+  xxl('XXL', 'Huge', 1.4);
 
   const AppTextSize(this.short, this.label, this.scale);
   final String short, label;
@@ -107,6 +109,35 @@ final appTextSizeProvider = StreamProvider<AppTextSize>((ref) => ref
     .watch(databaseProvider)
     .watchSetting('appTextSize')
     .map((v) => AppTextSize.values.asNameMap()[v] ?? AppTextSize.m));
+
+/// Size of the big "next up" card at the top of Home.
+enum HeroSize {
+  big('Big'),
+  small('Small'),
+  hidden('Hidden');
+
+  const HeroSize(this.label);
+  final String label;
+}
+
+/// How much room each date takes in lists (Home, Calendar, profiles).
+enum RowSize {
+  compact('Compact'),
+  normal('Normal');
+
+  const RowSize(this.label);
+  final String label;
+}
+
+final heroSizeProvider = StreamProvider<HeroSize>((ref) => ref
+    .watch(databaseProvider)
+    .watchSetting('homeHero')
+    .map((v) => HeroSize.values.asNameMap()[v] ?? HeroSize.big));
+
+final rowSizeProvider = StreamProvider<RowSize>((ref) => ref
+    .watch(databaseProvider)
+    .watchSetting('rowSize')
+    .map((v) => RowSize.values.asNameMap()[v] ?? RowSize.normal));
 
 final themeModeProvider = StreamProvider<ThemeMode>((ref) => ref
     .watch(databaseProvider)

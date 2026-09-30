@@ -71,21 +71,55 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: SegmentedButton<AppTextSize>(
-              showSelectedIcon: false,
-              segments: [
-                for (final t in AppTextSize.values)
-                  ButtonSegment(value: t, label: Text(t.short, style: TextStyle(fontSize: 13 * t.scale))),
-              ],
-              selected: {ref.watch(appTextSizeProvider).value ?? AppTextSize.m},
-              onSelectionChanged: (s) => db.setSetting('appTextSize', s.first.name),
-            ),
+            child: Wrap(spacing: 8, runSpacing: 8, children: [
+              for (final t in AppTextSize.values)
+                ChoiceChip(
+                  label: Text(t.short, style: TextStyle(fontSize: 13 * t.scale)),
+                  selected: t == (ref.watch(appTextSizeProvider).value ?? AppTextSize.m),
+                  onSelected: (_) => db.setSetting('appTextSize', t.name),
+                ),
+            ]),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
             child: Text(
                 'Letters on Home and every other page: '
                 '${(ref.watch(appTextSizeProvider).value ?? AppTextSize.m).label.toLowerCase()}',
+                style: context.text.bodySmall?.copyWith(color: c.muted)),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text('Home top card', style: context.text.titleSmall),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: SegmentedButton<HeroSize>(
+              showSelectedIcon: false,
+              segments: [for (final h in HeroSize.values) ButtonSegment(value: h, label: Text(h.label))],
+              selected: {ref.watch(heroSizeProvider).value ?? HeroSize.big},
+              onSelectionChanged: (s) => db.setSetting('homeHero', s.first.name),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text('List rows', style: context.text.titleSmall),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: SegmentedButton<RowSize>(
+              showSelectedIcon: false,
+              segments: [for (final r in RowSize.values) ButtonSegment(value: r, label: Text(r.label))],
+              selected: {ref.watch(rowSizeProvider).value ?? RowSize.normal},
+              onSelectionChanged: (s) => db.setSetting('rowSize', s.first.name),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+            child: Text('Compact fits more dates on Home, Calendar and profiles.',
                 style: context.text.bodySmall?.copyWith(color: c.muted)),
           ),
           const SizedBox(height: 12),

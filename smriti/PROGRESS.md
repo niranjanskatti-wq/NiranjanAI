@@ -258,6 +258,20 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Settings › Appearance › Text size: XS, S, Normal, L, XL for Home and every page (on top of the
   phone's own font size)
 
+### Business calendar (Karnataka)
+- Calendar › Business: Sundays, 2nd & 4th Saturdays (bank rule; can switch to 2nd only / every / none) and
+  Karnataka bank holidays in red, 2026–2036
+- Holiday list built by tools/build_bank_holidays.py (assets/holidays/karnataka_bank.json): fixed days,
+  Good Friday, almanac dates for Hindu festivals, tabular Islamic calendar for Muslim festivals (matches
+  India's 2025 dates; marked ~ as it can move a day)
+- Upcoming bank holidays with countdown; long weekends (3+ days off) and "take 1 day leave → 4+ days" ideas
+- Tap/long-press a date to mark, rename or remove a holiday
+
+### Home layout
+- Top card: Big / Small / Hidden (Settings › Appearance, or the shrink/expand button on the card)
+- List rows: Compact / Normal (Home, Calendar, profiles)
+- Text size now Tiny (XXS) to Huge (XXL)
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

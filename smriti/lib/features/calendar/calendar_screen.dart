@@ -60,6 +60,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Calendar'), actions: [
+        TextButton.icon(
+          onPressed: () => context.push('/business'),
+          icon: const Icon(Icons.business_center_outlined, size: 20),
+          label: const Text('Business'),
+        ),
         IconButton(
           tooltip: 'Export to Excel',
           icon: const Icon(Icons.table_chart_outlined),
