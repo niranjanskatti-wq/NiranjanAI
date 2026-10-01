@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="log_hour" android:enabled="true" android:icon="@drawable/ic_sc_log"
+        android:shortcutShortLabel="@string/sc_log" android:shortcutLongLabel="@string/sc_log">
+        <intent android:action="com.essential.app.shortcut.log_hour" android:targetPackage="com.essential.app" android:targetClass="com.essential.app.ui.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="focus" android:enabled="true" android:icon="@drawable/ic_sc_focus"
+        android:shortcutShortLabel="@string/sc_focus" android:shortcutLongLabel="@string/sc_focus">
+        <intent android:action="com.essential.app.shortcut.focus" android:targetPackage="com.essential.app" android:targetClass="com.essential.app.ui.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="new_idea" android:enabled="true" android:icon="@drawable/ic_sc_idea"
+        android:shortcutShortLabel="@string/sc_idea" android:shortcutLongLabel="@string/sc_idea">
+        <intent android:action="com.essential.app.shortcut.new_idea" android:targetPackage="com.essential.app" android:targetClass="com.essential.app.ui.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="log_trade" android:enabled="true" android:icon="@drawable/ic_sc_trade"
+        android:shortcutShortLabel="@string/sc_trade" android:shortcutLongLabel="@string/sc_trade">
+        <intent android:action="com.essential.app.shortcut.log_trade" android:targetPackage="com.essential.app" android:targetClass="com.essential.app.ui.MainActivity" />
+    </shortcut>
+</shortcuts>

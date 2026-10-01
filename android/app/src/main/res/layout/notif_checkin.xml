@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <TextView android:id="@+id/n_title" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification.Title" android:maxLines="2" />
+    <TextView android:id="@+id/n_text" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="2dp" android:textAppearance="@android:style/TextAppearance.Material.Notification" android:maxLines="1" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="horizontal">
+        <TextView android:id="@+id/n_planned" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+            android:background="@drawable/notif_btn" android:gravity="center" android:text="As planned" android:textStyle="bold"
+            android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+        <TextView android:id="@+id/n_essential" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+            android:layout_marginStart="8dp" android:background="@drawable/notif_btn" android:gravity="center" android:text="Essential" android:textStyle="bold"
+            android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+        <TextView android:id="@+id/n_trivial" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1"
+            android:layout_marginStart="8dp" android:background="@drawable/notif_btn" android:gravity="center" android:text="Trivial" android:textStyle="bold"
+            android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+    </LinearLayout>
+</LinearLayout>

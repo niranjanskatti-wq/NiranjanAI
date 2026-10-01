@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/w_root"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:background="@drawable/widget_bg" android:padding="14dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/w_block" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/widget_text" android:textSize="15sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:text="Essential" />
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                <Chronometer android:id="@+id/w_left" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textColor="@color/widget_accent" android:textSize="16sp" />
+                <TextView android:id="@+id/w_left_label" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textColor="@color/widget_dim" android:textSize="12sp" android:layout_marginStart="5dp" android:text="left" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="end">
+            <TextView android:id="@+id/w_eh" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/widget_accent" android:textSize="26sp" android:text="0" />
+            <TextView android:id="@+id/w_eh_label" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/widget_dim" android:textSize="11sp" android:text="Essential h" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="40dp" android:orientation="horizontal" android:layout_marginTop="8dp">
+        <TextView android:id="@+id/w_planned" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+            android:background="@drawable/widget_btn" android:gravity="center" android:text="As planned" android:textColor="@color/widget_text" android:textSize="13sp" />
+        <TextView android:id="@+id/w_log" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="6dp"
+            android:background="@drawable/widget_btn" android:gravity="center" android:text="Log hour" android:textColor="@color/widget_text" android:textSize="13sp" />
+        <TextView android:id="@+id/w_distracted" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="6dp"
+            android:background="@drawable/widget_btn" android:gravity="center" android:text="Distracted" android:textColor="@color/widget_text" android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

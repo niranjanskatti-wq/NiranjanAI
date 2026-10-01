@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Essential</string>
+    <string name="tagline">Less, but better.</string>
+    <string name="widget_small">Essential · Now</string>
+    <string name="widget_medium">Essential · Log</string>
+    <string name="widget_small_desc">Current block and time left</string>
+    <string name="widget_medium_desc">Current block, Essential Hours and quick log buttons</string>
+    <string name="tile_log">Log hour</string>
+    <string name="tile_distracted">Distracted</string>
+    <string name="sc_log">Log hour</string>
+    <string name="sc_focus">Start Focus</string>
+    <string name="sc_idea">New idea</string>
+    <string name="sc_trade">Log trade</string>
+</resources>
