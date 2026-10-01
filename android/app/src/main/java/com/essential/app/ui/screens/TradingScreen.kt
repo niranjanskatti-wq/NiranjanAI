@@ -122,7 +122,7 @@ class TradingScreen(a: MainActivity) : Screen(a) {
                 val p = pnl.value.toDoubleOrNull()
                 if (p == null) { a.toast("Enter the P&L"); return@actions }
                 if (rules == null) { a.toast("Were your rules followed?"); return@actions }
-                val now = System.currentTimeMillis()
+                val now = TimeUtil.nowMillis()
                 repo.addTrade(Trade(0, Days.today(repo), now, custom.value.ifBlank { instrument }, dir, entry.value.toDoubleOrNull(), exit.value.toDoubleOrNull(),
                     qty.value.toDoubleOrNull(), p, rules!!, emotion, checklistPassed, note.value.ifBlank { null }))
                 sh.dismiss()

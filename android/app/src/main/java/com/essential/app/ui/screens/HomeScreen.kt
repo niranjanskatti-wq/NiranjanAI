@@ -114,6 +114,15 @@ class HomeScreen(a: MainActivity) : Screen(a) {
             nums.addProgress(work / workT.coerceAtLeast(0.1), Th.necessary, 5, top = 6)
             add(nums, bottom = 12)
 
+            // ---------- timely prompts: morning sleep log, evening review
+            val nowMin = TimeUtil.minuteOfDay(TimeUtil.now())
+            val sinceWake = TimeUtil.offset(nowMin, day.dayStart) - TimeUtil.offset(day.wake, day.dayStart)
+            if (sinceWake in 0..240 && repo.sleepLog(d) == null)
+                add(banner("moon", Th.necessary, "Good morning. How did you sleep?", "Log") { SleepSheet.open(a, d) }, bottom = 10)
+            val review = s.reviewTime(day.mode)
+            if (TimeUtil.offset(nowMin, day.dayStart) >= TimeUtil.offset(review, day.dayStart) - 30 && repo.review(d) == null)
+                add(banner("edit", Th.primary, "Daily review · under 2 minutes", "Start") { ReviewSheet.open(a, d) }, bottom = 10)
+
             // ---------- ONE thing
             add(oneThing(day), bottom = 12)
 
@@ -122,14 +131,15 @@ class HomeScreen(a: MainActivity) : Screen(a) {
             val acts = a.vbox()
             val r1 = a.hbox()
             r1.add(a.btn("Log hour", icon = "plus") { val sl = Logging.targetSlot(repo); LogHourSheet.open(a, sl.date, sl.hour) }, 0, WRAP, 1f, end = 8)
-            r1.add(a.btn(if (missing.isEmpty()) "Missed hours" else "Missed (${missing.size})", Btn.TONAL) { a.push(MissedHoursScreen(a)) }, 0, WRAP, 1f)
+            r1.add(a.btn(if (missing.isEmpty()) "Log missed hours" else "Log missed (${missing.size})", Btn.TONAL) { a.push(MissedHoursScreen(a)) }, 0, WRAP, 1f)
             acts.add(r1)
             val r2 = a.hbox()
-            r2.add(a.btn("Focus", Btn.TONAL, "timer") {
+            fun small(b: TextView) = b.apply { setPadding(a.dp(6), a.dp(10), a.dp(6), a.dp(10)); textSize = 14f; maxLines = 1 }
+            r2.add(small(a.btn("Start Focus", Btn.TONAL) {
                 if (Focus.isActive(a)) a.startActivity(Intent(a, FocusActivity::class.java)) else FocusSheet.open(a)
-            }, 0, WRAP, 1f, end = 8)
-            r2.add(a.btn("Distracted", Btn.TONAL, color = Th.trivial) { distracted(a) }, 0, WRAP, 1f, end = 8)
-            r2.add(a.btn("Idea", Btn.TONAL, "idea", Th.necessary) { a.push(OpportunityScreen(a)); OpportunityScreen.newIdea(a) }, 0, WRAP, 1f)
+            }), 0, WRAP, 1f, end = 6)
+            r2.add(small(a.btn("Distracted", Btn.TONAL, color = Th.trivial) { distracted(a) }), 0, WRAP, 1f, end = 6)
+            r2.add(small(a.btn("New idea", Btn.TONAL, color = Th.necessary) { a.push(OpportunityScreen(a)); OpportunityScreen.newIdea(a) }), 0, WRAP, 1f)
             acts.add(r2, top = 8)
             add(acts, bottom = 16)
 
@@ -250,7 +260,7 @@ class HomeScreen(a: MainActivity) : Screen(a) {
     private fun updateCountdown() {
         val cd = countdown ?: return
         if (blockEnd <= 0) return
-        val left = (blockEnd - System.currentTimeMillis()) / 1000
+        val left = (blockEnd - TimeUtil.nowMillis()) / 1000
         if (left <= 0) { a.refresh(); return }
         cd.text = "${TimeUtil.fmtCountdown(left)} left"
     }

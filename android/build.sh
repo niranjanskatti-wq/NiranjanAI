@@ -43,8 +43,11 @@ rm -rf $B && mkdir -p $B/gen $B/classes $B/dex release
 SRC=app/src/main
 
 echo "• Resources"
+# The source manifest uses Gradle-style namespacing (no package attribute); aapt2 needs it inline.
+sed 's|<manifest xmlns:android="http://schemas.android.com/apk/res/android">|<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.essential.app">|' \
+  $SRC/AndroidManifest.xml > $B/AndroidManifest.xml
 aapt2 compile --dir $SRC/res -o $B/res.zip
-aapt2 link -I "$ANDROID_ALL" --manifest $SRC/AndroidManifest.xml --min-sdk-version 29 --target-sdk-version 36 \
+aapt2 link -I "$ANDROID_ALL" --manifest $B/AndroidManifest.xml --min-sdk-version 29 --target-sdk-version 36 \
   --version-code "$VERSION_CODE" --version-name "$VERSION_NAME" -A $SRC/assets --java $B/gen -o $B/base.apk $B/res.zip
 
 echo "• Kotlin"

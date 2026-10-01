@@ -57,7 +57,7 @@ object Logging {
             else -> null
         }
         val log = HourLog(0, slot.date, slot.hour, 60, activity, m?.category ?: block?.category, m?.ventureId ?: block?.ventureId,
-            type, null, null, followed, null, null, null, source, System.currentTimeMillis())
+            type, null, null, followed, null, null, null, source, TimeUtil.nowMillis())
         val id = repo.saveLog(log)
         Hooks.afterChange(ctx)
         return log.copy(id = id)
@@ -66,7 +66,7 @@ object Logging {
     fun sameAsLast(ctx: Context, slot: Slot, source: String): HourLog? {
         val repo = Repo.get(ctx)
         val prev = repo.lastLogBefore(slot.date, slot.hour) ?: return null
-        val log = prev.copy(id = 0, date = slot.date, hour = slot.hour, minutes = 60, source = source, loggedAt = System.currentTimeMillis(),
+        val log = prev.copy(id = 0, date = slot.date, hour = slot.hour, minutes = 60, source = source, loggedAt = TimeUtil.nowMillis(),
             money = null, moneyNote = null)
         val id = repo.saveLog(log)
         Hooks.afterChange(ctx)

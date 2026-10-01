@@ -1,6 +1,7 @@
 package com.essential.app.data
 
 import android.database.sqlite.SQLiteDatabase
+import com.essential.app.core.TimeUtil
 
 /** Default ventures, templates, habits and voice rules created on first launch. */
 object Seed {
@@ -109,7 +110,7 @@ object Seed {
     const val TRIVIAL_RULE = "youtube, instagram, scrolling, whatsapp, reels, news, tv"
 
     fun seed(db: SQLiteDatabase) {
-        val now = System.currentTimeMillis()
+        val now = TimeUtil.nowMillis()
         val vid = HashMap<String, Long>()
         VENTURES.forEachIndexed { i, (name, color) ->
             vid[name] = db.insert("venture", null, cv("name" to name, "color" to color, "sort" to i, "updated_at" to now))

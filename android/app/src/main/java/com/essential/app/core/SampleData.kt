@@ -63,7 +63,7 @@ object SampleData {
                         venture = if (activity.startsWith("App")) apps else re
                     }
                     if (b.category == Cat.BUSINESS && r.nextDouble() < 0.3) { activity = "Client reading"; venture = astro; money = listOf(1500.0, 2100.0, 2500.0, 3100.0)[r.nextInt(4)] }
-                    if (b.category == Cat.BUSINESS && venture == re && r.nextDouble() < 0.06) { money = listOf(25000.0, 50000.0, 120000.0)[r.nextInt(3)]; note = "Commission received" }
+                    if (b.category == Cat.BUSINESS && venture == re && (r.nextDouble() < 0.06 || (h == 12 && i in setOf(3, 9)))) { money = listOf(25000.0, 50000.0, 120000.0)[r.nextInt(3)]; note = "Commission received" }
                     when {
                         roll < 0.10 && b.category !in setOf(Cat.SLEEP, Cat.SPIRITUAL) -> {
                             activity = trivia[r.nextInt(trivia.size)]; type = Type.TRIVIAL; cat = Cat.OTHER; venture = null

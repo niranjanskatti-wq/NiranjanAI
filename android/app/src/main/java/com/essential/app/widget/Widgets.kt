@@ -43,7 +43,7 @@ object Widgets {
         v.setTextViewText(R.id.w_block, b?.title ?: "Unplanned time")
         val end = now.currentEnd?.toInstant()?.toEpochMilli()
         if (end != null) {
-            val base = SystemClock.elapsedRealtime() + (end - System.currentTimeMillis())
+            val base = SystemClock.elapsedRealtime() + (end - TimeUtil.nowMillis())
             v.setChronometer(R.id.w_left, base, null, true)
             v.setChronometerCountDown(R.id.w_left, true)
         } else {

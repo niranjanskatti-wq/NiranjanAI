@@ -10,6 +10,7 @@ class Repo private constructor(val ctx: Context) {
     companion object {
         @Volatile private var inst: Repo? = null
         fun get(ctx: Context): Repo = inst ?: synchronized(this) { inst ?: Repo(ctx.applicationContext).also { inst = it } }
+        internal fun resetForTests() { inst = null }
     }
 
     val db: Db = Db.get(ctx)
@@ -107,9 +108,9 @@ class Repo private constructor(val ctx: Context) {
         c.s("status"), c.str("recovery_end_date")?.let { LocalDate.parse(it) }, c.bool("report_seen"))
     fun sprints(): List<Sprint> = db.query("SELECT * FROM sprint ORDER BY start_date DESC") { sprint(it) }
     fun sprint(id: Long): Sprint? = db.one("SELECT * FROM sprint WHERE id=?", id) { sprint(it) }
-    /** Sprint running on [date] (status active, within dates). */
+    /** Sprint covering [date] (running or finished; cancelled sprints excluded). */
     fun activeSprint(date: LocalDate): Sprint? = db.one(
-        "SELECT * FROM sprint WHERE status='active' AND start_date<=? AND end_date>=? ORDER BY id DESC LIMIT 1", date.toString(), date.toString()) { sprint(it) }
+        "SELECT * FROM sprint WHERE status IN ('active','done') AND start_date<=? AND end_date>=? ORDER BY id DESC LIMIT 1", date.toString(), date.toString()) { sprint(it) }
     /** Sprint whose recovery week covers [date]. */
     fun recoverySprint(date: LocalDate): Sprint? = db.one(
         "SELECT * FROM sprint WHERE status IN ('done','active') AND end_date<? AND recovery_end_date>=? ORDER BY id DESC LIMIT 1", date.toString(), date.toString()) { sprint(it) }
@@ -133,7 +134,7 @@ class Repo private constructor(val ctx: Context) {
     fun dayPlans(from: LocalDate, to: LocalDate): List<DayPlan> =
         db.query("SELECT * FROM day_plan WHERE date>=? AND date<=?", from.toString(), to.toString()) { dayPlan(it) }
     private fun ensurePlan(date: LocalDate) {
-        db.exec("INSERT OR IGNORE INTO day_plan(date, updated_at) VALUES(?, ?)", date.toString(), System.currentTimeMillis())
+        db.exec("INSERT OR IGNORE INTO day_plan(date, updated_at) VALUES(?, ?)", date.toString(), TimeUtil.nowMillis())
     }
     fun setPlanField(date: LocalDate, field: String, value: Any?) {
         ensurePlan(date); db.update("day_plan", cv(field to value), "date=?", date.toString())

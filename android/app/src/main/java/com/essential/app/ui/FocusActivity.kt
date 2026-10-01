@@ -108,7 +108,7 @@ class FocusActivity : Activity() {
             listOf("Phone", "WhatsApp", "Unplanned call", "Visitor", "Thought", "Break", "Other").forEach { reason ->
                 f.addView(chip(reason, false) {
                     val repo = Repo.get(this)
-                    repo.addDistraction(System.currentTimeMillis(), Days.today(repo), reason)
+                    repo.addDistraction(TimeUtil.nowMillis(), Days.today(repo), reason)
                     sh.dismiss()
                 })
             }

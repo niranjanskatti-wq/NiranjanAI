@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Only used to download the JVM test dependencies (Robolectric + JUnit) for ./test.sh -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.essential</groupId>
+  <artifactId>essential-tests</artifactId>
+  <version>1</version>
+  <packaging>pom</packaging>
+  <dependencies>
+    <dependency><groupId>org.robolectric</groupId><artifactId>robolectric</artifactId><version>4.16.1</version>
+      <exclusions>
+        <exclusion><groupId>androidx.test</groupId><artifactId>*</artifactId></exclusion>
+        <exclusion><groupId>androidx.test.espresso</groupId><artifactId>*</artifactId></exclusion>
+        <exclusion><groupId>androidx.annotation</groupId><artifactId>*</artifactId></exclusion>
+        <exclusion><groupId>androidx.tracing</groupId><artifactId>*</artifactId></exclusion>
+        <exclusion><groupId>androidx.concurrent</groupId><artifactId>*</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency><groupId>junit</groupId><artifactId>junit</artifactId><version>4.13.2</version></dependency>
+  </dependencies>
+</project>

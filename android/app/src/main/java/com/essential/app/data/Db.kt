@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.essential.app.core.TimeUtil
 
 /**
  * Local SQLite store. Everything the app knows lives here (including settings),
@@ -23,6 +24,9 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
         fun get(ctx: Context): Db = inst ?: synchronized(this) {
             inst ?: Db(ctx.applicationContext).also { inst = it }
         }
+
+        /** Drop cached singletons (tests). */
+        fun resetForTests() { inst?.close(); inst = null; Repo.resetForTests(); Settings.reset() }
 
         /** Tables included in backups, in restore order. */
         val TABLES = listOf(
@@ -151,7 +155,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
     }
 
     private fun stamp(table: String, cv: ContentValues) {
-        if (table != "settings" && !cv.containsKey("updated_at")) cv.put("updated_at", System.currentTimeMillis())
+        if (table != "settings" && !cv.containsKey("updated_at")) cv.put("updated_at", TimeUtil.nowMillis())
     }
 }
 

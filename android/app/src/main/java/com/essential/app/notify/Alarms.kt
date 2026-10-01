@@ -56,14 +56,14 @@ object Alarms {
     fun schedule(ctx: Context) {
         val repo = Repo.get(ctx)
         if (!repo.settings.bool("onboarded")) return
-        val now = System.currentTimeMillis()
+        val now = TimeUtil.nowMillis()
         val next = Planner.events(repo, now).firstOrNull() ?: return
         repo.settings.set("next_alarm_at", next.at)
         setExact(ctx, next.at, pi(ctx, RC_NEXT, ACTION_FIRE))
     }
 
     fun snooze(ctx: Context, date: LocalDate, hour: Int) {
-        setExact(ctx, System.currentTimeMillis() + 10 * 60_000L, pi(ctx, RC_SNOOZE, ACTION_SNOOZE) {
+        setExact(ctx, TimeUtil.nowMillis() + 10 * 60_000L, pi(ctx, RC_SNOOZE, ACTION_SNOOZE) {
             putExtra("date", date.toString()); putExtra("hour", hour)
         })
     }
@@ -74,7 +74,7 @@ object Alarms {
     /** Handle everything due since the last fire (skipping anything older than 20 minutes). */
     fun handleDue(ctx: Context) {
         val repo = Repo.get(ctx)
-        val now = System.currentTimeMillis()
+        val now = TimeUtil.nowMillis()
         val last = repo.settings.long("last_alarm_handled").coerceAtLeast(now - 20 * 60_000L)
         val due = Planner.events(repo, last - 1).filter { it.at in (last + 1)..(now + 30_000L) }
         repo.settings.set("last_alarm_handled", now + 30_000L)
@@ -112,7 +112,7 @@ object Alarms {
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
-        val pr = goAsync()
+        val pr: PendingResult? = goAsync()
         try {
             when (intent.action) {
                 Alarms.ACTION_FIRE -> Alarms.handleDue(ctx)
@@ -125,7 +125,7 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         } finally {
             Alarms.schedule(ctx)
-            pr.finish()
+            pr?.finish()
         }
     }
 }
@@ -135,11 +135,11 @@ class SystemEventReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
         val repo = Repo.get(ctx)
         if (intent.action == Intent.ACTION_TIMEZONE_CHANGED || intent.action == Intent.ACTION_TIME_CHANGED) {
-            repo.settings.set("last_alarm_handled", System.currentTimeMillis())
+            repo.settings.set("last_alarm_handled", TimeUtil.nowMillis())
         }
         TimeUtil.zone = if (repo.settings.bool("use_ist")) TimeUtil.IST else java.time.ZoneId.systemDefault()
         Notifier.ensureChannels(ctx)
-        Focus.state(ctx)?.let { st -> if (!st.paused) { if (st.endAt <= System.currentTimeMillis()) Focus.finish(ctx, true) else Alarms.scheduleFocusEnd(ctx, st.endAt) } }
+        Focus.state(ctx)?.let { st -> if (!st.paused) { if (st.endAt <= TimeUtil.nowMillis()) Focus.finish(ctx, true) else Alarms.scheduleFocusEnd(ctx, st.endAt) } }
         Alarms.schedule(ctx)
         Hooks.afterChange(ctx)
     }

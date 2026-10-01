@@ -18,7 +18,7 @@ import com.essential.app.notify.Notifier
 object Focus {
     data class State(val id: Long, val task: String, val planned: Int, val endAt: Long, val pausedLeft: Long, val interruptions: Int, val startedAt: Long) {
         val paused get() = pausedLeft > 0
-        fun leftMillis(now: Long = System.currentTimeMillis()) = if (paused) pausedLeft else maxOf(0, endAt - now)
+        fun leftMillis(now: Long = TimeUtil.nowMillis()) = if (paused) pausedLeft else maxOf(0, endAt - now)
     }
 
     fun state(ctx: Context): State? {
@@ -34,7 +34,7 @@ object Focus {
     fun start(ctx: Context, minutes: Int, task: String) {
         val repo = Repo.get(ctx)
         stopSilently(ctx)
-        val now = System.currentTimeMillis()
+        val now = TimeUtil.nowMillis()
         val id = repo.addFocus(Days.today(repo), now, minutes, task)
         val s = repo.settings
         s.set("focus_id", id); s.set("focus_task", task); s.set("focus_planned", minutes)
@@ -49,7 +49,7 @@ object Focus {
         val st = state(ctx) ?: return
         if (st.paused) return
         val s = Repo.get(ctx).settings
-        s.set("focus_paused_left", maxOf(1000L, st.endAt - System.currentTimeMillis()))
+        s.set("focus_paused_left", maxOf(1000L, st.endAt - TimeUtil.nowMillis()))
         Alarms.cancelFocusEnd(ctx)
         Notifier.focusOngoing(ctx)
     }
@@ -58,7 +58,7 @@ object Focus {
         val st = state(ctx) ?: return
         if (!st.paused) return
         val s = Repo.get(ctx).settings
-        val end = System.currentTimeMillis() + st.pausedLeft
+        val end = TimeUtil.nowMillis() + st.pausedLeft
         s.set("focus_end", end); s.set("focus_paused_left", 0)
         Alarms.scheduleFocusEnd(ctx, end)
         Notifier.focusOngoing(ctx)
@@ -73,7 +73,7 @@ object Focus {
     fun finish(ctx: Context, completed: Boolean) {
         val st = state(ctx) ?: return
         val repo = Repo.get(ctx)
-        val now = System.currentTimeMillis()
+        val now = TimeUtil.nowMillis()
         val focusedMs = (st.planned * 60_000L - st.leftMillis(now)).coerceAtLeast(0)
         repo.updateFocus(st.id, now, st.interruptions, completed)
         if (completed || focusedMs >= 10 * 60_000L) logFocusTime(ctx, now - focusedMs, now, st.task, st.interruptions)
@@ -110,7 +110,7 @@ object Focus {
                 repo.saveLog(HourLog(existing?.id ?: 0, date, t.hour, total, task.ifBlank { "Focus session" }, block?.category ?: Cat.ESSENTIAL,
                     block?.ventureId, Type.ESSENTIAL, if (interruptions == 0) 5 else 4, null,
                     if (block?.category == Cat.ESSENTIAL) Plan.YES else Plan.PARTLY, if (block?.category == Cat.ESSENTIAL) null else "Focus session",
-                    null, null, Source.FOCUS, System.currentTimeMillis()))
+                    null, null, Source.FOCUS, TimeUtil.nowMillis()))
             }
             t = segEnd
         }

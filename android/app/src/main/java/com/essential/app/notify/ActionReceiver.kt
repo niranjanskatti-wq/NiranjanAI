@@ -38,7 +38,7 @@ class ActionReceiver : BroadcastReceiver() {
 
         fun logDistraction(ctx: Context, reason: String? = null): Long {
             val repo = Repo.get(ctx)
-            val id = repo.addDistraction(System.currentTimeMillis(), Days.today(repo), reason)
+            val id = repo.addDistraction(TimeUtil.nowMillis(), Days.today(repo), reason)
             Hooks.afterChange(ctx)
             return id
         }

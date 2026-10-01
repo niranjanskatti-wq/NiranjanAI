@@ -120,7 +120,7 @@ object Notifier {
             .setContentText(if (st.paused) "${TimeUtil.fmtCountdown(left / 1000)} left" else "Time left")
             .setContentIntent(open).setCategory(Notification.CATEGORY_PROGRESS)
         if (!st.paused) {
-            b.setUsesChronometer(true).setChronometerCountDown(true).setWhen(System.currentTimeMillis() + left).setShowWhen(true)
+            b.setUsesChronometer(true).setChronometerCountDown(true).setWhen(TimeUtil.nowMillis() + left).setShowWhen(true)
             b.addAction(Notification.Action.Builder(null, "Pause", action(ctx, ActionReceiver.FOCUS_PAUSE, 4002)).build())
         } else {
             b.setShowWhen(false)

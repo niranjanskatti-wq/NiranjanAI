@@ -128,7 +128,7 @@ object LogHourSheet {
             if (act.isBlank()) { status.text = "Add a few words about this hour."; status.visibility = View.VISIBLE; return }
             val t = type ?: Cat.defaultType(category)
             val log = HourLog(existing?.id ?: 0, date, hour, existing?.minutes ?: 60, act, category, ventureId, t, focus, energy, followed,
-                if (followed == Plan.YES) null else reason, amt.value.toDoubleOrNull(), note.value.ifBlank { null }, source, System.currentTimeMillis())
+                if (followed == Plan.YES) null else reason, amt.value.toDoubleOrNull(), note.value.ifBlank { null }, source, TimeUtil.nowMillis())
             repo.saveLog(log)
             Notifier.cancelCheckin(a, hour)
             Hooks.afterChange(a)

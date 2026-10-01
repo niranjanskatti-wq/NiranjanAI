@@ -98,7 +98,7 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
             repo.addGoal(intentTitle.trim(), "intent", today, endDate)
             supporting.filter { it.isNotBlank() }.take(2).forEach { repo.addGoal(it.trim(), "supporting", today, endDate) }
             repo.settings.set("onboarded", true)
-            repo.settings.set("last_alarm_handled", System.currentTimeMillis())
+            repo.settings.set("last_alarm_handled", TimeUtil.nowMillis())
             if (loadSample) SampleData.load(a)
             a.finishOnboarding()
         })

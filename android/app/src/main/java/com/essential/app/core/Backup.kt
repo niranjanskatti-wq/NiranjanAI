@@ -23,7 +23,7 @@ object Backup {
         val db = Db.get(ctx)
         val root = JSONObject()
         root.put("format", FORMAT); root.put("version", VERSION); root.put("schema", Db.VERSION)
-        root.put("exported_at", System.currentTimeMillis())
+        root.put("exported_at", TimeUtil.nowMillis())
         val tables = JSONObject()
         for (t in Db.TABLES) {
             val arr = JSONArray()
@@ -48,7 +48,7 @@ object Backup {
         return root.toString()
     }
 
-    fun fileName(): String = "essential-backup-${LocalDate.now(TimeUtil.zone)}.json"
+    fun fileName(): String = "essential-backup-${TimeUtil.now().toLocalDate()}.json"
 
     /** Save to Downloads (no permission needed on Android 10+). Returns a display path. */
     fun saveToDownloads(ctx: Context, name: String, mime: String, bytes: ByteArray): Uri? {
@@ -127,7 +127,7 @@ object Backup {
         val name = fileName()
         val doc = DocumentsContract.createDocument(ctx.contentResolver, dirUri, "application/json", name) ?: return null
         ctx.contentResolver.openOutputStream(doc)?.use { it.write(exportJson(ctx).toByteArray()) }
-        s.set("last_auto_backup", System.currentTimeMillis())
+        s.set("last_auto_backup", TimeUtil.nowMillis())
         return name
     }
 
@@ -165,7 +165,7 @@ object Backup {
 
     fun exportCsv(ctx: Context): List<Uri> {
         val files = csvFiles(ctx)
-        val stamp = LocalDate.now(TimeUtil.zone).toString()
+        val stamp = TimeUtil.now().toLocalDate().toString()
         return files.map { (name, bytes) ->
             val n = name.replace(".csv", "-$stamp.csv")
             try { saveToDownloads(ctx, n, "text/csv", bytes) } catch (_: Exception) { }

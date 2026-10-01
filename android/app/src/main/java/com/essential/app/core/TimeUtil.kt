@@ -22,8 +22,10 @@ object TimeUtil {
     val IST: ZoneId = ZoneId.of("Asia/Kolkata")
     var zone: ZoneId = IST
 
-    fun now(): ZonedDateTime = ZonedDateTime.now(zone)
-    fun nowMillis(): Long = System.currentTimeMillis()
+    /** Single time source for the whole app (replaceable in tests). */
+    @JvmStatic var clock: () -> Long = { System.currentTimeMillis() }
+    fun now(): ZonedDateTime = Instant.ofEpochMilli(clock()).atZone(zone)
+    fun nowMillis(): Long = clock()
     fun at(millis: Long): ZonedDateTime = Instant.ofEpochMilli(millis).atZone(zone)
 
     fun dayStartFrom(wakeA: Int, wakeB: Int): Int = (minOf(wakeA, wakeB) / 60) * 60
