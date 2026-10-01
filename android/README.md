@@ -24,6 +24,8 @@ for your file manager when Android asks). Android 10 or newer. No Play Store, no
 
 Screenshots (rendered from the real app by the test-suite) are in `docs/screenshots/`.
 
+For updating this app years from now, see **MAINTENANCE.md**.
+
 ## Build & test
 
 ```bash
