@@ -85,7 +85,7 @@ data class DailyReview(
     val rating: Int?, val tomorrowOneThing: String?
 )
 
-data class Habit(val id: Long, val name: String, val trigger: String?, val active: Boolean, val sort: Int)
+data class Habit(val id: Long, val name: String, val trigger: String?, val active: Boolean, val sort: Int, val color: Int = 0)
 
 data class SleepLog(val date: LocalDate, val bedtime: Int, val wake: Int, val quality: Int) {
     /** Hours slept; bedtime is the evening before `date`. */

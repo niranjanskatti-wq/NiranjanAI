@@ -79,14 +79,17 @@ class NotificationFlowTest : AppTestBase() {
 
     @Test fun inlineReplySavesActivityAndAutoCategorises() {
         onboard()
+        val walkId = repo.addVenture("Fitness", 0)
+        repo.saveRule(com.essential.app.data.KeywordRule(0, "walk, walked, gym", com.essential.app.data.Cat.HEALTH, walkId, null))
         at(2026, 10, 5, 12, 0)
         val i = Intent(ActionReceiver.REPLY).putExtra("date", monday.toString()).putExtra("hour", 11)
         val ri = RemoteInput.Builder(Notifier.KEY_REPLY).build()
-        RemoteInput.addResultsToIntent(arrayOf(ri), i, Bundle().apply { putCharSequence(Notifier.KEY_REPLY, "Site visit at Devanahalli plot") })
+        RemoteInput.addResultsToIntent(arrayOf(ri), i, Bundle().apply { putCharSequence(Notifier.KEY_REPLY, "Walked in the park") })
         ActionReceiver().onReceive(app, i)
         val l = repo.logFor(monday, 11)!!
-        assertEquals("Site visit at Devanahalli plot", l.activity)
-        assertEquals(repo.ventureByName("Real Estate")!!.id, l.ventureId)
+        assertEquals("Walked in the park", l.activity)
+        assertEquals(walkId, l.ventureId)
+        assertEquals(com.essential.app.data.Cat.HEALTH, l.category)
         assertNull("notification cleared", notifications.getNotification(Notifier.checkinId(11)))
     }
 

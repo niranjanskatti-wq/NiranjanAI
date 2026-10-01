@@ -18,7 +18,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
 
     companion object {
         const val NAME = "essential.db"
-        const val VERSION = 2
+        const val VERSION = 3
 
         @Volatile private var inst: Db? = null
         fun get(ctx: Context): Db = inst ?: synchronized(this) {
@@ -69,7 +69,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
             """CREATE TABLE daily_review(date TEXT PRIMARY KEY, one_thing_done INTEGER NOT NULL DEFAULT 0, small_win TEXT, trivial_to_cut TEXT,
                headline TEXT, day_rating INTEGER, tomorrow_one_thing TEXT, is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
             """CREATE TABLE habit(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, trigger TEXT, active INTEGER NOT NULL DEFAULT 1,
-               sort INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
+               sort INTEGER NOT NULL DEFAULT 0, color INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
             """CREATE TABLE habit_log(habit_id INTEGER NOT NULL, date TEXT NOT NULL, done INTEGER NOT NULL DEFAULT 1,
                is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(habit_id, date))""",
             """CREATE TABLE sleep_log(date TEXT PRIMARY KEY, bedtime INTEGER NOT NULL, wake_time INTEGER NOT NULL, quality INTEGER NOT NULL,
@@ -101,6 +101,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) removeTrading(db)
+        if (oldVersion < 3) { db.execSQL("ALTER TABLE habit ADD COLUMN color INTEGER NOT NULL DEFAULT 0"); removeDefaultNames(db) }
         // Future migrations go here, one `if (oldVersion < N)` step at a time.
     }
 
@@ -114,6 +115,24 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
      * v2: trading was removed from the app. Drops trade data and turns trading blocks into
      * personal evening time (the day stays a full 24 hours). Also run after restoring an old backup.
      */
+    /**
+     * v3: no pre-filled names. Removes the old default activities (ventures), keyword rules and
+     * commitments, and gives default template blocks generic titles. Your own logs keep their text.
+     */
+    fun removeDefaultNames(db: SQLiteDatabase = w) {
+        val q = { l: List<String> -> l.joinToString(",") { "'" + it.replace("'", "''") + "'" } }
+        val v = q(Seed.LEGACY_VENTURES)
+        db.execSQL("UPDATE hour_log SET venture_id=NULL WHERE venture_id IN (SELECT id FROM venture WHERE name IN ($v))")
+        db.execSQL("UPDATE block SET venture_id=NULL WHERE venture_id IN (SELECT id FROM venture WHERE name IN ($v))")
+        db.execSQL("UPDATE uncommit_review SET venture_id=NULL WHERE venture_id IN (SELECT id FROM venture WHERE name IN ($v))")
+        db.execSQL("DELETE FROM keyword_rule WHERE keywords IN (${q(Seed.LEGACY_RULES)}) OR venture_id IN (SELECT id FROM venture WHERE name IN ($v))")
+        db.execSQL("DELETE FROM venture WHERE name IN ($v) AND is_sample=0")
+        db.execSQL("DELETE FROM commitment WHERE name IN (${q(Seed.LEGACY_COMMITMENTS)})")
+        for ((old, new) in Seed.LEGACY_TITLES) db.execSQL("UPDATE block SET title=? WHERE title=?", arrayOf(new, old))
+        val habits = db.rawQuery("SELECT id FROM habit ORDER BY sort, id", null).use { c -> val l = ArrayList<Long>(); while (c.moveToNext()) l.add(c.getLong(0)); l }
+        habits.forEachIndexed { i, id -> db.execSQL("UPDATE habit SET color=? WHERE id=? AND color=0", arrayOf(Seed.HABIT_COLORS[i % Seed.HABIT_COLORS.size], id)) }
+    }
+
     fun removeTrading(db: SQLiteDatabase = w) {
         val personal = db.rawQuery("SELECT id FROM venture WHERE name='Personal' LIMIT 1", null).use { if (it.moveToFirst()) it.getLong(0) else null }
         db.execSQL("DROP TABLE IF EXISTS trade")

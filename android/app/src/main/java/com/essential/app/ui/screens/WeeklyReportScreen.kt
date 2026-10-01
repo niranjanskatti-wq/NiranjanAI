@@ -30,7 +30,7 @@ class WeeklyReportScreen(a: MainActivity) : Screen(a) {
         add(nav, bottom = 8)
 
         val card = a.card(22)
-        card.add(a.txt("Essential", 13f, Th.primary, Fonts.semibold))
+        card.add(a.txt(App.NAME, 13f, Th.primary, Fonts.semibold))
         card.add(a.txt("Week of ${TimeUtil.fmtShort(r.weekStart)}", 22f, Th.text, Fonts.semibold), top = 2)
         card.add(a.body(r.headline), top = 8, bottom = 6)
         r.sections.forEach { s ->
@@ -64,7 +64,7 @@ class WeeklyReportScreen(a: MainActivity) : Screen(a) {
         v.draw(c)
         val out = ByteArrayOutputStream()
         bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
-        val name = "essential-week-${report?.weekStart ?: today}.png"
+        val name = "dailychain-week-${report?.weekStart ?: today}.png"
         a.shareUris(listOf(Backup.shareFile(a, name, out.toByteArray())), "image/png", "Weekly report")
     }
 }

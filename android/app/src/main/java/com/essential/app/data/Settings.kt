@@ -27,6 +27,7 @@ class Settings private constructor(private val db: Db) {
             "w_eh" to "35", "w_work" to "10", "w_one" to "15", "w_plan" to "15", "w_routine" to "15", "w_sleep" to "10",
             "backup_auto" to "0", "backup_tree_uri" to "", "last_auto_backup" to "0",
             "focus_dnd" to "0", "last_alarm_handled" to "0", "sample_loaded" to "0",
+            "tabs" to "now,log,habits,insights,tools",
             "haptics" to "1"
         )
     }

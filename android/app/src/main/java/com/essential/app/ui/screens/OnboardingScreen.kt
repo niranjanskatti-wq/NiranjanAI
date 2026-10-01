@@ -31,7 +31,7 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
     private fun go(s: Int) { step = s; a.refresh() }
 
     private fun welcome(v: LinearLayout) = with(v) {
-        add(a.txt("Essential", 40f, Th.text, Fonts.semibold))
+        add(a.txt(App.NAME, 40f, Th.text, Fonts.semibold))
         add(a.txt("Less, but better.", 20f, Th.primary, Fonts.light), top = 2, bottom = 28)
         add(a.body("Spend your best hours on the few things that matter most. Cut the trivial. Make essential work effortless through routine."), bottom = 24)
         listOf(
@@ -54,14 +54,14 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
     private fun intent(v: LinearLayout) = with(v) {
         add(a.h1("Your Essential Intent"), bottom = 6)
         add(a.dimText("One concrete, measurable goal for the next 90 days. If everything else waited, this would move."), bottom = 20)
-        val f = a.field("e.g. Close 3 JV real estate deals by 31 Dec", intentTitle, multiline = true)
+        val f = a.field("e.g. Finish my main project by 31 Dec", intentTitle, multiline = true)
         f.addTextChangedListener(Watch { intentTitle = it })
         add(f, bottom = 12)
         val due = a.listRow("Target date", TimeUtil.fmtDayLong(endDate), "log") { a.pickDate(endDate) { endDate = it; a.refresh() } }
         add(due, bottom = 16)
         add(a.label("Optional · up to 2 supporting goals"), bottom = 8)
         for (i in 0..1) {
-            val s = a.field(if (i == 0) "e.g. Launch the astrology app beta" else "e.g. 20 paid astrology consultations a month", supporting[i])
+            val s = a.field(if (i == 0) "e.g. Walk 10,000 steps a day" else "e.g. Read 6 books", supporting[i])
             s.addTextChangedListener(Watch { supporting[i] = it })
             add(s, bottom = 8)
         }
@@ -129,7 +129,7 @@ object PermissionRows {
         row("Notifications", "So the hourly check-in can reach you.", Perms.notifications(a)) { Perms.fixNotifications(a, changed) }
         if (android.os.Build.VERSION.SDK_INT >= 31)
             row("Exact alarms", "So reminders fire on the hour, not minutes late.", Perms.exactAlarms(a)) { Perms.fixExact(a, changed) }
-        row("Battery optimisation off", "So Android doesn't silence Essential in the background.", Perms.battery(a)) { Perms.fixBattery(a, changed) }
+        row("Battery optimisation off", "So Android doesn't silence ${App.NAME} in the background.", Perms.battery(a)) { Perms.fixBattery(a, changed) }
         return box
     }
 }

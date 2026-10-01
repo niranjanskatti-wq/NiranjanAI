@@ -46,7 +46,7 @@ class InsightsScreen(a: MainActivity) : Screen(a) {
         v.add(r, top = 8, bottom = 12)
         val row = a.hbox()
         row.add(a.btn("Weekly report", Btn.TONAL, "insights") { a.push(WeeklyReportScreen(a)) }, 0, WRAP, 1f, end = 8)
-        row.add(a.btn("Plan vs actual", Btn.TONAL) { a.selectTab(1) }, 0, WRAP, 1f)
+        row.add(a.btn("Plan vs actual", Btn.TONAL) { a.selectTab("log") }, 0, WRAP, 1f)
         v.add(row, bottom = 16)
         return v
     }
@@ -91,7 +91,7 @@ class InsightsScreen(a: MainActivity) : Screen(a) {
             val best = g.filter { e -> e.value.first != null }.maxByOrNull { e -> e.value.first!! }
             best?.let { b -> it.add(a.dimText("Your best focus is around ${TimeUtil.fmtTime(b.key * 60)}. Guard it for Essential work."), top = 4) }
         }
-        section("Time vs ₹ by venture") {
+        section("Time vs ₹ by activity") {
             val vs = ins.byVenture()
             val maxH = vs.maxOfOrNull { s -> s.hours } ?: 1.0
             val maxM = vs.maxOfOrNull { s -> s.money }?.coerceAtLeast(1.0) ?: 1.0

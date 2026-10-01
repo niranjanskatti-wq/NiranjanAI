@@ -19,7 +19,7 @@ object WeeklyReport {
     data class Section(val title: String, val lines: List<String>)
     data class Report(val weekStart: LocalDate, val weekEnd: LocalDate, val headline: String, val sections: List<Section>, val suggestions: List<String>) {
         fun asText(): String = buildString {
-            append("Essential · Week of ${TimeUtil.fmtShort(weekStart)}–${TimeUtil.fmtShort(weekEnd)}\n")
+            append("${com.essential.app.ui.App.NAME} · Week of ${TimeUtil.fmtShort(weekStart)}–${TimeUtil.fmtShort(weekEnd)}\n")
             append(headline).append("\n\n")
             sections.forEach { s -> append(s.title).append('\n'); s.lines.forEach { append("• ").append(it).append('\n') }; append('\n') }
             append("Next week\n"); suggestions.forEachIndexed { i, s -> append("${i + 1}. ").append(s).append('\n') }

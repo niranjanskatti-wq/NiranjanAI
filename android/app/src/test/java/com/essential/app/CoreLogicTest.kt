@@ -77,10 +77,10 @@ class CoreLogicTest {
     @Test fun tradeOffRuleTakesTimeFromNeighbours() {
         val b = blocks(Seed.NORMAL)
         val brk = b.first { it.title == "Break" }  // 10:30–10:45
-        // Extend Break to 11:15: Real estate (10:45–13:00) loses 30 minutes
+        // Extend Break to 11:15: Work block (10:45–13:00) loses 30 minutes
         val res = Timeline.place(b, brk.copy(end = 11 * 60 + 15))
         assertEquals(1, res.affected.size)
-        assertEquals("Real estate: calls, visits, meetings", res.affected[0].block.title)
+        assertEquals("Work block", res.affected[0].block.title)
         assertEquals(30, res.affected[0].lostMinutes)
         assertFalse(res.touchesProtected)
         assertEquals(1440, res.blocks.sumOf { it.duration })
@@ -111,7 +111,7 @@ class CoreLogicTest {
         val i = s.indexOfFirst { it.title == "Break" }
         val swapped = Timeline.swapAdjacent(b, s[i], s[i + 1])
         val brk = swapped.first { it.title == "Break" }
-        val re = swapped.first { it.title.startsWith("Real estate") }
+        val re = swapped.first { it.title == "Work block" }
         assertEquals(10 * 60 + 30, re.start); assertEquals(15, brk.duration); assertEquals(12 * 60 + 45, brk.start)
         assertFalse(Timeline.overlaps(swapped))
     }
@@ -125,7 +125,7 @@ class CoreLogicTest {
     @Test fun blockForHourPicksMajority() {
         val b = blocks(Seed.NORMAL)
         assertEquals("Essential Block 1", Timeline.blockForHour(b, 9)?.title)
-        assertEquals("Real estate: calls, visits, meetings", Timeline.blockForHour(b, 11)?.title)
+        assertEquals("Work block", Timeline.blockForHour(b, 11)?.title)
         assertEquals(Cat.SLEEP, Timeline.blockForHour(b, 23)?.category)
     }
 

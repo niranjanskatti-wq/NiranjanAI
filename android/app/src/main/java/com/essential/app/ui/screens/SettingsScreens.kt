@@ -21,11 +21,24 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
             add(a.txt("Some permissions are off — reminders may be late. Tap to fix.", 14.5f))
         }, bottom = 12)
 
+        group("Bottom tabs") {
+            it.add(a.dimText("Choose which tabs appear at the bottom. Settings always stays so you can turn tabs back on."), top = 6, bottom = 2)
+            val on = s.str("tabs").split(',').map { t -> t.trim() }.toMutableSet()
+            val desc = mapOf("now" to "Current block, ONE thing, score", "log" to "Plan vs actual, hour by hour", "habits" to "Daily habit chains and calendars",
+                "insights" to "Charts and weekly report", "tools" to "Goals, focus, sleep, reviews…")
+            MainActivity.ALL_TABS.filter { t -> t.first != "settings" }.forEach { (id, label) ->
+                it.add(a.switchRow(label, desc[id], id in on) { checked ->
+                    if (checked) on.add(id) else on.remove(id)
+                    s.set("tabs", MainActivity.ALL_TABS.map { t -> t.first }.filter { t -> t in on }.joinToString(","))
+                    a.renderNav()
+                })
+            }
+        }
         group("Your day") {
             it.add(a.listRow("Day & targets", "Wake/sleep, targets per mode, review time", "now") { a.push(TargetsScreen(a)) })
             it.add(a.listRow("Daily Score weights", "${s.int("w_eh")}/${s.int("w_work")}/${s.int("w_one")}/${s.int("w_plan")}/${s.int("w_routine")}/${s.int("w_sleep")}", "insights") { a.push(WeightsScreen(a)) })
             it.add(a.listRow("Schedule templates", null, "log") { a.push(TemplatesScreen(a)) })
-            it.add(a.listRow("Ventures", null, "tools") { a.push(VenturesScreen(a)) })
+            it.add(a.listRow("My activities", "Add, rename, recolour, archive", "tools") { a.push(VenturesScreen(a)) })
         }
         group("Reminders") {
             it.add(a.listRow("Notifications", "Which reminders, quiet hours, reliability", "bell") { a.push(NotificationSettingsScreen(a)) })
@@ -37,7 +50,7 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
             it.add(a.listRow("Voice language", if (s.str("voice_lang").startsWith("kn")) "ಕನ್ನಡ (Kannada) — needs the offline pack" else "English (India)", "mic") {
                 s.set("voice_lang", if (s.str("voice_lang").startsWith("kn")) "en-IN" else "kn-IN"); a.refresh()
             })
-            it.add(a.listRow("Voice keyword rules", "${repo.rules().size} rules auto-fill category and venture", "edit") { a.push(KeywordRulesScreen(a)) })
+            it.add(a.listRow("Voice keyword rules", "${repo.rules().size} rules auto-fill category and activity", "edit") { a.push(KeywordRulesScreen(a)) })
         }
         group("Appearance") {
             it.add(a.switchRow("Dark mode", "Default. Calm at night.", s.darkTheme) { on -> s.set("theme", if (on) "dark" else "light"); Th.dark = on; a.recreate() })
@@ -49,7 +62,7 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
         group("Your data") {
             it.add(a.listRow("Backup & restore", "Export to Downloads, restore, weekly auto-backup", "share") { a.push(BackupScreen(a)) })
             it.add(a.listRow("Export CSV", "Hour logs, reviews, habits, sleep", "copy") {
-                val uris = Backup.exportCsv(a); a.shareUris(uris, "text/csv", "Essential CSV export"); a.toast("Saved to Downloads/Essential")
+                val uris = Backup.exportCsv(a); a.shareUris(uris, "text/csv", "${App.NAME} CSV export"); a.toast("Saved to Downloads/Daily Chain")
             })
             if (repo.hasSampleData()) it.add(a.listRow("Clear sample data", "Removes only the 14 sample days", "trash", Th.red) {
                 a.confirm("Clear sample data?", "Your own logs, goals and settings stay.", "Clear") { repo.clearSampleData(); Hooks.afterChange(a); a.refresh() }
@@ -58,7 +71,7 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
             })
         }
         add(a.card(16).apply {
-            add(a.h3("Essential"))
+            add(a.h3(App.NAME))
             add(a.dimText("Less, but better. Version ${a.packageManager.getPackageInfo(a.packageName, 0).versionName}"), top = 2)
             add(a.dimText("100% offline: this app has no internet permission. Your data lives only on this phone."), top = 6)
         })
@@ -211,7 +224,7 @@ class BackupScreen(a: MainActivity) : Screen(a) {
         add(a.dimText("One file holds everything: logs, goals, templates, habits, settings."), bottom = 14)
         add(a.btn("Export backup", icon = "share") {
             val e = Backup.export(a)
-            a.toast(if (e.downloads != null) "Saved to Downloads/Essential/${e.name}" else "Ready to share")
+            a.toast(if (e.downloads != null) "Saved to Downloads/Daily Chain/${e.name}" else "Ready to share")
             a.shareUris(listOf(e.share), "application/json", e.name)
         }, bottom = 8)
         add(a.btn("Restore backup", Btn.TONAL) {
@@ -238,7 +251,7 @@ class BackupScreen(a: MainActivity) : Screen(a) {
             a.toast(n?.let { "Saved $it" } ?: "Couldn't write to that folder — choose it again"); a.refresh()
         })
         add(c, bottom = 16)
-        add(a.btn("Export CSV files", Btn.TONAL, "copy") { a.shareUris(Backup.exportCsv(a), "text/csv", "Essential CSV export") })
+        add(a.btn("Export CSV files", Btn.TONAL, "copy") { a.shareUris(Backup.exportCsv(a), "text/csv", "${App.NAME} CSV export") })
     }
 
     private fun pickFolder() {
@@ -256,14 +269,14 @@ class KeywordRulesScreen(a: MainActivity) : Screen(a) {
     override val title = "Voice keyword rules"
     override fun actions() = listOf(a.iconBtn("plus", Th.text, desc = "New rule") { edit(null) })
     override fun content(): View = page {
-        add(a.dimText("When a spoken or typed activity contains a keyword, Essential fills in the category, venture and type. The longest matching keyword wins. You always confirm before saving."), bottom = 12)
+        add(a.dimText("When a spoken or typed activity contains a keyword, ${App.NAME} fills in the category, activity and type. The longest matching keyword wins. You always confirm before saving."), bottom = 12)
         val vs = repo.ventures(true).associateBy { it.id }
         val c = a.card(6)
         repo.rules().forEach { r ->
             c.add(a.listRow(r.keywords, listOfNotNull(r.category, r.ventureId?.let { vs[it]?.name }, r.type).joinToString(" · ")) { edit(r) })
         }
         add(c, bottom = 12)
-        val test = a.field("Try it: e.g. \"site visit at Hebbal plot\"")
+        val test = a.field("Try it: e.g. \"walked in the park\"")
         val res = a.dimText("")
         test.addTextChangedListener(Watch { t ->
             val m = Classifier.parse(t, repo.rules())
@@ -279,7 +292,7 @@ class KeywordRulesScreen(a: MainActivity) : Screen(a) {
         sh.add(f)
         sh.add(a.label("Category"), bottom = 6)
         sh.add(a.choice(Cat.ALL, cat, allowNone = true) { cat = it })
-        sh.add(a.label("Venture"), bottom = 6)
+        sh.add(a.label("Activity"), bottom = 6)
         val vs = repo.ventures()
         sh.add(a.choice(vs.map { it.name }, vs.firstOrNull { it.id == vid }?.name, allowNone = true) { n -> vid = vs.firstOrNull { it.name == n }?.id })
         sh.add(a.label("Type (optional)"), bottom = 6)

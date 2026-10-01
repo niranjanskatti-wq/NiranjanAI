@@ -205,12 +205,21 @@ class Repo private constructor(val ctx: Context) {
     }
 
     // ---------------------------------------------------------------- habits
-    private fun habit(c: Cursor) = Habit(c.lng("id"), c.s("name"), c.str("trigger"), c.bool("active"), c.int("sort"))
+    private fun habit(c: Cursor) = Habit(c.lng("id"), c.s("name"), c.str("trigger"), c.bool("active"), c.int("sort"),
+        c.int("color").takeIf { it != 0 } ?: Seed.HABIT_COLORS[(c.lng("id") % Seed.HABIT_COLORS.size).toInt()])
+    fun habit(id: Long): Habit? = db.one("SELECT * FROM habit WHERE id=?", id) { habit(it) }
     fun habits(activeOnly: Boolean = true): List<Habit> =
         db.query("SELECT * FROM habit ${if (activeOnly) "WHERE active=1" else ""} ORDER BY sort, id") { habit(it) }
-    fun addHabit(name: String, trigger: String?): Long =
-        db.insert("habit", cv("name" to name, "trigger" to trigger, "sort" to (db.scalarL("SELECT MAX(sort) FROM habit") + 1)))
-    fun updateHabit(h: Habit) = db.update("habit", cv("name" to h.name, "trigger" to h.trigger, "active" to h.active), "id=?", h.id)
+    fun addHabit(name: String, trigger: String?, color: Int = Seed.HABIT_COLORS[(db.scalarL("SELECT COUNT(*) FROM habit") % Seed.HABIT_COLORS.size).toInt()]): Long =
+        db.insert("habit", cv("name" to name, "trigger" to trigger, "color" to color, "sort" to (db.scalarL("SELECT MAX(sort) FROM habit") + 1)))
+    fun updateHabit(h: Habit) = db.update("habit", cv("name" to h.name, "trigger" to h.trigger, "active" to h.active, "color" to h.color), "id=?", h.id)
+    fun moveHabit(h: Habit, up: Boolean) {
+        val list = habits(false).toMutableList()
+        val i = list.indexOfFirst { it.id == h.id }; val j = if (up) i - 1 else i + 1
+        if (i < 0 || j !in list.indices) return
+        java.util.Collections.swap(list, i, j)
+        db.tx { list.forEachIndexed { k, x -> db.update("habit", cv("sort" to k), "id=?", x.id) } }
+    }
     fun deleteHabit(id: Long) = db.tx { db.delete("habit_log", "habit_id=?", id); db.delete("habit", "id=?", id) }
     fun habitDone(date: LocalDate): Set<Long> =
         db.query("SELECT habit_id FROM habit_log WHERE date=? AND done=1", date.toString()) { it.getLong(0) }.toSet()

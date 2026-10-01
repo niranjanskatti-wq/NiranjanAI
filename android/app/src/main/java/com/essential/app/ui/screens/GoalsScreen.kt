@@ -60,7 +60,7 @@ class GoalsScreen(a: MainActivity) : Screen(a) {
         }
         c.add(a.btn("Add milestone", Btn.TEXT, "plus") {
             val sh = Sheet(a, "New milestone")
-            val f = a.field("e.g. Term sheet signed with Rao Builders")
+            val f = a.field("e.g. First draft finished")
             sh.add(f).actions("Add") { if (f.value.isNotBlank()) { repo.addMilestone(g.id, f.value); Hooks.afterChange(a) }; sh.dismiss(); a.refresh() }.show()
         }, top = 4)
         return c

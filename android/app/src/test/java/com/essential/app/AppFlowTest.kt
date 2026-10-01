@@ -62,17 +62,17 @@ class AppFlowTest : AppTestBase() {
         at(2026, 10, 5, 11, 20)
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         val home = a.root.allText()
-        assertTrue(home.contains("Real estate: calls, visits, meetings")) // current block 10:45–13:00
+        assertTrue(home.contains("Work block")) // current block 10:45–13:00
         assertTrue(home.contains("Daily Score"))
-        for (tab in 0..4) { a.selectTab(tab); idle() }
+        for (tab in MainActivity.ALL_TABS.map { it.first }) { a.selectTab(tab); idle() }
         val screens: List<Screen> = listOf(GoalsScreen(a), SprintScreen(a), TemplatesScreen(a), TemplateEditorScreen(a, repo.templates().first().id),
             VenturesScreen(a), OpportunityScreen(a), NoLogScreen(a), UncommitScreen(a), BufferScreen(a), ObstacleScreen(a), DistractionScreen(a),
-            HabitsScreen(a), SleepScreen(a), PlayThinkScreen(a), WeeklyReportScreen(a), MissedHoursScreen(a),
+            HabitsScreen(a), HabitDetailScreen(a, repo.habits().first().id), SleepScreen(a), PlayThinkScreen(a), WeeklyReportScreen(a), MissedHoursScreen(a),
             TargetsScreen(a), WeightsScreen(a), NotificationSettingsScreen(a), PermissionsScreen(a), PhoneHelpScreen(a), BackupScreen(a),
             KeywordRulesScreen(a), SprintReportScreen(a, repo.sprints().first().id))
         for (s in screens) { a.push(s); idle(); a.back(); idle() }
         // Insights computes on a background thread
-        a.selectTab(2)
+        a.selectTab("insights")
         var waited = 0
         while (a.root.findText("Calculating", contains = true) != null && waited < 200) { Thread.sleep(50); idle(); waited++ }
         assertNotNull(a.root.findText("Golden Hours", contains = true) ?: a.root.findText("GOLDEN HOURS: FOCUS & ENERGY BY HOUR"))
@@ -87,7 +87,7 @@ class AppFlowTest : AppTestBase() {
         onboard()
         at(2026, 10, 5, 12, 5)
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
-        a.selectTab(1); idle()
+        a.selectTab("log"); idle()
         assertTrue(a.root.allText().contains("Log 7 missed hours")) // 5,6,7,8,9,10,11
         a.push(MissedHoursScreen(a)); idle()
         click(a, "All as planned")
@@ -150,7 +150,7 @@ class AppFlowTest : AppTestBase() {
         assertEquals(0, repo.db.scalarL("SELECT COUNT(*) FROM sqlite_master WHERE name='trade'"))
         for (t in repo.templates()) assertEquals(1440, repo.blocks(t.id).sumOf { it.duration })
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
-        a.selectTab(3); idle()
+        a.selectTab("tools"); idle()
         assertFalse(a.root.allText().contains("Trading"))
     }
 
@@ -286,7 +286,80 @@ class AppFlowTest : AppTestBase() {
         val h = repo.habits().first()
         for (i in 1..3) repo.setHabit(h.id, monday.minusDays(i.toLong() + 2), true)
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
-        a.push(HabitsScreen(a)); idle()
-        assertTrue(a.root.allText().contains("Fresh start today · best 3"))
+        a.selectTab("habits"); idle()
+        assertTrue(a.root.allText().contains("Fresh start · best 3"))
+    }
+
+    @Test fun habitChainsAndCalendar() {
+        onboard()
+        val today = monday
+        val done = setOf(today, today.minusDays(1), today.minusDays(2), today.minusDays(5), today.minusDays(6))
+        assertEquals(3, com.essential.app.ui.screens.Chains.current(done, today))
+        assertEquals(2, com.essential.app.ui.screens.Chains.current(done - today, today)) // unticked today doesn't break it yet
+        assertEquals(0, com.essential.app.ui.screens.Chains.current(setOf(today.minusDays(3)), today))
+        assertEquals(3, com.essential.app.ui.screens.Chains.best(done))
+        // add a custom habit and tick it from the calendar
+        val id = repo.addHabit("Walking 30 min", "After dinner")
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        a.push(HabitDetailScreen(a, id)); idle()
+        val cal = findView(a.root) { it is com.essential.app.ui.screens.HabitCalendar } as com.essential.app.ui.screens.HabitCalendar
+        cal.layout(0, 0, 700, 800)
+        // tap 5 Oct 2026 (Monday) : first row is 1–4 Oct (Thu–Sun), 5 Oct is row 2, col 0
+        val cellW = 700 / 7f; val head = cal.context.resources.displayMetrics.density * 24
+        val x = cellW * 0.5f; val y = head + cellW * 0.9f * 1.5f
+        cal.handleTouch(android.view.MotionEvent.obtain(0, 0, android.view.MotionEvent.ACTION_UP, x, y, 0))
+        idle()
+        assertTrue(monday in repo.habitDates(id))
+        // future dates can't be ticked
+        cal.handleTouch(android.view.MotionEvent.obtain(0, 0, android.view.MotionEvent.ACTION_UP, cellW * 3.5f, head + cellW * 0.9f * 2.5f, 0))
+        assertEquals(1, repo.habitDates(id).size)
+    }
+
+    private fun findView(v: View, f: (View) -> Boolean): View? {
+        if (f(v)) return v
+        if (v is android.view.ViewGroup) for (i in 0 until v.childCount) findView(v.getChildAt(i), f)?.let { return it }
+        return null
+    }
+
+    @Test fun bottomTabsCanBeHidden() {
+        onboard()
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        assertEquals(listOf("now", "log", "habits", "insights", "tools", "settings"), a.enabledTabs())
+        repo.settings.set("tabs", "habits,tools")
+        assertEquals(listOf("habits", "tools", "settings"), a.enabledTabs())
+        assertEquals("habits", a.homeTab())
+        val b = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        assertTrue("opens on the first visible tab", b.root.allText().contains("Habits"))
+        repo.settings.set("tabs", "")
+        assertEquals(listOf("settings"), a.enabledTabs())
+    }
+
+    @Test fun noPrefilledNamesAndActivitiesAreAddable() {
+        onboard()
+        assertTrue("no default activities", repo.ventures(true).isEmpty())
+        assertTrue(repo.rules().none { it.ventureId != null })
+        assertTrue(repo.commitments().isEmpty())
+        for (i in 1..25) repo.addVenture("Activity $i", 0)
+        assertEquals(25, repo.ventures().size)
+        assertEquals(listOf("Walking", "Meditation"), repo.habits().map { it.name })
+    }
+
+    @Test fun upgradeFromV2RemovesOldNames() {
+        onboard()
+        val db = repo.db
+        val re = repo.addVenture("Real Estate", 0)
+        db.insert("keyword_rule", com.essential.app.data.cv("keywords" to com.essential.app.data.Seed.LEGACY_RULES[0], "category" to "Business", "venture_id" to re))
+        db.insert("commitment", com.essential.app.data.cv("name" to "Free astrology Q&A group"))
+        val t = repo.templates().first().id
+        db.exec("UPDATE block SET title='Real estate: calls, visits, meetings', venture_id=$re WHERE template_id=$t AND title='Work block'")
+        Logging.quick(app, Logging.Slot(monday, 9), Logging.AS_PLANNED, "app", "My own words")
+        db.exec("UPDATE hour_log SET venture_id=$re")
+        db.removeDefaultNames()
+        assertNull(repo.ventureByName("Real Estate"))
+        assertTrue(repo.rules().none { it.ventureId == re })
+        assertTrue(repo.commitments().isEmpty())
+        assertTrue(repo.blocks(t).any { it.title == "Work block" && it.ventureId == null })
+        assertEquals("My own words", repo.logFor(monday, 9)!!.activity)
+        assertNull(repo.logFor(monday, 9)!!.ventureId)
     }
 }

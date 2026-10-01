@@ -110,9 +110,9 @@ class NoLogScreen(a: MainActivity) : Screen(a) {
             Triple("Event or meeting",
                 "Thanks for the invite. I'm keeping my evenings for focused work these weeks, so I'll pass this time.",
                 "ಆಹ್ವಾನಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಈ ವಾರಗಳಲ್ಲಿ ನನ್ನ ಸಂಜೆಯ ಸಮಯವನ್ನು ಮುಖ್ಯ ಕೆಲಸಕ್ಕೆ ಮೀಸಲಿಟ್ಟಿದ್ದೇನೆ, ಹಾಗಾಗಿ ಈ ಬಾರಿ ಬರಲು ಆಗುವುದಿಲ್ಲ."),
-            Triple("Free astrology reading",
-                "I'd be glad to help through a proper consultation. I don't do free readings, but I can share my available slots.",
-                "ಸರಿಯಾದ ಸಮಾಲೋಚನೆಯ ಮೂಲಕ ಸಹಾಯ ಮಾಡಲು ನನಗೆ ಸಂತೋಷ. ನಾನು ಉಚಿತವಾಗಿ ಜಾತಕ ನೋಡುವುದಿಲ್ಲ, ಆದರೆ ನನ್ನ ಲಭ್ಯವಿರುವ ಸಮಯವನ್ನು ತಿಳಿಸುತ್ತೇನೆ."),
+            Triple("Free work request",
+                "I'd be glad to help properly. I don't take on free work right now, but I can share when I'm available.",
+                "ಸರಿಯಾಗಿ ಸಹಾಯ ಮಾಡಲು ನನಗೆ ಸಂತೋಷ. ಈಗ ನಾನು ಉಚಿತವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ, ಆದರೆ ನಾನು ಯಾವಾಗ ಲಭ್ಯವಿದ್ದೇನೆ ಎಂದು ತಿಳಿಸುತ್ತೇನೆ."),
             Triple("Partnership / new idea",
                 "This sounds interesting, but it doesn't fit what I'm focused on this quarter. Let's revisit after a few months.",
                 "ಇದು ಆಸಕ್ತಿದಾಯಕವಾಗಿದೆ, ಆದರೆ ಈ ತ್ರೈಮಾಸಿಕದಲ್ಲಿ ನಾನು ಗಮನ ಕೊಡುತ್ತಿರುವ ಕೆಲಸಕ್ಕೆ ಹೊಂದುವುದಿಲ್ಲ. ಕೆಲವು ತಿಂಗಳ ನಂತರ ಮತ್ತೆ ಮಾತನಾಡೋಣ."),
@@ -169,7 +169,7 @@ class NoLogScreen(a: MainActivity) : Screen(a) {
     private fun logNo() {
         var hours = 2.0
         val sh = Sheet(a, "I said no to…")
-        val f = a.field("e.g. Weekend property expo stall")
+        val f = a.field("e.g. Weekend event I didn't need")
         sh.add(f)
         sh.add(a.label("Hours it saved"), bottom = 6)
         sh.add(a.choice(listOf("0.5", "1", "2", "4", "8", "20"), "2") { hours = it?.toDouble() ?: 2.0 })
@@ -190,7 +190,7 @@ class UncommitScreen(a: MainActivity) : Screen(a) {
         val existing = repo.uncommitReviews(month).associateBy { it.item }
         val logs = repo.logsRange(today.minusDays(30), today)
         add(a.h2(TimeUtil.fmtMonth(today)), bottom = 4)
-        add(a.dimText("For each venture and recurring commitment: if you weren't already doing this, would you start it today?"), bottom = 14)
+        add(a.dimText("For each of your activities and recurring commitments: if you weren't already doing this, would you start it today?"), bottom = 14)
 
         val follow = repo.pendingFollowUps()
         if (follow.isNotEmpty()) {
@@ -215,7 +215,7 @@ class UncommitScreen(a: MainActivity) : Screen(a) {
         }
         add(a.btn("Add a recurring commitment", Btn.TEXT, "plus") {
             val sh = Sheet(a, "Recurring commitment")
-            val f = a.field("e.g. Weekly builders' association meeting")
+            val f = a.field("e.g. Weekly association meeting")
             sh.add(f).actions("Add") { if (f.value.isNotBlank()) repo.addCommitment(f.value); sh.dismiss(); a.refresh() }.show()
         }, top = 6)
     }
@@ -378,72 +378,6 @@ class DistractionScreen(a: MainActivity) : Screen(a) {
             add(a.label("Reasons"), bottom = 2)
             add(a.hbars(reasons.map { Triple(it.first, it.second.toDouble(), Th.trivial) }, { "${it.toInt()}" }), bottom = 14)
         }
-    }
-}
-
-// ============================================================ Habits
-class HabitsScreen(a: MainActivity) : Screen(a) {
-    override val title = "Routines & habits"
-    override fun actions() = listOf(a.iconBtn("plus", Th.text, desc = "New habit") { edit(null) })
-
-    private fun streaks(dates: List<java.time.LocalDate>): Pair<Int, Int> {
-        val set = dates.toSet()
-        var cur = 0
-        var d = if (today in set) today else today.minusDays(1)
-        while (d in set) { cur++; d = d.minusDays(1) }
-        var best = 0; var run = 0; var prev: java.time.LocalDate? = null
-        for (x in dates.sorted()) { run = if (prev != null && prev.plusDays(1) == x) run + 1 else 1; best = maxOf(best, run); prev = x }
-        return cur to best
-    }
-
-    override fun content(): View = page {
-        val done = repo.habitDone(today)
-        val habits = repo.habits(false)
-        val active = habits.filter { it.active }
-        add(a.dimText("${done.count { id -> active.any { it.id == id } }} of ${active.size} today. Routines make essential work effortless."), bottom = 12)
-        active.forEach { h ->
-            val (cur, best) = streaks(repo.habitDates(h.id))
-            val c = a.card(14)
-            val r = a.hbox()
-            r.add(HomeScreen.checkBox(a, h.id in done) { repo.setHabit(h.id, today, it); Hooks.afterChange(a); a.refresh() }, a.dp(28), a.dp(28), end = 14)
-            val col = a.vbox()
-            col.add(a.txt(h.name, 16f, Th.text, Fonts.medium))
-            h.trigger?.takeIf { it.isNotBlank() }?.let { col.add(a.dimText(it), top = 2) }
-            col.add(a.txt(when {
-                cur > 0 -> "$cur-day streak · best $best"
-                best > 0 -> "Fresh start today · best $best"
-                else -> "Start whenever you're ready"
-            }, 12.5f, Th.faint), top = 4)
-            r.add(col, 0, WRAP, 1f)
-            r.add(a.iconBtn("edit", Th.faint, 40, "Edit habit") { edit(h) }, WRAP, WRAP)
-            c.add(r)
-            add(c, bottom = 8)
-        }
-        val inactive = habits.filter { !it.active }
-        if (inactive.isNotEmpty()) {
-            add(a.label("Paused"), top = 10, bottom = 6)
-            val c = a.card(6)
-            inactive.forEach { h -> c.add(a.listRow(h.name, h.trigger) { edit(h) }) }
-            add(c)
-        }
-    }
-
-    private fun edit(h: com.essential.app.data.Habit?) {
-        var active = h?.active ?: true
-        val sh = Sheet(a, if (h == null) "New habit" else "Edit habit")
-        val n = a.field("Habit", h?.name)
-        val t = a.field("Trigger, e.g. After bath → write ONE thing", h?.trigger)
-        sh.add(n); sh.add(t)
-        if (h != null) {
-            sh.add(a.switchRow("Active", null, active) { active = it })
-            sh.add(a.btn("Delete habit", Btn.TEXT, color = Th.red) { a.confirm("Delete \"${h.name}\"?", "Its history is removed too.", "Delete", danger = true) { repo.deleteHabit(h.id); sh.dismiss(); a.refresh() } })
-        }
-        sh.actions("Save") {
-            if (n.value.isBlank()) return@actions
-            if (h == null) repo.addHabit(n.value, t.value) else repo.updateHabit(h.copy(name = n.value, trigger = t.value, active = active))
-            sh.dismiss(); a.refresh()
-        }
-        sh.show()
     }
 }
 

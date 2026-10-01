@@ -70,22 +70,30 @@ class ScreenshotTest : AppTestBase() {
         for (h in 5..10) com.essential.app.core.Logging.quick(app, com.essential.app.core.Logging.Slot(LocalDate.of(2026, 10, 1), h), "as_planned", "app")
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         shoot(a, "01-home")
-        a.selectTab(1); shoot(a, "02-plan-vs-actual")
-        a.selectTab(2); var n = 0
+        a.selectTab("log"); shoot(a, "02-plan-vs-actual")
+        a.selectTab("insights"); var n = 0
         while (a.root.findText("Calculating", true) != null && n++ < 200) { Thread.sleep(50); idle() }
         shoot(a, "03-insights")
-        a.selectTab(3); shoot(a, "04-tools")
-        a.selectTab(4); shoot(a, "05-settings")
-        a.selectTab(3)
+        a.selectTab("tools"); shoot(a, "04-tools")
+        a.selectTab("settings"); shoot(a, "05-settings")
+        a.selectTab("habits"); shoot(a, "06-habits")
+        a.selectTab("tools")
         push(a, TemplateEditorScreen(a, repo.templates().first().id), "07-template-editor")
         push(a, OpportunityScreen(a), "08-opportunity")
         push(a, NoLogScreen(a), "09-no-scripts")
-        push(a, HabitsScreen(a), "10-habits")
+        push(a, HabitDetailScreen(a, repo.habits().first().id), "10-habit-calendar")
         push(a, SleepScreen(a), "11-sleep")
         push(a, WeeklyReportScreen(a), "12-weekly-report")
         push(a, GoalsScreen(a), "13-goals")
         push(a, SprintReportScreen(a, repo.sprints().first().id), "14-sprint-report")
         push(a, PhoneHelpScreen(a), "15-phone-help")
+        run {
+            val h = repo.habits().first()
+            val cal = HabitCalendar(a, java.time.YearMonth.of(2026, 9), repo.habitDates(h.id).toSet(), LocalDate.of(2026, 10, 1), h.color) { }
+            cal.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+            cal.layout(0, 0, 800, cal.measuredHeight)
+            save(cal, "11-habit-calendar-september", fullHeight = false)
+        }
         LogHourSheet.open(a, LocalDate.of(2026, 10, 1), 10); sheet("20-log-hour-sheet")
         ModeSheet.open(a, LocalDate.of(2026, 10, 1)); sheet("21-mode-sheet")
         ScoreSheet.open(a, LocalDate.of(2026, 10, 1)); sheet("22-score-sheet")

@@ -25,7 +25,10 @@ import com.essential.app.notify.Notifier
 import com.essential.app.ui.screens.*
 import java.time.LocalDate
 
-object App { var haptics = true }
+object App {
+    const val NAME = "Daily Chain"
+    var haptics = true
+}
 
 /** Base for every screen. Screens rebuild their view on refresh (data is local and small). */
 abstract class Screen(val a: MainActivity) {
@@ -62,8 +65,8 @@ class MainActivity : Activity() {
     private lateinit var column: LinearLayout
     private lateinit var content: FrameLayout
     private lateinit var nav: LinearLayout
-    private val tabs = arrayOfNulls<Screen>(5)
-    private var tab = 0
+    private val tabs = HashMap<String, Screen>()
+    private var tab = "now"
     private val stack = ArrayList<Screen>()
     private var current: Screen? = null
     private var backCb: Any? = null
@@ -79,7 +82,7 @@ class MainActivity : Activity() {
         Fonts.load(this)
         setupWindow()
         buildShell()
-        if (!repo.settings.bool("onboarded")) showOnboarding() else { selectTab(0); handleRoute(intent) }
+        if (!repo.settings.bool("onboarded")) showOnboarding() else { selectTab(homeTab()); handleRoute(intent) }
     }
 
     private fun setupWindow() {
@@ -125,29 +128,45 @@ class MainActivity : Activity() {
         renderNav()
     }
 
-    private val tabDefs = listOf("Now" to "now", "Log" to "log", "Insights" to "insights", "Tools" to "tools", "Settings" to "settings")
+    companion object {
+        /** Every bottom tab. Settings is always shown so tabs can be turned back on. */
+        val ALL_TABS = listOf("now" to "Now", "log" to "Log", "habits" to "Habits", "insights" to "Insights", "tools" to "Tools", "settings" to "Settings")
+        val ICONS = mapOf("now" to "now", "log" to "log", "habits" to "check", "insights" to "insights", "tools" to "tools", "settings" to "settings")
+    }
 
-    private fun renderNav() {
+    /** Tabs switched on in Settings, in fixed order, always ending with Settings. */
+    fun enabledTabs(): List<String> {
+        val on = repo.settings.str("tabs").split(',').map { it.trim() }.toSet()
+        return ALL_TABS.map { it.first }.filter { it == "settings" || it in on }
+    }
+
+    fun homeTab(): String = enabledTabs().first()
+
+    fun renderNav() {
         nav.removeAllViews()
-        tabDefs.forEachIndexed { i, (label, icon) ->
-            val sel = i == tab && stack.isEmpty()
+        val labels = ALL_TABS.toMap()
+        enabledTabs().forEach { id ->
+            val on = id == tab
+            val sel = on && stack.isEmpty()
             val item = vbox().apply { gravity = Gravity.CENTER; setPadding(0, dp(4), 0, dp(4)) }
-            val pill = FrameLayout(this).apply { background = if (i == tab) rounded(Th.primaryContainer, dp(16).toFloat()) else null }
-            pill.add(iconView(icon, if (i == tab) Th.onPrimaryContainer.takeIf { !Th.dark } ?: Th.primary else Th.dim, 22), WRAP, WRAP, gravity = Gravity.CENTER)
-            item.add(pill, dp(60), dp(32), gravity = Gravity.CENTER_HORIZONTAL)
-            item.add(txt(label, 12f, if (i == tab) Th.text else Th.dim, if (i == tab) Fonts.semibold else Fonts.medium, center = true), WRAP, WRAP, top = 4, gravity = Gravity.CENTER_HORIZONTAL)
+            val pill = FrameLayout(this).apply { background = if (on) rounded(Th.primaryContainer, dp(16).toFloat()) else null }
+            pill.add(iconView(ICONS[id]!!, if (on) Th.onPrimaryContainer.takeIf { !Th.dark } ?: Th.primary else Th.dim, 22), WRAP, WRAP, gravity = Gravity.CENTER)
+            item.add(pill, dp(54), dp(32), gravity = Gravity.CENTER_HORIZONTAL)
+            item.add(txt(labels[id]!!, 12f, if (on) Th.text else Th.dim, if (on) Fonts.semibold else Fonts.medium, center = true, maxLines = 1), WRAP, WRAP, top = 4, gravity = Gravity.CENTER_HORIZONTAL)
             item.background = ripple(null, dp(20).toFloat())
-            item.click(true) { if (sel) refresh() else { stack.clear(); selectTab(i) } }
-            item.contentDescription = label
+            item.click(true) { if (sel) refresh() else { stack.clear(); selectTab(id) } }
+            item.contentDescription = labels[id]
             nav.add(item, 0, WRAP, 1f)
         }
     }
 
-    fun selectTab(i: Int) {
-        tab = i
-        val s = tabs[i] ?: when (i) {
-            0 -> HomeScreen(this); 1 -> LogScreen(this); 2 -> InsightsScreen(this); 3 -> ToolsScreen(this); else -> SettingsScreen(this)
-        }.also { tabs[i] = it }
+    /** Show a tab by id. Works even for a tab hidden from the bar (e.g. from a notification). */
+    fun selectTab(id: String) {
+        tab = id
+        val s = tabs[id] ?: when (id) {
+            "now" -> HomeScreen(this); "log" -> LogScreen(this); "habits" -> HabitsScreen(this)
+            "insights" -> InsightsScreen(this); "tools" -> ToolsScreen(this); else -> SettingsScreen(this)
+        }.also { tabs[id] = it }
         stack.clear()
         display(s)
         renderNav()
@@ -170,9 +189,9 @@ class MainActivity : Activity() {
     fun back() {
         if (stack.isNotEmpty()) {
             stack.removeAt(stack.size - 1)
-            display(stack.lastOrNull() ?: tabs[tab]!!)
+            display(stack.lastOrNull() ?: tabs[tab] ?: SettingsScreen(this))
             renderNav()
-        } else if (tab != 0 && current !is OnboardingScreen) selectTab(0)
+        } else if (tab != homeTab() && current !is OnboardingScreen) selectTab(homeTab())
         else finish()
     }
 
@@ -202,12 +221,12 @@ class MainActivity : Activity() {
         nav.visibility = View.VISIBLE
         root.requestApplyInsets()
         Alarms.schedule(this)
-        selectTab(0)
+        selectTab(homeTab())
     }
 
     private fun updateBack() {
         if (Build.VERSION.SDK_INT < 33) return
-        val need = stack.isNotEmpty() || (tab != 0 && current !is OnboardingScreen)
+        val need = stack.isNotEmpty() || (tab != homeTab() && current !is OnboardingScreen)
         val d = onBackInvokedDispatcher
         if (need && backCb == null) {
             val cb = OnBackInvokedCallback { back() }
@@ -219,7 +238,7 @@ class MainActivity : Activity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (stack.isNotEmpty() || tab != 0) back() else @Suppress("DEPRECATION") super.onBackPressed()
+        if (stack.isNotEmpty() || tab != homeTab()) back() else @Suppress("DEPRECATION") super.onBackPressed()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -242,24 +261,24 @@ class MainActivity : Activity() {
             "log" -> {
                 val d = i?.getStringExtra("date")?.let { LocalDate.parse(it) }
                 val h = i?.getIntExtra("hour", -1) ?: -1
-                selectTab(0)
+                selectTab(homeTab())
                 if (d != null && h >= 0) { Notifier.cancelCheckin(this, h); LogHourSheet.open(this, d, h) }
                 else { val s = Logging.targetSlot(repo); LogHourSheet.open(this, s.date, s.hour) }
             }
-            "log_hour" -> { selectTab(0); val s = Logging.targetSlot(repo); LogHourSheet.open(this, s.date, s.hour) }
-            "missed" -> { selectTab(1); push(MissedHoursScreen(this)) }
-            "focus" -> { selectTab(0); if (Focus.isActive(this)) startActivity(Intent(this, FocusActivity::class.java)) else FocusSheet.open(this) }
-            "new_idea" -> { selectTab(3); push(OpportunityScreen(this)); OpportunityScreen.newIdea(this) }
-            "review" -> { selectTab(0); ReviewSheet.open(this, Days.today(repo)) }
-            "sleep" -> { selectTab(0); SleepSheet.open(this, Days.today(repo)) }
-            "backup" -> { selectTab(4); push(BackupScreen(this)) }
-            "obstacle" -> { selectTab(3); push(ObstacleScreen(this)) }
-            "report" -> { selectTab(2); push(WeeklyReportScreen(this)) }
-            "uncommit" -> { selectTab(3); push(UncommitScreen(this)) }
-            "sprint" -> { selectTab(3); push(SprintScreen(this)) }
-            "settings" -> selectTab(4)
-            "distracted" -> { selectTab(0); HomeScreen.distracted(this) }
-            else -> selectTab(0)
+            "log_hour" -> { selectTab(homeTab()); val s = Logging.targetSlot(repo); LogHourSheet.open(this, s.date, s.hour) }
+            "missed" -> { selectTab("log"); push(MissedHoursScreen(this)) }
+            "focus" -> { selectTab(homeTab()); if (Focus.isActive(this)) startActivity(Intent(this, FocusActivity::class.java)) else FocusSheet.open(this) }
+            "new_idea" -> { selectTab("tools"); push(OpportunityScreen(this)); OpportunityScreen.newIdea(this) }
+            "review" -> { selectTab(homeTab()); ReviewSheet.open(this, Days.today(repo)) }
+            "sleep" -> { selectTab(homeTab()); SleepSheet.open(this, Days.today(repo)) }
+            "backup" -> { selectTab("settings"); push(BackupScreen(this)) }
+            "obstacle" -> { selectTab("tools"); push(ObstacleScreen(this)) }
+            "report" -> { selectTab("insights"); push(WeeklyReportScreen(this)) }
+            "uncommit" -> { selectTab("tools"); push(UncommitScreen(this)) }
+            "sprint" -> { selectTab("tools"); push(SprintScreen(this)) }
+            "settings" -> selectTab("settings")
+            "distracted" -> { selectTab(homeTab()); HomeScreen.distracted(this) }
+            else -> selectTab(homeTab())
         }
     }
 
@@ -320,14 +339,14 @@ class MainActivity : Activity() {
         startActivity(Intent.createChooser(i, subject))
     }
 
-    fun shareText(text: String, subject: String = "Essential") {
+    fun shareText(text: String, subject: String = App.NAME) {
         val i = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text).putExtra(Intent.EXTRA_SUBJECT, subject)
         startActivity(Intent.createChooser(i, subject))
     }
 
     fun copy(text: String) {
         val cm = getSystemService(android.content.ClipboardManager::class.java)
-        cm.setPrimaryClip(android.content.ClipData.newPlainText("Essential", text))
+        cm.setPrimaryClip(android.content.ClipData.newPlainText(App.NAME, text))
         if (Build.VERSION.SDK_INT < 33) toast("Copied")
     }
 

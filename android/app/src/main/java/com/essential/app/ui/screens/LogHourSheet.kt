@@ -23,7 +23,7 @@ object LogHourSheet {
         val planned = day.plannedFor(hour)
         val existing = repo.logFor(date, hour)
         val rules = repo.rules()
-        val ventures = repo.ventures()
+        val ventures = repo.ventures().toMutableList()
 
         var activity = existing?.activity ?: ""
         var type: String? = existing?.type
@@ -51,8 +51,9 @@ object LogHourSheet {
         sh.add(a.label("Activity"), top = 4, bottom = 8)
         val f = a.field("What did you do?", activity)
         val status = a.dimText("").apply { visibility = View.GONE }
-        lateinit var catFlow: Flow
-        lateinit var ventFlow: Flow
+        val catFlow = Flow(a)
+        val ventFlow = Flow(a)
+        val pick: (String) -> Unit = { name -> if (f.value.isBlank()) { f.setText(name); f.setSelection(name.length) } }
         lateinit var typeBox: android.widget.LinearLayout
         fun applyClassifier(text: String) {
             if (catTouched) return
@@ -60,7 +61,7 @@ object LogHourSheet {
             m.category?.let { category = it }
             m.ventureId?.let { ventureId = it }
             if (m.type != null && type == null) type = m.type
-            renderCats(a, catFlow, ventFlow, { category }, { category = it; catTouched = true }, { ventureId }, { ventureId = it; catTouched = true }, ventures)
+            renderCats(a, catFlow, ventFlow, { category }, { category = it; catTouched = true }, { ventureId }, { ventureId = it; catTouched = true }, ventures, pick)
             renderType(a, typeBox, { type }, { type = it })
         }
         f.addTextChangedListener(Watch { activity = it; applyClassifier(it) })
@@ -79,6 +80,10 @@ object LogHourSheet {
         sh.add(vr, bottom = 4)
         sh.add(status, bottom = 12)
         sh.onDismiss { voice.destroy() }
+
+        // My activities: as many as you like, added right here
+        sh.add(a.label("My activity"), top = 4, bottom = 6)
+        sh.add(ventFlow, bottom = 12)
 
         // Type
         sh.add(a.label("Type"), top = 6, bottom = 8)
@@ -106,20 +111,17 @@ object LogHourSheet {
         renderReasons()
         sh.add(reasonBox, bottom = 12)
 
-        // Category & venture
+        // Category
         sh.add(a.label("Category"), bottom = 6)
-        catFlow = Flow(a); ventFlow = Flow(a)
-        renderCats(a, catFlow, ventFlow, { category }, { category = it; catTouched = true }, { ventureId }, { ventureId = it; catTouched = true }, ventures)
-        sh.add(catFlow, bottom = 10)
-        sh.add(a.label("Venture"), bottom = 6)
-        sh.add(ventFlow, bottom = 12)
+        renderCats(a, catFlow, ventFlow, { category }, { category = it; catTouched = true }, { ventureId }, { ventureId = it; catTouched = true }, ventures, pick)
+        sh.add(catFlow, bottom = 12)
 
         // Money (collapsed)
         val moneyBox = a.vbox().apply { visibility = if (existing?.money != null) View.VISIBLE else View.GONE }
         val amt = a.field("₹ amount", existing?.money?.let { if (it == Math.floor(it)) it.toLong().toString() else it.toString() }, numeric = true, decimal = true)
-        val note = a.field("Deal note (optional)", existing?.moneyNote)
+        val note = a.field("Note (optional)", existing?.moneyNote)
         moneyBox.add(amt, bottom = 8); moneyBox.add(note)
-        val toggle = a.btn(if (moneyBox.visibility == View.VISIBLE) "₹ Money" else "+ ₹ amount / deal note", Btn.TEXT, color = Th.dim) { moneyBox.visibility = View.VISIBLE }
+        val toggle = a.btn(if (moneyBox.visibility == View.VISIBLE) "₹ Money" else "+ ₹ amount / note", Btn.TEXT, color = Th.dim) { moneyBox.visibility = View.VISIBLE }
         sh.add(toggle, bottom = 4)
         sh.add(moneyBox, bottom = 8)
 
@@ -164,16 +166,34 @@ object LogHourSheet {
     }
 
     private fun renderCats(a: MainActivity, catFlow: Flow, ventFlow: Flow, getCat: () -> String?, setCat: (String) -> Unit,
-                           getV: () -> Long?, setV: (Long?) -> Unit, ventures: List<com.essential.app.data.Venture>) {
+                           getV: () -> Long?, setV: (Long?) -> Unit, ventures: MutableList<com.essential.app.data.Venture>, pick: (String) -> Unit) {
+        val again = { renderCats(a, catFlow, ventFlow, getCat, setCat, getV, setV, ventures, pick) }
         catFlow.removeAllViews()
-        Cat.ALL.filter { it != Cat.SLEEP }.forEach { c ->
-            catFlow.addView(a.chip(c, getCat() == c) { setCat(c); renderCats(a, catFlow, ventFlow, getCat, setCat, getV, setV, ventures) })
-        }
+        Cat.ALL.filter { it != Cat.SLEEP }.forEach { c -> catFlow.addView(a.chip(c, getCat() == c) { setCat(c); again() }) }
         ventFlow.removeAllViews()
         ventures.forEach { v ->
             ventFlow.addView(a.chip(v.name, getV() == v.id, v.color) {
-                setV(if (getV() == v.id) null else v.id); renderCats(a, catFlow, ventFlow, getCat, setCat, getV, setV, ventures)
+                val on = getV() != v.id
+                setV(if (on) v.id else null); if (on) pick(v.name); again()
             })
         }
+        ventFlow.addView(a.chip("+ Add activity", false, Th.dim) {
+            val sh = Sheet(a, "New activity", "Add as many as you like. It stays in your list for next time.")
+            val name = a.field("e.g. Client calls, Project X, Guitar")
+            sh.add(name).actions("Add") {
+                val n = name.value
+                if (n.isBlank()) return@actions
+                val existing = ventures.firstOrNull { it.name.equals(n, true) } ?: a.repo.ventureByName(n)
+                val v = existing ?: a.repo.venture(a.repo.addVenture(n, ActivityColors.next(ventures.size)))!!
+                if (ventures.none { it.id == v.id }) ventures.add(v)
+                setV(v.id); pick(v.name); sh.dismiss(); again()
+            }.show()
+            name.requestFocus()
+        })
     }
+}
+
+object ActivityColors {
+    val ALL = listOf(0xFF7FB8A4, 0xFFB39DDB, 0xFFE6C07B, 0xFF8AB4F8, 0xFFF2A285, 0xFFA8B0B8, 0xFFE88A8A, 0xFF9FD3E6, 0xFFC5D88A).map { it.toInt() }
+    fun next(i: Int) = ALL[i % ALL.size]
 }

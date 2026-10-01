@@ -24,7 +24,7 @@ object ModeSheet {
                 if (err != null) {
                     sh.dismiss()
                     if (repo.activeSprint(date) == null && repo.recoverySprint(date) == null)
-                        a.confirm("Max Mode needs a sprint", err, "Start a sprint") { a.selectTab(3); a.push(SprintScreen(a)); SprintScreen.newSprint(a) }
+                        a.confirm("Max Mode needs a sprint", err, "Start a sprint") { a.selectTab("tools"); a.push(SprintScreen(a)); SprintScreen.newSprint(a) }
                     else a.info("Recovery week", err)
                 } else { Hooks.scheduleChanged(a); sh.dismiss(); a.refresh() }
             }
@@ -46,7 +46,7 @@ object ModeSheet {
         sh.add(f, bottom = 12)
         if (day.sprint == null && day.recovery == null)
             sh.add(a.dimText("Max Mode is time-limited: it runs only inside a sprint (up to 6 weeks), followed by a recovery week."))
-        sh.add(a.btn("Edit templates", Btn.TEXT) { sh.dismiss(); a.selectTab(3); a.push(TemplatesScreen(a)) }, top = 4)
+        sh.add(a.btn("Edit templates", Btn.TEXT) { sh.dismiss(); a.selectTab("tools"); a.push(TemplatesScreen(a)) }, top = 4)
         sh.show()
     }
 }

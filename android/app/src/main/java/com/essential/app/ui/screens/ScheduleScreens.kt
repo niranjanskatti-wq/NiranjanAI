@@ -21,7 +21,7 @@ class SprintScreen(a: MainActivity) : Screen(a) {
             repo.recoverySprint(today)?.let { a.info("Recovery week", "Recovery runs until ${TimeUtil.fmtDayLong(it.recoveryEnd!!)}. Rest is part of the plan."); return }
             var start = today; var weeks = 2
             val sh = Sheet(a, "Start a sprint", "Max Mode runs only inside a sprint: a clear goal, an end date, at most 6 weeks, then one recovery week.")
-            val goal = a.field("Sprint goal, e.g. Sign 2 JV term sheets", repo.intent()?.title)
+            val goal = a.field("Sprint goal, e.g. Finish the first version", repo.intent()?.title)
             sh.add(goal)
             lateinit var sr: android.widget.LinearLayout
             sr = a.listRow("Starts", TimeUtil.fmtDayLong(start), "log") { a.pickDate(start) { start = it; ((sr.getChildAt(1) as android.widget.LinearLayout).getChildAt(1) as android.widget.TextView).text = TimeUtil.fmtDayLong(it) } }
@@ -263,7 +263,7 @@ class TemplateEditorScreen(a: MainActivity, private val templateId: Long) : Scre
         sh.add(times)
         sh.add(a.label("Category"), bottom = 6)
         sh.add(a.choice(Cat.ALL, cat) { cat = it ?: cat })
-        sh.add(a.label("Venture"), bottom = 6)
+        sh.add(a.label("Activity"), bottom = 6)
         sh.add(a.choice(repo.ventures().map { it.name }, repo.venture(vid)?.name, allowNone = true) { n -> vid = repo.ventures().firstOrNull { it.name == n }?.id })
         sh.add(a.switchRow("Protected", "Shows a lock. Moving or shrinking it asks first.", prot) { prot = it })
         if (b != null) sh.add(a.btn("Delete block", Btn.TEXT, color = Th.red) { sh.dismiss(); deleteBlock(b, blocks) })
@@ -327,23 +327,26 @@ class TemplateEditorScreen(a: MainActivity, private val templateId: Long) : Scre
 
 // ============================================================ Ventures
 class VenturesScreen(a: MainActivity) : Screen(a) {
-    override val title = "Ventures"
-    override fun actions() = listOf(a.iconBtn("plus", Th.text, desc = "Add venture") { edit(null) })
+    override val title = "My activities"
+    override fun actions() = listOf(a.iconBtn("plus", Th.text, desc = "Add activity") { edit(null) })
     private val palette = listOf(0xFF7FB8A4, 0xFFB39DDB, 0xFFE6C07B, 0xFF8AB4F8, 0xFFF2A285, 0xFFA8B0B8, 0xFFE88A8A, 0xFF9FD3E6, 0xFFC5D88A).map { it.toInt() }
 
     override fun content(): View = page {
-        add(a.dimText("Tag every block and log with a venture to see time vs ₹ earned."), bottom = 12)
-        val c = a.card(6)
-        repo.ventures(true).forEach { v ->
-            c.add(a.listRow(v.name, if (v.archived) "Archived" else null, "dot", v.color) { edit(v) })
+        add(a.dimText("Add as many activities as you like — work, clients, projects, hobbies. Tag any hour or block with one to see where your time (and ₹) goes."), bottom = 12)
+        val list = repo.ventures(true)
+        if (list.isEmpty()) add(a.dimText("No activities yet. Tap + to add your first one — you can add as many as you want."), bottom = 12)
+        else {
+            val c = a.card(6)
+            list.forEach { v -> c.add(a.listRow(v.name, if (v.archived) "Archived" else null, "dot", v.color) { edit(v) }) }
+            add(c, bottom = 12)
         }
-        add(c)
+        add(a.btn("Add activity", Btn.TONAL, "plus") { edit(null) })
     }
 
     private fun edit(v: com.essential.app.data.Venture?) {
         var color = v?.color ?: palette.first()
         var archived = v?.archived ?: false
-        val sh = Sheet(a, if (v == null) "New venture" else "Edit venture")
+        val sh = Sheet(a, if (v == null) "New activity" else "Edit activity")
         val f = a.field("Name", v?.name)
         sh.add(f)
         val row = Flow(a)
