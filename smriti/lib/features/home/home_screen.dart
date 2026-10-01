@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../contacts/duplicates.dart';
+import '../highlight/highlight.dart';
 import '../contacts/duplicates_screen.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
@@ -210,9 +211,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                            child: heroSize == HeroSize.big
-                                ? HeroCard(item: hero, onResize: () => setHero(HeroSize.small))
-                                : _SmallHero(item: hero, onResize: () => setHero(HeroSize.big)),
+                            child: SoonHighlight(
+                              item: hero,
+                              topCard: true,
+                              radius: heroSize == HeroSize.big ? Radii.card + 4 : 16,
+                              child: heroSize == HeroSize.big
+                                  ? HeroCard(item: hero, onResize: () => setHero(HeroSize.small))
+                                  : _SmallHero(item: hero, onResize: () => setHero(HeroSize.big)),
+                            ),
                           ),
                         ),
                       if (missed.isNotEmpty) ...[

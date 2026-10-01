@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../autocall/auto_call.dart';
 import '../home/home_screen.dart';
 import '../lock/app_lock.dart';
+import '../highlight/highlight.dart';
 import '../messages/message_engine.dart' show AgeInWishes, AgeLines, MessageContext;
 import '../wish/share_sheet.dart' show ageInWishesProvider;
 import '../widget/home_widget_service.dart';
@@ -89,7 +90,13 @@ class SettingsScreen extends ConsumerWidget {
                 '${(ref.watch(appTextSizeProvider).value ?? AppTextSize.m).label.toLowerCase()}',
                 style: context.text.bodySmall?.copyWith(color: c.muted)),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+          tile(Icons.auto_awesome_rounded, 'Highlight coming dates',
+              (ref.watch(highlightProvider).value ?? const HighlightPrefs()).on
+                  ? '${(ref.watch(highlightProvider).value ?? const HighlightPrefs()).style.label} · '
+                      '${(ref.watch(highlightProvider).value ?? const HighlightPrefs()).window.label.toLowerCase()}'
+                  : 'Off',
+              () => context.push('/highlight')),          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text('Home top card', style: context.text.titleSmall),

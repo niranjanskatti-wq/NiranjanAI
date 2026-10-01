@@ -293,6 +293,14 @@ Building all phases in a row (your choice), testing everything on the phone at t
   people". Asked right after importing from contacts; Home shows the count. Same-day single anniversaries
   also get "Same person: merge" next to "Make one couple anniversary"
 
+### Highlight coming dates (moving neon borders)
+- Dates within 1 day (24 h) get an animated glowing border on Home's top card and in lists; stops once wished
+- Settings › Appearance › Highlight coming dates: on/off; when (today / within 1 day / 3 days / a week);
+  8 styles with live previews (Neon frame, Running dashes, Comet, Twin comets, Colour sweep, Pulse, Sparkle,
+  Steady glow); 8 colour sets (Neon, Gold, Fire, Rose, Emerald, Ocean, Rainbow, White); speed; thickness;
+  where (top card / lists); stop once wished
+- Respects the phone's "remove animations" setting (shows a still glow)
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one
