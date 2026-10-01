@@ -12,8 +12,4 @@
         android:shortcutShortLabel="@string/sc_idea" android:shortcutLongLabel="@string/sc_idea">
         <intent android:action="com.essential.app.shortcut.new_idea" android:targetPackage="com.essential.app" android:targetClass="com.essential.app.ui.MainActivity" />
     </shortcut>
-    <shortcut android:shortcutId="log_trade" android:enabled="true" android:icon="@drawable/ic_sc_trade"
-        android:shortcutShortLabel="@string/sc_trade" android:shortcutLongLabel="@string/sc_trade">
-        <intent android:action="com.essential.app.shortcut.log_trade" android:targetPackage="com.essential.app" android:targetClass="com.essential.app.ui.MainActivity" />
-    </shortcut>
 </shortcuts>

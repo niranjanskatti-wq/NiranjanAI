@@ -139,15 +139,15 @@ class CoreLogicTest {
     @Test fun keywordRulesPickLongestMatch() {
         val rules = listOf(
             KeywordRule(1, "site visit, jv, plot", Cat.BUSINESS, 1, null),
-            KeywordRule(2, "gold, crude, trade", Cat.TRADING, 3, null),
+            KeywordRule(2, "app, code, bug", Cat.ESSENTIAL, 3, null),
             KeywordRule(3, "client reading, consultation", Cat.BUSINESS, 2, null),
             KeywordRule(4, "youtube, instagram", Cat.OTHER, null, Type.TRIVIAL)
         )
         assertEquals(1L, Classifier.parse("Site visit at Hebbal plot", rules)?.ventureId)
-        assertEquals(3L, Classifier.parse("crude short trade", rules)?.ventureId)
+        assertEquals(3L, Classifier.parse("fixed a bug in the app", rules)?.ventureId)
         assertEquals(2L, Classifier.parse("Client reading for Mrs. Rao", rules)?.ventureId)
         assertEquals(Type.TRIVIAL, Classifier.parse("watched YouTube", rules)?.type)
         assertNull(Classifier.parse("lunch", rules))
-        assertNull("no partial-word matches", Classifier.parse("golden retriever walk", rules))
+        assertNull("no partial-word matches", Classifier.parse("happy codeword walk", rules))
     }
 }

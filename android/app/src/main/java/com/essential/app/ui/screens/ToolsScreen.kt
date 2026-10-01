@@ -31,7 +31,6 @@ class ToolsScreen(a: MainActivity) : Screen(a) {
             Triple("Sprint & Max Mode", sprint?.let { "Active: ${it.goal} · ends ${TimeUtil.fmtShort(it.end)}" } ?: "Up to 6 weeks, then a recovery week", "bolt") to { a.push(SprintScreen(a)) },
             Triple("Routines & habits", "Triggers, streaks, no guilt", "check") to { a.push(HabitsScreen(a)) },
             Triple("Sleep", "Bedtime, wake, quality vs next-day focus", "moon") to { a.push(SleepScreen(a)) },
-            Triple("Trading journal (MCX)", "Checklist, revenge-trade guard, stats", "insights") to { a.push(TradingScreen(a)) },
             Triple("Time estimates & buffer", "Your planning error and suggested buffer", "timer") to { a.push(BufferScreen(a)) },
             Triple("Daily review", "Under 2 minutes", "edit") to { ReviewSheet.open(a, Days.today(repo)) },
             Triple("Ventures", "Add, rename, recolor, archive", "tools") to { a.push(VenturesScreen(a)) }

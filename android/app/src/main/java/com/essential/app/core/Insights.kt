@@ -1,14 +1,12 @@
 package com.essential.app.core
 
 import com.essential.app.data.Cat
-import com.essential.app.data.Emotions
 import com.essential.app.data.Goal
 import com.essential.app.data.HourLog
 import com.essential.app.data.Mode
 import com.essential.app.data.Plan
 import com.essential.app.data.Repo
 import com.essential.app.data.Sprint
-import com.essential.app.data.Trade
 import com.essential.app.data.Type
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -17,19 +15,17 @@ import kotlin.math.roundToInt
 
 data class DayStat(
     val date: LocalDate, val mode: String, val essential: Double, val work: Double, val necessary: Double, val trivial: Double,
-    val logged: Double, val follow: Double?, val focus: Double?, val energy: Double?, val money: Double, val pnl: Double,
+    val logged: Double, val follow: Double?, val focus: Double?, val energy: Double?, val money: Double,
     val score: Int, val targetEssential: Double
 )
 
 /** Everything the dashboard and reports need for a date range, loaded once. */
 class Insights(val repo: Repo, val from: LocalDate, val to: LocalDate) {
     val logs: List<HourLog> = repo.logsRange(from, to)
-    val trades: List<Trade> = repo.trades(from, to)
     val days: List<DayStat>
     private val byDate = logs.groupBy { it.date }
 
     init {
-        val tradesByDate = trades.groupBy { it.date }
         val list = ArrayList<DayStat>()
         var d = from
         while (!d.isAfter(to)) {
@@ -38,7 +34,7 @@ class Insights(val repo: Repo, val from: LocalDate, val to: LocalDate) {
             val score = Metrics.dayScore(repo, d, info).total
             list.add(DayStat(d, info.mode, Metrics.essentialHours(l), Metrics.workHours(l), Metrics.necessaryHours(l), Metrics.trivialHours(l),
                 Metrics.loggedHours(l), Metrics.followRate(l), Metrics.avgFocus(l), Metrics.avgEnergy(l), Metrics.money(l),
-                tradesByDate[d].orEmpty().sumOf { it.pnl }, score, repo.settings.targetEssential(info.mode)))
+                score, repo.settings.targetEssential(info.mode)))
             d = d.plusDays(1)
         }
         days = list
@@ -90,32 +86,14 @@ class Insights(val repo: Repo, val from: LocalDate, val to: LocalDate) {
 
     fun categoryHours(cat: String): Double = logs.filter { it.category == cat }.sumOf { it.minutes } / 60.0
 
-    data class ModeStat(val days: Int, val essential: Double, val focus: Double?, val energy: Double?, val perHour: Double, val pnl: Double, val work: Double)
+    data class ModeStat(val days: Int, val essential: Double, val focus: Double?, val energy: Double?, val perHour: Double, val work: Double)
 
     fun modeStats(mode: String, from: LocalDate = this.from, to: LocalDate = this.to): ModeStat {
         val ds = activeDays.filter { it.mode == mode && !it.date.isBefore(from) && !it.date.isAfter(to) }
         val l = logs.filter { lg -> ds.any { it.date == lg.date } }
         val work = ds.sumOf { it.work }
         return ModeStat(ds.size, ds.map { it.essential }.average0(), Metrics.avgFocus(l), Metrics.avgEnergy(l),
-            if (work > 0) ds.sumOf { it.money } / work else 0.0, ds.sumOf { it.pnl } / ds.size.coerceAtLeast(1), ds.map { it.work }.average0())
-    }
-
-    data class TradeStats(val count: Int, val winRate: Double, val pnl: Double, val rulesFollowedPct: Double,
-                          val byInstrument: List<Pair<String, Double>>, val byEmotion: List<Pair<String, Double>>,
-                          val byHour: List<Pair<Int, Double>>, val followedPnl: Double, val brokenPnl: Double,
-                          val brokenCount: Int, val revengeFomoLoss: Double)
-
-    fun tradeStats(t: List<Trade> = trades): TradeStats {
-        val n = t.size
-        val wins = t.count { it.pnl > 0 }
-        return TradeStats(n, if (n > 0) wins.toDouble() / n else 0.0, t.sumOf { it.pnl },
-            if (n > 0) t.count { it.rulesFollowed }.toDouble() / n else 0.0,
-            t.groupBy { it.instrument }.map { it.key to it.value.sumOf { x -> x.pnl } }.sortedByDescending { it.second },
-            Emotions.ALL.map { e -> e to t.filter { it.emotion == e }.sumOf { it.pnl } }.filter { e -> t.any { it.emotion == e.first } },
-            t.groupBy { TimeUtil.at(it.ts).hour }.map { it.key to it.value.sumOf { x -> x.pnl } }.sortedBy { it.first },
-            t.filter { it.rulesFollowed }.sumOf { it.pnl }, t.filter { !it.rulesFollowed }.sumOf { it.pnl },
-            t.count { !it.rulesFollowed },
-            t.filter { (it.emotion == "Revenge" || it.emotion == "FOMO") && it.pnl < 0 }.sumOf { it.pnl })
+            if (work > 0) ds.sumOf { it.money } / work else 0.0, ds.map { it.work }.average0())
     }
 
     /** Ratio of actual to estimated minutes for finished tasks (1.0 = perfect). */
@@ -194,7 +172,6 @@ class Insights(val repo: Repo, val from: LocalDate, val to: LocalDate) {
             cmp("Focus", max.focus, normal.focus) { "%.1f".format(it) }
             cmp("Energy", max.energy, normal.energy) { "%.1f".format(it) }
             cmp("₹ per working hour", max.perHour, normal.perHour) { TimeUtil.rupees(it) }
-            cmp("Trading P&L/day", max.pnl, normal.pnl) { TimeUtil.rupees(it) }
             return SprintReport(sprint, max, normal, lines)
         }
     }

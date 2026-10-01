@@ -6,7 +6,6 @@ import android.content.Intent
 import android.view.View
 import com.essential.app.core.*
 import com.essential.app.data.Mode
-import com.essential.app.data.Trade
 import com.essential.app.ui.FocusActivity
 import com.essential.app.ui.MainActivity
 import com.essential.app.ui.Screen
@@ -68,7 +67,7 @@ class AppFlowTest : AppTestBase() {
         for (tab in 0..4) { a.selectTab(tab); idle() }
         val screens: List<Screen> = listOf(GoalsScreen(a), SprintScreen(a), TemplatesScreen(a), TemplateEditorScreen(a, repo.templates().first().id),
             VenturesScreen(a), OpportunityScreen(a), NoLogScreen(a), UncommitScreen(a), BufferScreen(a), ObstacleScreen(a), DistractionScreen(a),
-            HabitsScreen(a), SleepScreen(a), PlayThinkScreen(a), TradingScreen(a), WeeklyReportScreen(a), MissedHoursScreen(a),
+            HabitsScreen(a), SleepScreen(a), PlayThinkScreen(a), WeeklyReportScreen(a), MissedHoursScreen(a),
             TargetsScreen(a), WeightsScreen(a), NotificationSettingsScreen(a), PermissionsScreen(a), PhoneHelpScreen(a), BackupScreen(a),
             KeywordRulesScreen(a), SprintReportScreen(a, repo.sprints().first().id))
         for (s in screens) { a.push(s); idle(); a.back(); idle() }
@@ -81,7 +80,7 @@ class AppFlowTest : AppTestBase() {
         LogHourSheet.open(a, monday, 9); idle(); assertTrue(dialogText().contains("Followed plan?") || dialogText().contains("FOLLOWED PLAN?"))
         FocusSheet.open(a); idle(); ModeSheet.open(a, monday); idle(); ReviewSheet.open(a, monday); idle()
         SleepSheet.open(a, monday); idle(); ScoreSheet.open(a, monday); idle()
-        OpportunityScreen.newIdea(a); idle(); TradingScreen.startTrade(a); idle()
+        OpportunityScreen.newIdea(a); idle()
     }
 
     @Test fun logScreenSwipeAndLogMissed() {
@@ -143,39 +142,47 @@ class AppFlowTest : AppTestBase() {
         assertTrue(a.root.allText().contains("Your body may need a lighter day"))
     }
 
-    @Test fun revengeTradeGuard() {
-        onboard()
+    @Test fun noTradingAnywhere() {
+        onboard(sample = true)
+        assertNull(repo.ventureByName("Trading"))
+        assertTrue(repo.habits(false).none { it.name.contains("Trading") })
+        assertTrue(repo.templates().flatMap { repo.blocks(it.id) }.none { it.category == "Trading" || it.title.contains("MCX") })
+        assertEquals(0, repo.db.scalarL("SELECT COUNT(*) FROM sqlite_master WHERE name='trade'"))
+        for (t in repo.templates()) assertEquals(1440, repo.blocks(t.id).sumOf { it.duration })
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
-        assertNull(TradingScreen.guardReason(a))
-        repeat(2) { repo.addTrade(Trade(0, monday, TimeUtil.nowMillis() + it, "Crude", "Long", 6100.0, 6080.0, 100.0, -2000.0, true, "Calm", true, null)) }
-        assertNotNull(TradingScreen.guardReason(a))
-        TradingScreen.startTrade(a); idle()
-        val d = ShadowDialog.getLatestDialog()
-        assertTrue(d.window!!.decorView.allText().contains("Stop trading for today"))
-        assertFalse(shadowOf(d).isCancelable)
+        a.selectTab(3); idle()
+        assertFalse(a.root.allText().contains("Trading"))
     }
 
-    @Test fun lossLimitTriggersGuard() {
+    @Test fun upgradeFromV1RemovesTradingData() {
         onboard()
-        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
-        repo.addTrade(Trade(0, monday, TimeUtil.nowMillis(), "Gold", "Short", 71000.0, 71500.0, 25.0, -12500.0, false, "Revenge", false, null))
-        assertTrue(TradingScreen.guardReason(a)!!.contains("loss limit"))
+        val db = repo.db
+        val tid = db.insert("venture", com.essential.app.data.cv("name" to "Trading", "color" to 0))
+        val weekday = repo.templates().first().id
+        db.insert("block", com.essential.app.data.cv("template_id" to weekday, "start_time" to 0, "end_time" to 1, "title" to "MCX trading", "category" to "Trading", "venture_id" to tid))
+        db.exec("CREATE TABLE trade(id INTEGER PRIMARY KEY, pnl REAL)")
+        db.insert("habit", com.essential.app.data.cv("name" to "Trading rules followed"))
+        repo.settings.set("loss_limit", 5000)
+        db.removeTrading()
+        assertNull(repo.ventureByName("Trading"))
+        assertEquals(0, db.scalarL("SELECT COUNT(*) FROM block WHERE category='Trading'"))
+        assertEquals(1, db.scalarL("SELECT COUNT(*) FROM block WHERE title='Family, reading, walk' AND start_time=0"))
+        assertEquals(0, db.scalarL("SELECT COUNT(*) FROM sqlite_master WHERE name='trade'"))
+        assertTrue(repo.habits(false).none { it.name == "Trading rules followed" })
     }
 
     @Test fun backupRestoreRoundTripAndCsv() {
         onboard(sample = true)
         val logs = repo.db.scalarL("SELECT COUNT(*) FROM hour_log")
-        val trades = repo.db.scalarL("SELECT COUNT(*) FROM trade")
-        assertTrue(logs > 150); assertTrue(trades > 5)
+        assertTrue(logs > 150)
         val json = Backup.exportJson(app)
-        repo.db.exec("DELETE FROM hour_log"); repo.db.exec("DELETE FROM trade")
+        repo.db.exec("DELETE FROM hour_log")
         assertEquals(0, repo.db.scalarL("SELECT COUNT(*) FROM hour_log"))
         Backup.restoreJson(app, json)
         assertEquals(logs, repo.db.scalarL("SELECT COUNT(*) FROM hour_log"))
-        assertEquals(trades, repo.db.scalarL("SELECT COUNT(*) FROM trade"))
         try { Backup.restoreJson(app, "{\"hello\":1}"); fail("should reject") } catch (e: IllegalArgumentException) { }
         val csv = Backup.csvFiles(app)
-        assertEquals(setOf("hour_logs.csv", "trades.csv", "reviews.csv", "habits.csv", "sleep.csv"), csv.keys)
+        assertEquals(setOf("hour_logs.csv", "reviews.csv", "habits.csv", "sleep.csv"), csv.keys)
         val hl = String(csv["hour_logs.csv"]!!).lines()
         assertTrue(hl[0].startsWith("date,hour,minutes,activity,category,venture,type,focus,energy"))
         assertTrue(hl.size > 150)
@@ -193,7 +200,6 @@ class AppFlowTest : AppTestBase() {
         repo.clearSampleData()
         assertFalse(repo.hasSampleData())
         assertEquals(1, repo.db.scalarL("SELECT COUNT(*) FROM hour_log"))
-        assertEquals(0, repo.db.scalarL("SELECT COUNT(*) FROM trade"))
         assertNotNull("user's intent kept", repo.intent())
         assertEquals("templates kept", 4, repo.templates().size)
     }
@@ -204,7 +210,7 @@ class AppFlowTest : AppTestBase() {
         assertTrue("under 200 words: ${r.wordCount()}\n${r.asText()}", r.wordCount() < 200)
         assertEquals(3, r.suggestions.size)
         assertTrue(r.sections.any { it.title == "Hours" })
-        assertTrue(r.sections.any { it.title == "Trading" })
+        assertTrue(r.sections.none { it.title == "Trading" })
         assertTrue(r.asText().contains("vs last week"))
     }
 
@@ -271,8 +277,8 @@ class AppFlowTest : AppTestBase() {
         val a = Robolectric.buildActivity(MainActivity::class.java, Intent().setAction("com.essential.app.shortcut.log_hour")).setup().get()
         idle()
         assertTrue(dialogText().contains("Followed plan?") || dialogText().contains("FOLLOWED PLAN?"))
-        a.handleRoute(Intent().putExtra("route", "log_trade")); idle()
-        assertTrue(dialogText().contains("Pre-trade checklist"))
+        a.handleRoute(Intent().putExtra("route", "new_idea")); idle()
+        assertTrue(dialogText().contains("New idea"))
     }
 
     @Test fun habitsStreaksAndNoGuilt() {

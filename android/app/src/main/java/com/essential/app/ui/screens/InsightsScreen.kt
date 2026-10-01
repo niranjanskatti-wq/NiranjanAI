@@ -140,7 +140,6 @@ class InsightsScreen(a: MainActivity) : Screen(a) {
             row("Focus", n.focus?.let { f -> "%.1f".format(f) } ?: "–", m.focus?.let { f -> "%.1f".format(f) } ?: "–")
             row("Energy", n.energy?.let { f -> "%.1f".format(f) } ?: "–", m.energy?.let { f -> "%.1f".format(f) } ?: "–")
             row("₹ / work hour", TimeUtil.rupees(n.perHour), TimeUtil.rupees(m.perHour))
-            row("Trading P&L/day", TimeUtil.rupees(n.pnl), TimeUtil.rupees(m.pnl))
         }
         repo.intent()?.let { g ->
             section("Goal pace") {

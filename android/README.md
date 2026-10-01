@@ -1,7 +1,10 @@
 # Essential — *Less, but better.*
 
 An offline-first Android planner, hourly tracker and productivity system for a solo entrepreneur
-running several ventures (real estate, astrology, MCX trading, apps, new ideas).
+running several ventures (real estate, astrology, apps, new ideas).
+
+**Personal use only — not for commercial purposes.** Built for one person's own phone; not published
+on any store. (Bundled Inter font is under the SIL Open Font License; see `app/src/main/assets/fonts/OFL.txt`.)
 
 **Install:** copy `release/Essential.apk` to your phone and open it (allow "Install unknown apps"
 for your file manager when Android asks). Android 10 or newer. No Play Store, no account, no internet.
@@ -12,9 +15,9 @@ for your file manager when Android asks). Android 10 or newer. No Play Store, no
 |---|---|
 | **Explore** | One 90-day Essential Intent (+ up to 2 supporting goals, max 3), milestones, goal pace; Opportunity filter (<90 → Not Now, reviewed monthly); Play & Think Time; monthly Uncommit review |
 | **Eliminate** | "No" log + polite decline scripts (English & ಕನ್ನಡ, copy/share); weekly obstacle; distraction counter (Home, widget, Quick Settings tile) |
-| **Execute** | Hourly check-ins with one-tap **As planned / Essential / Trivial**, inline **Reply** and **Snooze**; full log sheet (2–3 taps), "Same as last hour", "Log missed hours", offline voice logging with keyword rules; Plan vs Actual; Normal/Max Mode templates with the 24-hour trade-off rule and protected blocks; sprints (≤6 weeks) + recovery week + burnout check; Focus mode (25/50/90, DND, interruption tracking, auto-logged as Essential); habits & streaks; sleep; MCX trading journal with required checklist and revenge-trade guard; buffer/estimate tracking; daily review |
+| **Execute** | Hourly check-ins with one-tap **As planned / Essential / Trivial**, inline **Reply** and **Snooze**; full log sheet (2–3 taps), "Same as last hour", "Log missed hours", offline voice logging with keyword rules; Plan vs Actual; Normal/Max Mode templates with the 24-hour trade-off rule and protected blocks; sprints (≤6 weeks) + recovery week + burnout check; Focus mode (25/50/90, DND, interruption tracking, auto-logged as Essential); habits & streaks; sleep; buffer/estimate tracking; daily review |
 | **Insights** | Essential Hours chart with target, working hours, E/N/T split, plan-follow trend, Golden Hours, time vs ₹ by venture (low-return flag), Daily Score heatmap, off-plan & distraction reasons, Normal vs Max, goal pace; Daily Score (editable weights); rule-based weekly report (<200 words, share as image) |
-| **Everywhere** | Exact Doze-proof alarms re-armed after reboot/update/time-zone change; brand-specific battery/autostart help (Xiaomi, Vivo, Oppo, Realme, OnePlus, Samsung, Motorola); permission banner; widgets (small + medium); Quick Settings tiles; app shortcuts; JSON backup/restore, weekly auto-backup to a chosen folder, CSV export; dark (default) + light; IST and 12-hour time; 14 days of sample data with "Clear sample data" |
+| **Everywhere** | Exact Doze-proof alarms re-armed after reboot/update/time-zone change; brand-specific battery/autostart help (Xiaomi, Vivo, Oppo, Realme, OnePlus, Samsung, Motorola); permission banner; widgets (small + medium); Quick Settings tiles; app shortcuts; JSON backup/restore, weekly auto-backup to a chosen folder, CSV export (hour logs, reviews, habits, sleep); dark (default) + light; IST and 12-hour time; 14 days of sample data with "Clear sample data" |
 
 Screenshots (rendered from the real app by the test-suite) are in `docs/screenshots/`.
 
@@ -43,3 +46,9 @@ without losing data. Keep using it (or the same replacement) for future versions
 **Future online features** (not built): cloud sync implements `sync.SyncProvider`; an AI coach implements
 `core.Coach`; AI voice parsing implements `core.ActivityParser`. Defaults are local-only and the
 app has no `INTERNET` permission, so it always works fully offline.
+
+## Changes in 1.1.0
+
+- Trading removed completely (journal, checklist, guard, hard-stop reminder, P&L in reports, "Log trade" shortcut,
+  Trading venture, habit and keyword rule). The evening trading blocks became **Astrology consultations** and
+  **family time** (editable in Templates). Installing over 1.0 migrates the data automatically.

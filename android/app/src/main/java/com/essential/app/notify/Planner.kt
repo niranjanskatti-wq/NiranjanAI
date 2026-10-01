@@ -13,7 +13,7 @@ import java.time.LocalDate
  */
 object Planner {
     object K {
-        const val CHECKIN = "checkin"; const val BLOCK = "block"; const val TRADE_STOP = "trade_stop"; const val REVIEW = "review"
+        const val CHECKIN = "checkin"; const val BLOCK = "block"; const val REVIEW = "review"
         const val WIND = "wind"; const val SLEEP = "sleep"; const val BACKUP = "backup"; const val UNCOMMIT = "uncommit"
         const val OBSTACLE = "obstacle"; const val REPORT = "report"; const val SPRINT_END = "sprint_end"; const val FOLLOW_UP = "follow_up"
         const val REFRESH = "refresh"
@@ -37,8 +37,6 @@ object Planner {
                 if (s.bool("n_block") && b.category != Cat.SLEEP)
                     out.add(Ev(at(b.start) - 5 * 60_000L, K.BLOCK, date, blockTitle = b.title, text = TimeUtil.fmtTime(b.start)))
             }
-            if (s.bool("n_trade_stop") && day.blocks.any { it.category == Cat.TRADING })
-                out.add(Ev(at(s.tradeStop(day.mode)), K.TRADE_STOP, date))
             if (s.bool("n_review")) out.add(Ev(at(s.reviewTime(day.mode)), K.REVIEW, date))
             if (s.bool("n_wind")) out.add(Ev(at(day.sleep) - 15 * 60_000L, K.WIND, date))
             if (s.bool("n_sleep")) out.add(Ev(at(day.wake) + 15 * 60_000L, K.SLEEP, date))

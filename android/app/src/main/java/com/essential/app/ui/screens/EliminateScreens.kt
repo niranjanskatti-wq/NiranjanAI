@@ -118,10 +118,7 @@ class NoLogScreen(a: MainActivity) : Screen(a) {
                 "ಇದು ಆಸಕ್ತಿದಾಯಕವಾಗಿದೆ, ಆದರೆ ಈ ತ್ರೈಮಾಸಿಕದಲ್ಲಿ ನಾನು ಗಮನ ಕೊಡುತ್ತಿರುವ ಕೆಲಸಕ್ಕೆ ಹೊಂದುವುದಿಲ್ಲ. ಕೆಲವು ತಿಂಗಳ ನಂತರ ಮತ್ತೆ ಮಾತನಾಡೋಣ."),
             Triple("Call during a work block",
                 "I'm in a work block right now. Can I call you back at 10:45?",
-                "ಈಗ ನಾನು ಮುಖ್ಯ ಕೆಲಸದಲ್ಲಿದ್ದೇನೆ. 10:45ಕ್ಕೆ ನಿಮಗೆ ಮತ್ತೆ ಕರೆ ಮಾಡಲೇ?"),
-            Triple("Trading tip or group",
-                "Thanks, but I trade only my own plan and rules. I'll skip this one.",
-                "ಧನ್ಯವಾದಗಳು, ಆದರೆ ನಾನು ನನ್ನ ಸ್ವಂತ ಯೋಜನೆ ಮತ್ತು ನಿಯಮಗಳ ಪ್ರಕಾರ ಮಾತ್ರ ಟ್ರೇಡ್ ಮಾಡುತ್ತೇನೆ. ಇದನ್ನು ಬಿಟ್ಟುಬಿಡುತ್ತೇನೆ.")
+                "ಈಗ ನಾನು ಮುಖ್ಯ ಕೆಲಸದಲ್ಲಿದ್ದೇನೆ. 10:45ಕ್ಕೆ ನಿಮಗೆ ಮತ್ತೆ ಕರೆ ಮಾಡಲೇ?")
         )
     }
 

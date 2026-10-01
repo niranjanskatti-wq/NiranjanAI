@@ -87,7 +87,6 @@ object Alarms {
         when (ev.kind) {
             Planner.K.CHECKIN -> if (!quiet && !Focus.isActive(ctx) && repo.logFor(ev.date, ev.hour) == null) Notifier.checkin(ctx, ev.date, ev.hour)
             Planner.K.BLOCK -> if (!quiet) Notifier.simple(ctx, Notifier.CH_BLOCK, 3001, "Next: ${ev.blockTitle}", "Starts at ${ev.text}", "now")
-            Planner.K.TRADE_STOP -> Notifier.simple(ctx, Notifier.CH_TRADE, 3002, "Trading hard stop", "Close positions and step away.", "trades")
             Planner.K.REVIEW -> if (!quiet && repo.review(ev.date) == null) Notifier.simple(ctx, Notifier.CH_REVIEW, 3003, "Daily review", "Two minutes: one small win, one thing to cut, tomorrow's ONE thing.", "review")
             Planner.K.WIND -> if (!quiet) Notifier.simple(ctx, Notifier.CH_WIND, 3004, "Wind down", "Sleep in 15 minutes. Screens away; tomorrow is planned.", "now")
             Planner.K.SLEEP -> if (!quiet && repo.sleepLog(ev.date) == null) Notifier.simple(ctx, Notifier.CH_SLEEP, 3005, "Good morning", "How did you sleep? Log bedtime, wake time and quality.", "sleep")

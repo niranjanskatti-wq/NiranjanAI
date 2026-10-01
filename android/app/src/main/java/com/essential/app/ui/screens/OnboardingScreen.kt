@@ -61,7 +61,7 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
         add(due, bottom = 16)
         add(a.label("Optional · up to 2 supporting goals"), bottom = 8)
         for (i in 0..1) {
-            val s = a.field(if (i == 0) "e.g. Launch the astrology app beta" else "e.g. Trade MCX with zero rule breaks", supporting[i])
+            val s = a.field(if (i == 0) "e.g. Launch the astrology app beta" else "e.g. 20 paid astrology consultations a month", supporting[i])
             s.addTextChangedListener(Watch { supporting[i] = it })
             add(s, bottom = 8)
         }

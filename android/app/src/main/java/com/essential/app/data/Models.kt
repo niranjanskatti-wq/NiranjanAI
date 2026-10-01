@@ -6,14 +6,14 @@ object Cat {
     const val ROUTINE = "Routine"; const val SPIRITUAL = "Spiritual"; const val HEALTH = "Health"
     const val PLANNING = "Planning"; const val ESSENTIAL = "Essential"; const val REST = "Rest"
     const val BUSINESS = "Business"; const val ADMIN = "Admin"; const val LIFE = "Life"
-    const val TRADING = "Trading"; const val SLEEP = "Sleep"; const val THINK = "Think Time"
+    const val SLEEP = "Sleep"; const val THINK = "Think Time"
     const val LEARNING = "Learning"; const val BUFFER = "Buffer"; const val TRAVEL = "Travel"; const val OTHER = "Other"
 
-    val ALL = listOf(ESSENTIAL, BUSINESS, TRADING, ADMIN, PLANNING, THINK, LEARNING, BUFFER, ROUTINE,
+    val ALL = listOf(ESSENTIAL, BUSINESS, ADMIN, PLANNING, THINK, LEARNING, BUFFER, ROUTINE,
         SPIRITUAL, HEALTH, LIFE, REST, TRAVEL, SLEEP, OTHER)
 
     /** Categories that count toward "working hours". */
-    val WORK = setOf(ESSENTIAL, BUSINESS, TRADING, ADMIN, PLANNING, THINK, LEARNING, BUFFER)
+    val WORK = setOf(ESSENTIAL, BUSINESS, ADMIN, PLANNING, THINK, LEARNING, BUFFER)
 
     /** Type implied when an hour is logged "as planned". */
     fun defaultType(category: String?): String = when (category) {
@@ -106,15 +106,7 @@ data class UncommitReview(
 data class TaskEstimate(val id: Long, val title: String, val date: LocalDate, val est: Int, val actual: Int?)
 data class Obstacle(val id: Long, val week: String, val obstacle: String, val action: String?, val resolved: Boolean?)
 
-data class Trade(
-    val id: Long, val date: LocalDate, val ts: Long, val instrument: String, val direction: String, val entry: Double?,
-    val exit: Double?, val qty: Double?, val pnl: Double, val rulesFollowed: Boolean, val emotion: String?,
-    val checklistPassed: Boolean, val note: String?
-)
-
 data class KeywordRule(val id: Long, val keywords: String, val category: String?, val ventureId: Long?, val type: String?) {
     val words: List<String> get() = keywords.split(',').map { it.trim().lowercase() }.filter { it.isNotEmpty() }
 }
 
-object Instruments { val DEFAULT = listOf("Gold", "Silver", "Crude", "Natural Gas") }
-object Emotions { val ALL = listOf("Calm", "FOMO", "Fear", "Greed", "Revenge") }

@@ -113,6 +113,7 @@ object Backup {
                 }
             }
         }
+        db.removeTrading()
         Settings.reset()
         Repo.get(ctx).settings.set("onboarded", true)
         Hooks.scheduleChanged(ctx)
@@ -149,10 +150,6 @@ object Backup {
             "followed_plan", "off_plan_reason", "money_inr", "money_note", "source"),
             repo.logsRange(from, to).map { listOf(it.date, TimeUtil.fmtHourRange(it.hour), it.minutes, it.activity, it.category,
                 ventures[it.ventureId], it.type, it.focus, it.energy, it.followedPlan, it.offPlanReason, it.money, it.moneyNote, it.source) })
-        out["trades.csv"] = csv(listOf("date", "time", "instrument", "direction", "entry", "exit", "qty", "pnl_inr", "rules_followed",
-            "emotion", "checklist_passed", "note"),
-            repo.trades(from, to).map { listOf(it.date, TimeUtil.fmtClock(TimeUtil.at(it.ts)), it.instrument, it.direction, it.entry, it.exit,
-                it.qty, it.pnl, if (it.rulesFollowed) "Y" else "N", it.emotion, if (it.checklistPassed) "Y" else "N", it.note) })
         out["reviews.csv"] = csv(listOf("date", "one_thing_done", "small_win", "trivial_to_cut", "headline", "rating", "tomorrow_one_thing"),
             repo.reviews(from, to).map { listOf(it.date, if (it.oneThingDone) "Y" else "N", it.smallWin, it.trivialToCut, it.headline, it.rating, it.tomorrowOneThing) })
         val habits = repo.habits(false).associate { it.id to it.name }

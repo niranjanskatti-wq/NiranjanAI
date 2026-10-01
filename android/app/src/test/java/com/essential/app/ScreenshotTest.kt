@@ -77,7 +77,6 @@ class ScreenshotTest : AppTestBase() {
         a.selectTab(3); shoot(a, "04-tools")
         a.selectTab(4); shoot(a, "05-settings")
         a.selectTab(3)
-        push(a, TradingScreen(a), "06-trading")
         push(a, TemplateEditorScreen(a, repo.templates().first().id), "07-template-editor")
         push(a, OpportunityScreen(a), "08-opportunity")
         push(a, NoLogScreen(a), "09-no-scripts")

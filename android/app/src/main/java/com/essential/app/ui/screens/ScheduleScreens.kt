@@ -110,7 +110,6 @@ class SprintReportScreen(a: MainActivity, private val sprintId: Long) : Screen(a
         row("Focus", f1(r.max.focus), f1(r.normal.focus))
         row("Energy", f1(r.max.energy), f1(r.normal.energy))
         row("₹ per hour", TimeUtil.rupees(r.max.perHour), TimeUtil.rupees(r.normal.perHour))
-        row("Trading P&L/day", TimeUtil.rupees(r.max.pnl), TimeUtil.rupees(r.normal.pnl))
         add(c, bottom = 12)
         r.lines.forEach { add(a.dimText("• $it"), bottom = 4) }
         val verdict = when {
@@ -118,7 +117,7 @@ class SprintReportScreen(a: MainActivity, private val sprintId: Long) : Screen(a
             (r.max.focus ?: 0.0) < (r.normal.focus ?: 0.0) - 0.5 && r.max.essential <= r.normal.essential * 1.2 ->
                 "Max Mode added hours but cost focus. Next time: a shorter sprint or protect sleep."
             r.max.essential > r.normal.essential * 1.2 -> "Max Mode moved the needle. Recover well so the gain sticks."
-            else -> "Similar results in both modes. Normal Mode may be the better trade."
+            else -> "Similar results in both modes. Normal Mode may be the better choice."
         }
         add(a.card(16, Th.primaryContainer).apply { add(a.body(verdict)) }, top = 8)
     }

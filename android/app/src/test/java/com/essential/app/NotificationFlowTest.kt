@@ -134,10 +134,8 @@ class NotificationFlowTest : AppTestBase() {
         onboard()
         val ev = Planner.events(repo, TimeUtil.nowMillis(), 2)
         val kinds = ev.map { it.kind }.toSet()
-        for (k in listOf(Planner.K.CHECKIN, Planner.K.BLOCK, Planner.K.TRADE_STOP, Planner.K.REVIEW, Planner.K.WIND, Planner.K.SLEEP))
+        for (k in listOf(Planner.K.CHECKIN, Planner.K.BLOCK, Planner.K.REVIEW, Planner.K.WIND, Planner.K.SLEEP))
             assertTrue("has $k", k in kinds)
-        val stop = ev.first { it.kind == Planner.K.TRADE_STOP && it.date == monday }
-        assertEquals(21, TimeUtil.at(stop.at).hour) // Normal: 9 PM
         val review = ev.first { it.kind == Planner.K.REVIEW && it.date == monday }
         assertEquals(21 * 60 + 30, TimeUtil.minuteOfDay(TimeUtil.at(review.at)))
         val block = ev.first { it.kind == Planner.K.BLOCK && it.blockTitle == "Break" && it.date == monday }
@@ -155,8 +153,8 @@ class NotificationFlowTest : AppTestBase() {
         assertEquals(19, ev.size)
         val last = ev.maxByOrNull { it.at }!!
         assertEquals(22, last.hour) // 10–11 PM slot, asked at 11 PM
-        val trade = Planner.events(repo, TimeUtil.nowMillis(), 1).first { it.kind == Planner.K.TRADE_STOP && it.date == monday }
-        assertEquals(21 * 60 + 30, TimeUtil.minuteOfDay(TimeUtil.at(trade.at)))
+        val review = Planner.events(repo, dayStart, 1).first { it.kind == Planner.K.REVIEW && it.date == monday }
+        assertEquals(22 * 60 + 45, TimeUtil.minuteOfDay(TimeUtil.at(review.at)))
     }
 
     @Test fun quietHoursSuppressCheckins() {
@@ -178,6 +176,6 @@ class NotificationFlowTest : AppTestBase() {
         Notifier.test(app)
         assertNotNull(notifications.getNotification(3999))
         val channels = notifications.notificationChannels.map { (it as android.app.NotificationChannel).id }.toSet()
-        assertTrue(channels.containsAll(listOf("checkin", "block", "trade_stop", "review", "wind_down", "sleep_log", "backup", "tools", "focus")))
+        assertTrue(channels.containsAll(listOf("checkin", "block", "review", "wind_down", "sleep_log", "backup", "tools", "focus")))
     }
 }

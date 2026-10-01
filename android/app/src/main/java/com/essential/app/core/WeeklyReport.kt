@@ -62,14 +62,6 @@ object WeeklyReport {
         if (reason != null) time.add("Top off-plan reason: ${reason.first} (${reason.second}×)")
         if (time.isNotEmpty()) sections.add(Section("Time", time))
 
-        val ts = cur.tradeStats()
-        if (ts.count > 0) {
-            val l = arrayListOf("${ts.count} trades · win rate ${(ts.winRate * 100).roundToInt()}% · P&L ${TimeUtil.rupees(ts.pnl, true)}",
-                "Rules followed: ${(ts.rulesFollowedPct * 100).roundToInt()}%")
-            if (ts.revengeFomoLoss < 0) l.add("Losses on Revenge/FOMO trades: ${TimeUtil.rupees(ts.revengeFomoLoss)}")
-            sections.add(Section("Trading", l))
-        }
-
         val intent = repo.intent()
         if (intent != null) {
             val p = Insights.goalPace(intent, today)
@@ -94,7 +86,6 @@ object WeeklyReport {
         val all = cur.logs.mapNotNull { it.focus }
         if (late.size >= 2 && late.average() < 3.0 && all.isNotEmpty() && late.average() < all.average())
             sug.add("Move evening work earlier — focus after 9 PM averages ${"%.1f".format(late.average())}.")
-        if (ts.brokenCount >= 2) sug.add("Review your trading checklist — rules were broken in ${ts.brokenCount} trades.")
         val sleeps = repo.sleepLogs(weekStart, weekEnd)
         val short = sleeps.count { s -> s.hours < (if (Days.resolve(repo, s.date).mode == Mode.MAX) 5.5 else 7.0) - 0.25 }
         if (short >= 3) sug.add("Protect sleep this week — $short nights were below target.")

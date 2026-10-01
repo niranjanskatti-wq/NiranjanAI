@@ -250,10 +250,8 @@ class MainActivity : Activity() {
             "missed" -> { selectTab(1); push(MissedHoursScreen(this)) }
             "focus" -> { selectTab(0); if (Focus.isActive(this)) startActivity(Intent(this, FocusActivity::class.java)) else FocusSheet.open(this) }
             "new_idea" -> { selectTab(3); push(OpportunityScreen(this)); OpportunityScreen.newIdea(this) }
-            "log_trade" -> { selectTab(3); push(TradingScreen(this)); TradingScreen.startTrade(this) }
             "review" -> { selectTab(0); ReviewSheet.open(this, Days.today(repo)) }
             "sleep" -> { selectTab(0); SleepSheet.open(this, Days.today(repo)) }
-            "trades" -> { selectTab(3); push(TradingScreen(this)) }
             "backup" -> { selectTab(4); push(BackupScreen(this)) }
             "obstacle" -> { selectTab(3); push(ObstacleScreen(this)) }
             "report" -> { selectTab(2); push(WeeklyReportScreen(this)) }

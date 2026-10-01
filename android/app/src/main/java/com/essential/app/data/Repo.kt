@@ -282,19 +282,6 @@ class Repo private constructor(val ctx: Context) {
     }
     fun setObstacleResolved(id: Long, resolved: Boolean) = db.update("obstacle", cv("resolved" to resolved), "id=?", id)
 
-    // ---------------------------------------------------------------- trades
-    private fun trade(c: Cursor) = Trade(c.lng("id"), LocalDate.parse(c.s("date")), c.lng("ts"), c.s("instrument"), c.s("direction"),
-        c.dblN("entry"), c.dblN("exit"), c.dblN("qty"), c.dbl("pnl"), c.bool("rules_followed"), c.str("emotion"), c.bool("checklist_passed"), c.str("note"))
-    fun trades(from: LocalDate, to: LocalDate): List<Trade> =
-        db.query("SELECT * FROM trade WHERE date>=? AND date<=? ORDER BY ts", from.toString(), to.toString()) { trade(it) }
-    fun recentTrades(limit: Int = 50): List<Trade> = db.query("SELECT * FROM trade ORDER BY ts DESC LIMIT ?", limit) { trade(it) }
-    fun addTrade(t: Trade): Long = db.insert("trade", cv("date" to t.date.toString(), "ts" to t.ts, "instrument" to t.instrument,
-        "direction" to t.direction, "entry" to t.entry, "exit" to t.exit, "qty" to t.qty, "pnl" to t.pnl, "rules_followed" to t.rulesFollowed,
-        "emotion" to t.emotion, "checklist_passed" to t.checklistPassed, "note" to t.note))
-    fun deleteTrade(id: Long) = db.delete("trade", "id=?", id)
-    fun instruments(): List<String> =
-        (Instruments.DEFAULT + db.query("SELECT DISTINCT instrument FROM trade") { it.getString(0) }).distinct()
-
     // ---------------------------------------------------------------- keyword rules
     fun rules(): List<KeywordRule> = db.query("SELECT * FROM keyword_rule ORDER BY id") {
         KeywordRule(it.lng("id"), it.s("keywords"), it.str("category"), it.lngN("venture_id"), it.str("type"))

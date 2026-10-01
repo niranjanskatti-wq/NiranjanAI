@@ -19,7 +19,7 @@ import java.time.LocalDate
 
 /** Builds every notification. One channel per type so each can be controlled in Android settings. */
 object Notifier {
-    const val CH_CHECKIN = "checkin"; const val CH_BLOCK = "block"; const val CH_TRADE = "trade_stop"; const val CH_REVIEW = "review"
+    const val CH_CHECKIN = "checkin"; const val CH_BLOCK = "block"; const val CH_REVIEW = "review"
     const val CH_WIND = "wind_down"; const val CH_SLEEP = "sleep_log"; const val CH_BACKUP = "backup"; const val CH_TOOLS = "tools"
     const val CH_FOCUS = "focus"; const val CH_TEST = "test"
     const val ID_FOCUS = 4000
@@ -37,7 +37,7 @@ object Notifier {
         }
         ch(CH_CHECKIN, "Hourly check-in", NotificationManager.IMPORTANCE_HIGH, "Every hour: what did you do? Log it with one tap.")
         ch(CH_BLOCK, "Next block", NotificationManager.IMPORTANCE_DEFAULT, "5 minutes before each block starts")
-        ch(CH_TRADE, "Trading hard stop", NotificationManager.IMPORTANCE_HIGH, "Close positions and step away")
+        nm.deleteNotificationChannel("trade_stop") // trading removed in v2
         ch(CH_REVIEW, "Daily review", NotificationManager.IMPORTANCE_DEFAULT, "Evening review reminder")
         ch(CH_WIND, "Wind-down", NotificationManager.IMPORTANCE_DEFAULT, "15 minutes before sleep")
         ch(CH_SLEEP, "Morning sleep log", NotificationManager.IMPORTANCE_DEFAULT, "Log last night's sleep")

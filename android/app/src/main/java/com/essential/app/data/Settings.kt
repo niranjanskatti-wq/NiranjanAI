@@ -19,10 +19,8 @@ class Settings private constructor(private val db: Db) {
             "onboarded" to "0", "theme" to "dark", "use_ist" to "1",
             "wake_normal" to "300", "sleep_normal" to "1320", "wake_max" to "270", "sleep_max" to "1380",
             "target_eh_normal" to "6", "target_work_normal" to "10", "target_eh_max" to "9", "target_work_max" to "14",
-            "trade_stop_normal" to "1260", "trade_stop_max" to "1290",
             "review_normal" to "1290", "review_max" to "1365",
-            "loss_limit" to "10000", "max_consec_losses" to "2",
-            "n_checkin" to "1", "n_block" to "1", "n_trade_stop" to "1", "n_review" to "1", "n_wind" to "1",
+            "n_checkin" to "1", "n_block" to "1", "n_review" to "1", "n_wind" to "1",
             "n_sleep" to "1", "n_backup" to "1", "n_tools" to "1",
             "quiet_enabled" to "0", "quiet_start" to "1380", "quiet_end" to "300",
             "alarm_clock_mode" to "0", "voice_lang" to "en-IN",
@@ -59,7 +57,6 @@ class Settings private constructor(private val db: Db) {
     fun sleep(mode: String) = int(if (mode == Mode.MAX) "sleep_max" else "sleep_normal")
     fun targetEssential(mode: String) = dbl(if (mode == Mode.MAX) "target_eh_max" else "target_eh_normal")
     fun targetWork(mode: String) = dbl(if (mode == Mode.MAX) "target_work_max" else "target_work_normal")
-    fun tradeStop(mode: String) = int(if (mode == Mode.MAX) "trade_stop_max" else "trade_stop_normal")
     fun reviewTime(mode: String) = int(if (mode == Mode.MAX) "review_max" else "review_normal")
     val darkTheme get() = str("theme") != "light"
 }

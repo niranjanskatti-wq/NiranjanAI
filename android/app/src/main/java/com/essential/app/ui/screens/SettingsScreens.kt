@@ -22,7 +22,7 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
         }, bottom = 12)
 
         group("Your day") {
-            it.add(a.listRow("Day & targets", "Wake/sleep, targets per mode, trading stop, loss limits", "now") { a.push(TargetsScreen(a)) })
+            it.add(a.listRow("Day & targets", "Wake/sleep, targets per mode, review time", "now") { a.push(TargetsScreen(a)) })
             it.add(a.listRow("Daily Score weights", "${s.int("w_eh")}/${s.int("w_work")}/${s.int("w_one")}/${s.int("w_plan")}/${s.int("w_routine")}/${s.int("w_sleep")}", "insights") { a.push(WeightsScreen(a)) })
             it.add(a.listRow("Schedule templates", null, "log") { a.push(TemplatesScreen(a)) })
             it.add(a.listRow("Ventures", null, "tools") { a.push(VenturesScreen(a)) })
@@ -48,12 +48,12 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
         }
         group("Your data") {
             it.add(a.listRow("Backup & restore", "Export to Downloads, restore, weekly auto-backup", "share") { a.push(BackupScreen(a)) })
-            it.add(a.listRow("Export CSV", "Hour logs, trades, reviews, habits, sleep", "copy") {
+            it.add(a.listRow("Export CSV", "Hour logs, reviews, habits, sleep", "copy") {
                 val uris = Backup.exportCsv(a); a.shareUris(uris, "text/csv", "Essential CSV export"); a.toast("Saved to Downloads/Essential")
             })
             if (repo.hasSampleData()) it.add(a.listRow("Clear sample data", "Removes only the 14 sample days", "trash", Th.red) {
                 a.confirm("Clear sample data?", "Your own logs, goals and settings stay.", "Clear") { repo.clearSampleData(); Hooks.afterChange(a); a.refresh() }
-            }) else it.add(a.listRow("Load sample data", "14 days of example logs, trades, habits and sleep", "plus") {
+            }) else it.add(a.listRow("Load sample data", "14 days of example logs, habits and sleep", "plus") {
                 SampleData.load(a); a.toast("Sample data loaded"); a.refresh()
             })
         }
@@ -88,25 +88,13 @@ class TargetsScreen(a: MainActivity) : Screen(a) {
         add(a.card(6).apply {
             add(timeRow("Wake", "wake_normal")); add(timeRow("Sleep", "sleep_normal"))
             add(numRow("Essential Hours target", "target_eh_normal", " h")); add(numRow("Working hours target", "target_work_normal", " h"))
-            add(timeRow("Trading hard stop", "trade_stop_normal")); add(timeRow("Daily review", "review_normal"))
+            add(timeRow("Daily review", "review_normal"))
         }, bottom = 14)
         add(a.label("Max Mode"), bottom = 6)
         add(a.card(6).apply {
             add(timeRow("Wake", "wake_max")); add(timeRow("Sleep", "sleep_max"))
             add(numRow("Essential Hours target", "target_eh_max", " h")); add(numRow("Working hours target", "target_work_max", " h"))
-            add(timeRow("Trading hard stop", "trade_stop_max")); add(timeRow("Daily review", "review_max"))
-        }, bottom = 14)
-        add(a.label("Trading limits"), bottom = 6)
-        add(a.card(6).apply {
-            add(a.listRow("Daily loss limit", TimeUtil.rupees(s.dbl("loss_limit")), null) {
-                val sh = Sheet(a, "Daily loss limit (₹)")
-                val f = a.field("₹", s.dbl("loss_limit").toLong().toString(), numeric = true)
-                sh.add(f).actions("Save") { f.value.toDoubleOrNull()?.let { v -> s.set("loss_limit", v) }; sh.dismiss(); a.refresh() }.show()
-            })
-            add(a.listRow("Losses in a row before stop", "${s.int("max_consec_losses")}", null) {
-                val sh = Sheet(a, "Losses in a row")
-                sh.add(a.choice(listOf("1", "2", "3", "4"), "${s.int("max_consec_losses")}") { v -> s.set("max_consec_losses", v ?: "2"); sh.dismiss(); a.refresh() }).show()
-            })
+            add(timeRow("Daily review", "review_max"))
         }, bottom = 14)
         add(a.dimText("The day starts at your earliest wake time (${TimeUtil.fmtTime(repo.dayStart())}). Hours logged after midnight belong to the previous day. Templates control blocks; edit them in Templates."))
     }
@@ -141,7 +129,6 @@ class NotificationSettingsScreen(a: MainActivity) : Screen(a) {
         add(a.card(14).apply {
             add(t("n_checkin", "Hourly check-in", "On the hour, wake to sleep, with one-tap buttons"))
             add(t("n_block", "Next block", "5 minutes before each block"))
-            add(t("n_trade_stop", "Trading hard stop", "Close positions and step away"))
             add(t("n_review", "Daily review", "Evening, under 2 minutes"))
             add(t("n_wind", "Wind-down", "15 minutes before sleep"))
             add(t("n_sleep", "Morning sleep log", "After you wake"))
@@ -150,7 +137,7 @@ class NotificationSettingsScreen(a: MainActivity) : Screen(a) {
         }, bottom = 14)
         add(a.label("Quiet hours"), bottom = 6)
         add(a.card(14).apply {
-            add(a.switchRow("Quiet hours", "No reminders in this window (trading stop still shows)", s.bool("quiet_enabled")) { on -> s.set("quiet_enabled", on) })
+            add(a.switchRow("Quiet hours", "No reminders in this window", s.bool("quiet_enabled")) { on -> s.set("quiet_enabled", on) })
             add(a.listRow("From", TimeUtil.fmtTimeFull(s.int("quiet_start"))) { a.pickTime("Quiet from", s.int("quiet_start")) { v -> s.set("quiet_start", v); a.refresh() } })
             add(a.listRow("Until", TimeUtil.fmtTimeFull(s.int("quiet_end"))) { a.pickTime("Quiet until", s.int("quiet_end")) { v -> s.set("quiet_end", v); a.refresh() } })
         }, bottom = 14)
@@ -221,7 +208,7 @@ class BackupScreen(a: MainActivity) : Screen(a) {
     override val title = "Backup & restore"
     override fun content(): View = page {
         val s = repo.settings
-        add(a.dimText("One file holds everything: logs, goals, templates, trades, settings."), bottom = 14)
+        add(a.dimText("One file holds everything: logs, goals, templates, habits, settings."), bottom = 14)
         add(a.btn("Export backup", icon = "share") {
             val e = Backup.export(a)
             a.toast(if (e.downloads != null) "Saved to Downloads/Essential/${e.name}" else "Ready to share")

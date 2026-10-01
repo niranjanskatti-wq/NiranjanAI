@@ -39,7 +39,6 @@ object Th {
     fun category(cat: String?) = when (cat) {
         Cat.ESSENTIAL, Cat.THINK -> essential
         Cat.BUSINESS, Cat.ADMIN, Cat.PLANNING, Cat.LEARNING, Cat.BUFFER -> necessary
-        Cat.TRADING -> trivial
         Cat.SLEEP, Cat.REST -> faint
         else -> dim
     }

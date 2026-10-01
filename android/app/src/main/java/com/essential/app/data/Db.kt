@@ -18,7 +18,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
 
     companion object {
         const val NAME = "essential.db"
-        const val VERSION = 1
+        const val VERSION = 2
 
         @Volatile private var inst: Db? = null
         fun get(ctx: Context): Db = inst ?: synchronized(this) {
@@ -33,7 +33,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
             "settings", "venture", "goal", "milestone", "template", "block", "sprint", "day_plan",
             "hour_log", "focus_session", "distraction", "daily_review", "habit", "habit_log",
             "sleep_log", "opportunity", "no_log", "commitment", "uncommit_review", "task_estimate",
-            "obstacle", "trade", "keyword_rule"
+            "obstacle", "keyword_rule"
         )
 
         private val SCHEMA = listOf(
@@ -89,9 +89,6 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
                estimated_minutes INTEGER NOT NULL, actual_minutes INTEGER, is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
             """CREATE TABLE obstacle(id INTEGER PRIMARY KEY AUTOINCREMENT, week TEXT NOT NULL, obstacle TEXT NOT NULL, action TEXT,
                resolved INTEGER, is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
-            """CREATE TABLE trade(id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, ts INTEGER NOT NULL, instrument TEXT NOT NULL,
-               direction TEXT NOT NULL, entry REAL, exit REAL, qty REAL, pnl REAL NOT NULL, rules_followed INTEGER NOT NULL,
-               emotion TEXT, checklist_passed INTEGER NOT NULL, note TEXT, is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
             """CREATE TABLE keyword_rule(id INTEGER PRIMARY KEY AUTOINCREMENT, keywords TEXT NOT NULL, category TEXT, venture_id INTEGER,
                type TEXT, updated_at INTEGER NOT NULL DEFAULT 0)"""
         )
@@ -103,6 +100,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) removeTrading(db)
         // Future migrations go here, one `if (oldVersion < N)` step at a time.
     }
 
@@ -111,6 +109,25 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
     }
 
     val w: SQLiteDatabase get() = writableDatabase
+
+    /**
+     * v2: trading was removed from the app. Drops trade data and turns trading blocks into
+     * personal evening time (the day stays a full 24 hours). Also run after restoring an old backup.
+     */
+    fun removeTrading(db: SQLiteDatabase = w) {
+        val personal = db.rawQuery("SELECT id FROM venture WHERE name='Personal' LIMIT 1", null).use { if (it.moveToFirst()) it.getLong(0) else null }
+        db.execSQL("DROP TABLE IF EXISTS trade")
+        db.execSQL("UPDATE block SET category='Life', title='Family, reading, walk', venture_id=?, is_protected=0 WHERE category='Trading'", arrayOf(personal))
+        db.execSQL("UPDATE hour_log SET category='Other' WHERE category='Trading'")
+        db.execSQL("UPDATE hour_log SET venture_id=NULL WHERE venture_id IN (SELECT id FROM venture WHERE name='Trading')")
+        db.execSQL("UPDATE block SET venture_id=NULL WHERE venture_id IN (SELECT id FROM venture WHERE name='Trading')")
+        db.execSQL("DELETE FROM keyword_rule WHERE venture_id IN (SELECT id FROM venture WHERE name='Trading') OR category='Trading'")
+        db.execSQL("DELETE FROM venture WHERE name='Trading'")
+        db.execSQL("DELETE FROM habit_log WHERE habit_id IN (SELECT id FROM habit WHERE name='Trading rules followed')")
+        db.execSQL("DELETE FROM habit WHERE name='Trading rules followed'")
+        db.execSQL("DELETE FROM commitment WHERE name='Trading Telegram group'")
+        db.execSQL("DELETE FROM settings WHERE key IN ('trade_stop_normal','trade_stop_max','loss_limit','max_consec_losses','n_trade_stop','guard_date')")
+    }
 
     fun <T> query(sql: String, vararg args: Any?, map: (Cursor) -> T): List<T> {
         val out = ArrayList<T>()
