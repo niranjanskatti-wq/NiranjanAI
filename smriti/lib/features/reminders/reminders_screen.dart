@@ -80,7 +80,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
     final e = entry.event;
     final specs = _specs!;
     final morning = _find(ReminderKind.morning);
-    final custom = _find(ReminderKind.custom);
+    final onDay = specs.where((s) => s.kind == ReminderKind.custom).toList()..sort((a, b) => a.minute.compareTo(b.minute));
     final midnight = _find(ReminderKind.midnight);
     final gift = _find(ReminderKind.gift);
     final before = specs.where((s) => s.kind == ReminderKind.daysBefore).toList()
@@ -136,11 +136,45 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                 secondary: morning == null ? null : timeChip(morning.minute, (m) => _replace(morning, morning.copyWith(minute: m))),
               ),
               const Divider(),
-              SwitchListTile(
-                title: const Text('Another time on the day'),
-                value: custom != null,
-                onChanged: (v) => _toggle(ReminderKind.custom, v, minute: 1080),
-                secondary: custom == null ? null : timeChip(custom.minute, (m) => _replace(custom, custom.copyWith(minute: m))),
+              ListTile(
+                title: const Text('More times on the day'),
+                subtitle: Text(onDay.isEmpty ? 'Add as many as you like' : '${onDay.length} more'),
+                trailing: TextButton.icon(
+                  onPressed: () async {
+                    final m = await pickMinute(context, 1080);
+                    if (m != null && !onDay.any((s) => s.minute == m)) {
+                      _save([...specs, ReminderSpec(ReminderKind.custom, minute: m)]);
+                    }
+                  },
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: const Text('Add'),
+                ),
+              ),
+              for (final s in onDay)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 4, 0),
+                  child: Row(children: [
+                    Icon(Icons.notifications_active_outlined, size: 18, color: c.muted),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text('On the day', style: context.text.titleSmall)),
+                    timeChip(s.minute, (m) => _replace(s, s.copyWith(minute: m))),
+                    IconButton(
+                      tooltip: 'Remove',
+                      onPressed: () => _save([...specs]..remove(s)),
+                      icon: Icon(Icons.close_rounded, color: c.muted),
+                    ),
+                  ]),
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Wrap(spacing: 6, runSpacing: 6, children: [
+                  for (final (m, label) in const [(360, '6 AM'), (720, '12 PM'), (1080, '6 PM'), (1260, '9 PM')])
+                    if (!onDay.any((s) => s.minute == m) && morning?.minute != m)
+                      ActionChip(
+                        label: Text('+ $label'),
+                        onPressed: () => _save([...specs, ReminderSpec(ReminderKind.custom, minute: m)]),
+                      ),
+                ]),
               ),
             ]),
           ),

@@ -25,6 +25,7 @@ class DuplicatesScreen extends ConsumerWidget {
     final clashes = Duplicates.sameDay(entries);
     final doubles = Duplicates.people(people, entries);
     final couples = ref.watch(coupleSuggestionsProvider);
+    final sameDate = ref.watch(sameDateGroupsProvider);
     final repo = ref.read(repoProvider);
 
     Future<void> remove(EventEntry e, String what) async {
@@ -35,7 +36,7 @@ class DuplicatesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Check for duplicates')),
-      body: clashes.isEmpty && doubles.isEmpty && couples.isEmpty
+      body: clashes.isEmpty && doubles.isEmpty && couples.isEmpty && sameDate.isEmpty
           ? const Center(
               child: EmptyState(
                 title: 'All clear',
@@ -45,6 +46,14 @@ class DuplicatesScreen extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
               children: [
+                if (sameDate.isNotEmpty) ...[
+                  const SectionLabel('Same date: same person?'),
+                  Text('Often one person was saved twice with different names. Merging keeps the one with the '
+                      'phone number (tap a name to keep that one instead), with all dates, gifts and wishes.',
+                      style: context.text.bodySmall),
+                  const SizedBox(height: 8),
+                  for (final g in sameDate) _SameDateCard(group: g, entries: entries),
+                ],
                 if (couples.isNotEmpty) ...[
                   const SectionLabel('Anniversaries that could be one couple'),
                   Text('One anniversary for both means one reminder and one card, like "Mom & Dad · 35 years".',
@@ -82,6 +91,16 @@ class DuplicatesScreen extends ConsumerWidget {
                                 }
                               },
                               child: const Text('Make one couple anniversary'),
+                            ),
+                            FilledButton.tonal(
+                              onPressed: () async {
+                                final keepFirst = x.first.callNumber != null || x.second.callNumber == null;
+                                final keep = keepFirst ? x.first : x.second, extra = keepFirst ? x.second : x.first;
+                                await Duplicates(ref.read(databaseProvider)).merge(keep, extra);
+                                HapticFeedback.lightImpact();
+                                if (context.mounted) showToast(context, 'Merged into ${keep.name}');
+                              },
+                              child: const Text('Same person: merge'),
                             ),
                             TextButton(
                               onPressed: () async {
@@ -209,3 +228,76 @@ final coupleSuggestionsProvider = Provider<List<CoupleSuggestion>>((ref) {
 
 final _coupleSkipsProvider =
     StreamProvider<String?>((ref) => ref.watch(databaseProvider).watchSetting('coupleSkips'));
+
+final _sameDateSkipsProvider =
+    StreamProvider<String?>((ref) => ref.watch(databaseProvider).watchSetting('sameDateSkips'));
+
+/// People sharing a birthday (or other date) on the same day, minus "Different people" answers.
+final sameDateGroupsProvider = Provider<List<SameDateGroup>>((ref) {
+  final entries = ref.watch(entriesProvider).value ?? const <EventEntry>[];
+  final people = ref.watch(peopleProvider).value ?? const <Person>[];
+  final skips = (ref.watch(_sameDateSkipsProvider).value ?? '').split(',').where((k) => k.isNotEmpty).toSet();
+  return Duplicates.sameDate(people, entries, skip: skips);
+});
+
+class _SameDateCard extends ConsumerStatefulWidget {
+  const _SameDateCard({required this.group, required this.entries});
+  final SameDateGroup group;
+  final List<EventEntry> entries;
+
+  @override
+  ConsumerState<_SameDateCard> createState() => _SameDateCardState();
+}
+
+class _SameDateCardState extends ConsumerState<_SameDateCard> {
+  int? _keepId;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final g = widget.group;
+    final keep = g.all.firstWhere((p) => p.id == _keepId, orElse: () => g.keep);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text('${g.all.length} ${g.type.label.toLowerCase()}s on ${fmtEventDate(day: g.day, month: g.month)}',
+              style: context.text.labelMedium?.copyWith(color: c.alert)),
+          const SizedBox(height: 6),
+          for (final p in g.all)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              leading: PersonAvatar(person: p, size: 34),
+              title: Text(p.name),
+              subtitle: Text(DuplicatesScreen._summary(p, widget.entries)),
+              trailing: p.id == keep.id
+                  ? Chip(label: const Text('Keep'), avatar: Icon(Icons.check_rounded, size: 16, color: c.call))
+                  : null,
+              onTap: () => setState(() => _keepId = p.id),
+            ),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            FilledButton.tonal(
+              onPressed: () async {
+                final merged = SameDateGroup(g.type, g.day, g.month, keep, [for (final p in g.all) if (p.id != keep.id) p]);
+                await Duplicates(ref.read(databaseProvider)).mergeGroup(merged);
+                HapticFeedback.lightImpact();
+                if (context.mounted) showToast(context, 'Merged into ${keep.name}');
+              },
+              child: Text('Same person: keep ${keep.shortName}'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final db = ref.read(databaseProvider);
+                final skips = {...?(await db.getSetting('sameDateSkips'))?.split(','), g.key};
+                await db.setSetting('sameDateSkips', skips.where((k) => k.isNotEmpty).join(','));
+              },
+              child: const Text('Different people'),
+            ),
+          ]),
+        ]),
+      ),
+    );
+  }
+}

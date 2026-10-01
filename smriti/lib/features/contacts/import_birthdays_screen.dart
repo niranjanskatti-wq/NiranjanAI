@@ -210,6 +210,26 @@ class _ImportBirthdaysScreenState extends ConsumerState<ImportBirthdaysScreen> {
     if (!mounted) return;
     showToast(context,
         'Imported $count date${count == 1 ? '' : 's'}${cleaned > 0 ? ' · removed $cleaned double${cleaned == 1 ? '' : 's'}' : ''}');
+    final skips = ((await ref.read(databaseProvider).getSetting('sameDateSkips')) ?? '').split(',').toSet();
+    final groups =
+        Duplicates.sameDate(await repo.allPeople(), await repo.watchEntries().first, skip: skips);
+    if (!mounted) return;
+    if (groups.isNotEmpty) {
+      final review = await confirm(
+        context,
+        title: 'Same person saved twice?',
+        message: '${groups.length} ${groups.length == 1 ? 'date is' : 'dates are'} shared by different names, e.g. '
+            '${groups.first.all.map((p) => p.name).join(' and ')} on '
+            '${fmtEventDate(day: groups.first.day, month: groups.first.month)}. '
+            'Check and merge them, keeping the one with the phone number?',
+        action: 'Check now',
+      );
+      if (!mounted) return;
+      if (review) {
+        context.pushReplacement('/duplicates');
+        return;
+      }
+    }
     context.pop();
   }
 

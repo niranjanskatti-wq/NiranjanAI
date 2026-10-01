@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/tokens.dart';
+import '../../data/enums.dart';
 import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import 'notification_service.dart';
@@ -72,6 +73,52 @@ class ReminderSettingsSection extends ConsumerWidget {
         title: const Text('Midnight alarm'),
         value: has(person, ReminderKind.midnight),
         onChanged: (v) => togglePerson(ReminderKind.midnight, v),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+        child: Text('More times on the day', style: context.text.titleSmall),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
+        child: Wrap(spacing: 8, runSpacing: 6, children: [
+          for (final (m, label) in const [(360, '6 AM'), (720, '12 PM'), (1080, '6 PM'), (1260, '9 PM')])
+            FilterChip(
+              label: Text(label),
+              selected: person.any((s) => s.kind == ReminderKind.custom && s.minute == m),
+              onSelected: (on) async {
+                final l = [...person]..removeWhere((s) => s.kind == ReminderKind.custom && s.minute == m);
+                if (on) l.add(ReminderSpec(ReminderKind.custom, minute: m));
+                await db.setSetting('defaultPersonReminders', encodeSpecs(l));
+              },
+            ),
+        ]),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            icon: const Icon(Icons.done_all_rounded, size: 18),
+            label: const Text('Apply to all birthdays & anniversaries now'),
+            onPressed: () async {
+              final ok = await confirm(
+                context,
+                title: 'Use these reminders for everyone?',
+                message: '${describeSpecs(person)} for every birthday and anniversary already saved. '
+                    'Reminders you changed for one person are replaced too.',
+                action: 'Apply',
+              );
+              if (!ok) return;
+              final entries = await ref.read(repoProvider).watchEntries().first;
+              final ids = [
+                for (final e in entries)
+                  if (e.kind == EventKind.person || e.kind == EventKind.couple) e.event.id,
+              ];
+              await ref.read(repoProvider).setRemindersForMany(ids, person);
+              if (context.mounted) showToast(context, 'Updated ${ids.length} dates');
+            },
+          ),
+        ),
       ),
       const Padding(
         padding: EdgeInsets.fromLTRB(16, 8, 16, 0),

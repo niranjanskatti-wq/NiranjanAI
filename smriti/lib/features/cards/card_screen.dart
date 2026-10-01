@@ -62,7 +62,7 @@ CardData cardDataFor(WishTarget t, {String message = '', Person? me, Person? to}
   }
   if (t.belated) headline = 'Belated ${headline.replaceFirst('Happy ', '').toLowerCase()} wishes';
   final people = e?.people.where((p) => !p.isMe).toList() ?? const <Person>[];
-  final name = people.isNotEmpty ? people.map((p) => p.shortName).join(' & ') : (t.about ?? to)?.shortName ?? '';
+  final name = people.isNotEmpty ? people.map((p) => p.wishName).join(' & ') : (t.about ?? to)?.wishName ?? '';
   return CardData(
     kind: kind,
     headline: headline,

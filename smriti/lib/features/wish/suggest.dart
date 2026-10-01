@@ -31,8 +31,8 @@ Future<Suggestions> suggestFor(WidgetRef ref, WishTarget t, Person? to, Lang lan
   } else {
     final p = t.about ?? to;
     ctx = MessageContext(
-      name: p?.name.trim().split(RegExp(r'\s+')).first,
-      nickname: p?.shortName,
+      name: p?.wishName,
+      nickname: p?.wishName,
       relation: p?.relation,
       festival: t.festivalName,
       myName: me?.name.trim().split(RegExp(r'\s+')).first,

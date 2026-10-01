@@ -147,8 +147,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
                           child: _NoticeCard(
                             message: dupCount == 1
-                                ? '1 thing to tidy up: someone saved twice, a same-day birthday and anniversary, or an anniversary that could be a couple’s. Tap to check.'
-                                : '$dupCount things to tidy up: people saved twice, same-day birthdays and anniversaries, or anniversaries that could be a couple’s. Tap to check.',
+                                ? '1 thing to check: the same person may be saved twice (same date or number). Tap to review and merge.'
+                                : '$dupCount things to check: people who may be saved twice (same date or number). Tap to review and merge.',
                             onOpen: () => context.push('/duplicates'),
                             onDismiss: () => ref.read(databaseProvider).setSetting('dupNoticeSeen', '$dupCount'),
                           ),
@@ -356,7 +356,8 @@ final duplicateCountProvider = Provider<int>((ref) {
   final people = ref.watch(peopleProvider).value ?? const <Person>[];
   return Duplicates.sameDay(entries).length +
       Duplicates.people(people, entries).length +
-      ref.watch(coupleSuggestionsProvider).length;
+      ref.watch(coupleSuggestionsProvider).length +
+      ref.watch(sameDateGroupsProvider).length;
 });
 
 final dupNoticeSeenProvider =

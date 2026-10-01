@@ -243,14 +243,14 @@ class MessageContext {
   static MessageContext forEntry(EventEntry entry, {required int? years, Person? me, String? festival}) {
     final people = entry.people.where((p) => !p.isMe).toList();
     final p = people.firstOrNull;
-    final first = p?.name.trim().split(RegExp(r'\s+')).first;
+
     return MessageContext(
-      name: first,
-      nickname: p?.shortName,
+      name: p?.wishName,
+      nickname: p?.wishName,
       relation: p?.relation,
       age: entry.type == EventType.birthday ? years : null,
       yearsMarried: entry.type.isAnniversaryLike ? years : null,
-      coupleNames: entry.kind == EventKind.couple ? people.map((x) => x.shortName).join(' & ') : null,
+      coupleNames: entry.kind == EventKind.couple ? people.map((x) => x.wishName).join(' & ') : null,
       festival: festival,
       myName: me?.name.trim().split(RegExp(r'\s+')).first,
       type: entry.type,

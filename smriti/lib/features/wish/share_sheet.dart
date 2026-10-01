@@ -124,14 +124,81 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
     await _loadSuggestions(keepText: _fromDraft);
   }
 
+  /// Nickname typed in this sheet (saved on the person too).
+  String? _nick;
+
+  /// The one person being wished (not couples), whose nickname can be set here.
+  Person? get _wished {
+    final people = t.entry?.people.where((p) => !p.isMe).toList() ?? [?(t.about ?? _to)];
+    return people.length == 1 ? people.single : null;
+  }
+
   MessageContext _ctx(Person? me) {
+    final base = _baseCtx(me);
+    final nick = _nick;
+    if (nick == null) return base;
+    return MessageContext(
+      name: nick,
+      nickname: nick,
+      relation: base.relation,
+      age: base.age,
+      yearsMarried: base.yearsMarried,
+      coupleNames: base.coupleNames,
+      festival: base.festival,
+      myName: base.myName,
+      type: base.type,
+    );
+  }
+
+  /// "Calls them Bharti · Change": sets the nickname used in wishes.
+  Widget _nameRow(BuildContext context) {
+    final p = _wished;
+    if (p == null) return const SizedBox.shrink();
+    final current = _nick ?? p.wishName;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        onPressed: () => _changeNick(p, current),
+        icon: const Icon(Icons.badge_outlined, size: 18),
+        label: Text('Name in message: $current · Change'),
+      ),
+    );
+  }
+
+  Future<void> _changeNick(Person p, String current) async {
+    final ctrl = TextEditingController(text: current);
+    final nick = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('What do you call ${p.name}?'),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(hintText: 'e.g. Appa, Bharti Aunty, Chinnu'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('Save')),
+        ],
+      ),
+    );
+    if (nick == null || nick.isEmpty || nick == current || !mounted) return;
+    await ref.read(repoProvider).updatePerson(p.id, PeopleCompanion(nickname: Value(nick)));
+    setState(() {
+      _nick = nick;
+      _text = _text.replaceAll(current, nick);
+    });
+  }
+
+  MessageContext _baseCtx(Person? me) {
     if (t.entry != null) {
       return MessageContext.forEntry(t.entry!, years: _years ?? t.years, me: me, festival: t.festivalName);
     }
     final p = t.about ?? _to;
     return MessageContext(
-      name: p?.name.trim().split(RegExp(r'\s+')).first,
-      nickname: p?.shortName,
+      name: p?.wishName,
+      nickname: p?.wishName,
       relation: p?.relation,
       festival: t.festivalName,
       myName: me?.name.trim().split(RegExp(r'\s+')).first,
@@ -500,6 +567,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
               if (_fromDraft)
                 Text('Your saved message for this event', style: context.text.bodySmall),
               if (!_loading) _ageChip(context),
+              if (!_loading) _nameRow(context),
               const SizedBox(height: 8),
               _BigOption(
                 color: const Color(0xFF25A35A),

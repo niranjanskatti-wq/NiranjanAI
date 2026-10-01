@@ -36,6 +36,23 @@ class CoupleSuggestion {
   final String reason;
 }
 
+/// Different people with the same birthday (or other date) on the same day:
+/// often one person saved twice under different names.
+class SameDateGroup {
+  const SameDateGroup(this.type, this.day, this.month, this.keep, this.others);
+  final EventType type;
+  final int day, month;
+
+  /// The one kept when merging: the one with a phone number, then the one with more saved.
+  final Person keep;
+  final List<Person> others;
+
+  List<Person> get all => [keep, ...others];
+
+  /// Remembers "Different people".
+  String get key => '${type.name}|$month|$day|${(all.map((p) => p.id).toList()..sort()).join('-')}';
+}
+
 class Duplicates {
   Duplicates(this.db) : repo = Repository(db);
 
@@ -111,6 +128,43 @@ class Duplicates {
           await repo.deleteEvent(other.event.id);
         }
       });
+
+  /// Groups of different people sharing a birthday (or other single-person date)
+  /// on the same day. Wedding anniversaries are left to [couples].
+  static List<SameDateGroup> sameDate(List<Person> people, List<EventEntry> entries, {Set<String> skip = const {}}) {
+    int weight(Person p) =>
+        (p.callNumber != null ? 1000 : 0) +
+        entries.where((e) => e.people.any((x) => x.id == p.id)).length * 10 +
+        (realYear(p.birthYear) != null ? 2 : 0) +
+        (p.photoPath != null ? 1 : 0);
+    final groups = <String, (EventEntry, Set<Person>)>{};
+    for (final e in entries) {
+      if (e.kind != EventKind.person || e.people.length != 1 || e.isArchived) continue;
+      if (e.type == EventType.weddingAnniversary || e.type == EventType.otherDate) continue;
+      final p = e.people.single;
+      if (p.isMe) continue;
+      final k = '${e.type.name}|${e.event.month}|${e.event.day}';
+      final g = groups[k] ??= (e, <Person>{});
+      g.$2.add(p);
+    }
+    final out = <SameDateGroup>[];
+    for (final (e, ps) in groups.values) {
+      final unique = {for (final p in ps) p.id: p}.values.toList();
+      if (unique.length < 2) continue;
+      unique.sort((a, b) => weight(b).compareTo(weight(a)));
+      final g = SameDateGroup(e.type, e.event.day, e.event.month, unique.first, unique.skip(1).toList());
+      if (!skip.contains(g.key)) out.add(g);
+    }
+    out.sort((a, b) => a.month != b.month ? a.month - b.month : a.day - b.day);
+    return out;
+  }
+
+  /// Merges everyone in [g] into [g.keep].
+  Future<void> mergeGroup(SameDateGroup g) async {
+    for (final p in g.others) {
+      await merge(g.keep, p);
+    }
+  }
 
   /// Pairs of people who are probably the same person. The one with more saved keeps.
   static List<DuplicatePeople> people(List<Person> people, List<EventEntry> entries) {

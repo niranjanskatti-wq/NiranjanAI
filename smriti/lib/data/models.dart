@@ -10,6 +10,17 @@ extension PersonX on Person {
   /// What the app calls this person: nickname first.
   String get shortName => (nickname?.trim().isNotEmpty ?? false) ? nickname!.trim() : name;
 
+  /// The name used in wishes: the nickname if set ("Appa", "Bharti Aunty"),
+  /// otherwise the first name without titles, not the full contact name.
+  String get wishName {
+    final nick = nickname?.trim();
+    if (nick != null && nick.isNotEmpty) return nick;
+    final words = name.trim().split(RegExp(r'\s+'));
+    const titles = {'dr', 'mr', 'mrs', 'ms', 'miss', 'shri', 'sri', 'smt', 'kum', 'prof', 'er', 'adv', 'capt', 'col'};
+    final first = words.where((w) => !titles.contains(w.toLowerCase().replaceAll('.', ''))).firstOrNull;
+    return first ?? words.first;
+  }
+
   String get relationLabel => relation == Relationship.custom
       ? (customRelationship?.trim().isNotEmpty ?? false ? customRelationship!.trim() : 'Custom')
       : relation.label;

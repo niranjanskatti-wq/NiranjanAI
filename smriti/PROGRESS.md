@@ -282,6 +282,17 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Added automatically; edit by hand: "Correct age" in the wish sheet fixes a wrong age (and the saved year),
   Settings › Wishes › Birthday/Anniversary line lets you write your own wording with {age_th}, {nickname}…
 
+### Nicknames in wishes, more reminders on the day, same-date merge
+- Messages and cards use the nickname ("Bharti Aunty"); without one, the first name without titles
+  (Dr/Mr/Mrs/Shri/Smt…) instead of the full contact name. "Name in message · Change" in the wish sheet
+  saves a nickname
+- Reminders: add any number of times on the day (+6 AM, +12 PM, +6 PM, +9 PM or any time); Settings ›
+  Reminders can set them as defaults and "Apply to all birthdays & anniversaries now"
+- Different names with a birthday (or other single date) on the same day: Duplicates › "Same date: same
+  person?" merges them, keeping the one with the phone number (tap another to keep it), or "Different
+  people". Asked right after importing from contacts; Home shows the count. Same-day single anniversaries
+  also get "Same person: merge" next to "Make one couple anniversary"
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one
