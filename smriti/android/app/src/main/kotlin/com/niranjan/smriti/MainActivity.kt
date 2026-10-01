@@ -103,6 +103,17 @@ class MainActivity : FlutterFragmentActivity() {
                 else -> result.notImplemented()
             }
         }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "smriti/sms").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "schedule" -> {
+                    SmsScheduler.schedule(applicationContext, call.arguments as String)
+                    result.success(null)
+                }
+                "drainSent" -> result.success(SmsScheduler.drainSent(applicationContext))
+                "canSend" -> result.success(SmsScheduler.canSend(applicationContext))
+                else -> result.notImplemented()
+            }
+        }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "smriti/calendar").setMethodCallHandler { call, result ->
             try {
                 when (call.method) {

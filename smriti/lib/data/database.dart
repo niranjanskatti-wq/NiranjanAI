@@ -137,6 +137,25 @@ class AutoCalls extends Table {
   TextColumn get number => text().nullable()();
 }
 
+/// A text message (SMS) Smriti sends by itself at a set time: every year on
+/// one of the person's dates, or once on a date. Several rows = several times.
+@DataClassName('SmsSchedule')
+class ScheduledSms extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get personId => integer().references(People, #id, onDelete: KeyAction.cascade)();
+  IntColumn get eventId => integer().nullable().references(Events, #id, onDelete: KeyAction.cascade)();
+  TextColumn get date => text().nullable()();
+  IntColumn get minuteOfDay => integer()();
+
+  /// Your own words ({nickname}, {age_th}… are filled in); empty means
+  /// Smriti writes a wish (the prepared message, or a fitting one).
+  TextColumn get message => text().nullable()();
+
+  /// Number to text; empty means the person's saved number.
+  TextColumn get number => text().nullable()();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+}
+
 /// Family, Office, College friends… A person can be in several.
 @DataClassName('PersonGroup')
 class Groups extends Table {
@@ -304,13 +323,13 @@ class Settings extends Table {
 
 @DriftDatabase(tables: [
   People, Events, EventPeople, GiftIdeas, ContactNotices, WishLogs, Reminders, UserMessages, FavouriteMessages,
-  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Groups, GroupMembers, FamilyLinks, AutoCalls, Settings,
+  FestivalOverrides, CustomFestivals, WishSessions, WishSessionItems, PhotoMemories, Groups, GroupMembers, FamilyLinks, AutoCalls, ScheduledSms, Settings,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'smriti'));
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -364,6 +383,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 9) {
             await m.createTable(autoCalls);
+          }
+          if (from < 10) {
+            await m.createTable(scheduledSms);
           }
         },
         beforeOpen: (details) async {

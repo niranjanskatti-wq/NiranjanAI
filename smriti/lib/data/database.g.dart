@@ -8621,6 +8621,523 @@ class AutoCallsCompanion extends UpdateCompanion<AutoCall> {
   }
 }
 
+class $ScheduledSmsTable extends ScheduledSms
+    with TableInfo<$ScheduledSmsTable, SmsSchedule> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScheduledSmsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _personIdMeta = const VerificationMeta(
+    'personId',
+  );
+  @override
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+    'person_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES people (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _eventIdMeta = const VerificationMeta(
+    'eventId',
+  );
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+    'event_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES events (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _minuteOfDayMeta = const VerificationMeta(
+    'minuteOfDay',
+  );
+  @override
+  late final GeneratedColumn<int> minuteOfDay = GeneratedColumn<int>(
+    'minute_of_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _messageMeta = const VerificationMeta(
+    'message',
+  );
+  @override
+  late final GeneratedColumn<String> message = GeneratedColumn<String>(
+    'message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _numberMeta = const VerificationMeta('number');
+  @override
+  late final GeneratedColumn<String> number = GeneratedColumn<String>(
+    'number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    personId,
+    eventId,
+    date,
+    minuteOfDay,
+    message,
+    number,
+    enabled,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'scheduled_sms';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SmsSchedule> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('person_id')) {
+      context.handle(
+        _personIdMeta,
+        personId.isAcceptableOrUnknown(data['person_id']!, _personIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_personIdMeta);
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(
+        _eventIdMeta,
+        eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta),
+      );
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    }
+    if (data.containsKey('minute_of_day')) {
+      context.handle(
+        _minuteOfDayMeta,
+        minuteOfDay.isAcceptableOrUnknown(
+          data['minute_of_day']!,
+          _minuteOfDayMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_minuteOfDayMeta);
+    }
+    if (data.containsKey('message')) {
+      context.handle(
+        _messageMeta,
+        message.isAcceptableOrUnknown(data['message']!, _messageMeta),
+      );
+    }
+    if (data.containsKey('number')) {
+      context.handle(
+        _numberMeta,
+        number.isAcceptableOrUnknown(data['number']!, _numberMeta),
+      );
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SmsSchedule map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SmsSchedule(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      personId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}person_id'],
+      )!,
+      eventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}event_id'],
+      ),
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      ),
+      minuteOfDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}minute_of_day'],
+      )!,
+      message: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}message'],
+      ),
+      number: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}number'],
+      ),
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+    );
+  }
+
+  @override
+  $ScheduledSmsTable createAlias(String alias) {
+    return $ScheduledSmsTable(attachedDatabase, alias);
+  }
+}
+
+class SmsSchedule extends DataClass implements Insertable<SmsSchedule> {
+  final int id;
+  final int personId;
+  final int? eventId;
+  final String? date;
+  final int minuteOfDay;
+
+  /// Your own words ({nickname}, {age_th}… are filled in); empty means
+  /// Smriti writes a wish (the prepared message, or a fitting one).
+  final String? message;
+
+  /// Number to text; empty means the person's saved number.
+  final String? number;
+  final bool enabled;
+  const SmsSchedule({
+    required this.id,
+    required this.personId,
+    this.eventId,
+    this.date,
+    required this.minuteOfDay,
+    this.message,
+    this.number,
+    required this.enabled,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['person_id'] = Variable<int>(personId);
+    if (!nullToAbsent || eventId != null) {
+      map['event_id'] = Variable<int>(eventId);
+    }
+    if (!nullToAbsent || date != null) {
+      map['date'] = Variable<String>(date);
+    }
+    map['minute_of_day'] = Variable<int>(minuteOfDay);
+    if (!nullToAbsent || message != null) {
+      map['message'] = Variable<String>(message);
+    }
+    if (!nullToAbsent || number != null) {
+      map['number'] = Variable<String>(number);
+    }
+    map['enabled'] = Variable<bool>(enabled);
+    return map;
+  }
+
+  ScheduledSmsCompanion toCompanion(bool nullToAbsent) {
+    return ScheduledSmsCompanion(
+      id: Value(id),
+      personId: Value(personId),
+      eventId: eventId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventId),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+      minuteOfDay: Value(minuteOfDay),
+      message: message == null && nullToAbsent
+          ? const Value.absent()
+          : Value(message),
+      number: number == null && nullToAbsent
+          ? const Value.absent()
+          : Value(number),
+      enabled: Value(enabled),
+    );
+  }
+
+  factory SmsSchedule.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SmsSchedule(
+      id: serializer.fromJson<int>(json['id']),
+      personId: serializer.fromJson<int>(json['personId']),
+      eventId: serializer.fromJson<int?>(json['eventId']),
+      date: serializer.fromJson<String?>(json['date']),
+      minuteOfDay: serializer.fromJson<int>(json['minuteOfDay']),
+      message: serializer.fromJson<String?>(json['message']),
+      number: serializer.fromJson<String?>(json['number']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'personId': serializer.toJson<int>(personId),
+      'eventId': serializer.toJson<int?>(eventId),
+      'date': serializer.toJson<String?>(date),
+      'minuteOfDay': serializer.toJson<int>(minuteOfDay),
+      'message': serializer.toJson<String?>(message),
+      'number': serializer.toJson<String?>(number),
+      'enabled': serializer.toJson<bool>(enabled),
+    };
+  }
+
+  SmsSchedule copyWith({
+    int? id,
+    int? personId,
+    Value<int?> eventId = const Value.absent(),
+    Value<String?> date = const Value.absent(),
+    int? minuteOfDay,
+    Value<String?> message = const Value.absent(),
+    Value<String?> number = const Value.absent(),
+    bool? enabled,
+  }) => SmsSchedule(
+    id: id ?? this.id,
+    personId: personId ?? this.personId,
+    eventId: eventId.present ? eventId.value : this.eventId,
+    date: date.present ? date.value : this.date,
+    minuteOfDay: minuteOfDay ?? this.minuteOfDay,
+    message: message.present ? message.value : this.message,
+    number: number.present ? number.value : this.number,
+    enabled: enabled ?? this.enabled,
+  );
+  SmsSchedule copyWithCompanion(ScheduledSmsCompanion data) {
+    return SmsSchedule(
+      id: data.id.present ? data.id.value : this.id,
+      personId: data.personId.present ? data.personId.value : this.personId,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      date: data.date.present ? data.date.value : this.date,
+      minuteOfDay: data.minuteOfDay.present
+          ? data.minuteOfDay.value
+          : this.minuteOfDay,
+      message: data.message.present ? data.message.value : this.message,
+      number: data.number.present ? data.number.value : this.number,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SmsSchedule(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('minuteOfDay: $minuteOfDay, ')
+          ..write('message: $message, ')
+          ..write('number: $number, ')
+          ..write('enabled: $enabled')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    personId,
+    eventId,
+    date,
+    minuteOfDay,
+    message,
+    number,
+    enabled,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SmsSchedule &&
+          other.id == this.id &&
+          other.personId == this.personId &&
+          other.eventId == this.eventId &&
+          other.date == this.date &&
+          other.minuteOfDay == this.minuteOfDay &&
+          other.message == this.message &&
+          other.number == this.number &&
+          other.enabled == this.enabled);
+}
+
+class ScheduledSmsCompanion extends UpdateCompanion<SmsSchedule> {
+  final Value<int> id;
+  final Value<int> personId;
+  final Value<int?> eventId;
+  final Value<String?> date;
+  final Value<int> minuteOfDay;
+  final Value<String?> message;
+  final Value<String?> number;
+  final Value<bool> enabled;
+  const ScheduledSmsCompanion({
+    this.id = const Value.absent(),
+    this.personId = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.minuteOfDay = const Value.absent(),
+    this.message = const Value.absent(),
+    this.number = const Value.absent(),
+    this.enabled = const Value.absent(),
+  });
+  ScheduledSmsCompanion.insert({
+    this.id = const Value.absent(),
+    required int personId,
+    this.eventId = const Value.absent(),
+    this.date = const Value.absent(),
+    required int minuteOfDay,
+    this.message = const Value.absent(),
+    this.number = const Value.absent(),
+    this.enabled = const Value.absent(),
+  }) : personId = Value(personId),
+       minuteOfDay = Value(minuteOfDay);
+  static Insertable<SmsSchedule> custom({
+    Expression<int>? id,
+    Expression<int>? personId,
+    Expression<int>? eventId,
+    Expression<String>? date,
+    Expression<int>? minuteOfDay,
+    Expression<String>? message,
+    Expression<String>? number,
+    Expression<bool>? enabled,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (personId != null) 'person_id': personId,
+      if (eventId != null) 'event_id': eventId,
+      if (date != null) 'date': date,
+      if (minuteOfDay != null) 'minute_of_day': minuteOfDay,
+      if (message != null) 'message': message,
+      if (number != null) 'number': number,
+      if (enabled != null) 'enabled': enabled,
+    });
+  }
+
+  ScheduledSmsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? personId,
+    Value<int?>? eventId,
+    Value<String?>? date,
+    Value<int>? minuteOfDay,
+    Value<String?>? message,
+    Value<String?>? number,
+    Value<bool>? enabled,
+  }) {
+    return ScheduledSmsCompanion(
+      id: id ?? this.id,
+      personId: personId ?? this.personId,
+      eventId: eventId ?? this.eventId,
+      date: date ?? this.date,
+      minuteOfDay: minuteOfDay ?? this.minuteOfDay,
+      message: message ?? this.message,
+      number: number ?? this.number,
+      enabled: enabled ?? this.enabled,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (personId.present) {
+      map['person_id'] = Variable<int>(personId.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (minuteOfDay.present) {
+      map['minute_of_day'] = Variable<int>(minuteOfDay.value);
+    }
+    if (message.present) {
+      map['message'] = Variable<String>(message.value);
+    }
+    if (number.present) {
+      map['number'] = Variable<String>(number.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduledSmsCompanion(')
+          ..write('id: $id, ')
+          ..write('personId: $personId, ')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('minuteOfDay: $minuteOfDay, ')
+          ..write('message: $message, ')
+          ..write('number: $number, ')
+          ..write('enabled: $enabled')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -8853,6 +9370,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $GroupMembersTable groupMembers = $GroupMembersTable(this);
   late final $FamilyLinksTable familyLinks = $FamilyLinksTable(this);
   late final $AutoCallsTable autoCalls = $AutoCallsTable(this);
+  late final $ScheduledSmsTable scheduledSms = $ScheduledSmsTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -8877,6 +9395,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     groupMembers,
     familyLinks,
     autoCalls,
+    scheduledSms,
     settings,
   ];
   @override
@@ -8999,6 +9518,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('auto_calls', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'people',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('scheduled_sms', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'events',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('scheduled_sms', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -9202,6 +9735,24 @@ final class $$PeopleTableReferences
     ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_autoCallsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ScheduledSmsTable, List<SmsSchedule>>
+  _scheduledSmsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.scheduledSms,
+    aliasName: 'people__id__scheduled_sms__person_id',
+  );
+
+  $$ScheduledSmsTableProcessedTableManager get scheduledSmsRefs {
+    final manager = $$ScheduledSmsTableTableManager(
+      $_db,
+      $_db.scheduledSms,
+    ).filter((f) => f.personId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_scheduledSmsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -9528,6 +10079,31 @@ class $$PeopleTableFilterComposer
           }) => $$AutoCallsTableFilterComposer(
             $db: $db,
             $table: $db.autoCalls,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> scheduledSmsRefs(
+    Expression<bool> Function($$ScheduledSmsTableFilterComposer f) f,
+  ) {
+    final $$ScheduledSmsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.scheduledSms,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ScheduledSmsTableFilterComposer(
+            $db: $db,
+            $table: $db.scheduledSms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -9968,6 +10544,31 @@ class $$PeopleTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> scheduledSmsRefs<T extends Object>(
+    Expression<T> Function($$ScheduledSmsTableAnnotationComposer a) f,
+  ) {
+    final $$ScheduledSmsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.scheduledSms,
+      getReferencedColumn: (t) => t.personId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ScheduledSmsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.scheduledSms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$PeopleTableTableManager
@@ -9992,6 +10593,7 @@ class $$PeopleTableTableManager
             bool photoMemoriesRefs,
             bool groupMembersRefs,
             bool autoCallsRefs,
+            bool scheduledSmsRefs,
           })
         > {
   $$PeopleTableTableManager(_$AppDatabase db, $PeopleTable table)
@@ -10127,6 +10729,7 @@ class $$PeopleTableTableManager
                 photoMemoriesRefs = false,
                 groupMembersRefs = false,
                 autoCallsRefs = false,
+                scheduledSmsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -10139,6 +10742,7 @@ class $$PeopleTableTableManager
                     if (photoMemoriesRefs) db.photoMemories,
                     if (groupMembersRefs) db.groupMembers,
                     if (autoCallsRefs) db.autoCalls,
+                    if (scheduledSmsRefs) db.scheduledSms,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -10311,6 +10915,27 @@ class $$PeopleTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (scheduledSmsRefs)
+                        await $_getPrefetchedData<
+                          Person,
+                          $PeopleTable,
+                          SmsSchedule
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PeopleTableReferences
+                              ._scheduledSmsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PeopleTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).scheduledSmsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.personId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -10340,6 +10965,7 @@ typedef $$PeopleTableProcessedTableManager =
         bool photoMemoriesRefs,
         bool groupMembersRefs,
         bool autoCallsRefs,
+        bool scheduledSmsRefs,
       })
     >;
 typedef $$EventsTableCreateCompanionBuilder = EventsCompanion Function({
@@ -10473,6 +11099,24 @@ final class $$EventsTableReferences
     ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_autoCallsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ScheduledSmsTable, List<SmsSchedule>>
+  _scheduledSmsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.scheduledSms,
+    aliasName: 'events__id__scheduled_sms__event_id',
+  );
+
+  $$ScheduledSmsTableProcessedTableManager get scheduledSmsRefs {
+    final manager = $$ScheduledSmsTableTableManager(
+      $_db,
+      $_db.scheduledSms,
+    ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_scheduledSmsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -10694,6 +11338,31 @@ class $$EventsTableFilterComposer
           }) => $$AutoCallsTableFilterComposer(
             $db: $db,
             $table: $db.autoCalls,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> scheduledSmsRefs(
+    Expression<bool> Function($$ScheduledSmsTableFilterComposer f) f,
+  ) {
+    final $$ScheduledSmsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.scheduledSms,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ScheduledSmsTableFilterComposer(
+            $db: $db,
+            $table: $db.scheduledSms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -11001,6 +11670,31 @@ class $$EventsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> scheduledSmsRefs<T extends Object>(
+    Expression<T> Function($$ScheduledSmsTableAnnotationComposer a) f,
+  ) {
+    final $$ScheduledSmsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.scheduledSms,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ScheduledSmsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.scheduledSms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$EventsTableTableManager
@@ -11022,6 +11716,7 @@ class $$EventsTableTableManager
             bool wishLogsRefs,
             bool remindersRefs,
             bool autoCallsRefs,
+            bool scheduledSmsRefs,
           })
         > {
   $$EventsTableTableManager(_$AppDatabase db, $EventsTable table)
@@ -11130,6 +11825,7 @@ class $$EventsTableTableManager
                 wishLogsRefs = false,
                 remindersRefs = false,
                 autoCallsRefs = false,
+                scheduledSmsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -11139,6 +11835,7 @@ class $$EventsTableTableManager
                     if (wishLogsRefs) db.wishLogs,
                     if (remindersRefs) db.reminders,
                     if (autoCallsRefs) db.autoCalls,
+                    if (scheduledSmsRefs) db.scheduledSms,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -11244,6 +11941,27 @@ class $$EventsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (scheduledSmsRefs)
+                        await $_getPrefetchedData<
+                          Event,
+                          $EventsTable,
+                          SmsSchedule
+                        >(
+                          currentTable: table,
+                          referencedTable: $$EventsTableReferences
+                              ._scheduledSmsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$EventsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).scheduledSmsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.eventId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -11270,6 +11988,7 @@ typedef $$EventsTableProcessedTableManager =
         bool wishLogsRefs,
         bool remindersRefs,
         bool autoCallsRefs,
+        bool scheduledSmsRefs,
       })
     >;
 typedef $$EventPeopleTableCreateCompanionBuilder =
@@ -16647,6 +17366,458 @@ typedef $$AutoCallsTableProcessedTableManager =
       AutoCall,
       PrefetchHooks Function({bool personId, bool eventId})
     >;
+typedef $$ScheduledSmsTableCreateCompanionBuilder =
+    ScheduledSmsCompanion Function({
+      Value<int> id,
+      required int personId,
+      Value<int?> eventId,
+      Value<String?> date,
+      required int minuteOfDay,
+      Value<String?> message,
+      Value<String?> number,
+      Value<bool> enabled,
+    });
+typedef $$ScheduledSmsTableUpdateCompanionBuilder =
+    ScheduledSmsCompanion Function({
+      Value<int> id,
+      Value<int> personId,
+      Value<int?> eventId,
+      Value<String?> date,
+      Value<int> minuteOfDay,
+      Value<String?> message,
+      Value<String?> number,
+      Value<bool> enabled,
+    });
+
+final class $$ScheduledSmsTableReferences
+    extends BaseReferences<_$AppDatabase, $ScheduledSmsTable, SmsSchedule> {
+  $$ScheduledSmsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $PeopleTable _personIdTable(_$AppDatabase db) =>
+      db.people.createAlias('scheduled_sms__person_id__people__id');
+
+  $$PeopleTableProcessedTableManager get personId {
+    final $_column = $_itemColumn<int>('person_id')!;
+
+    final manager = $$PeopleTableTableManager(
+      $_db,
+      $_db.people,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_personIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $EventsTable _eventIdTable(_$AppDatabase db) =>
+      db.events.createAlias('scheduled_sms__event_id__events__id');
+
+  $$EventsTableProcessedTableManager? get eventId {
+    final $_column = $_itemColumn<int>('event_id');
+    if ($_column == null) return null;
+    final manager = $$EventsTableTableManager(
+      $_db,
+      $_db.events,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ScheduledSmsTableFilterComposer
+    extends Composer<_$AppDatabase, $ScheduledSmsTable> {
+  $$ScheduledSmsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minuteOfDay => $composableBuilder(
+    column: $table.minuteOfDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get number => $composableBuilder(
+    column: $table.number,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PeopleTableFilterComposer get personId {
+    final $$PeopleTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableFilterComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableFilterComposer get eventId {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ScheduledSmsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScheduledSmsTable> {
+  $$ScheduledSmsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minuteOfDay => $composableBuilder(
+    column: $table.minuteOfDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get number => $composableBuilder(
+    column: $table.number,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PeopleTableOrderingComposer get personId {
+    final $$PeopleTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableOrderingComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableOrderingComposer get eventId {
+    final $$EventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ScheduledSmsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScheduledSmsTable> {
+  $$ScheduledSmsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get minuteOfDay => $composableBuilder(
+    column: $table.minuteOfDay,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get message =>
+      $composableBuilder(column: $table.message, builder: (column) => column);
+
+  GeneratedColumn<String> get number =>
+      $composableBuilder(column: $table.number, builder: (column) => column);
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  $$PeopleTableAnnotationComposer get personId {
+    final $$PeopleTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.personId,
+      referencedTable: $db.people,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PeopleTableAnnotationComposer(
+            $db: $db,
+            $table: $db.people,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$EventsTableAnnotationComposer get eventId {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ScheduledSmsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScheduledSmsTable,
+          SmsSchedule,
+          $$ScheduledSmsTableFilterComposer,
+          $$ScheduledSmsTableOrderingComposer,
+          $$ScheduledSmsTableAnnotationComposer,
+          $$ScheduledSmsTableCreateCompanionBuilder,
+          $$ScheduledSmsTableUpdateCompanionBuilder,
+          (SmsSchedule, $$ScheduledSmsTableReferences),
+          SmsSchedule,
+          PrefetchHooks Function({bool personId, bool eventId})
+        > {
+  $$ScheduledSmsTableTableManager(_$AppDatabase db, $ScheduledSmsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScheduledSmsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScheduledSmsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScheduledSmsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> personId = const Value.absent(),
+                Value<int?> eventId = const Value.absent(),
+                Value<String?> date = const Value.absent(),
+                Value<int> minuteOfDay = const Value.absent(),
+                Value<String?> message = const Value.absent(),
+                Value<String?> number = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+              }) => ScheduledSmsCompanion(
+                id: id,
+                personId: personId,
+                eventId: eventId,
+                date: date,
+                minuteOfDay: minuteOfDay,
+                message: message,
+                number: number,
+                enabled: enabled,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int personId,
+                Value<int?> eventId = const Value.absent(),
+                Value<String?> date = const Value.absent(),
+                required int minuteOfDay,
+                Value<String?> message = const Value.absent(),
+                Value<String?> number = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+              }) => ScheduledSmsCompanion.insert(
+                id: id,
+                personId: personId,
+                eventId: eventId,
+                date: date,
+                minuteOfDay: minuteOfDay,
+                message: message,
+                number: number,
+                enabled: enabled,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ScheduledSmsTable, SmsSchedule>(table),
+                  $$ScheduledSmsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({personId = false, eventId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (personId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.personId,
+                        referencedTable: $$ScheduledSmsTableReferences
+                            ._personIdTable(db),
+                        referencedColumn: $$ScheduledSmsTableReferences
+                            ._personIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (eventId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.eventId,
+                        referencedTable: $$ScheduledSmsTableReferences
+                            ._eventIdTable(db),
+                        referencedColumn: $$ScheduledSmsTableReferences
+                            ._eventIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ScheduledSmsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScheduledSmsTable,
+      SmsSchedule,
+      $$ScheduledSmsTableFilterComposer,
+      $$ScheduledSmsTableOrderingComposer,
+      $$ScheduledSmsTableAnnotationComposer,
+      $$ScheduledSmsTableCreateCompanionBuilder,
+      $$ScheduledSmsTableUpdateCompanionBuilder,
+      (SmsSchedule, $$ScheduledSmsTableReferences),
+      SmsSchedule,
+      PrefetchHooks Function({bool personId, bool eventId})
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -16821,6 +17992,8 @@ class $AppDatabaseManager {
       $$FamilyLinksTableTableManager(_db, _db.familyLinks);
   $$AutoCallsTableTableManager get autoCalls =>
       $$AutoCallsTableTableManager(_db, _db.autoCalls);
+  $$ScheduledSmsTableTableManager get scheduledSms =>
+      $$ScheduledSmsTableTableManager(_db, _db.scheduledSms);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
 }

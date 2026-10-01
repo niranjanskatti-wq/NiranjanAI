@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../autocall/auto_call.dart';
+import '../autosms/auto_sms.dart';
 import '../cards/card_screen.dart';
 import '../messages/message_engine.dart';
 import '../wish/suggest.dart';
@@ -188,6 +189,24 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                               .firstOrNull;
                           scheduleAutoCall(context, ref, event: e, person: e.people.firstOrNull, existing: a);
                         },
+                      ),
+                    ),
+                  if (ref.watch(autoSmsOnProvider).value ?? false)
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.schedule_send_outlined, color: c.goldText),
+                        title: const Text('Auto text message'),
+                        subtitle: Text(() {
+                          final mine = (ref.watch(smsSchedulesProvider).value ?? const [])
+                              .where((a) => a.eventId == ev.id)
+                              .toList();
+                          return mine.isEmpty
+                              ? 'Send an SMS by itself on the day, at any times you choose'
+                              : 'On the day at ${mine.map((a) => fmtMinute(a.minuteOfDay)).join(', ')}';
+                        }()),
+                        trailing: const Icon(Icons.add_rounded),
+                        onTap: () => scheduleSms(context, ref,
+                            event: e, person: e.people.where((p) => !p.isMe).firstOrNull),
                       ),
                     ),
                   Card(

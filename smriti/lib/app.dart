@@ -10,6 +10,7 @@ import 'core/theme/tokens.dart';
 import 'core/util/occurrence.dart';
 import 'data/providers.dart';
 import 'features/autocall/auto_call.dart';
+import 'features/autosms/auto_sms.dart';
 import 'features/business/business_calendar.dart';
 import 'features/highlight/highlight.dart';
 import 'features/backup/backup_screen.dart';
@@ -86,6 +87,7 @@ GoRouter buildRouter(bool onboarded) => GoRouter(
         GoRoute(path: '/not-wished', builder: (_, _) => const NotWishedScreen()),
         GoRoute(path: '/import/contacts', builder: (_, _) => const BulkAddScreen()),
         GoRoute(path: '/auto-calls', builder: (_, _) => const AutoCallsScreen()),
+        GoRoute(path: '/auto-sms', builder: (_, _) => const AutoSmsScreen()),
         GoRoute(
           path: '/autocall',
           builder: (_, state) => AutoCallPromptScreen(
@@ -244,6 +246,7 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
   void _sync() {
     ContactSync(ref.read(repoProvider)).run();
     if (NotificationService.supported) Duplicates.cleanSafely(ref.read(databaseProvider));
+    AutoSms.syncSoon(ref.read(databaseProvider));
     AlarmScheduler.syncSoon(ref.read(databaseProvider));
     if (NotificationService.supported) BackupService(ref.read(databaseProvider)).autoIfDue();
     _publishWidget();
@@ -315,6 +318,9 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     ref.listen(widgetGlowProvider, (_, _) => _publishWidget());
     ref.listen(widgetLookProvider, (_, _) => _publishWidget());
     ref.listen(entriesProvider, (_, _) => CalendarSync.syncSoon(ref.read(databaseProvider)));
+    // Texts follow changes to dates, names, the schedule and the message settings.
+    ref.listen(entriesProvider, (_, _) => AutoSms.syncSoon(ref.read(databaseProvider)));
+    ref.listen(smsSchedulesProvider, (_, _) => AutoSms.syncSoon(ref.read(databaseProvider)));
     return MaterialApp.router(
       title: 'Smriti',
       debugShowCheckedModeBanner: false,

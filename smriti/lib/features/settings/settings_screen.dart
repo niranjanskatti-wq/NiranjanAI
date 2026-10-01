@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../autocall/auto_call.dart';
 import '../home/home_screen.dart';
 import '../lock/app_lock.dart';
+import '../autosms/auto_sms.dart';
 import '../highlight/highlight.dart';
 import '../messages/message_engine.dart' show AgeInWishes, AgeLines, MessageContext;
 import '../wish/share_sheet.dart' show ageInWishesProvider;
@@ -187,6 +188,8 @@ class SettingsScreen extends ConsumerWidget {
           tile(Icons.inventory_2_outlined, 'Archived people', null, () => context.push('/archived')),
           const SizedBox(height: 12),
           const AutoCallSettings(),
+          const SizedBox(height: 12),
+          const AutoSmsSettings(),
           const SizedBox(height: 12),
           const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Privacy & extras')),
           const _LockSwitch(),

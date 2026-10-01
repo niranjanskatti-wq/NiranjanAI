@@ -305,6 +305,18 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - "Dad · Anniversary 10 May" next to "Dad & Mom · Anniversary 10 May" is now found: removed automatically
   on app open (wish history moves to the couple date) and listed in Check for duplicates
 
+### Auto text message (SMS scheduler)
+- Settings › Auto text message (SMS): switch on (asks for SMS permission); Scheduled messages list with
+  on/off, edit, remove, "Schedule a text"
+- On any birthday/anniversary page: Auto text message → pick times (as many as you like: +12 AM, +6 AM,
+  +9 AM, +6 PM or any time), every year on that date or once on a date
+- Message: your own words ({nickname}, {age_th} filled in), or Smriti writes a warm wish with nickname and
+  age — the prepared message first, then a different suggestion at each later time
+- Sent by Android itself (exact alarm → SmsManager), even with the phone locked or Smriti closed; comes
+  back after a restart; a "Wish sent to Appa ✓" notification; marked as wished in Smriti
+- Data: ScheduledSms table (schema v10); native SmsScheduler.kt; this year's and next year's sends are kept
+  lined up and refreshed whenever the app opens or dates change
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one
