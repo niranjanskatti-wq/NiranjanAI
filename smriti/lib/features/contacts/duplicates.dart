@@ -228,6 +228,25 @@ class Duplicates {
         out.add((list.first, extra));
       }
     }
+    // One person's own date that is already part of a couple date they share,
+    // e.g. "Dad · Anniversary 10 May" next to "Dad & Mom · Anniversary 10 May".
+    final taken = out.map((x) => x.$2.event.id).toSet();
+    for (final single in entries.where((e) => e.people.length == 1 && e.kind != EventKind.festival)) {
+      if (taken.contains(single.event.id)) continue;
+      final pid = single.people.single.id;
+      final shared = entries
+          .where((e) =>
+              e.people.length > 1 &&
+              e.people.any((p) => p.id == pid) &&
+              e.type == single.type &&
+              e.event.day == single.event.day &&
+              e.event.month == single.event.month)
+          .firstOrNull;
+      if (shared != null) {
+        out.add((shared, single));
+        taken.add(single.event.id);
+      }
+    }
     return out;
   }
 

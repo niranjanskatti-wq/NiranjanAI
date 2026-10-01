@@ -301,6 +301,10 @@ Building all phases in a row (your choice), testing everything on the phone at t
   where (top card / lists); stop once wished
 - Respects the phone's "remove animations" setting (shows a still glow)
 
+### Fix: single copy of a couple date
+- "Dad · Anniversary 10 May" next to "Dad & Mom · Anniversary 10 May" is now found: removed automatically
+  on app open (wish history moves to the couple date) and listed in Check for duplicates
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

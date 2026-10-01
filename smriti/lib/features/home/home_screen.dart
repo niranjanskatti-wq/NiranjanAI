@@ -363,7 +363,8 @@ final duplicateCountProvider = Provider<int>((ref) {
   return Duplicates.sameDay(entries).length +
       Duplicates.people(people, entries).length +
       ref.watch(coupleSuggestionsProvider).length +
-      ref.watch(sameDateGroupsProvider).length;
+      ref.watch(sameDateGroupsProvider).length +
+      Duplicates.doubleDates(entries).length;
 });
 
 final dupNoticeSeenProvider =

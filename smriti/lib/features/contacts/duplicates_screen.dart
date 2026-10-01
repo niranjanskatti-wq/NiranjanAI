@@ -26,6 +26,7 @@ class DuplicatesScreen extends ConsumerWidget {
     final doubles = Duplicates.people(people, entries);
     final couples = ref.watch(coupleSuggestionsProvider);
     final sameDate = ref.watch(sameDateGroupsProvider);
+    final copies = Duplicates.doubleDates(entries);
     final repo = ref.read(repoProvider);
 
     Future<void> remove(EventEntry e, String what) async {
@@ -36,7 +37,7 @@ class DuplicatesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Check for duplicates')),
-      body: clashes.isEmpty && doubles.isEmpty && couples.isEmpty && sameDate.isEmpty
+      body: clashes.isEmpty && doubles.isEmpty && couples.isEmpty && sameDate.isEmpty && copies.isEmpty
           ? const Center(
               child: EmptyState(
                 title: 'All clear',
@@ -46,6 +47,29 @@ class DuplicatesScreen extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
               children: [
+                if (copies.isNotEmpty) ...[
+                  const SectionLabel('The same date saved twice'),
+                  Text('The extra copy is removed; reminders and wish history stay on the one kept.',
+                      style: context.text.bodySmall),
+                  const SizedBox(height: 8),
+                  for (final (keep, extra) in copies)
+                    Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        title: Text('${extra.title} · ${extra.shortLabel}'),
+                        subtitle: Text('${fmtEventDate(day: extra.event.day, month: extra.event.month)} · '
+                            'already in "${keep.title}"'),
+                        trailing: FilledButton.tonal(
+                          onPressed: () async {
+                            final n = await Duplicates.cleanSafely(ref.read(databaseProvider));
+                            HapticFeedback.lightImpact();
+                            if (context.mounted) showToast(context, n > 0 ? 'Extra copy removed' : 'Nothing to remove');
+                          },
+                          child: const Text('Remove extra'),
+                        ),
+                      ),
+                    ),
+                ],
                 if (sameDate.isNotEmpty) ...[
                   const SectionLabel('Same date: same person?'),
                   Text('Often one person was saved twice with different names. Merging keeps the one with the '

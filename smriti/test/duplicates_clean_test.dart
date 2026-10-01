@@ -48,4 +48,28 @@ void main() {
     expect(await Duplicates(db).autoClean(), 0, reason: 'nothing left to clean');
     await db.close();
   });
+
+  test('a single anniversary that is already in the couple anniversary is removed', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final r = Repository(db);
+    final dad = await r.insertPerson(PeopleCompanion.insert(name: 'Dad'));
+    final mom = await r.insertPerson(PeopleCompanion.insert(name: 'Mom'));
+    final couple = await r.saveEvent(
+        data: EventsCompanion.insert(kind: 'couple', type: 'weddingAnniversary', day: 10, month: 5, year: const Value(1986)),
+        personIds: [dad, mom]);
+    final single = await r.saveEvent(
+        data: EventsCompanion.insert(kind: 'person', type: 'weddingAnniversary', day: 10, month: 5, year: const Value(1986)),
+        personIds: [dad]);
+    // Dad's birthday on another day stays.
+    await r.saveEvent(data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: 9, month: 3), personIds: [dad]);
+    await r.markWished(eventId: single, occasionDate: '2026-05-10', personId: dad);
+
+    final found = Duplicates.doubleDates(await r.watchEntries().first);
+    expect(found.map((x) => (x.$1.event.id, x.$2.event.id)).toList(), [(couple, single)]);
+    expect(await Duplicates(db).autoClean(), 1);
+    final entries = await r.watchEntries().first;
+    expect(entries.map((e) => '${e.title} ${e.type.name}').toSet(), {'Dad & Mom weddingAnniversary', 'Dad birthday'});
+    expect((await db.select(db.wishLogs).get()).single.eventId, couple);
+    await db.close();
+  });
 }
