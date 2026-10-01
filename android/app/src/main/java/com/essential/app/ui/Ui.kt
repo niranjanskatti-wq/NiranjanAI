@@ -243,8 +243,8 @@ fun Context.switchRow(title: String, desc: String?, checked: Boolean, onChange: 
     val sw = Switch(this)
     sw.isChecked = checked
     val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf())
-    sw.thumbTintList = ColorStateList(states, intArrayOf(Th.onPrimary, Th.dim))
-    sw.trackTintList = ColorStateList(states, intArrayOf(Th.primary, Th.surface3))
+    sw.thumbTintList = ColorStateList(states, intArrayOf(Th.primary, Th.dim))
+    sw.trackTintList = ColorStateList(states, intArrayOf(Th.alpha(Th.primary, 0.45f), Th.surface3))
     sw.setOnCheckedChangeListener { v, b -> v.haptic(); onChange(b) }
     row.add(sw, WRAP, WRAP, start = 12)
     row.click { sw.toggle() }

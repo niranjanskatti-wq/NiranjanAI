@@ -64,6 +64,8 @@ class ScreenshotTest : AppTestBase() {
         at(2026, 10, 1, 7, 30)
         val first = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         shoot(first, "00-onboarding")
+        first.root.findText("Begin")!!.performClick(); idle()
+        shoot(first, "00b-choose-tabs")
         onboard(sample = true)
         repo.setPlanField(LocalDate.of(2026, 10, 1), "one_thing", "Send JV term sheet to Mr. Rao")
         at(2026, 10, 1, 11, 20)

@@ -67,3 +67,8 @@ app has no `INTERNET` permission, so it always works fully offline.
 ## Changes in 1.2.1
 
 - Renamed to **Abhyasa** (अभ्यास, steady daily practice). Installs over earlier versions and keeps your data.
+
+## Changes in 1.2.2
+
+- Setup is fully optional: **Skip setup** on every step, a **Choose your tabs** step, and the main goal is optional.
+- Sample data is off by default.

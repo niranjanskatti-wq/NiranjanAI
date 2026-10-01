@@ -36,19 +36,39 @@ class AppFlowTest : AppTestBase() {
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         assertNotNull(a.root.findText("Less, but better."))
         click(a, "Begin")
-        val field = a.root.findText("", false).let { findEdit(a.root)!! }
-        field.setText("Close 3 JV real estate deals by 31 Dec")
-        click(a, "Set my intent")
-        assertNotNull("permissions step", a.root.findText("Reliable reminders"))
-        assertNotNull(a.root.findText("Notifications"))
+        assertNotNull("tab chooser", a.root.findText("Choose your tabs"))
+        click(a, "Continue")
+        findEdit(a.root)!!.setText("Finish my main project by 31 Dec")
+        click(a, "Continue")
+        assertNotNull("reminders step", a.root.findText("Reminders"))
         click(a, "Continue")
         click(a, "Start")
         assertTrue(repo.settings.bool("onboarded"))
-        assertEquals("Close 3 JV real estate deals by 31 Dec", repo.intent()!!.title)
-        assertTrue("sample data loaded", repo.hasSampleData())
-        assertNotNull("Home shows intent", a.root.findText("Close 3 JV real estate deals by 31 Dec"))
-        assertNotNull(a.root.findText("Essential Hours today", contains = true) ?: a.root.findText("ESSENTIAL HOURS TODAY"))
+        assertEquals("Finish my main project by 31 Dec", repo.intent()!!.title)
+        assertFalse("sample data is off by default", repo.hasSampleData())
+        assertNotNull("Home shows intent", a.root.findText("Finish my main project by 31 Dec"))
         assertTrue("alarms armed after onboarding", alarms.scheduledAlarms.isNotEmpty())
+    }
+
+    @Test fun setupCanBeSkippedEntirely() {
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        click(a, "Skip setup and open the app")
+        assertTrue(repo.settings.bool("onboarded"))
+        assertNull("no goal required", repo.intent())
+        assertTrue(a.root.allText().contains("Add a main goal (optional)"))
+    }
+
+    @Test fun tabsChosenDuringSetup() {
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        click(a, "Begin")
+        // turn off Now, Log, Insights and Tools: only Habits (+ Settings) remain
+        for (label in listOf("Now", "Log", "Insights", "Tools")) {
+            val row = a.root.findText(label)!!.parent.parent as android.view.View
+            row.performClick(); idle()
+        }
+        click(a, "Skip setup")
+        assertEquals(listOf("habits", "settings"), a.enabledTabs())
+        assertTrue("opens on Habits", a.root.allText().contains("Walking"))
     }
 
     private fun findEdit(v: View): android.widget.EditText? {

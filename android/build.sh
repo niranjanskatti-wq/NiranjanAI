@@ -10,8 +10,8 @@ cd "$(dirname "$0")"
 TOOLS=${TOOLS:-/opt/essential-tools}
 KV=1.9.24
 ANDROID_ALL=$TOOLS/android-all-14-robolectric-10818077.jar
-VERSION_CODE=${VERSION_CODE:-4}
-VERSION_NAME=${VERSION_NAME:-1.2.1}
+VERSION_CODE=${VERSION_CODE:-5}
+VERSION_NAME=${VERSION_NAME:-1.2.2}
 export JAVA_TOOL_OPTIONS=""
 
 fetch() { # url dest

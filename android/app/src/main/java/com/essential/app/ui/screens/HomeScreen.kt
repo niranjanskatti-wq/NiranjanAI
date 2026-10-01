@@ -59,7 +59,13 @@ class HomeScreen(a: MainActivity) : Screen(a) {
                 val pace = Insights.goalPace(intent, d)
                 c.add(a.dimText("${intent.progress}% · ${pace.daysLeft} days left" + if (!pace.onTrack) " · a little behind pace" else ""), top = 8)
                 add(c, bottom = 10)
-            } else add(a.card(16) { a.push(GoalsScreen(a)) }.apply { add(a.h3("Set your Essential Intent")); add(a.dimText("One goal for the next 90 days."), top = 2) }, bottom = 10)
+            } else if (!s.bool("goal_prompt_hidden")) add(a.card(14) { a.push(GoalsScreen(a)) }.apply {
+                val r = a.hbox()
+                val col = a.vbox(); col.add(a.h3("Add a main goal (optional)")); col.add(a.dimText("Shows its progress here."), top = 2)
+                r.add(col, 0, WRAP, 1f)
+                r.add(a.iconBtn("close", Th.faint, 40, "Hide") { s.set("goal_prompt_hidden", true); a.refresh() }, WRAP, WRAP)
+                add(r)
+            }, bottom = 10)
 
             day.sprint?.let { sp ->
                 val left = ChronoUnit.DAYS.between(d, sp.end) + 1
