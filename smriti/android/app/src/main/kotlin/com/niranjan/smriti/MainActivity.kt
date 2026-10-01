@@ -110,7 +110,6 @@ class MainActivity : FlutterFragmentActivity() {
                     result.success(null)
                 }
                 "drainSent" -> result.success(SmsScheduler.drainSent(applicationContext))
-                "canSend" -> result.success(SmsScheduler.canSend(applicationContext))
                 else -> result.notImplemented()
             }
         }

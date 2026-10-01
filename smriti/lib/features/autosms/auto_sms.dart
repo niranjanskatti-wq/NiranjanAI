@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import 'package:drift/drift.dart' show OrderingTerm, Value;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/theme/tokens.dart';
 import '../../core/util/format.dart';
@@ -205,14 +206,6 @@ class AutoSms {
     }
     return n;
   }
-
-  static Future<bool> canSend() async {
-    try {
-      return await _channel.invokeMethod<bool>('canSend') ?? false;
-    } catch (_) {
-      return false;
-    }
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -227,19 +220,15 @@ class AutoSmsSettings extends ConsumerWidget {
     final on = ref.watch(autoSmsOnProvider).value ?? false;
     final list = ref.watch(smsSchedulesProvider).value ?? const <SmsSchedule>[];
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Auto text message (SMS)')),
+      const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SectionLabel('Scheduled text message (SMS)')),
       SwitchListTile(
         secondary: const Icon(Icons.sms_outlined),
-        title: const Text('Auto text message'),
-        subtitle: const Text('Smriti sends the SMS by itself at the times you set, even with the phone locked'),
+        title: const Text('Scheduled text message'),
+        subtitle: const Text('At the times you set, the phone buzzes: tap once and Messages opens with the wish typed, '
+            'ready to send'),
         value: on,
         onChanged: (v) async {
           if (v) {
-            final ok = await Permission.sms.request().isGranted;
-            if (!ok) {
-              if (context.mounted) showToast(context, 'Smriti needs the SMS permission to send texts');
-              return;
-            }
             await NotificationService.requestNotifications();
             if (!await NotificationService.exactAllowed()) await NotificationService.requestExact();
           }
@@ -268,7 +257,7 @@ Future<void> scheduleSms(BuildContext context, WidgetRef ref,
     {Person? person, EventEntry? event, SmsSchedule? existing}) async {
   final db = ref.read(databaseProvider);
   if (!(ref.read(autoSmsOnProvider).value ?? false)) {
-    showToast(context, 'Switch on Auto text message in Settings first');
+    showToast(context, 'Switch on Scheduled text message in Settings first');
     return;
   }
   await showModalBottomSheet<void>(
@@ -375,6 +364,42 @@ class _SmsSheetState extends ConsumerState<_SmsSheet> {
     showToast(context, _times.length == 1 ? 'Text set for ${fmtMinute(_times.first)}' : '${_times.length} texts set');
   }
 
+  /// Opens the Messages app with the number and the wish typed, for its own scheduled send.
+  Future<void> _openNow() async {
+    final p = _person;
+    final number = p?.callNumber ?? p?.whatsappNumber;
+    if (p == null || number == null) return showToast(context, 'Choose someone with a phone number');
+    final repo = Repository(widget.db);
+    final me = await repo.getMe();
+    final e = _event;
+    final day = e?.nextFrom(Day.today()) ?? _date ?? Day.today();
+    final ctx = e != null
+        ? MessageContext.forEntry(e, years: Upcoming(e, day, 0).years, me: me)
+        : MessageContext(name: p.wishName, nickname: p.wishName, relation: p.relation, myName: me?.wishName);
+    final mine = _text.text.trim();
+    var text = mine.isNotEmpty ? ctx.fill(mine) : (e?.event.draftMessage?.trim() ?? '');
+    if (text.isEmpty) {
+      final lib = await MessageLibrary.load();
+      final occasions = e == null ? [Occasion.general] : occasionsFor(e, milestone: Upcoming(e, day, 0).milestone);
+      final list = lib.suggest(occasions: occasions, lang: Lang.parse(await widget.db.getSetting('messageLang')), ctx: ctx);
+      text = list.isEmpty ? fallbackMessage(ctx, occasions.first) : ctx.fill(list.first.text);
+    }
+    if (mine.isEmpty) {
+      text = ctx.withAge(text, Lang.parse(await widget.db.getSetting('messageLang')),
+          AgeInWishes.parse(await widget.db.getSetting('ageInWishes')), await AgeLines.load(widget.db));
+    }
+    try {
+      await AndroidIntent(
+        action: 'android.intent.action.SENDTO',
+        data: 'smsto:$number',
+        arguments: {'sms_body': text},
+        flags: const [Flag.FLAG_ACTIVITY_NEW_TASK],
+      ).launch();
+    } catch (_) {
+      if (mounted) showToast(context, 'No messaging app found');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -384,8 +409,9 @@ class _SmsSheetState extends ConsumerState<_SmsSheet> {
       padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.viewInsetsOf(context).bottom),
       child: SingleChildScrollView(
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text('Auto text message', style: context.text.titleLarge),
-          Text('Smriti sends this SMS by itself at each time you add.', style: context.text.bodySmall),
+          Text('Scheduled text message', style: context.text.titleLarge),
+          Text('At each time you add, your phone buzzes. Tap it and Messages opens with the wish typed: just press Send.',
+              style: context.text.bodySmall),
           const SizedBox(height: 12),
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -509,6 +535,15 @@ class _SmsSheetState extends ConsumerState<_SmsSheet> {
             icon: const Icon(Icons.schedule_send_rounded),
             label: const Text('Schedule'),
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _openNow,
+            icon: const Icon(Icons.sms_outlined),
+            label: const Text('Fully automatic: schedule it in Messages'),
+          ),
+          Text('Opens Messages with the wish typed. Long-press Send, choose Schedule message and the time: '
+              'Messages then sends it by itself.',
+              style: context.text.bodySmall),
         ]),
       ),
     );
@@ -537,7 +572,7 @@ class AutoSmsScreen extends ConsumerWidget {
           ? const Center(
               child: EmptyState(
                 title: 'No texts scheduled',
-                message: 'Add one here, or open any birthday or anniversary and tap Auto text message.',
+                message: 'Add one here, or open any birthday or anniversary and tap Scheduled text message.',
               ),
             )
           : ListView(

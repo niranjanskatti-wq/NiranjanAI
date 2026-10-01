@@ -195,13 +195,13 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     Card(
                       child: ListTile(
                         leading: Icon(Icons.schedule_send_outlined, color: c.goldText),
-                        title: const Text('Auto text message'),
+                        title: const Text('Scheduled text message'),
                         subtitle: Text(() {
                           final mine = (ref.watch(smsSchedulesProvider).value ?? const [])
                               .where((a) => a.eventId == ev.id)
                               .toList();
                           return mine.isEmpty
-                              ? 'Send an SMS by itself on the day, at any times you choose'
+                              ? 'A tap-to-send SMS on the day, at any times you choose'
                               : 'On the day at ${mine.map((a) => fmtMinute(a.minuteOfDay)).join(', ')}';
                         }()),
                         trailing: const Icon(Icons.add_rounded),

@@ -137,7 +137,7 @@ class AutoCalls extends Table {
   TextColumn get number => text().nullable()();
 }
 
-/// A text message (SMS) Smriti sends by itself at a set time: every year on
+/// A text message (SMS) Smriti prompts you to send at a set time: every year on
 /// one of the person's dates, or once on a date. Several rows = several times.
 @DataClassName('SmsSchedule')
 class ScheduledSms extends Table {

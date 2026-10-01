@@ -1,6 +1,5 @@
 package com.niranjan.smriti
 
-import android.Manifest
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,25 +7,25 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
-import android.telephony.SmsManager
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Sends scheduled text messages by itself. Smriti hands over the list of
- * messages (time, number, text); each gets an exact alarm. When it rings,
- * [SmsAlarmReceiver] sends the SMS, even with the phone locked or Smriti
- * closed. The list is kept so alarms come back after a restart.
+ * Scheduled text messages. Smriti hands over the list (time, number, text);
+ * each gets an exact alarm. When it rings, [SmsAlarmReceiver] shows a
+ * notification that opens the Messages app with the number and wish already
+ * typed, so sending is one tap. Smriti never sends an SMS by itself (that
+ * needs the SEND_SMS permission, which Play Protect blocks for apps installed
+ * outside the Play Store). The list is kept so alarms come back after a restart.
  */
 object SmsScheduler {
     private const val PREFS = "smriti_sms"
     private const val JOBS = "jobs"
     private const val SENT = "sent"
-    private const val CHANNEL = "smriti_sms"
+    private const val CHANNEL = "smriti_sms_prompt"
 
     private fun prefs(ctx: Context) = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
@@ -37,7 +36,7 @@ object SmsScheduler {
     }
 
     private fun intent(ctx: Context, id: Int): PendingIntent {
-        val i = Intent(ctx, SmsAlarmReceiver::class.java).setAction("com.niranjan.smriti.SEND_SMS").putExtra("id", id)
+        val i = Intent(ctx, SmsAlarmReceiver::class.java).setAction("com.niranjan.smriti.SMS_DUE").putExtra("id", id)
         return PendingIntent.getBroadcast(
             ctx, id, i, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
@@ -73,10 +72,7 @@ object SmsScheduler {
         }
     }
 
-    fun canSend(ctx: Context) =
-        ContextCompat.checkSelfPermission(ctx, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
-
-    /** Sends the message with this alarm [id], records the result and shows a notice. */
+    /** Shows the "tap to send" notice for the message with this alarm [id]. */
     fun fire(ctx: Context, id: Int) {
         val list = jobs(ctx)
         var job: JSONObject? = null
@@ -86,62 +82,39 @@ object SmsScheduler {
             if (j.getInt("id") == id) job = j else keep.put(j)
         }
         prefs(ctx).edit().putString(JOBS, keep.toString()).apply()
-        val j = job ?: return
-        var ok = false
-        var error = ""
-        if (!canSend(ctx)) {
-            error = "SMS permission is off"
-        } else {
-            try {
-                val sms = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    ctx.getSystemService(SmsManager::class.java)
-                } else {
-                    @Suppress("DEPRECATION")
-                    SmsManager.getDefault()
-                }
-                val parts = sms.divideMessage(j.getString("text"))
-                if (parts.size > 1) {
-                    sms.sendMultipartTextMessage(j.getString("number"), null, parts, null, null)
-                } else {
-                    sms.sendTextMessage(j.getString("number"), null, j.getString("text"), null, null)
-                }
-                ok = true
-            } catch (e: Exception) {
-                error = e.message ?: "Could not send"
-            }
-        }
-        val sent = try {
-            JSONArray(prefs(ctx).getString(SENT, "[]"))
-        } catch (_: Exception) {
-            JSONArray()
-        }
-        sent.put(JSONObject(j.toString()).put("ok", ok).put("error", error).put("sentAt", System.currentTimeMillis()))
-        prefs(ctx).edit().putString(SENT, sent.toString()).apply()
-        notify(ctx, id, j, ok, error)
+        notify(ctx, id, job ?: return)
     }
 
-    /** Results since Smriti last asked, so it can mark people as wished. */
-    fun drainSent(ctx: Context): String {
-        val s = prefs(ctx).getString(SENT, "[]") ?: "[]"
-        prefs(ctx).edit().putString(SENT, "[]").apply()
-        return s
-    }
+    /** Nothing is sent by Smriti itself, so there is nothing to report. */
+    fun drainSent(@Suppress("UNUSED_PARAMETER") ctx: Context): String = "[]"
 
-    private fun notify(ctx: Context, id: Int, j: JSONObject, ok: Boolean, error: String) {
+    private fun notify(ctx: Context, id: Int, j: JSONObject) {
         val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            nm.createNotificationChannel(NotificationChannel(CHANNEL, "Auto text messages", NotificationManager.IMPORTANCE_DEFAULT))
+            nm.createNotificationChannel(
+                NotificationChannel(CHANNEL, "Scheduled text messages", NotificationManager.IMPORTANCE_HIGH).apply {
+                    enableVibration(true)
+                    vibrationPattern = longArrayOf(0, 400, 200, 400)
+                },
+            )
         }
         val name = j.optString("name")
-        val open = PendingIntent.getActivity(
-            ctx, id, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        val text = j.optString("text")
+        val compose = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + j.optString("number")))
+            .putExtra("sms_body", text)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val send = PendingIntent.getActivity(
+            ctx, id, compose, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val n = NotificationCompat.Builder(ctx, CHANNEL)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(if (ok) "✉️ Wish sent to $name" else "Couldn't text $name")
-            .setContentText(if (ok) j.optString("text") else "$error. Open Smriti to send it yourself.")
-            .setStyle(NotificationCompat.BigTextStyle().bigText(if (ok) j.optString("text") else error))
-            .setContentIntent(open)
+            .setContentTitle("✉️ Time to wish $name: tap to send")
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setContentIntent(send)
+            .addAction(0, "Send SMS", send)
             .setAutoCancel(true)
             .build()
         try {
