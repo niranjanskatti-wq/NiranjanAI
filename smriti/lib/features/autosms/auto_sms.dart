@@ -388,13 +388,23 @@ class _SmsSheetState extends ConsumerState<_SmsSheet> {
       text = ctx.withAge(text, Lang.parse(await widget.db.getSetting('messageLang')),
           AgeInWishes.parse(await widget.db.getSetting('ageInWishes')), await AgeLines.load(widget.db));
     }
+    // Google Messages has "Schedule message" on a long-press of Send; open it
+    // directly when it's installed, otherwise the phone's own SMS app.
+    AndroidIntent compose({String? package}) => AndroidIntent(
+          action: 'android.intent.action.SENDTO',
+          data: 'smsto:$number',
+          package: package,
+          arguments: {'sms_body': text},
+          flags: const [Flag.FLAG_ACTIVITY_NEW_TASK],
+        );
     try {
-      await AndroidIntent(
-        action: 'android.intent.action.SENDTO',
-        data: 'smsto:$number',
-        arguments: {'sms_body': text},
-        flags: const [Flag.FLAG_ACTIVITY_NEW_TASK],
-      ).launch();
+      final google = compose(package: 'com.google.android.apps.messaging');
+      if (await google.canResolveActivity() ?? false) {
+        await google.launch();
+        if (mounted) showToast(context, 'Long-press Send, then Schedule message');
+      } else {
+        await compose().launch();
+      }
     } catch (_) {
       if (mounted) showToast(context, 'No messaging app found');
     }
@@ -541,8 +551,8 @@ class _SmsSheetState extends ConsumerState<_SmsSheet> {
             icon: const Icon(Icons.sms_outlined),
             label: const Text('Fully automatic: schedule it in Messages'),
           ),
-          Text('Opens Messages with the wish typed. Long-press Send, choose Schedule message and the time: '
-              'Messages then sends it by itself.',
+          Text('Opens Google Messages with the wish typed. Long-press Send → Schedule message → pick the time: '
+              'Google Messages then sends it by itself, even if your phone is locked.',
               style: context.text.bodySmall),
         ]),
       ),
