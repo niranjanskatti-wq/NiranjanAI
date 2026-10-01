@@ -62,7 +62,7 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
         group("Your data") {
             it.add(a.listRow("Backup & restore", "Export to Downloads, restore, weekly auto-backup", "share") { a.push(BackupScreen(a)) })
             it.add(a.listRow("Export CSV", "Hour logs, reviews, habits, sleep", "copy") {
-                val uris = Backup.exportCsv(a); a.shareUris(uris, "text/csv", "${App.NAME} CSV export"); a.toast("Saved to Downloads/Daily Chain")
+                val uris = Backup.exportCsv(a); a.shareUris(uris, "text/csv", "${App.NAME} CSV export"); a.toast("Saved to Downloads/Abhyasa")
             })
             if (repo.hasSampleData()) it.add(a.listRow("Clear sample data", "Removes only the 14 sample days", "trash", Th.red) {
                 a.confirm("Clear sample data?", "Your own logs, goals and settings stay.", "Clear") { repo.clearSampleData(); Hooks.afterChange(a); a.refresh() }
@@ -72,6 +72,7 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
         }
         add(a.card(16).apply {
             add(a.h3(App.NAME))
+            add(a.dimText("अभ्यास (abhyāsa): steady, repeated practice — the essential thing, done daily until it is effortless."), top = 2)
             add(a.dimText("Less, but better. Version ${a.packageManager.getPackageInfo(a.packageName, 0).versionName}"), top = 2)
             add(a.dimText("100% offline: this app has no internet permission. Your data lives only on this phone."), top = 6)
         })
@@ -224,7 +225,7 @@ class BackupScreen(a: MainActivity) : Screen(a) {
         add(a.dimText("One file holds everything: logs, goals, templates, habits, settings."), bottom = 14)
         add(a.btn("Export backup", icon = "share") {
             val e = Backup.export(a)
-            a.toast(if (e.downloads != null) "Saved to Downloads/Daily Chain/${e.name}" else "Ready to share")
+            a.toast(if (e.downloads != null) "Saved to Downloads/Abhyasa/${e.name}" else "Ready to share")
             a.shareUris(listOf(e.share), "application/json", e.name)
         }, bottom = 8)
         add(a.btn("Restore backup", Btn.TONAL) {

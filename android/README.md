@@ -1,4 +1,6 @@
-# Daily Chain — *Less, but better.*
+# Abhyasa (अभ्यास) — *Less, but better.*
+
+*Abhyāsa*: steady, repeated practice (Yoga Sutra 1.12–1.14) — the essential thing, done daily until it becomes effortless.
 
 An offline-first Android planner, hourly tracker, habit-chain tracker and productivity system.
 Nothing is pre-filled with names: you add your own activities and habits — as many as you like.
@@ -6,7 +8,7 @@ Nothing is pre-filled with names: you add your own activities and habits — as 
 **Personal use only — not for commercial purposes.** Built for one person's own phone; not published
 on any store. (Bundled Inter font is under the SIL Open Font License; see `app/src/main/assets/fonts/OFL.txt`.)
 
-**Install:** copy `release/Essential.apk` (the app installs as **Daily Chain**) to your phone and open it (allow "Install unknown apps"
+**Install:** copy `release/Abhyasa.apk` (the app installs as **Abhyasa**) to your phone and open it (allow "Install unknown apps"
 for your file manager when Android asks). Android 10 or newer. No Play Store, no account, no internet.
 
 ## What's inside
@@ -25,7 +27,7 @@ Screenshots (rendered from the real app by the test-suite) are in `docs/screensh
 ## Build & test
 
 ```bash
-./build.sh   # → release/Essential.apk (signed with keystore/essential.jks)
+./build.sh   # → release/Abhyasa.apk (signed with keystore/essential.jks)
 ./test.sh    # 46 JVM tests: pure logic + Robolectric (real app on simulated Android 14)
 ```
 
@@ -56,8 +58,12 @@ app has no `INTERNET` permission, so it always works fully offline.
 
 ## Changes in 1.2.0
 
-- Renamed to **Daily Chain** (same package, so it installs over the old version and keeps your data).
+- Renamed to **Abhyasa** (same package, so it installs over the old version and keeps your data).
 - No pre-filled names: default activities, keyword rules and commitments are gone; template blocks are generic.
   Add as many **activities** as you like (Tools → My activities, or "+ Add activity" right in the log sheet).
 - New **Habits** tab with daily ticks, chain strips and a calendar per habit; fully customisable.
 - **Bottom tabs** can be shown or hidden in Settings (Settings itself always stays).
+
+## Changes in 1.2.1
+
+- Renamed to **Abhyasa** (अभ्यास, steady daily practice). Installs over earlier versions and keeps your data.

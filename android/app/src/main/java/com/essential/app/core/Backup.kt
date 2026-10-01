@@ -48,14 +48,14 @@ object Backup {
         return root.toString()
     }
 
-    fun fileName(): String = "dailychain-backup-${TimeUtil.now().toLocalDate()}.json"
+    fun fileName(): String = "abhyasa-backup-${TimeUtil.now().toLocalDate()}.json"
 
     /** Save to Downloads (no permission needed on Android 10+). Returns a display path. */
     fun saveToDownloads(ctx: Context, name: String, mime: String, bytes: ByteArray): Uri? {
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, mime)
-            put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/Daily Chain")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/Abhyasa")
         }
         val uri = ctx.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: return null
         ctx.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
@@ -86,8 +86,8 @@ object Backup {
     }
 
     fun restoreJson(ctx: Context, text: String) {
-        val root = try { JSONObject(text) } catch (e: Exception) { throw IllegalArgumentException("This isn't a Daily Chain backup file") }
-        if (root.optString("format") != FORMAT) throw IllegalArgumentException("This isn't a Daily Chain backup file")
+        val root = try { JSONObject(text) } catch (e: Exception) { throw IllegalArgumentException("This isn't a Abhyasa backup file") }
+        if (root.optString("format") != FORMAT) throw IllegalArgumentException("This isn't a Abhyasa backup file")
         val tables = root.getJSONObject("tables")
         val db = Db.get(ctx)
         db.tx {

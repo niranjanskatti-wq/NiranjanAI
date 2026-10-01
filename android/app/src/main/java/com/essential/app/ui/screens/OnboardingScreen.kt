@@ -32,7 +32,8 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
 
     private fun welcome(v: LinearLayout) = with(v) {
         add(a.txt(App.NAME, 40f, Th.text, Fonts.semibold))
-        add(a.txt("Less, but better.", 20f, Th.primary, Fonts.light), top = 2, bottom = 28)
+        add(a.txt("अभ्यास · steady daily practice", 15f, Th.dim, Fonts.regular), top = 2)
+        add(a.txt("Less, but better.", 20f, Th.primary, Fonts.light), top = 8, bottom = 28)
         add(a.body("Spend your best hours on the few things that matter most. Cut the trivial. Make essential work effortless through routine."), bottom = 24)
         listOf(
             Triple("Explore", "Decide what matters: one Essential Intent for 90 days.", "idea"),

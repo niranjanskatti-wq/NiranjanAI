@@ -56,44 +56,44 @@ object Perms {
         val m = (Build.MANUFACTURER + " " + Build.BRAND).lowercase()
         return when {
             m.contains("xiaomi") || m.contains("redmi") || m.contains("poco") -> Brand("Xiaomi / Redmi / POCO", listOf(
-                "Open Security → Permissions → Autostart, and turn Daily Chain on.",
-                "Settings → Apps → Daily Chain → Battery saver → No restrictions.",
-                "Recent apps: long-press Daily Chain → tap the lock icon so it isn't cleared."),
+                "Open Security → Permissions → Autostart, and turn Abhyasa on.",
+                "Settings → Apps → Abhyasa → Battery saver → No restrictions.",
+                "Recent apps: long-press Abhyasa → tap the lock icon so it isn't cleared."),
                 listOf(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")))
             m.contains("vivo") || m.contains("iqoo") -> Brand("Vivo / iQOO", listOf(
-                "i Manager → App manager → Autostart manager → allow Daily Chain.",
-                "Settings → Battery → Background power consumption → Daily Chain → Allow.",
-                "Recent apps: pull Daily Chain down to lock it."),
+                "i Manager → App manager → Autostart manager → allow Abhyasa.",
+                "Settings → Battery → Background power consumption → Abhyasa → Allow.",
+                "Recent apps: pull Abhyasa down to lock it."),
                 listOf(ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"),
                     ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")))
             m.contains("realme") -> Brand("Realme", listOf(
-                "Settings → Apps → Auto launch → turn Daily Chain on.",
-                "Settings → Battery → App battery management → Daily Chain → Allow background activity.",
-                "Recent apps: tap ⋮ on Daily Chain → Lock."),
+                "Settings → Apps → Auto launch → turn Abhyasa on.",
+                "Settings → Battery → App battery management → Abhyasa → Allow background activity.",
+                "Recent apps: tap ⋮ on Abhyasa → Lock."),
                 listOf(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity"),
                     ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")))
             m.contains("oppo") -> Brand("Oppo", listOf(
-                "Settings → Apps → Auto launch (or Startup manager) → turn Daily Chain on.",
-                "Settings → Battery → Daily Chain → Allow background activity / Don't optimise.",
-                "Recent apps: tap ⋮ on Daily Chain → Lock."),
+                "Settings → Apps → Auto launch (or Startup manager) → turn Abhyasa on.",
+                "Settings → Battery → Abhyasa → Allow background activity / Don't optimise.",
+                "Recent apps: tap ⋮ on Abhyasa → Lock."),
                 listOf(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity"),
                     ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity")))
             m.contains("oneplus") -> Brand("OnePlus", listOf(
-                "Settings → Apps → Daily Chain → Battery usage → Allow background activity.",
-                "Settings → Battery → Battery optimisation → Daily Chain → Don't optimise.",
-                "Recent apps: lock Daily Chain so it isn't cleared."),
+                "Settings → Apps → Abhyasa → Battery usage → Allow background activity.",
+                "Settings → Battery → Battery optimisation → Abhyasa → Don't optimise.",
+                "Recent apps: lock Abhyasa so it isn't cleared."),
                 listOf(ComponentName("com.oneplus.security", "com.oneplus.security.chainlaunch.view.ChainLaunchAppListActivity")))
             m.contains("samsung") -> Brand("Samsung", listOf(
-                "Settings → Apps → Daily Chain → Battery → Unrestricted.",
-                "Settings → Battery → Background usage limits → make sure Daily Chain is not in Sleeping or Deep sleeping apps.",
-                "Add Daily Chain to Never sleeping apps."),
+                "Settings → Apps → Abhyasa → Battery → Unrestricted.",
+                "Settings → Battery → Background usage limits → make sure Abhyasa is not in Sleeping or Deep sleeping apps.",
+                "Add Abhyasa to Never sleeping apps."),
                 listOf(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity")))
             m.contains("motorola") || m.contains("moto") -> Brand("Motorola", listOf(
-                "Settings → Apps → Daily Chain → App battery usage → Unrestricted.",
-                "Keep Daily Chain out of Adaptive Battery restrictions."), emptyList())
+                "Settings → Apps → Abhyasa → App battery usage → Unrestricted.",
+                "Keep Abhyasa out of Adaptive Battery restrictions."), emptyList())
             else -> Brand(Build.MANUFACTURER.replaceFirstChar { it.uppercase() }, listOf(
-                "Settings → Apps → Daily Chain → Battery → Unrestricted / Don't optimise.",
-                "If your phone has an Autostart list, allow Daily Chain."), emptyList())
+                "Settings → Apps → Abhyasa → Battery → Unrestricted / Don't optimise.",
+                "If your phone has an Autostart list, allow Abhyasa."), emptyList())
         }
     }
 

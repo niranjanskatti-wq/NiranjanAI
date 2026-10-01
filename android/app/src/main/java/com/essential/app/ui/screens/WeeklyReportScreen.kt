@@ -64,7 +64,7 @@ class WeeklyReportScreen(a: MainActivity) : Screen(a) {
         v.draw(c)
         val out = ByteArrayOutputStream()
         bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
-        val name = "dailychain-week-${report?.weekStart ?: today}.png"
+        val name = "abhyasa-week-${report?.weekStart ?: today}.png"
         a.shareUris(listOf(Backup.shareFile(a, name, out.toByteArray())), "image/png", "Weekly report")
     }
 }

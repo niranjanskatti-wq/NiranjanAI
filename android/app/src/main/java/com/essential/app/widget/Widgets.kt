@@ -35,7 +35,7 @@ object Widgets {
         val v = RemoteViews(ctx.packageName, if (medium) R.layout.widget_medium else R.layout.widget_small)
         v.setOnClickPendingIntent(R.id.w_root, Notifier.openApp(ctx, "now", 5001))
         if (!repo.settings.bool("onboarded")) {
-            v.setTextViewText(R.id.w_block, "Open Daily Chain to begin")
+            v.setTextViewText(R.id.w_block, "Open Abhyasa to begin")
             return v
         }
         val now = Days.now(repo)

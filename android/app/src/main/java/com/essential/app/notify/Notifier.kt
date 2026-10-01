@@ -135,5 +135,5 @@ object Notifier {
     fun focusDone(ctx: Context, minutes: Int, task: String) =
         simple(ctx, CH_FOCUS, 4005, "Focus complete: $minutes min", "${task.ifBlank { "Essential work" }} — logged as Essential.", "now")
 
-    fun test(ctx: Context) = simple(ctx, CH_TEST, 3999, "Daily Chain is working", "Notifications arrive on time. Less, but better.", "settings")
+    fun test(ctx: Context) = simple(ctx, CH_TEST, 3999, "Abhyasa is working", "Notifications arrive on time. Less, but better.", "settings")
 }

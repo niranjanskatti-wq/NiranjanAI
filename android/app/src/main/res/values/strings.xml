@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Daily Chain</string>
+    <string name="app_name">Abhyasa</string>
     <string name="tagline">Less, but better.</string>
-    <string name="widget_small">Daily Chain · Now</string>
-    <string name="widget_medium">Daily Chain · Log</string>
+    <string name="widget_small">Abhyasa · Now</string>
+    <string name="widget_medium">Abhyasa · Log</string>
     <string name="widget_small_desc">Current block and time left</string>
     <string name="widget_medium_desc">Current block, Essential Hours and quick log buttons</string>
     <string name="tile_log">Log hour</string>

@@ -4,14 +4,14 @@
 #   aapt2, dx (dalvik-exchange), zipalign, apksigner  -> Ubuntu packages
 #   Android framework jar (API 34, with resources)    -> Maven Central (org.robolectric:android-all)
 #   Kotlin compiler + stdlib                          -> Maven Central
-# Usage: ./build.sh            (output: release/Essential.apk)
+# Usage: ./build.sh            (output: release/Abhyasa.apk)
 set -euo pipefail
 cd "$(dirname "$0")"
 TOOLS=${TOOLS:-/opt/essential-tools}
 KV=1.9.24
 ANDROID_ALL=$TOOLS/android-all-14-robolectric-10818077.jar
-VERSION_CODE=${VERSION_CODE:-3}
-VERSION_NAME=${VERSION_NAME:-1.2.0}
+VERSION_CODE=${VERSION_CODE:-4}
+VERSION_NAME=${VERSION_NAME:-1.2.1}
 export JAVA_TOOL_OPTIONS=""
 
 fetch() { # url dest
@@ -70,6 +70,6 @@ cp $B/base.apk $B/unsigned.apk
 (cd $B/dex && zip -q ../unsigned.apk classes*.dex)
 zipalign -f -p 4 $B/unsigned.apk $B/aligned.apk
 apksigner sign --ks keystore/essential.jks --ks-pass pass:essential-sideload --key-pass pass:essential-sideload \
-  --v2-signing-enabled true --v3-signing-enabled true --out release/Essential.apk $B/aligned.apk
-apksigner verify release/Essential.apk
-ls -la release/Essential.apk
+  --v2-signing-enabled true --v3-signing-enabled true --out release/Abhyasa.apk $B/aligned.apk
+apksigner verify release/Abhyasa.apk
+ls -la release/Abhyasa.apk

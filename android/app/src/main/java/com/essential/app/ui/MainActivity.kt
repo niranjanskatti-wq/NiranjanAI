@@ -26,7 +26,7 @@ import com.essential.app.ui.screens.*
 import java.time.LocalDate
 
 object App {
-    const val NAME = "Daily Chain"
+    const val NAME = "Abhyasa"
     var haptics = true
 }
 
