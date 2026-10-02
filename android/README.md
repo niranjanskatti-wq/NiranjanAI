@@ -82,3 +82,8 @@ app has no `INTERNET` permission, so it always works fully offline.
 - **Totals** per habit (optional): today, week, month, year, all time, average, and a monthly chart (hours per month for minutes).
 - Starter habits: Walking, Meditation, Reading, Pranayam, Full breathing (fast) at night. All editable, deletable, and you can add any others.
 - CSV export adds habit_amounts.csv and books.csv.
+
+## Changes in 1.4.0
+
+- **Timer** for minute habits (Meditation, Pranayam, Walking…): countdown or open-ended, pause/resume, optional interval bell, end bell even with the phone locked, minutes logged automatically.
+- Fixed: Save/Cancel are now pinned at the bottom of every sheet (always visible, content scrolls above); colour choices are circles again; full-screen timer/focus screens scroll on small phones.

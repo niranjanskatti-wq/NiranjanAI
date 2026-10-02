@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import com.essential.app.core.Backup
 import com.essential.app.core.Focus
+import com.essential.app.core.HabitTimer
 import com.essential.app.core.Hooks
 import com.essential.app.core.TimeUtil
 import com.essential.app.data.Repo
@@ -22,9 +23,11 @@ object Alarms {
     private const val RC_NEXT = 1
     private const val RC_SNOOZE = 2
     private const val RC_FOCUS = 3
+    private const val RC_HTIMER = 5
     const val ACTION_FIRE = "com.essential.app.ALARM_FIRE"
     const val ACTION_SNOOZE = "com.essential.app.ALARM_SNOOZE"
     const val ACTION_FOCUS_END = "com.essential.app.FOCUS_END"
+    const val ACTION_HTIMER_END = "com.essential.app.HABIT_TIMER_END"
 
     fun am(ctx: Context): AlarmManager = ctx.getSystemService(AlarmManager::class.java)
 
@@ -70,6 +73,8 @@ object Alarms {
 
     fun scheduleFocusEnd(ctx: Context, at: Long) = setExact(ctx, at, pi(ctx, RC_FOCUS, ACTION_FOCUS_END))
     fun cancelFocusEnd(ctx: Context) = am(ctx).cancel(pi(ctx, RC_FOCUS, ACTION_FOCUS_END))
+    fun scheduleHabitTimerEnd(ctx: Context, at: Long) = setExact(ctx, at, pi(ctx, RC_HTIMER, ACTION_HTIMER_END))
+    fun cancelHabitTimerEnd(ctx: Context) = am(ctx).cancel(pi(ctx, RC_HTIMER, ACTION_HTIMER_END))
 
     /** Handle everything due since the last fire (skipping anything older than 20 minutes). */
     fun handleDue(ctx: Context) {
@@ -121,6 +126,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     if (hour >= 0 && Repo.get(ctx).logFor(date, hour) == null) Notifier.checkin(ctx, date, hour)
                 }
                 Alarms.ACTION_FOCUS_END -> Focus.finish(ctx, true)
+                Alarms.ACTION_HTIMER_END -> HabitTimer.state(ctx)?.let { st -> if (!st.paused && !st.open && st.leftMs() <= 1500) HabitTimer.finish(ctx, save = true, completed = true) }
             }
         } finally {
             Alarms.schedule(ctx)
@@ -138,6 +144,9 @@ class SystemEventReceiver : BroadcastReceiver() {
         }
         TimeUtil.zone = if (repo.settings.bool("use_ist")) TimeUtil.IST else java.time.ZoneId.systemDefault()
         Notifier.ensureChannels(ctx)
+        HabitTimer.state(ctx)?.let { st ->
+            if (!st.paused && !st.open) { if (st.leftMs() <= 0) HabitTimer.finish(ctx, save = true, completed = true) else Alarms.scheduleHabitTimerEnd(ctx, TimeUtil.nowMillis() + st.leftMs()) }
+        }
         Focus.state(ctx)?.let { st -> if (!st.paused) { if (st.endAt <= TimeUtil.nowMillis()) Focus.finish(ctx, true) else Alarms.scheduleFocusEnd(ctx, st.endAt) } }
         Alarms.schedule(ctx)
         Hooks.afterChange(ctx)

@@ -358,7 +358,7 @@ class VenturesScreen(a: MainActivity) : Screen(a) {
                     minimumWidth = a.dp(36); minimumHeight = a.dp(36)
                     click(true) { color = col; render() }
                 }
-                row.addView(d)
+                row.addView(d, android.view.ViewGroup.LayoutParams(a.dp(36), a.dp(36)))
             }
         }
         render()

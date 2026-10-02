@@ -108,6 +108,8 @@ class HabitsScreen(a: MainActivity, private val pushed: Boolean = false) : Scree
             col.add(a.txt(b?.let { "${it.title} · ${it.left} pages left" } ?: "Tap Log to add your book", 12.5f, Th.dim, maxLines = 1), top = 2)
         }
         r.add(col, 0, WRAP, 1f)
+        if (h.unit == HabitUnit.MINUTES)
+            r.add(a.btn("Timer", Btn.TONAL, "timer", color = h.color) { HabitTimerActivity.startSheet(a, h) }.apply { minHeight = a.dp(40); setPadding(a.dp(14), a.dp(6), a.dp(14), a.dp(6)) }, WRAP, WRAP, end = 6)
         r.add(a.btn("+ Log", Btn.TONAL, color = h.color) { AmountSheet.open(a, h) }.apply { minHeight = a.dp(40); setPadding(a.dp(16), a.dp(6), a.dp(16), a.dp(6)) }, WRAP, WRAP)
         box.add(r)
         h.target?.takeIf { it > 0 }?.let { box.addProgress((got / it).coerceIn(0.0, 1.0), h.color, 5, top = 8) }
@@ -144,6 +146,7 @@ class HabitDetailScreen(a: MainActivity, private val habitId: Long) : Screen(a) 
             val lr = a.hbox()
             lr.add(a.btn(if (h.unit == HabitUnit.COUNT) "Log" else "Log ${h.unit}", color = h.color, icon = "plus") { AmountSheet.open(a, h) }, 0, WRAP, 1f)
             if (h.usesBooks) lr.add(a.btn("Books", Btn.TONAL, color = h.color) { a.push(BooksScreen(a)) }, WRAP, WRAP, start = 8)
+            if (h.unit == HabitUnit.MINUTES) lr.add(a.btn("Timer", Btn.TONAL, "timer", color = h.color) { HabitTimerActivity.startSheet(a, h) }, WRAP, WRAP, start = 8)
             add(lr, bottom = 12)
             if (h.usesBooks) repo.books(false).take(3).forEach { b ->
                 val c = a.card(14) { a.push(BooksScreen(a)) }
@@ -242,6 +245,7 @@ object HabitEditor {
             }, bottom = 8)
             if (unit != null) {
                 if (modeOf(unit) == "Own unit") track.add(customUnit, bottom = 8)
+                track.add(a.dimText("Daily target (optional)"), bottom = 4)
                 track.add(target, bottom = 4)
                 if (unit == HabitUnit.PAGES) track.add(a.dimText("Add your books (title + total pages) and each log moves the book forward, showing pages left."), top = 2, bottom = 4)
                 track.add(a.switchRow("Chain needs the daily target", "Off: any amount counts as done for the day.", targetForChain) { targetForChain = it })
@@ -256,7 +260,7 @@ object HabitEditor {
         fun render() {
             row.removeAllViews()
             Seed.HABIT_COLORS.forEach { col ->
-                row.addView(View(a).apply {
+                row.addView(android.view.ViewGroup.LayoutParams(a.dp(36), a.dp(36)).let { lp -> View(a).apply { layoutParams = lp }}.apply {
                     background = rounded(col, a.dp(18).toFloat(), if (col == color) a.dp(3) else 0, Th.text)
                     minimumWidth = a.dp(36); minimumHeight = a.dp(36)
                     contentDescription = "Colour"

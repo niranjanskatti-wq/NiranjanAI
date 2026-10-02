@@ -427,6 +427,68 @@ class AppFlowTest : AppTestBase() {
         assertTrue(monday in repo.habitDates(plain.id))
     }
 
+    @Test fun sheetButtonsAlwaysVisibleOnSmallScreens() {
+        onboard()
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        val h = repo.habits().first { it.name == "Reading" }
+        for (open in listOf<() -> kotlin.Unit>({ HabitEditor.open(a, h) }, { HabitEditor.open(a, null) }, { LogHourSheet.open(a, monday, 9) },
+                { AmountSheet.open(a, h) }, { ReviewSheet.open(a, monday) })) {
+            open(); idle()
+            val d = ShadowDialog.getLatestDialog()
+            val decor = d.window!!.decorView
+            decor.measure(android.view.View.MeasureSpec.makeMeasureSpec(1080, android.view.View.MeasureSpec.EXACTLY),
+                android.view.View.MeasureSpec.makeMeasureSpec(1900, android.view.View.MeasureSpec.AT_MOST))
+            decor.layout(0, 0, decor.measuredWidth, decor.measuredHeight)
+            val save = decor.findText("Save") ?: decor.findText("Save review")!!
+            val loc = IntArray(2); save.getLocationInWindow(loc)
+            assertTrue("Save must be fully inside the sheet (bottom ${loc[1] + save.height} ≤ ${decor.measuredHeight})", loc[1] + save.height <= decor.measuredHeight)
+            assertTrue(save.height > 0)
+            d.dismiss(); idle()
+        }
+    }
+
+    @Test fun colourSwatchesAreSmallCircles() {
+        onboard()
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        HabitEditor.open(a, repo.habits().first()); idle()
+        val decor = ShadowDialog.getLatestDialog().window!!.decorView
+        decor.measure(android.view.View.MeasureSpec.makeMeasureSpec(1080, android.view.View.MeasureSpec.EXACTLY),
+            android.view.View.MeasureSpec.makeMeasureSpec(1900, android.view.View.MeasureSpec.AT_MOST))
+        decor.layout(0, 0, decor.measuredWidth, decor.measuredHeight)
+        val swatch = findView(decor) { it.contentDescription == "Colour" }!!
+        assertTrue("swatch width ${swatch.width}", swatch.width in 1..200)
+    }
+
+    @Test fun meditationTimerLogsMinutes() {
+        onboard()
+        val med = repo.habits().first { it.name == "Meditation" }
+        at(2026, 10, 5, 6, 0)
+        com.essential.app.core.HabitTimer.start(app, med.id, 20, 5)
+        assertTrue(com.essential.app.core.HabitTimer.isActive(app))
+        assertNotNull("ongoing notification", notifications.getNotification(com.essential.app.notify.Notifier.ID_HTIMER))
+        assertTrue("end bell armed", alarms.scheduledAlarms.any { TimeUtil.at(it.triggerAtTime).hour == 6 && TimeUtil.at(it.triggerAtTime).minute == 20 })
+        at(2026, 10, 5, 6, 5); com.essential.app.core.HabitTimer.pause(app)
+        at(2026, 10, 5, 6, 9); com.essential.app.core.HabitTimer.resume(app)
+        assertEquals(15 * 60_000L, com.essential.app.core.HabitTimer.state(app)!!.leftMs())
+        at(2026, 10, 5, 6, 24)
+        com.essential.app.notify.AlarmReceiver().onReceive(app, Intent(app, com.essential.app.notify.AlarmReceiver::class.java).setAction(com.essential.app.notify.Alarms.ACTION_HTIMER_END))
+        assertFalse(com.essential.app.core.HabitTimer.isActive(app))
+        assertEquals(20.0, repo.amount(med.id, monday, monday), 0.0)
+        assertTrue(monday in repo.habitDates(med.id))
+        // open-ended pranayam, finished early from the notification
+        val pran = repo.habits().first { it.name == "Pranayam" }
+        at(2026, 10, 5, 20, 0)
+        com.essential.app.core.HabitTimer.start(app, pran.id, 0, 0)
+        at(2026, 10, 5, 20, 12)
+        com.essential.app.notify.ActionReceiver().onReceive(app, Intent(com.essential.app.notify.ActionReceiver.HT_FINISH))
+        assertEquals(12.0, repo.amount(pran.id, monday, monday), 0.0)
+        // timer screen opens
+        com.essential.app.core.HabitTimer.start(app, med.id, 10, 0)
+        val t = Robolectric.buildActivity(com.essential.app.ui.HabitTimerActivity::class.java).setup().get()
+        assertTrue(t.window.decorView.allText().contains("Meditation"))
+        com.essential.app.core.HabitTimer.finish(app, save = false)
+    }
+
     @Test fun starterHabitsAddedOnceAndKeepUserHabits() {
         onboard()
         repo.deleteHabit(repo.habits().first { it.name == "Pranayam" }.id)

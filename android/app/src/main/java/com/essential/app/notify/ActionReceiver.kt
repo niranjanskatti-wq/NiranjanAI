@@ -26,6 +26,9 @@ class ActionReceiver : BroadcastReceiver() {
         const val FOCUS_PAUSE = "com.essential.app.FOCUS_PAUSE"
         const val FOCUS_RESUME = "com.essential.app.FOCUS_RESUME"
         const val FOCUS_STOP = "com.essential.app.FOCUS_STOP"
+        const val HT_PAUSE = "com.essential.app.HT_PAUSE"
+        const val HT_RESUME = "com.essential.app.HT_RESUME"
+        const val HT_FINISH = "com.essential.app.HT_FINISH"
         const val DISTRACTED = "com.essential.app.DISTRACTED"
         const val WIDGET_AS_PLANNED = "com.essential.app.WIDGET_AS_PLANNED"
 
@@ -72,6 +75,9 @@ class ActionReceiver : BroadcastReceiver() {
             FOCUS_PAUSE -> Focus.pause(ctx)
             FOCUS_RESUME -> Focus.resume(ctx)
             FOCUS_STOP -> Focus.finish(ctx, false)
+            HT_PAUSE -> com.essential.app.core.HabitTimer.pause(ctx)
+            HT_RESUME -> com.essential.app.core.HabitTimer.resume(ctx)
+            HT_FINISH -> { val m = com.essential.app.core.HabitTimer.finish(ctx, save = true); if (m > 0) toast(ctx, "$m min logged") }
             DISTRACTED -> { logDistraction(ctx); haptic(ctx); toast(ctx, "Distraction noted. Back to what matters.") }
             WIDGET_AS_PLANNED -> {
                 val slot = Logging.targetSlot(Repo.get(ctx))

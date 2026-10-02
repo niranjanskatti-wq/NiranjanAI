@@ -274,6 +274,7 @@ class MainActivity : Activity() {
             "backup" -> { selectTab("settings"); push(BackupScreen(this)) }
             "obstacle" -> { selectTab("tools"); push(ObstacleScreen(this)) }
             "report" -> { selectTab("insights"); push(WeeklyReportScreen(this)) }
+            "habits" -> selectTab("habits")
             "uncommit" -> { selectTab("tools"); push(UncommitScreen(this)) }
             "sprint" -> { selectTab("tools"); push(SprintScreen(this)) }
             "settings" -> selectTab("settings")

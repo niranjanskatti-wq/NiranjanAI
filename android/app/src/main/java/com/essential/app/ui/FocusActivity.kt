@@ -56,7 +56,7 @@ class FocusActivity : Activity() {
         col.add(sub, MATCH, WRAP, top = 6)
         controls = hbox().apply { gravity = Gravity.CENTER }
         col.add(controls, MATCH, WRAP, top = 36)
-        root.add(col, MATCH, MATCH)
+        root.add(scroll(col), MATCH, MATCH)
         setContentView(root)
         root.setOnApplyWindowInsetsListener { v, ins ->
             if (Build.VERSION.SDK_INT >= 30) {

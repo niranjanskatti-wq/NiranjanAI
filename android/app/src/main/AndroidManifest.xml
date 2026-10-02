@@ -49,6 +49,13 @@
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode" />
 
+        <activity
+            android:name=".ui.HabitTimerActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode" />
+
         <receiver android:name=".notify.AlarmReceiver" android:exported="false" />
         <receiver android:name=".notify.ActionReceiver" android:exported="false" />
 

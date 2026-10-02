@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.view.View
 import com.essential.app.core.Focus
 import com.essential.app.ui.FocusActivity
+import com.essential.app.ui.HabitTimerActivity
 import com.essential.app.ui.MainActivity
 import com.essential.app.ui.Screen
 import com.essential.app.ui.Th
@@ -104,6 +105,20 @@ class ScreenshotTest : AppTestBase() {
             push(a, BooksScreen(a), "13-books")
             AmountSheet.open(a, reading); sheet("25-log-reading")
             AmountSheet.open(a, walk); sheet("26-log-walking")
+        }
+        run {
+            HabitEditor.open(a, repo.habits().first { it.name == "Reading" }); idle()
+            val d = ShadowDialog.getLatestDialog()
+            val decor = d.window!!.decorView
+            decor.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(1720, View.MeasureSpec.AT_MOST))
+            decor.layout(0, 0, decor.measuredWidth, decor.measuredHeight)
+            save(decor, "27-edit-habit-real-size", fullHeight = false)
+            d.dismiss(); idle()
+            HabitTimerActivity.startSheet(a, repo.habits().first { it.name == "Meditation" }); sheet("28-timer-start")
+            com.essential.app.core.HabitTimer.start(app, repo.habits().first { it.name == "Meditation" }.id, 20, 5)
+            val t = Robolectric.buildActivity(HabitTimerActivity::class.java).setup().get()
+            idle(); save(t.window.decorView, "29-meditation-timer", fullHeight = false)
+            com.essential.app.core.HabitTimer.finish(app, save = false)
         }
         LogHourSheet.open(a, LocalDate.of(2026, 10, 1), 10); sheet("20-log-hour-sheet")
         ModeSheet.open(a, LocalDate.of(2026, 10, 1)); sheet("21-mode-sheet")

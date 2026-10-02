@@ -22,6 +22,7 @@ object Notifier {
     const val CH_CHECKIN = "checkin"; const val CH_BLOCK = "block"; const val CH_REVIEW = "review"
     const val CH_WIND = "wind_down"; const val CH_SLEEP = "sleep_log"; const val CH_BACKUP = "backup"; const val CH_TOOLS = "tools"
     const val CH_FOCUS = "focus"; const val CH_TEST = "test"
+    const val CH_HTIMER = "habit_timer"; const val CH_HTIMER_DONE = "habit_timer_done"; const val ID_HTIMER = 4100
     const val ID_FOCUS = 4000
     const val KEY_REPLY = "reply"
     private const val ACCENT = 0xFF7FD1B9.toInt()
@@ -32,7 +33,7 @@ object Notifier {
         val nm = nm(ctx)
         fun ch(id: String, name: String, imp: Int, desc: String) {
             val c = NotificationChannel(id, name, imp); c.description = desc
-            if (id == CH_FOCUS) { c.setSound(null, null); c.enableVibration(false) }
+            if (id == CH_FOCUS || id == CH_HTIMER) { c.setSound(null, null); c.enableVibration(false) }
             nm.createNotificationChannel(c)
         }
         ch(CH_CHECKIN, "Hourly check-in", NotificationManager.IMPORTANCE_HIGH, "Every hour: what did you do? Log it with one tap.")
@@ -45,6 +46,8 @@ object Notifier {
         ch(CH_TOOLS, "Reviews & reports", NotificationManager.IMPORTANCE_DEFAULT, "Weekly report, obstacle, monthly uncommit, sprints")
         ch(CH_FOCUS, "Focus session", NotificationManager.IMPORTANCE_LOW, "Ongoing focus timer")
         ch(CH_TEST, "Test", NotificationManager.IMPORTANCE_HIGH, "Test notification from Settings")
+        ch(CH_HTIMER, "Habit timer", NotificationManager.IMPORTANCE_LOW, "Running meditation / pranayam timer")
+        ch(CH_HTIMER_DONE, "Habit timer bell", NotificationManager.IMPORTANCE_HIGH, "Bell when a meditation / pranayam timer ends")
     }
 
     fun openApp(ctx: Context, route: String, rc: Int, extras: Intent.() -> Unit = {}): PendingIntent {
@@ -131,6 +134,36 @@ object Notifier {
     }
 
     fun cancelFocus(ctx: Context) = nm(ctx).cancel(ID_FOCUS)
+
+    fun habitTimerOngoing(ctx: Context) {
+        val st = com.essential.app.core.HabitTimer.state(ctx) ?: return
+        val open = PendingIntent.getActivity(ctx, 4101, Intent(ctx, com.essential.app.ui.HabitTimerActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val now = TimeUtil.nowMillis()
+        val b = base(ctx, CH_HTIMER).setOngoing(true).setAutoCancel(false).setOnlyAlertOnce(true)
+            .setContentTitle(if (st.paused) "${st.name} · paused" else st.name)
+            .setContentIntent(open).setCategory(Notification.CATEGORY_STOPWATCH)
+        if (st.paused) {
+            b.setShowWhen(false).setContentText(if (st.open) "${TimeUtil.fmtCountdown(st.elapsedMs() / 1000)} so far" else "${TimeUtil.fmtCountdown(st.leftMs() / 1000)} left")
+            b.addAction(Notification.Action.Builder(null, "Resume", action(ctx, ActionReceiver.HT_RESUME, 4103)).build())
+        } else {
+            b.setUsesChronometer(true).setShowWhen(true)
+            if (st.open) b.setWhen(now - st.elapsedMs(now)).setContentText("Timer running")
+            else b.setChronometerCountDown(true).setWhen(now + st.leftMs(now)).setContentText("Time left")
+            b.addAction(Notification.Action.Builder(null, "Pause", action(ctx, ActionReceiver.HT_PAUSE, 4102)).build())
+        }
+        b.addAction(Notification.Action.Builder(null, "Finish & save", action(ctx, ActionReceiver.HT_FINISH, 4104)).build())
+        if (canPost(ctx)) nm(ctx).notify(ID_HTIMER, b.build())
+    }
+
+    fun cancelHabitTimer(ctx: Context) = nm(ctx).cancel(ID_HTIMER)
+
+    fun habitTimerDone(ctx: Context, name: String, minutes: Int) {
+        if (!canPost(ctx)) return
+        nm(ctx).notify(4105, base(ctx, CH_HTIMER_DONE).setContentTitle("$name complete 🔔")
+            .setContentText(if (minutes > 0) "$minutes min logged. Well done." else "Time's up.")
+            .setContentIntent(openApp(ctx, "habits", 4106)).build())
+    }
 
     fun focusDone(ctx: Context, minutes: Int, task: String) =
         simple(ctx, CH_FOCUS, 4005, "Focus complete: $minutes min", "${task.ifBlank { "Essential work" }} — logged as Essential.", "now")

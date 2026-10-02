@@ -146,7 +146,12 @@ class Flow(ctx: Context, private val hGap: Int = ctx.dp(8), private val vGap: In
         for (i in 0 until childCount) {
             val c = getChildAt(i)
             if (c.visibility == GONE) continue
-            c.measure(MeasureSpec.makeMeasureSpec(maxW, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED))
+            // Natural size first (so plain Views like colour swatches keep their own size), capped to the row width.
+            val lp = c.layoutParams
+            val ws = if (lp != null && lp.width > 0) MeasureSpec.makeMeasureSpec(lp.width, MeasureSpec.EXACTLY) else MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+            val hs = if (lp != null && lp.height > 0) MeasureSpec.makeMeasureSpec(lp.height, MeasureSpec.EXACTLY) else MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+            c.measure(ws, hs)
+            if (c.measuredWidth > maxW) c.measure(MeasureSpec.makeMeasureSpec(maxW, MeasureSpec.AT_MOST), hs)
             if (x > 0 && x + c.measuredWidth > maxW) { x = 0; y += rowH + vGap; rowH = 0 }
             x += c.measuredWidth + hGap; rowH = maxOf(rowH, c.measuredHeight)
         }
@@ -313,7 +318,11 @@ class Sheet(val act: Activity, title: String? = null, subtitle: String? = null) 
     val dialog = Dialog(act, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar)
     val body: LinearLayout = act.vbox()
     private val root: LinearLayout = act.vbox()
+    /** Buttons live here, outside the scrolling area, so Save/Cancel are always on screen. */
+    val footer: LinearLayout = act.vbox()
     private var imeInset = 0
+    private var topInset = act.dp(24)
+    private var navInset = 0
 
     init {
         root.background = GradientDrawable().apply {
@@ -326,11 +335,17 @@ class Sheet(val act: Activity, title: String? = null, subtitle: String? = null) 
         if (subtitle != null) root.add(act.dimText(subtitle), bottom = 14)
         val sc = object : ScrollView(act) {
             override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-                val maxH = act.resources.displayMetrics.heightPixels - act.dp(150) - imeInset
-                super.onMeasure(widthMeasureSpec, View.MeasureSpec.makeMeasureSpec(maxOf(act.dp(160), maxH), View.MeasureSpec.AT_MOST))
+                // Room = the screen's real height minus status bar, keyboard/nav bar, sheet header and the footer buttons.
+                footer.measure(widthMeasureSpec, View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+                val screen = act.window.decorView.height.takeIf { it > 0 } ?: act.resources.displayMetrics.heightPixels
+                var maxH = screen - topInset - maxOf(navInset, imeInset) - act.dp(130) - footer.measuredHeight
+                val spec = View.MeasureSpec.getSize(heightMeasureSpec)
+                if (View.MeasureSpec.getMode(heightMeasureSpec) != View.MeasureSpec.UNSPECIFIED && spec > 0) maxH = minOf(maxH, spec - footer.measuredHeight)
+                super.onMeasure(widthMeasureSpec, View.MeasureSpec.makeMeasureSpec(maxOf(act.dp(120), maxH), View.MeasureSpec.AT_MOST))
             }
-        }.apply { isVerticalScrollBarEnabled = false; isFillViewport = true; addView(body, FrameLayout.LayoutParams(MATCH, WRAP)) }
+        }.apply { isVerticalScrollBarEnabled = true; isFillViewport = true; addView(body, FrameLayout.LayoutParams(MATCH, WRAP)) }
         root.add(sc)
+        root.add(footer)
         dialog.setContentView(root)
         dialog.window?.let { w ->
             w.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -345,7 +360,8 @@ class Sheet(val act: Activity, title: String? = null, subtitle: String? = null) 
                 root.setOnApplyWindowInsetsListener { v, ins ->
                     val ime = ins.getInsets(WindowInsets.Type.ime()).bottom
                     val nav = ins.getInsets(WindowInsets.Type.navigationBars()).bottom
-                    imeInset = ime
+                    imeInset = ime; navInset = nav
+                    topInset = maxOf(act.dp(24), ins.getInsets(WindowInsets.Type.statusBars() or WindowInsets.Type.displayCutout()).top)
                     v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, act.dp(20) + maxOf(nav, ime))
                     sc.requestLayout()
                     ins
@@ -364,7 +380,7 @@ class Sheet(val act: Activity, title: String? = null, subtitle: String? = null) 
         val row = act.hbox()
         if (secondary != null) row.add(act.btn(secondary, Btn.TEXT, color = Th.dim) { onSecondary() }, WRAP, WRAP, end = 8)
         row.add(act.btn(primary) { onPrimary() }, 0, WRAP, 1f)
-        body.add(row, top = 8)
+        footer.add(row, top = 10)
         return this
     }
 }
@@ -375,14 +391,14 @@ fun Activity.confirm(title: String, message: String, yes: String = "Yes", no: St
     val row = hbox()
     row.add(btn(no, Btn.TEXT, color = Th.dim) { s.dismiss() }, WRAP, WRAP, end = 8)
     row.add(btn(yes, color = if (danger) Th.red else Th.primary) { s.dismiss(); onYes() }, 0, WRAP, 1f)
-    s.body.add(row, top = 8)
+    s.footer.add(row, top = 10)
     s.show()
 }
 
 fun Activity.info(title: String, message: String, ok: String = "OK") {
     val s = Sheet(this, title)
     s.add(body(message))
-    s.body.add(btn(ok) { s.dismiss() }, top = 8)
+    s.footer.add(btn(ok) { s.dismiss() }, top = 10)
     s.show()
 }
 
