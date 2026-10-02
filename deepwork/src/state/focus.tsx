@@ -5,7 +5,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { db, uid } from '@/db'
 import type { SessionResult } from '@/db/types'
 import { ambient, chime } from '@/lib/audio'
-import { notify } from '@/lib/notify'
+import { notify, scheduleTimerAlert } from '@/lib/notify'
+import { Deepwork, isAndroid, isNative } from '@/lib/native'
 import type { AmbientSound } from '@/lib/settings'
 import { dateKey } from '@/lib/date'
 import { useSettings } from './settings'
@@ -136,7 +137,8 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     ambient.stop(1.2)
     const st = settingsRef.current
     chime('complete')
-    void notify(st, 'sessionComplete', 'Session complete', 'Nice work. Take a moment to note what you got done.')
+    // On Android the alert was already scheduled natively for this exact moment.
+    if (!isNative) void notify(st, 'sessionComplete', 'Session complete', 'Nice work. Take a moment to note what you got done.')
     if (!st.modules.sessionClose) {
       commit({ ...next, phase: 'closed', result: 'done' })
       await saveSession(next, 'done', '')
@@ -151,7 +153,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
     commit({ ...s, phase: 'breakOver' })
     chime('break')
     const st = settingsRef.current
-    void notify(st, 'breakOver', 'Break is over', 'Ready for the next session?')
+    if (!isNative) void notify(st, 'breakOver', 'Break is over', 'Ready for the next session?')
   }, [commit])
 
   useEffect(() => {
@@ -178,6 +180,10 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   // ------------------------------------------------------------ wake lock
   useEffect(() => {
     const want = settings.focus.wakeLock && (state.phase === 'running' || state.phase === 'paused' || state.phase === 'break')
+    if (isNative) {
+      void Deepwork.setKeepAwake({ on: want }).catch(() => {})
+      return
+    }
     if (!want || !('wakeLock' in navigator)) return
     let lock: WakeLockSentinel | null = null
     let cancelled = false
@@ -199,6 +205,50 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       void lock?.release().catch(() => {})
     }
   }, [settings.focus.wakeLock, state.phase])
+
+  // ------------------------------------------------------------ Android: timer alerts that fire even when the app is closed
+  useEffect(() => {
+    if (!isNative) return
+    if (state.phase === 'running') void scheduleTimerAlert(settings, state.startedAt + state.pausedMs + state.plannedSec * 1000, 'sessionComplete')
+    else if (state.phase === 'break' && state.breakStartedAt) void scheduleTimerAlert(settings, state.breakStartedAt + state.breakSec * 1000, 'breakOver')
+    else void scheduleTimerAlert(settings, null, 'sessionComplete')
+  }, [settings, state.phase, state.startedAt, state.pausedMs, state.plannedSec, state.breakStartedAt, state.breakSec])
+
+  // ------------------------------------------------------------ Android: block distracting apps while focusing
+  useEffect(() => {
+    if (!isAndroid) return
+    const b = settings.blocking
+    const want = settings.modules.appBlocking && state.phase === 'running' && (b.mode === 'allow' || b.packages.length > 0)
+    if (!want) {
+      void Deepwork.stopBlocking().catch(() => {})
+      return
+    }
+    const until = state.startedAt + state.pausedMs + state.plannedSec * 1000
+    void (async () => {
+      const task = state.taskId ? await db.tasks.get(state.taskId) : undefined
+      await Deepwork.startBlocking({ until, mode: b.mode, packages: b.packages, taskTitle: task?.title ?? '' }).catch(() => {})
+    })()
+  }, [settings.modules.appBlocking, settings.blocking, state.phase, state.startedAt, state.pausedMs, state.plannedSec, state.taskId])
+
+  // Attempts to open a blocked app are logged as distractions when you come back.
+  useEffect(() => {
+    if (!isAndroid) return
+    const collect = async () => {
+      if (document.visibilityState !== 'visible') return
+      const { attempts } = await Deepwork.takeBlockedAttempts().catch(() => ({ attempts: [] }))
+      const st = settingsRef.current
+      const s = stateRef.current
+      if (!attempts.length || !s.sessionId || !st.blocking.logAttempts || !st.modules.distractions) return
+      await db.distractions.bulkPut(
+        attempts
+          .filter((a) => a.timestamp >= s.startedAt)
+          .map((a) => ({ id: uid(), session_id: s.sessionId!, timestamp: a.timestamp, reason: 'Blocked app', note: `Tried to open ${a.label}` })),
+      )
+    }
+    void collect()
+    document.addEventListener('visibilitychange', collect)
+    return () => document.removeEventListener('visibilitychange', collect)
+  }, [])
 
   // ------------------------------------------------------------ ambient sound follows the phase
   useEffect(() => {

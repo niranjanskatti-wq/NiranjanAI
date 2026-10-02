@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowLeft,
+  Ban,
   CircleCheck,
   CloudRain,
   Coffee,
@@ -32,6 +33,7 @@ import { toast } from '@/components/ui/toast'
 import { formatDuration, formatTimer, todayKey } from '@/lib/date'
 import { AMBIENT_SOUNDS, type AmbientSound } from '@/lib/settings'
 import { unlockAudio } from '@/lib/audio'
+import { Deepwork, isAndroid } from '@/lib/native'
 import { cn, pluralize } from '@/lib/utils'
 import { ProgressRing, type RingStatus } from './ProgressRing'
 import { SessionClose } from './SessionClose'
@@ -369,6 +371,7 @@ function FocusSession() {
             {display}
           </div>
           <div className="mt-1 text-sm text-muted">{caption}</div>
+          {inSession && <BlockingChip />}
           {inSession && settings.modules.distractions && distractionCount > 0 && (
             <div className="mt-3 rounded-full bg-card-2 px-2.5 py-1 text-xs text-muted">{pluralize(distractionCount, 'distraction')}</div>
           )}
@@ -507,6 +510,36 @@ function FocusSession() {
           <SoundPicker sound={state.sound} onChange={setSound} compact />
         </div>
       </Dialog>
+    </div>
+  )
+}
+
+/** Android: shows that distracting apps are paused, or how to turn blocking on. */
+function BlockingChip() {
+  const { settings } = useSettings()
+  const navigate = useNavigate()
+  const [serviceOn, setServiceOn] = useState<boolean | null>(null)
+  useEffect(() => {
+    if (!isAndroid) return
+    const check = () => void Deepwork.blockerStatus().then((s) => setServiceOn(s.serviceEnabled)).catch(() => setServiceOn(false))
+    check()
+    const onVis = () => document.visibilityState === 'visible' && check()
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [])
+  if (!isAndroid || !settings.modules.appBlocking || serviceOn === null) return null
+  const b = settings.blocking
+  if (!serviceOn || (b.mode === 'block' && b.packages.length === 0)) {
+    return (
+      <button onClick={() => navigate('/settings/blocking')} className="mt-3 flex items-center gap-1.5 rounded-full bg-card-2 px-2.5 py-1 text-xs text-muted">
+        <Ban className="size-3" /> Set up app blocking
+      </button>
+    )
+  }
+  return (
+    <div className="mt-3 flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-xs text-accent">
+      <Ban className="size-3" />
+      {b.mode === 'block' ? `${pluralize(b.packages.length, 'app')} paused` : `Only ${pluralize(b.packages.length, 'app')} allowed`}
     </div>
   )
 }

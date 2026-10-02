@@ -2,7 +2,9 @@
 import { useEffect } from 'react'
 import { db } from '@/db'
 import { dateKey, timeToMinutes } from '@/lib/date'
-import { notify } from '@/lib/notify'
+import { notify, rescheduleReminders } from '@/lib/notify'
+import { isNative } from '@/lib/native'
+import { useLiveQuery } from 'dexie-react-hooks'
 import type { Settings } from '@/lib/settings'
 import { isBackupDue, runBackup } from '@/lib/backup'
 import { isEveningReviewDue, isWeeklyReviewDue } from '@/lib/reviews'
@@ -27,8 +29,18 @@ function markFired(kind: string, stamp: string) {
 }
 
 export function useReminders(settings: Settings) {
+  // Android: reminders are scheduled natively a week ahead, re-planned when anything relevant changes.
+  const reviewCount = useLiveQuery(() => db.reviews.count(), [])
   useEffect(() => {
-    if (!settings.modules.notifications) return
+    if (!isNative) return
+    void rescheduleReminders(settings).catch(() => {})
+    const onVis = () => document.visibilityState === 'visible' && void rescheduleReminders(settings).catch(() => {})
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [settings, reviewCount])
+
+  useEffect(() => {
+    if (isNative || !settings.modules.notifications) return
     const check = async () => {
       const now = new Date()
       const today = dateKey(now)

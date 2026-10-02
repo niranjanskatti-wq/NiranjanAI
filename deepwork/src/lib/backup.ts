@@ -4,7 +4,7 @@ import { addDays, startOfDay } from 'date-fns'
 import { readSettings, updateSettings } from '@/state/settings'
 import type { Settings } from './settings'
 import { backupFilename, buildBackup } from './data'
-import { DriveAuthError, DriveConfigError, pruneBackups, requestToken, uploadBackup, validToken } from './drive'
+import { DriveAuthError, DriveConfigError, pruneBackups, requestToken, silentToken, uploadBackup, validToken } from './drive'
 
 /** Most recent occurrence of the configured backup weekday at 00:00 that is <= now. */
 export function lastScheduled(day: number, now = new Date()) {
@@ -34,7 +34,7 @@ export async function runBackup({ interactive }: { interactive: boolean }): Prom
   if (!s.modules.backup || !s.backup.connected) return { outcome: 'disabled' }
   running = true
   try {
-    let token = validToken()
+    let token = validToken() ?? (await silentToken())
     if (!token) {
       if (!interactive) {
         await updateSettings((d) => {

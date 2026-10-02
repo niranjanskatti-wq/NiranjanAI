@@ -1,0 +1,133 @@
+# Builds the Deepwork Android app and publishes the APK as a GitHub release,
+# so it can be downloaded straight onto the phone.
+name: Deepwork Android build
+
+on:
+  push:
+    paths:
+      - "deepwork/**"
+      - ".github/workflows/deepwork-android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deepwork-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deepwork
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: deepwork/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK platform
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Type-check and build the app
+        run: npm run build
+
+      - name: Copy the app into the Android project
+        run: npx cap sync android
+
+      # One signing key for every build, so each new APK installs as an update
+      # over the last one and keeps the app's data. It lives in the Actions cache
+      # (private to this repository, never in the code). The two secrets, if
+      # ever added, take priority.
+      - name: Restore the build signing key
+        id: buildkey
+        uses: actions/cache@v4
+        with:
+          path: deepwork/android/app/deepwork-build.jks
+          key: deepwork-build-signing-key-v1
+
+      - name: Create the build signing key (first build only)
+        if: steps.buildkey.outputs.cache-hit != 'true'
+        run: |
+          keytool -genkeypair -keystore android/app/deepwork-build.jks -alias deepwork \
+            -storepass deepwork-build -keypass deepwork-build -keyalg RSA -keysize 2048 \
+            -validity 36500 -dname "CN=Deepwork, O=Personal"
+
+      - name: Prepare signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.DEEPWORK_KEYSTORE_B64 }}
+          KEY_PASSWORD: ${{ secrets.DEEPWORK_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > android/app/deepwork.jks
+            printf "storeFile=deepwork.jks\nstorePassword=%s\nkeyAlias=deepwork\nkeyPassword=%s\n" \
+              "$KEY_PASSWORD" "$KEY_PASSWORD" > android/key.properties
+            echo "SIGNING=your private key" >> "$GITHUB_ENV"
+          else
+            printf "storeFile=deepwork-build.jks\nstorePassword=deepwork-build\nkeyAlias=deepwork\nkeyPassword=deepwork-build\n" \
+              > android/key.properties
+            echo "SIGNING=the saved build key (installs as an update over earlier builds signed the same way)" >> "$GITHUB_ENV"
+          fi
+          SHA1=$(keytool -list -v -keystore android/app/$(grep storeFile android/key.properties | cut -d= -f2) \
+            -storepass "$(grep storePassword android/key.properties | cut -d= -f2)" | grep -m1 "SHA1:" | sed 's/.*SHA1: //')
+          echo "Signing SHA-1: $SHA1"
+          echo "SIGNING_SHA1=$SHA1" >> "$GITHUB_ENV"
+
+      - name: Build APK
+        working-directory: deepwork/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease -PversionCode=${{ github.run_number }} --no-daemon --stacktrace
+
+      - name: Name the APK
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk "../Deepwork-build-${{ github.run_number }}.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk ../Deepwork.apk
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: deepwork-build-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Deepwork · build ${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          files: Deepwork-build-${{ github.run_number }}.apk
+          body: |
+            Deepwork Android app, build ${{ github.run_number }} (branch `${{ github.ref_name }}`).
+
+            **To install:** open this page on your Android phone, tap the `.apk` file under Assets,
+            then open the download and allow "Install unknown apps" for your browser when asked.
+
+            Signed with ${{ env.SIGNING }}.
+            Package `com.niranjan.deepwork` · SHA-1 `${{ env.SIGNING_SHA1 }}` (needed once for Google Drive backup, see the README).
+
+      # A fixed link that always serves the newest APK.
+      - name: Update the "latest" download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: deepwork-latest
+          name: Deepwork · latest Android build
+          prerelease: true
+          make_latest: false
+          files: Deepwork.apk
+          body: |
+            Always the newest Deepwork Android build (currently build ${{ github.run_number }}, commit ${{ github.sha }}).
+
+            **To install:** open this page on your Android phone, tap `Deepwork.apk` under Assets,
+            then open the download and allow "Install unknown apps" for your browser when asked.

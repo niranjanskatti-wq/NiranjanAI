@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { Input, Select } from '@/components/ui/input'
 import { Segmented } from '@/components/ui/segmented'
+import { isNative } from '@/lib/native'
 import { toast } from '@/components/ui/toast'
 
 export function PrivacySection() {
@@ -39,7 +40,15 @@ export function PrivacySection() {
             </Row>
             <Row
               label="Unlock with biometrics"
-              description={bioAvail ? 'Face ID, Touch ID, Windows Hello or fingerprint. Your PIN still works.' : 'Not available on this device or browser (requires HTTPS and a platform authenticator).'}
+              description={
+                bioAvail
+                  ? isNative
+                    ? 'Fingerprint or face unlock. Your PIN still works.'
+                    : 'Face ID, Touch ID, Windows Hello or fingerprint. Your PIN still works.'
+                  : isNative
+                    ? 'No fingerprint or face unlock is set up on this phone.'
+                    : 'Not available on this device or browser (requires HTTPS and a platform authenticator).'
+              }
             >
               <Switch
                 checked={lock.biometric && !!lock.credentialId}
@@ -76,7 +85,7 @@ export function PrivacySection() {
 
       <Section title="Your data">
         <div className="space-y-2 py-4 text-sm text-muted">
-          <p>Everything you create in Deepwork is stored in this browser's on-device database (IndexedDB). There are no accounts, no analytics and no servers.</p>
+          <p>Everything you create in Deepwork is stored on this device. There are no accounts, no analytics and no servers.</p>
           <p>The only network activity is the optional weekly backup, which sends a single JSON file directly from this device to a folder in your own Google Drive. The app can only see files it created.</p>
           <p>Backups never include your PIN, biometric registration or Google sign-in token.</p>
         </div>

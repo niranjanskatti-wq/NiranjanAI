@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Bell, ChevronLeft, ChevronRight, Cloud, Database, Info, Palette, Shield, SlidersHorizontal, ToggleRight, type LucideIcon } from 'lucide-react'
+import { Ban, Bell, ChevronLeft, ChevronRight, Cloud, Database, Info, Palette, Shield, SlidersHorizontal, ToggleRight, type LucideIcon } from 'lucide-react'
 import { NavLink, useNavigate, useParams } from 'react-router'
 import { Page } from '@/components/shared/Page'
 import { PageHeader } from '@/components/ui/empty'
@@ -13,9 +13,12 @@ import { PrivacySection } from './sections/Privacy'
 import { BackupSection } from './sections/Backup'
 import { DataSection } from './sections/Data'
 import { AboutSection } from './sections/About'
+import { BlockingSection } from './sections/Blocking'
+import { isAndroid } from '@/lib/native'
 
 const SECTIONS: { id: string; label: string; description: string; icon: LucideIcon; Component: () => React.ReactNode }[] = [
   { id: 'features', label: 'Features', description: 'Turn modules on or off', icon: ToggleRight, Component: FeaturesSection },
+  ...(isAndroid ? [{ id: 'blocking', label: 'App blocking', description: 'Pause distracting apps while you focus', icon: Ban, Component: BlockingSection }] : []),
   { id: 'customize', label: 'Customization', description: 'Fine-tune each module', icon: SlidersHorizontal, Component: CustomizeSection },
   { id: 'appearance', label: 'Appearance', description: 'Theme, accent, font, layout', icon: Palette, Component: AppearanceSection },
   { id: 'notifications', label: 'Notifications', description: 'Reminders and quiet hours', icon: Bell, Component: NotificationsSection },

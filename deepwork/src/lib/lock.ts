@@ -1,3 +1,5 @@
+import { Deepwork, isNative } from './native'
+
 // App lock helpers: salted PIN hashing (WebCrypto) and device biometrics via WebAuthn platform
 // authenticators. Everything stays on-device; WebAuthn here is used purely as a local presence check.
 
@@ -42,6 +44,7 @@ export async function verifyPin(pin: string, salt: string | null, hash: string |
 }
 
 export async function biometricsAvailable(): Promise<boolean> {
+  if (isNative) return (await Deepwork.biometricAvailable().catch(() => ({ available: false }))).available
   try {
     if (!window.PublicKeyCredential || !window.isSecureContext) return false
     return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
@@ -52,6 +55,11 @@ export async function biometricsAvailable(): Promise<boolean> {
 
 /** Register a platform credential (Face ID / Touch ID / Windows Hello). Returns the credential id. */
 export async function registerBiometric(): Promise<string> {
+  if (isNative) {
+    const r = await Deepwork.authenticate({ title: 'Confirm fingerprint unlock' })
+    if (!r.success) throw new Error(r.error || 'Biometric setup was cancelled.')
+    return 'android'
+  }
   const cred = (await navigator.credentials.create({
     publicKey: {
       challenge: randomBytes(32),
@@ -71,6 +79,7 @@ export async function registerBiometric(): Promise<string> {
 }
 
 export async function verifyBiometric(credentialId: string): Promise<boolean> {
+  if (isNative) return (await Deepwork.authenticate({ title: 'Unlock Deepwork' }).catch(() => ({ success: false }))).success
   try {
     const res = await navigator.credentials.get({
       publicKey: {

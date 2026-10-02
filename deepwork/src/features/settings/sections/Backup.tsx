@@ -17,6 +17,7 @@ import { Spinner } from '@/components/ui/empty'
 import { confirmDialog } from '@/components/ui/confirm'
 import { toast } from '@/components/ui/toast'
 import { NumberInput } from '../controls'
+import { Deepwork, isNative } from '@/lib/native'
 
 export const TABLE_LABELS: Record<(typeof DATA_TABLES)[number], string> = {
   projects: 'Projects',
@@ -137,6 +138,7 @@ export function BackupSection() {
           </Button>
           {!online && <p className="text-xs text-muted">You're offline. Connect when you're back online.</p>}
         </div>
+        {isNative && <AndroidSetupHelp />}
       </Section>
     )
   }
@@ -206,6 +208,36 @@ export function BackupSection() {
 
       <RestoreDialog open={restoreOpen} onOpenChange={setRestoreOpen} />
     </>
+  )
+}
+
+/** The values Google Cloud needs for an Android OAuth client (one-time setup, see README). */
+function AndroidSetupHelp() {
+  const [info, setInfo] = useState<{ packageName: string; sha1?: string } | null>(null)
+  useEffect(() => {
+    void Deepwork.getSigningInfo().then(setInfo).catch(() => {})
+  }, [])
+  const copy = (v: string) => void navigator.clipboard?.writeText(v).then(() => toast('Copied', { kind: 'success', duration: 1500 }))
+  return (
+    <div className="border-t border-border/70 py-4 text-[13px] text-muted">
+      <p className="mb-2 font-medium text-fg">One-time Google Cloud setup</p>
+      <p>
+        Create an <b>Android</b> OAuth client in Google Cloud Console (project with the Drive API enabled) using these two values. The README has step-by-step instructions.
+      </p>
+      {info && (
+        <div className="mt-3 space-y-2">
+          {[
+            ['Package name', info.packageName],
+            ['SHA-1 certificate fingerprint', info.sha1 || 'Unavailable'],
+          ].map(([k, v]) => (
+            <button key={k} onClick={() => copy(v)} className="block w-full rounded-[10px] bg-card-2/70 px-3 py-2 text-left" title="Tap to copy">
+              <span className="block text-[11px] uppercase tracking-wider">{k}</span>
+              <span className="block break-all font-mono text-[12px] text-fg">{v}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 

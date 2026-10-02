@@ -6,6 +6,7 @@ import '@fontsource-variable/source-serif-4'
 import './index.css'
 import App from './App'
 import { registerSW } from 'virtual:pwa-register'
+import { isNative } from './lib/native'
 
 // Apply the last-known theme before first paint to avoid a flash.
 try {
@@ -15,7 +16,7 @@ try {
   /* ignore */
 }
 
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && !isNative) {
   registerSW({ immediate: true })
 }
 

@@ -2,6 +2,7 @@
 // Google Identity Services issues a short-lived access token in the browser; all Drive calls go
 // directly from this device to Google's REST API using the narrow drive.file scope.
 import { DRIVE_FOLDER_NAME, GOOGLE_DRIVE_SCOPE, getClientId } from '@/config/google'
+import { Deepwork, isNative } from './native'
 
 const TOKEN_KEY = 'deepwork.driveToken'
 const FOLDER_KEY = 'deepwork.driveFolderId'
@@ -61,7 +62,8 @@ function loadGis(): Promise<GoogleOAuth2> {
 }
 
 export function isConfigured() {
-  return getClientId().length > 0
+  // On Android, Google identifies the app by its package name and signing key instead.
+  return isNative || getClientId().length > 0
 }
 
 export function storedToken(): { token: string; expiresAt: number } | null {
@@ -99,6 +101,15 @@ export function clearToken() {
 
 /** Opens Google's consent popup (must be called from a user gesture). */
 export async function requestToken(prompt: '' | 'consent' | 'select_account' = ''): Promise<string> {
+  if (isNative) {
+    try {
+      const r = await Deepwork.googleAuthorize({ interactive: true })
+      saveToken(r.accessToken, r.expiresIn)
+      return r.accessToken
+    } catch (e) {
+      throw new Error(e instanceof Error ? e.message : 'Google sign-in failed.')
+    }
+  }
   const clientId = getClientId()
   if (!clientId) throw new DriveConfigError('No Google OAuth Client ID configured. Add it in src/config/google.ts (see README).')
   const oauth2 = await loadGis()
@@ -117,10 +128,30 @@ export async function requestToken(prompt: '' | 'consent' | 'select_account' = '
   })
 }
 
+/** Android only: get a fresh token without any UI when access was granted before. */
+export async function silentToken(): Promise<string | null> {
+  if (!isNative) return null
+  try {
+    const r = await Deepwork.googleAuthorize({ interactive: false })
+    saveToken(r.accessToken, r.expiresIn)
+    return r.accessToken
+  } catch {
+    return null
+  }
+}
+
 export async function revokeToken() {
   const t = storedToken()
   clearToken()
   if (!t) return
+  if (isNative) {
+    try {
+      await fetch(`https://oauth2.googleapis.com/revoke?token=${encodeURIComponent(t.token)}`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+    } catch {
+      /* offline: the token expires on its own within an hour */
+    }
+    return
+  }
   try {
     const oauth2 = await loadGis()
     await new Promise<void>((r) => oauth2.revoke(t.token, () => r()))

@@ -1,6 +1,7 @@
 import { MotionConfig } from 'framer-motion'
-import { lazy, Suspense, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, type ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { isNative } from '@/lib/native'
 import { SettingsProvider, useSettings } from '@/state/settings'
 import { FocusProvider } from '@/state/focus'
 import { useApplyAppearance } from '@/hooks/appearance'
@@ -45,6 +46,28 @@ function Guard({ module, anyOf, children }: { module?: ModuleKey; anyOf?: Module
   return <>{children}</>
 }
 
+/** Android hardware back button: go back within the app, or send the app to the background. */
+function NativeBackButton() {
+  useEffect(() => {
+    if (!isNative) return
+    let remove: (() => void) | undefined
+    void import('@capacitor/app').then(({ App: CapApp }) =>
+      CapApp.addListener('backButton', ({ canGoBack }) => {
+        // Close an open dialog first.
+        const dialog = document.querySelector('[role="dialog"][data-state="open"]')
+        if (dialog) {
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+          return
+        }
+        if (canGoBack && window.location.pathname !== '/') window.history.back()
+        else void CapApp.minimizeApp()
+      }).then((h) => (remove = () => void h.remove())),
+    )
+    return () => remove?.()
+  }, [])
+  return null
+}
+
 function Root() {
   const { settings } = useSettings()
   useApplyAppearance(settings)
@@ -56,6 +79,7 @@ function Root() {
       <FocusProvider>
         <LockGate>
           <BrowserRouter>
+            <NativeBackButton />
             <AppShell>
               <Suspense fallback={<PageFallback />}>
                 <Routes>

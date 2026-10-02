@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useSettings } from '@/state/settings'
 import { useFocus } from '@/state/focus'
 import { verifyBiometric, verifyPin } from '@/lib/lock'
+import { isNative } from '@/lib/native'
 import { cn } from '@/lib/utils'
 import { Logo } from '@/components/layout/Logo'
 
@@ -72,6 +73,11 @@ function LockScreen({ onUnlock }: { onUnlock: () => void }) {
     if (!biometric || !credentialId) return
     if (await verifyBiometric(credentialId)) onUnlock()
   }, [biometric, credentialId, onUnlock])
+
+  // On Android the fingerprint prompt can open by itself; browsers need a tap first.
+  useEffect(() => {
+    if (isNative) void tryBio()
+  }, [tryBio])
 
   useEffect(() => {
     if (pin.length < pinLength) return

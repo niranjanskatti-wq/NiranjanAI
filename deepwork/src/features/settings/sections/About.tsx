@@ -6,6 +6,7 @@ import { useOnline } from '@/hooks/useMediaQuery'
 import { SCHEMA_VERSION } from '@/lib/data'
 import { Logo } from '@/components/layout/Logo'
 import { toast } from '@/components/ui/toast'
+import { isNative } from '@/lib/native'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -49,6 +50,10 @@ export function AboutSection() {
 
       <Section title="This device">
         <Row label="Connection" description={online ? 'Online' : 'Offline — everything except Drive backup works normally.'} />
+        {isNative ? (
+          <Row label="App" description="Android app. Everything is stored on this phone and works offline." />
+        ) : (
+          <>
         <Row label="Offline ready" description={swActive ? 'The app is cached for offline use.' : 'Offline cache installs after the first load of the production build.'} />
         <Row label="Installed" description={standalone ? 'Running as an installed app.' : 'Running in a browser tab.'}>
           {!standalone && canInstall && (
@@ -68,6 +73,8 @@ export function AboutSection() {
             </Button>
           )}
         </Row>
+          </>
+        )}
         {storage && <Row label="Storage used" description={`${mb(storage.usage)} MB of ~${mb(storage.quota)} MB available`} />}
         <Row label="Persistent storage" description={persisted ? 'Granted — the browser won’t clear your data under storage pressure.' : 'Ask the browser not to evict your data when space is low.'}>
           {persisted === false && (

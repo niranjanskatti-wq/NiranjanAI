@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { Settings } from '@/lib/settings'
 import { contrastText } from '@/lib/utils'
+import { SystemBars, SystemBarsStyle } from '@capacitor/core'
+import { isNative } from '@/lib/native'
 
 function systemDark() {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches
@@ -31,6 +33,7 @@ export function useApplyAppearance(settings: Settings) {
     root.style.setProperty('--accent-fg', contrastText(a.accent))
     const meta = document.querySelector('meta[name="theme-color"]')
     meta?.setAttribute('content', resolved === 'dark' ? '#0B0B0F' : '#FAFAFB')
+    if (isNative) void SystemBars.setStyle({ style: resolved === 'dark' ? SystemBarsStyle.Dark : SystemBarsStyle.Light }).catch(() => {})
     try {
       localStorage.setItem('deepwork.themeHint', resolved)
     } catch {

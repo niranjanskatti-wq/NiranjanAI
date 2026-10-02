@@ -11,7 +11,58 @@ Stack: React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui-style components (
 
 ---
 
-## Run it
+## Android app
+
+Deepwork is packaged as a native Android app with [Capacitor](https://capacitorjs.com). The project is in `android/`, and the native code is in `android/app/src/main/java/com/niranjan/deepwork/`. The Android app adds:
+
+- **App blocking during focus sessions.** Pick apps to pause, or allow only the apps you pick. Opening a paused app shows a full-screen "Stay with it" screen with the time left. Pausing or ending the session lifts the block. Your home screen, phone/dialer and keyboard are never blocked. Each attempt can be logged as a "Blocked app" distraction.
+- **Real notifications.** Session-complete and break-over alerts are scheduled with Android, so they fire on time even when the app is closed. Morning, evening and weekly reminders are planned a week ahead.
+- **Fingerprint or face unlock** with the system biometric prompt, keep-screen-on during sessions, and the Android back button.
+- **Automatic Drive backup without prompts.** After you connect once, Android hands out fresh tokens silently, so the weekly backup runs on its own whenever you open the app.
+- **Sharing exports.** JSON and CSV exports go to the Android share sheet, so you can save them to Files, Drive or email.
+
+### Install
+Every push that changes `deepwork/` runs the **Deepwork Android build** GitHub Action. It builds a signed APK and publishes it as a GitHub release.
+
+- Always the newest build: <https://github.com/niranjanskatti-wq/NiranjanAI/releases/download/deepwork-latest/Deepwork.apk>
+- All builds: <https://github.com/niranjanskatti-wq/NiranjanAI/releases>
+
+Open the link on your phone, download the APK, and allow "Install unknown apps" for your browser when Android asks. New builds install as updates and keep your data, because every build is signed with the same key, which is saved in the repository's Actions cache.
+
+### Turn on app blocking
+1. In Deepwork, go to **Settings → App blocking → Open Accessibility settings**.
+2. Choose **Deepwork focus blocking** (it may be listed under "Installed apps" or "Downloaded apps") and switch it on.
+   - On Android 13 and later, sideloaded apps may show "Restricted setting". If you see that, open Android **Settings → Apps → Deepwork → ⋮ → Allow restricted settings**, then repeat step 2.
+3. Back in Deepwork, pick the apps to pause, or switch to "Allow only chosen apps".
+
+The permission is used only to see which app comes to the foreground during a session. Deepwork never reads screen content, and nothing leaves your phone.
+
+### Google Drive backup on Android
+On Android, Google recognises the app by its **package name and signing certificate**, so you don't need to paste a Client ID. You need one extra OAuth client:
+
+1. Do steps 1–3 of the web setup below (project, Drive API, consent screen with the `drive.file` scope, and yourself as a test user).
+2. Go to **Credentials → Create credentials → OAuth client ID → Android**.
+3. Package name: `com.niranjan.deepwork`.
+4. SHA-1 certificate fingerprint: copy it from **Deepwork → Settings → Backup** (tap to copy), or from the release notes of any build.
+5. **Create**. Then, in Deepwork, tap **Connect Google Drive**.
+
+If Google reports a "developer error", the package name or SHA-1 doesn't match the Android client.
+
+### Build it yourself
+You need Node 20+, JDK 21 and the Android SDK (platform 36):
+
+```bash
+npm install
+npm run build
+npx cap sync android
+cd android && ./gradlew assembleDebug     # app/build/outputs/apk/debug/app-debug.apk
+```
+
+Or open `android/` in Android Studio.
+
+---
+
+## Run it (web / desktop browser)
 
 Requirements: Node.js 20+ and npm.
 

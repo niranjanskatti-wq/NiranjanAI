@@ -18,8 +18,9 @@ export type ModuleKey =
   | 'summary'
   | 'backup'
   | 'notifications'
+  | 'appBlocking'
 
-export const MODULES: { key: ModuleKey; label: string; description: string; locked?: boolean }[] = [
+export const MODULES: { key: ModuleKey; label: string; description: string; locked?: boolean; androidOnly?: boolean }[] = [
   { key: 'priorities', label: 'Top priorities', description: 'The few things that matter most today.' },
   { key: 'timeBlocks', label: 'Hourly time blocks', description: 'Plan your day on an hourly timeline.' },
   { key: 'tasks', label: 'Task list', description: 'Projects, estimates, due dates and status.' },
@@ -28,6 +29,7 @@ export const MODULES: { key: ModuleKey; label: string; description: string; lock
   { key: 'distractions', label: 'Distraction logging', description: 'Log what pulls you away, without stopping the timer.' },
   { key: 'sessionClose', label: 'Session close', description: 'Record the result and a note after each session.' },
   { key: 'breaks', label: 'Break reminders', description: 'Suggested breaks and a break timer.' },
+  { key: 'appBlocking', label: 'App blocking', description: 'Pause distracting apps on your phone during focus sessions.', androidOnly: true },
   { key: 'ambient', label: 'Ambient sounds', description: 'Rain, café, white and brown noise.' },
   { key: 'streaks', label: 'Streaks', description: 'Consecutive days that meet your rule.' },
   { key: 'eveningReview', label: 'Evening review', description: 'A two-minute look back at the day.' },
@@ -174,6 +176,12 @@ export interface Settings {
     lastError: string | null
     needsReconnect: boolean
   }
+  blocking: {
+    mode: 'block' | 'allow' // block the chosen apps, or block everything except them
+    packages: string[]
+    labels: Record<string, string>
+    logAttempts: boolean
+  }
   sidebarCollapsed: boolean
   demoLoaded: boolean
 }
@@ -200,6 +208,7 @@ export const DEFAULT_SETTINGS: Settings = {
     summary: true,
     backup: false,
     notifications: true,
+    appBlocking: true,
   },
   priorities: { count: 3, label: 'Top priorities' },
   timeBlocks: { dayStart: '08:00', dayEnd: '18:00', blockLength: 60, showWeekends: true },
@@ -276,6 +285,7 @@ export const DEFAULT_SETTINGS: Settings = {
     lastError: null,
     needsReconnect: false,
   },
+  blocking: { mode: 'block', packages: [], labels: {}, logAttempts: true },
   sidebarCollapsed: false,
   demoLoaded: false,
 }
@@ -288,6 +298,8 @@ function isObj(v: unknown): v is Record<string, unknown> {
 export function mergeSettings(stored: unknown, defaults: Settings = DEFAULT_SETTINGS): Settings {
   const merge = (d: unknown, s: unknown): unknown => {
     if (s === undefined) return structuredClone(d)
+    // Free-form maps (empty by default) are taken as stored.
+    if (isObj(d) && Object.keys(d).length === 0) return isObj(s) ? s : {}
     if (isObj(d) && isObj(s)) {
       const out: Record<string, unknown> = {}
       for (const k of Object.keys(d)) out[k] = merge(d[k], s[k])
@@ -325,6 +337,7 @@ export type ResettableSection =
   | 'dailyGoal'
   | 'notifications'
   | 'appearance'
+  | 'blocking'
   | 'modules'
 
 export function resetSection(s: Settings, section: ResettableSection): void {

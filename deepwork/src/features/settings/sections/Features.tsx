@@ -2,6 +2,7 @@ import { RotateCcw } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { useSettings } from '@/state/settings'
 import { MODULES, resetSection } from '@/lib/settings'
+import { isAndroid } from '@/lib/native'
 import { Row, Section } from '@/components/ui/row'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
@@ -31,7 +32,7 @@ export function FeaturesSection() {
           </Button>
         }
       >
-        {MODULES.map((m) => {
+        {MODULES.filter((m) => !m.androidOnly || isAndroid).map((m) => {
           const on = settings.modules[m.key]
           const needsConnect = m.key === 'backup' && !settings.backup.connected
           return (

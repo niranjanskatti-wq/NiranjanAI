@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSettings } from '@/state/settings'
-import { notify, permission, requestPermission } from '@/lib/notify'
+import { exactAlarmStatus, getPermission, notify, openExactAlarmSettings, requestPermission, type PermissionState } from '@/lib/notify'
+import { isNative } from '@/lib/native'
 import { resetSection } from '@/lib/settings'
 import { DAY_NAMES } from '@/lib/date'
 import { Row, Section } from '@/components/ui/row'
@@ -11,9 +12,15 @@ import { ResetButton, TimeInput } from '../controls'
 
 export function NotificationsSection() {
   const { settings, update } = useSettings()
-  const [perm, setPerm] = useState(permission())
+  const [perm, setPerm] = useState<PermissionState | null>(null)
+  const [exact, setExact] = useState<'granted' | 'denied' | 'unsupported'>('unsupported')
   useEffect(() => {
-    const iv = setInterval(() => setPerm(permission()), 2000)
+    const check = () => {
+      void getPermission().then(setPerm)
+      void exactAlarmStatus().then(setExact)
+    }
+    check()
+    const iv = setInterval(check, 2000)
     return () => clearInterval(iv)
   }, [])
   const n = settings.notifications
@@ -24,13 +31,17 @@ export function NotificationsSection() {
     <>
       <Section title="Permission">
         <Row
-          label={perm === 'granted' ? 'Notifications allowed' : perm === 'denied' ? 'Notifications blocked' : perm === 'unsupported' ? 'Not supported' : 'Not yet allowed'}
+          label={perm === null ? 'Checking…' : perm === 'granted' ? 'Notifications allowed' : perm === 'denied' ? 'Notifications blocked' : perm === 'unsupported' ? 'Not supported' : 'Not yet allowed'}
           description={
             perm === 'denied'
-              ? 'Allow notifications for this site in your browser or system settings.'
+              ? isNative
+                ? 'Allow notifications for Deepwork in Android Settings → Apps → Deepwork → Notifications.'
+                : 'Allow notifications for this site in your browser or system settings.'
               : perm === 'unsupported'
                 ? 'This browser does not support notifications. On iPhone, install Deepwork to your Home Screen first.'
-                : 'Reminders fire while Deepwork is open or running in the background.'
+                : isNative
+                  ? 'Reminders and timer alerts fire even when Deepwork is closed.'
+                  : 'Reminders fire while Deepwork is open or running in the background.'
           }
         >
           {perm === 'default' && (
@@ -51,6 +62,18 @@ export function NotificationsSection() {
             </Button>
           )}
         </Row>
+        {isNative && exact !== 'unsupported' && (
+          <Row
+            label="Exact timer alerts"
+            description={exact === 'granted' ? 'Session and break alerts fire right on time.' : 'Without this, Android may delay timer alerts by a few minutes.'}
+          >
+            {exact === 'denied' && (
+              <Button variant="secondary" size="sm" onClick={() => void openExactAlarmSettings()}>
+                Allow
+              </Button>
+            )}
+          </Row>
+        )}
       </Section>
 
       <Section title="Reminders" action={<ResetButton label="Notifications" onReset={() => update((s) => resetSection(s, 'notifications'))} />}>

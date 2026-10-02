@@ -6,6 +6,7 @@ import { DEFAULT_SETTINGS, mergeSettings } from '@/lib/settings'
 import { backupFilename, buildBackup, buildCsvs, deleteAllData, parseBackupText, restoreBackup, type BackupFile } from '@/lib/data'
 import { clearDemoData, loadDemoData } from '@/lib/demo'
 import { downloadFile } from '@/lib/utils'
+import { isNative, shareFiles } from '@/lib/native'
 import { Row, Section } from '@/components/ui/row'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
@@ -28,6 +29,17 @@ export function DataSection() {
   const exportCsv = async () => {
     const { sessionsCsv, tasksCsv, distractionsCsv } = await buildCsvs()
     const d = format(new Date(), 'yyyy-MM-dd')
+    if (isNative) {
+      await shareFiles(
+        [
+          { name: `deepwork-sessions-${d}.csv`, content: sessionsCsv, mime: 'text/csv' },
+          { name: `deepwork-tasks-${d}.csv`, content: tasksCsv, mime: 'text/csv' },
+          { name: `deepwork-distractions-${d}.csv`, content: distractionsCsv, mime: 'text/csv' },
+        ],
+        'Deepwork CSV export',
+      )
+      return
+    }
     downloadFile(`deepwork-sessions-${d}.csv`, sessionsCsv, 'text/csv')
     setTimeout(() => downloadFile(`deepwork-tasks-${d}.csv`, tasksCsv, 'text/csv'), 300)
     setTimeout(() => downloadFile(`deepwork-distractions-${d}.csv`, distractionsCsv, 'text/csv'), 600)

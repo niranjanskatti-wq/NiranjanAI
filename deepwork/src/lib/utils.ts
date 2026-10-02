@@ -1,3 +1,4 @@
+import { isNative, shareFiles } from './native'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -27,6 +28,10 @@ export function pluralize(n: number, one: string, many = one + 's') {
 }
 
 export function downloadFile(filename: string, content: string | Blob, type = 'application/json') {
+  if (isNative && typeof content === 'string') {
+    void shareFiles([{ name: filename, content, mime: type }], filename)
+    return
+  }
   const blob = typeof content === 'string' ? new Blob([content], { type }) : content
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
