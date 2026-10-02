@@ -18,7 +18,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
 
     companion object {
         const val NAME = "essential.db"
-        const val VERSION = 3
+        const val VERSION = 4
 
         @Volatile private var inst: Db? = null
         fun get(ctx: Context): Db = inst ?: synchronized(this) {
@@ -31,7 +31,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
         /** Tables included in backups, in restore order. */
         val TABLES = listOf(
             "settings", "venture", "goal", "milestone", "template", "block", "sprint", "day_plan",
-            "hour_log", "focus_session", "distraction", "daily_review", "habit", "habit_log",
+            "hour_log", "focus_session", "distraction", "daily_review", "habit", "habit_log", "book", "habit_entry",
             "sleep_log", "opportunity", "no_log", "commitment", "uncommit_review", "task_estimate",
             "obstacle", "keyword_rule"
         )
@@ -69,7 +69,14 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
             """CREATE TABLE daily_review(date TEXT PRIMARY KEY, one_thing_done INTEGER NOT NULL DEFAULT 0, small_win TEXT, trivial_to_cut TEXT,
                headline TEXT, day_rating INTEGER, tomorrow_one_thing TEXT, is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
             """CREATE TABLE habit(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, trigger TEXT, active INTEGER NOT NULL DEFAULT 1,
-               sort INTEGER NOT NULL DEFAULT 0, color INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
+               sort INTEGER NOT NULL DEFAULT 0, color INTEGER NOT NULL DEFAULT 0,
+               unit TEXT, target REAL, target_for_chain INTEGER NOT NULL DEFAULT 0, show_totals INTEGER NOT NULL DEFAULT 1, updated_at INTEGER NOT NULL DEFAULT 0)""",
+            """CREATE TABLE book(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, author TEXT, total_pages INTEGER NOT NULL DEFAULT 0,
+               current_page INTEGER NOT NULL DEFAULT 0, started TEXT, finished TEXT, sort INTEGER NOT NULL DEFAULT 0,
+               is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
+            """CREATE TABLE habit_entry(id INTEGER PRIMARY KEY AUTOINCREMENT, habit_id INTEGER NOT NULL, date TEXT NOT NULL, amount REAL NOT NULL,
+               book_id INTEGER, note TEXT, created INTEGER NOT NULL DEFAULT 0, is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0)""",
+            "CREATE INDEX habit_entry_hd ON habit_entry(habit_id, date)",
             """CREATE TABLE habit_log(habit_id INTEGER NOT NULL, date TEXT NOT NULL, done INTEGER NOT NULL DEFAULT 1,
                is_sample INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(habit_id, date))""",
             """CREATE TABLE sleep_log(date TEXT PRIMARY KEY, bedtime INTEGER NOT NULL, wake_time INTEGER NOT NULL, quality INTEGER NOT NULL,
@@ -102,6 +109,7 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) removeTrading(db)
         if (oldVersion < 3) { db.execSQL("ALTER TABLE habit ADD COLUMN color INTEGER NOT NULL DEFAULT 0"); removeDefaultNames(db) }
+        if (oldVersion < 4) addHabitAmounts(db)
         // Future migrations go here, one `if (oldVersion < N)` step at a time.
     }
 
@@ -131,6 +139,14 @@ class Db private constructor(ctx: Context) : SQLiteOpenHelper(ctx, NAME, null, V
         for ((old, new) in Seed.LEGACY_TITLES) db.execSQL("UPDATE block SET title=? WHERE title=?", arrayOf(new, old))
         val habits = db.rawQuery("SELECT id FROM habit ORDER BY sort, id", null).use { c -> val l = ArrayList<Long>(); while (c.moveToNext()) l.add(c.getLong(0)); l }
         habits.forEachIndexed { i, id -> db.execSQL("UPDATE habit SET color=? WHERE id=? AND color=0", arrayOf(Seed.HABIT_COLORS[i % Seed.HABIT_COLORS.size], id)) }
+    }
+
+    /** v4: optional amounts per habit (minutes, pages with books, count, own unit) and the starter habits. */
+    private fun addHabitAmounts(db: SQLiteDatabase) {
+        listOf("unit TEXT", "target REAL", "target_for_chain INTEGER NOT NULL DEFAULT 0", "show_totals INTEGER NOT NULL DEFAULT 1")
+            .forEach { db.execSQL("ALTER TABLE habit ADD COLUMN $it") }
+        SCHEMA.filter { it.contains("TABLE book(") || it.contains("TABLE habit_entry(") || it.contains("habit_entry_hd") }.forEach { db.execSQL(it) }
+        Seed.addStarterHabits(db)
     }
 
     fun removeTrading(db: SQLiteDatabase = w) {

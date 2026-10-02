@@ -155,6 +155,13 @@ object Backup {
         val habits = repo.habits(false).associate { it.id to it.name }
         out["habits.csv"] = csv(listOf("date", "habit", "done"),
             repo.db.query("SELECT habit_id, date, done FROM habit_log ORDER BY date") { listOf(it.getString(1), habits[it.getLong(0)], if (it.getInt(2) == 1) "Y" else "N") })
+        val units = repo.habits(false).associate { it.id to (it.unit ?: "") }
+        val bookTitles = repo.books().associate { it.id to it.title }
+        out["habit_amounts.csv"] = csv(listOf("date", "habit", "amount", "unit", "book", "note"),
+            repo.db.query("SELECT habit_id, date, amount, book_id, note FROM habit_entry ORDER BY date, id") {
+                listOf(it.getString(1), habits[it.getLong(0)], it.getDouble(2), units[it.getLong(0)], if (it.isNull(3)) null else bookTitles[it.getLong(3)], it.getString(4)) })
+        out["books.csv"] = csv(listOf("title", "author", "total_pages", "current_page", "pages_left", "started", "finished"),
+            repo.books().map { listOf(it.title, it.author, it.totalPages, it.currentPage, it.left, it.started, it.finished) })
         out["sleep.csv"] = csv(listOf("date", "bedtime", "wake_time", "hours", "quality"),
             repo.sleepLogs(from, to).map { listOf(it.date, TimeUtil.fmtTimeFull(it.bedtime), TimeUtil.fmtTimeFull(it.wake), TimeUtil.fmtHours(it.hours), it.quality) })
         return out

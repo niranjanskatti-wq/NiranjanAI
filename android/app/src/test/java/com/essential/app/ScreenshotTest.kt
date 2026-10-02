@@ -96,6 +96,15 @@ class ScreenshotTest : AppTestBase() {
             cal.layout(0, 0, 800, cal.measuredHeight)
             save(cal, "11-habit-calendar-september", fullHeight = false)
         }
+        run {
+            val walk = repo.habits().first { it.name == "Walking" }
+            push(a, HabitDetailScreen(a, walk.id), "12-habit-walking-totals")
+            val reading = repo.habits().first { it.name == "Reading" }
+            repo.addBook("Atomic Habits", "James Clear", 320, 140)
+            push(a, BooksScreen(a), "13-books")
+            AmountSheet.open(a, reading); sheet("25-log-reading")
+            AmountSheet.open(a, walk); sheet("26-log-walking")
+        }
         LogHourSheet.open(a, LocalDate.of(2026, 10, 1), 10); sheet("20-log-hour-sheet")
         ModeSheet.open(a, LocalDate.of(2026, 10, 1)); sheet("21-mode-sheet")
         ScoreSheet.open(a, LocalDate.of(2026, 10, 1)); sheet("22-score-sheet")

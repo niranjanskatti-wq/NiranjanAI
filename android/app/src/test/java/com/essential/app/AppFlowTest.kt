@@ -202,7 +202,7 @@ class AppFlowTest : AppTestBase() {
         assertEquals(logs, repo.db.scalarL("SELECT COUNT(*) FROM hour_log"))
         try { Backup.restoreJson(app, "{\"hello\":1}"); fail("should reject") } catch (e: IllegalArgumentException) { }
         val csv = Backup.csvFiles(app)
-        assertEquals(setOf("hour_logs.csv", "reviews.csv", "habits.csv", "sleep.csv"), csv.keys)
+        assertEquals(setOf("hour_logs.csv", "reviews.csv", "habits.csv", "habit_amounts.csv", "books.csv", "sleep.csv"), csv.keys)
         val hl = String(csv["hour_logs.csv"]!!).lines()
         assertTrue(hl[0].startsWith("date,hour,minutes,activity,category,venture,type,focus,energy"))
         assertTrue(hl.size > 150)
@@ -361,7 +361,80 @@ class AppFlowTest : AppTestBase() {
         assertTrue(repo.commitments().isEmpty())
         for (i in 1..25) repo.addVenture("Activity $i", 0)
         assertEquals(25, repo.ventures().size)
-        assertEquals(listOf("Walking", "Meditation"), repo.habits().map { it.name })
+        assertEquals(listOf("Walking", "Meditation", "Reading", "Pranayam", "Full breathing (fast)"), repo.habits().map { it.name })
+    }
+
+    @Test fun minutesHabitTotalsAndTarget() {
+        onboard()
+        val walk = repo.habits().first { it.name == "Walking" }
+        assertEquals(com.essential.app.data.HabitUnit.MINUTES, walk.unit); assertEquals(30.0, walk.target!!, 0.0)
+        repo.logAmount(walk, monday, 20.0)
+        assertTrue("any amount counts by default", monday in repo.habitDates(walk.id))
+        repo.logAmount(walk, monday, 25.0)
+        repo.logAmount(walk, monday.minusDays(1), 40.0)
+        repo.logAmount(walk, monday.minusMonths(1), 60.0)
+        val t = HabitTotals.of(repo, walk, monday)
+        assertEquals(45.0, t.today, 0.0); assertEquals(45.0, t.week, 0.0) // Monday starts the week
+        assertEquals(85.0, t.month, 0.0)
+        assertEquals(145.0, t.all, 0.0); assertEquals(3, t.days)
+        assertEquals("2h 25m", com.essential.app.data.HabitUnit.fmt(walk.unit, t.all))
+        // target needed for the chain
+        val strict = walk.copy(targetForChain = true)
+        repo.updateHabit(strict)
+        val e = repo.entries(walk.id, monday, monday).first { it.amount == 25.0 }
+        repo.deleteEntry(strict, e)
+        assertFalse("20 of 30 minutes isn't enough when the target is required", monday in repo.habitDates(walk.id))
+        repo.logAmount(strict, monday, 10.0)
+        assertTrue(monday in repo.habitDates(walk.id))
+    }
+
+    @Test fun readingPagesMoveTheBook() {
+        onboard()
+        val reading = repo.habits().first { it.name == "Reading" }
+        assertTrue(reading.usesBooks)
+        val bookId = repo.addBook("Atomic Habits", "James Clear", 320, 20)
+        repo.logAmount(reading, monday, 30.0, bookId)
+        var b = repo.book(bookId)!!
+        assertEquals(50, b.currentPage); assertEquals(270, b.left)
+        val e = repo.recentEntries(reading.id).first()
+        repo.deleteEntry(reading, e)
+        assertEquals(20, repo.book(bookId)!!.currentPage)
+        repo.logAmount(reading, monday, 400.0, bookId)
+        b = repo.book(bookId)!!
+        assertEquals(320, b.currentPage); assertEquals(0, b.left); assertTrue(b.done)
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        a.push(BooksScreen(a)); idle()
+        assertTrue(a.root.allText().contains("Atomic Habits"))
+        a.push(HabitDetailScreen(a, reading.id)); idle()
+        assertTrue(a.root.allText().contains("All time"))
+        AmountSheet.open(a, reading); idle()
+        assertTrue(dialogText().contains("+ Add book"))
+    }
+
+    @Test fun customUnitHabitAndOptionalTotals() {
+        onboard()
+        val id = repo.addHabit("Japa", "Morning", unit = "rounds", target = 1.0, showTotals = false)
+        val h = repo.habit(id)!!
+        repo.logAmount(h, monday, 2.0)
+        assertEquals("2 rounds", com.essential.app.data.HabitUnit.fmt(h.unit, repo.amount(id, monday, monday)))
+        val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+        a.push(HabitDetailScreen(a, id)); idle()
+        assertFalse("totals hidden when switched off", a.root.allText().contains("All time"))
+        // plain done-only habits still work
+        val plain = repo.habit(repo.addHabit("No phone first hour", null))!!
+        assertFalse(plain.measured)
+        repo.setHabit(plain.id, monday, true)
+        assertTrue(monday in repo.habitDates(plain.id))
+    }
+
+    @Test fun starterHabitsAddedOnceAndKeepUserHabits() {
+        onboard()
+        repo.deleteHabit(repo.habits().first { it.name == "Pranayam" }.id)
+        repo.addHabit("Swimming", null)
+        com.essential.app.data.Seed.addStarterHabits(repo.db.w)
+        val names = repo.habits(false).map { it.name }
+        assertEquals(1, names.count { it == "Walking" })
+        assertTrue("Swimming" in names)
     }
 
     @Test fun upgradeFromV2RemovesOldNames() {

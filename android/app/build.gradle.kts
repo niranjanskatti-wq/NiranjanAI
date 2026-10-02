@@ -12,8 +12,8 @@ android {
         applicationId = "com.essential.app"
         minSdk = 29
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.2.2"
+        versionCode = 6
+        versionName = "1.3.0"
     }
 
     signingConfigs {

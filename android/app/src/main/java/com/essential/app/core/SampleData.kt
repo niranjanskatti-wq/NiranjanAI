@@ -40,6 +40,9 @@ object SampleData {
             val trivia = listOf("Instagram scrolling", "YouTube videos", "WhatsApp groups", "News browsing")
             val reasons = listOf("Phone", "Unplanned call", "Visitor", "Said yes to something", "Tired")
 
+            val sampleBook = db.insert("book", cv("title" to "Sample book", "author" to "Sample author", "total_pages" to 320, "current_page" to 0,
+                "started" to today.minusDays(14).toString(), "is_sample" to 1))
+            var samplePages = 0
             for (i in 14 downTo 1) {
                 val date = today.minusDays(i.toLong())
                 val inSprint = !date.isBefore(sprintStart) && !date.isAfter(sprintEnd) && date.dayOfWeek != DayOfWeek.SUNDAY
@@ -105,7 +108,18 @@ object SampleData {
                     "headline" to listOf("Steady and clear", "Busy but scattered", "Deep work morning", "Good progress", "Tired, still showed up")[r.nextInt(5)],
                     "day_rating" to (5 + r.nextInt(5)), "tomorrow_one_thing" to if (i > 1) oneThings[i - 2] else null, "is_sample" to 1))
                 // habits
-                repo.habits().forEach { hb -> if (r.nextDouble() < 0.72) db.insert("habit_log", cv("habit_id" to hb.id, "date" to date.toString(), "done" to 1, "is_sample" to 1)) }
+                repo.habits().forEach { hb ->
+                    if (r.nextDouble() < 0.72) {
+                        db.insert("habit_log", cv("habit_id" to hb.id, "date" to date.toString(), "done" to 1, "is_sample" to 1))
+                        if (hb.measured) {
+                            val t = hb.target ?: 10.0
+                            val amt = Math.round(t * (0.6 + r.nextDouble() * 0.8)).toDouble().coerceAtLeast(1.0)
+                            db.insert("habit_entry", cv("habit_id" to hb.id, "date" to date.toString(), "amount" to amt,
+                                "book_id" to if (hb.usesBooks) sampleBook else null, "created" to TimeUtil.nowMillis(), "is_sample" to 1))
+                            if (hb.usesBooks) samplePages += amt.toInt()
+                        }
+                    }
+                }
                 // sleep (night before)
                 val bedTarget = repo.settings.sleep(mode)
                 val bed = bedTarget + r.nextInt(-20, 45)
@@ -113,6 +127,7 @@ object SampleData {
                 db.insert("sleep_log", cv("date" to date.toString(), "bedtime" to ((bed % 1440) + 1440) % 1440, "wake_time" to wake,
                     "quality" to (if (inSprint) 2 + r.nextInt(3) else 3 + r.nextInt(3)), "is_sample" to 1))
             }
+            db.exec("UPDATE book SET current_page=? WHERE id=?", samplePages, sampleBook)
             listOf(Triple(12, "Free networking dinner", 3.0), Triple(9, "Unpaid talk at a club", 4.0),
                 Triple(5, "Friend's side-project partnership", 10.0), Triple(2, "Weekend event stall", 8.0)).forEach { (d, w, h) ->
                 db.insert("no_log", cv("date" to today.minusDays(d.toLong()).toString(), "what" to w, "hours_saved" to h, "is_sample" to 1))

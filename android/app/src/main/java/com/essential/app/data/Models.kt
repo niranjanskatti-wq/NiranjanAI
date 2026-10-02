@@ -85,7 +85,36 @@ data class DailyReview(
     val rating: Int?, val tomorrowOneThing: String?
 )
 
-data class Habit(val id: Long, val name: String, val trigger: String?, val active: Boolean, val sort: Int, val color: Int = 0)
+data class Habit(
+    val id: Long, val name: String, val trigger: String?, val active: Boolean, val sort: Int, val color: Int = 0,
+    /** null = just done / not done; otherwise [HabitUnit.MINUTES], [HabitUnit.PAGES], [HabitUnit.COUNT] or any word you choose. */
+    val unit: String? = null, val target: Double? = null, val targetForChain: Boolean = false, val showTotals: Boolean = true
+) {
+    val measured get() = !unit.isNullOrBlank()
+    val usesBooks get() = unit == HabitUnit.PAGES
+}
+
+object HabitUnit {
+    const val MINUTES = "minutes"; const val PAGES = "pages"; const val COUNT = "times"
+    /** Readable amount: 95 minutes → "1h 35m", 12 pages → "12 pages". */
+    fun fmt(unit: String?, v: Double): String {
+        val n = if (v == Math.floor(v)) v.toLong().toString() else "%.1f".format(v)
+        return when (unit) {
+            MINUTES -> com.essential.app.core.TimeUtil.fmtDuration(Math.round(v))
+            null, "" -> n
+            else -> "$n ${if (v == 1.0 && unit.endsWith("s")) unit.dropLast(1) else unit}"
+        }
+    }
+    fun short(unit: String?): String = when (unit) { MINUTES -> "min"; PAGES -> "pages"; null -> ""; else -> unit }
+}
+
+data class Book(val id: Long, val title: String, val author: String?, val totalPages: Int, val currentPage: Int, val started: String?, val finished: String?) {
+    val left get() = maxOf(0, totalPages - currentPage)
+    val done get() = finished != null || (totalPages > 0 && currentPage >= totalPages)
+    val fraction get() = if (totalPages > 0) currentPage.toDouble() / totalPages else 0.0
+}
+
+data class HabitEntry(val id: Long, val habitId: Long, val date: java.time.LocalDate, val amount: Double, val bookId: Long?, val note: String?)
 
 data class SleepLog(val date: LocalDate, val bedtime: Int, val wake: Int, val quality: Int) {
     /** Hours slept; bedtime is the evening before `date`. */

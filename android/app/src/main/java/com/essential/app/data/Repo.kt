@@ -206,13 +206,17 @@ class Repo private constructor(val ctx: Context) {
 
     // ---------------------------------------------------------------- habits
     private fun habit(c: Cursor) = Habit(c.lng("id"), c.s("name"), c.str("trigger"), c.bool("active"), c.int("sort"),
-        c.int("color").takeIf { it != 0 } ?: Seed.HABIT_COLORS[(c.lng("id") % Seed.HABIT_COLORS.size).toInt()])
+        c.int("color").takeIf { it != 0 } ?: Seed.HABIT_COLORS[(c.lng("id") % Seed.HABIT_COLORS.size).toInt()],
+        c.str("unit")?.takeIf { it.isNotBlank() }, c.dblN("target"), c.bool("target_for_chain"), c.bool("show_totals"))
     fun habit(id: Long): Habit? = db.one("SELECT * FROM habit WHERE id=?", id) { habit(it) }
     fun habits(activeOnly: Boolean = true): List<Habit> =
         db.query("SELECT * FROM habit ${if (activeOnly) "WHERE active=1" else ""} ORDER BY sort, id") { habit(it) }
-    fun addHabit(name: String, trigger: String?, color: Int = Seed.HABIT_COLORS[(db.scalarL("SELECT COUNT(*) FROM habit") % Seed.HABIT_COLORS.size).toInt()]): Long =
-        db.insert("habit", cv("name" to name, "trigger" to trigger, "color" to color, "sort" to (db.scalarL("SELECT MAX(sort) FROM habit") + 1)))
-    fun updateHabit(h: Habit) = db.update("habit", cv("name" to h.name, "trigger" to h.trigger, "active" to h.active, "color" to h.color), "id=?", h.id)
+    fun addHabit(name: String, trigger: String?, color: Int = Seed.HABIT_COLORS[(db.scalarL("SELECT COUNT(*) FROM habit") % Seed.HABIT_COLORS.size).toInt()],
+                 unit: String? = null, target: Double? = null, targetForChain: Boolean = false, showTotals: Boolean = true): Long =
+        db.insert("habit", cv("name" to name, "trigger" to trigger, "color" to color, "sort" to (db.scalarL("SELECT MAX(sort) FROM habit") + 1),
+            "unit" to unit, "target" to target, "target_for_chain" to targetForChain, "show_totals" to showTotals))
+    fun updateHabit(h: Habit) = db.update("habit", cv("name" to h.name, "trigger" to h.trigger, "active" to h.active, "color" to h.color,
+        "unit" to h.unit, "target" to h.target, "target_for_chain" to h.targetForChain, "show_totals" to h.showTotals), "id=?", h.id)
     fun moveHabit(h: Habit, up: Boolean) {
         val list = habits(false).toMutableList()
         val i = list.indexOfFirst { it.id == h.id }; val j = if (up) i - 1 else i + 1
@@ -220,7 +224,68 @@ class Repo private constructor(val ctx: Context) {
         java.util.Collections.swap(list, i, j)
         db.tx { list.forEachIndexed { k, x -> db.update("habit", cv("sort" to k), "id=?", x.id) } }
     }
-    fun deleteHabit(id: Long) = db.tx { db.delete("habit_log", "habit_id=?", id); db.delete("habit", "id=?", id) }
+    fun deleteHabit(id: Long) = db.tx { db.delete("habit_entry", "habit_id=?", id); db.delete("habit_log", "habit_id=?", id); db.delete("habit", "id=?", id) }
+
+    // ---------------------------------------------------------------- habit amounts & books
+    private fun entry(c: Cursor) = HabitEntry(c.lng("id"), c.lng("habit_id"), LocalDate.parse(c.s("date")), c.dbl("amount"), c.lngN("book_id"), c.str("note"))
+    fun entries(habitId: Long, from: LocalDate, to: LocalDate): List<HabitEntry> =
+        db.query("SELECT * FROM habit_entry WHERE habit_id=? AND date>=? AND date<=? ORDER BY date DESC, id DESC", habitId, from.toString(), to.toString()) { entry(it) }
+    fun recentEntries(habitId: Long, limit: Int = 30): List<HabitEntry> =
+        db.query("SELECT * FROM habit_entry WHERE habit_id=? ORDER BY date DESC, id DESC LIMIT ?", habitId, limit) { entry(it) }
+    fun amount(habitId: Long, from: LocalDate, to: LocalDate): Double =
+        db.scalarD("SELECT SUM(amount) FROM habit_entry WHERE habit_id=? AND date>=? AND date<=?", habitId, from.toString(), to.toString())
+    fun amountAllTime(habitId: Long): Double = db.scalarD("SELECT SUM(amount) FROM habit_entry WHERE habit_id=?", habitId)
+    fun amountsByDate(habitId: Long, from: LocalDate, to: LocalDate): Map<LocalDate, Double> =
+        db.query("SELECT date, SUM(amount) FROM habit_entry WHERE habit_id=? AND date>=? AND date<=? GROUP BY date", habitId, from.toString(), to.toString()) {
+            LocalDate.parse(it.getString(0)) to it.getDouble(1) }.toMap()
+    fun daysWithAmount(habitId: Long): Long = db.scalarL("SELECT COUNT(DISTINCT date) FROM habit_entry WHERE habit_id=?", habitId)
+
+    /** Log an amount; reading pages also move the book forward. The day counts as done when the habit's rule is met. */
+    fun logAmount(h: Habit, date: LocalDate, amount: Double, bookId: Long? = null, note: String? = null): Long {
+        var id = 0L
+        db.tx {
+            id = db.insert("habit_entry", cv("habit_id" to h.id, "date" to date.toString(), "amount" to amount, "book_id" to bookId,
+                "note" to note, "created" to TimeUtil.nowMillis()))
+            if (bookId != null) movePages(bookId, amount.toInt())
+            refreshDone(h, date)
+        }
+        return id
+    }
+
+    fun deleteEntry(h: Habit, e: HabitEntry) = db.tx {
+        db.delete("habit_entry", "id=?", e.id)
+        if (e.bookId != null) movePages(e.bookId, -e.amount.toInt())
+        refreshDone(h, e.date)
+    }
+
+    /** Measured habits: done when the day's amount reaches the target (if "target needed for chain") or is above zero. */
+    fun refreshDone(h: Habit, date: LocalDate) {
+        if (!h.measured) return
+        val sum = amount(h.id, date, date)
+        val t = h.target
+        val met = if (h.targetForChain && t != null && t > 0) sum >= t else sum > 0
+        if (met) setHabit(h.id, date, true)
+        else if (sum <= 0 || h.targetForChain) setHabit(h.id, date, false)
+    }
+
+    private fun book(c: Cursor) = Book(c.lng("id"), c.s("title"), c.str("author"), c.int("total_pages"), c.int("current_page"), c.str("started"), c.str("finished"))
+    fun books(includeFinished: Boolean = true): List<Book> =
+        db.query("SELECT * FROM book ${if (includeFinished) "" else "WHERE finished IS NULL"} ORDER BY (finished IS NOT NULL), sort, id") { book(it) }
+    fun book(id: Long?): Book? = id?.let { db.one("SELECT * FROM book WHERE id=?", it) { c -> book(c) } }
+    fun addBook(title: String, author: String?, total: Int, current: Int = 0): Long =
+        db.insert("book", cv("title" to title, "author" to author, "total_pages" to total, "current_page" to current.coerceIn(0, maxOf(total, current)),
+            "started" to TimeUtil.now().toLocalDate().toString(), "sort" to (db.scalarL("SELECT MAX(sort) FROM book") + 1)))
+    fun updateBook(b: Book) = db.update("book", cv("title" to b.title, "author" to b.author, "total_pages" to b.totalPages,
+        "current_page" to b.currentPage, "finished" to b.finished), "id=?", b.id)
+    fun deleteBook(id: Long) = db.tx { db.exec("UPDATE habit_entry SET book_id=NULL WHERE book_id=?", id); db.delete("book", "id=?", id) }
+    fun pagesReadFromBook(bookId: Long): Double = db.scalarD("SELECT SUM(amount) FROM habit_entry WHERE book_id=?", bookId)
+
+    private fun movePages(bookId: Long, delta: Int) {
+        val b = book(bookId) ?: return
+        val cur = (b.currentPage + delta).coerceAtLeast(0).let { if (b.totalPages > 0) minOf(it, b.totalPages) else it }
+        val finished = if (b.totalPages in 1..cur) (b.finished ?: TimeUtil.now().toLocalDate().toString()) else null
+        db.update("book", cv("current_page" to cur, "finished" to finished), "id=?", bookId)
+    }
     fun habitDone(date: LocalDate): Set<Long> =
         db.query("SELECT habit_id FROM habit_log WHERE date=? AND done=1", date.toString()) { it.getLong(0) }.toSet()
     fun setHabit(habitId: Long, date: LocalDate, done: Boolean) {

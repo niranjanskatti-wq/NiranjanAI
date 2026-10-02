@@ -30,6 +30,7 @@ class ToolsScreen(a: MainActivity) : Screen(a) {
             Triple("Schedule templates", "Weekday, Sprint Day, Sunday, Travel Day", "log") to { a.push(TemplatesScreen(a)) },
             Triple("Sprint & Max Mode", sprint?.let { "Active: ${it.goal} · ends ${TimeUtil.fmtShort(it.end)}" } ?: "Up to 6 weeks, then a recovery week", "bolt") to { a.push(SprintScreen(a)) },
             Triple("Habits", "Daily chains, calendar, streaks", "check") to { a.push(HabitsScreen(a, pushed = true)) },
+            Triple("Books", "Total pages, where you are, pages left", "log") to { a.push(BooksScreen(a)) },
             Triple("Sleep", "Bedtime, wake, quality vs next-day focus", "moon") to { a.push(SleepScreen(a)) },
             Triple("Time estimates & buffer", "Your planning error and suggested buffer", "timer") to { a.push(BufferScreen(a)) },
             Triple("Daily review", "Under 2 minutes", "edit") to { ReviewSheet.open(a, Days.today(repo)) },

@@ -74,3 +74,11 @@ app has no `INTERNET` permission, so it always works fully offline.
 
 - Setup is fully optional: **Skip setup** on every step, a **Choose your tabs** step, and the main goal is optional.
 - Sample data is off by default.
+
+## Changes in 1.3.0
+
+- Habits can count an amount (optional): **minutes**, **pages** (linked to your books), a **count**, or **your own unit** (rounds, km, glasses…), with an optional daily target.
+- **Books**: add each book with total pages; pages you log move it forward and show pages left; finished books are marked automatically.
+- **Totals** per habit (optional): today, week, month, year, all time, average, and a monthly chart (hours per month for minutes).
+- Starter habits: Walking, Meditation, Reading, Pranayam, Full breathing (fast) at night. All editable, deletable, and you can add any others.
+- CSV export adds habit_amounts.csv and books.csv.

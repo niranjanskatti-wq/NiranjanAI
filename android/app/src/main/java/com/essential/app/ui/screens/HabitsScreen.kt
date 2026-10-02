@@ -10,6 +10,7 @@ import android.view.View
 import com.essential.app.core.Hooks
 import com.essential.app.core.TimeUtil
 import com.essential.app.data.Habit
+import com.essential.app.data.HabitUnit
 import com.essential.app.data.Seed
 import com.essential.app.ui.*
 import java.time.LocalDate
@@ -43,6 +44,7 @@ class HabitsScreen(a: MainActivity, private val pushed: Boolean = false) : Scree
         if (!pushed) {
             val h = a.hbox()
             h.add(a.h1("Habits"), 0, WRAP, 1f)
+            if (repo.habits(false).any { it.usesBooks }) h.add(a.btn("Books", Btn.TEXT) { a.push(BooksScreen(a)) }, WRAP, WRAP)
             h.add(a.iconBtn("plus", Th.text, desc = "Add habit") { HabitEditor.open(a, null) }, WRAP, WRAP)
             add(h, top = 8, bottom = 2)
         }
@@ -56,7 +58,10 @@ class HabitsScreen(a: MainActivity, private val pushed: Boolean = false) : Scree
             c.add(a.h3("Start a chain"))
             c.add(a.dimText("Add the habits you want to do every day. Tap a suggestion or write your own."), top = 4, bottom = 10)
             val f = Flow(a)
-            Seed.HABIT_IDEAS.forEach { idea -> f.addView(a.chip("+ $idea", false) { repo.addHabit(idea, null); Hooks.afterChange(a); a.refresh() }) }
+            Seed.HABIT_IDEAS.forEach { idea -> f.addView(a.chip("+ $idea", false) {
+                val (u, t) = Seed.IDEA_UNITS[idea] ?: (null to null)
+                repo.addHabit(idea, null, unit = u, target = t); Hooks.afterChange(a); a.refresh()
+            }) }
             c.add(f)
             add(c, bottom = 12)
         }
@@ -77,6 +82,7 @@ class HabitsScreen(a: MainActivity, private val pushed: Boolean = false) : Scree
             r.add(TodayToggle.make(a, h.id in doneToday, h.color) { on -> repo.setHabit(h.id, today, on); Hooks.afterChange(a); a.refresh() }, a.dp(48), a.dp(48), start = 8)
             c.add(r)
             c.add(ChainStrip(a, today, dates, h.color, 14), MATCH, a.dp(26), top = 12)
+            if (h.measured) c.add(amountRow(h), top = 10)
             add(c, bottom = 10)
         }
 
@@ -88,6 +94,24 @@ class HabitsScreen(a: MainActivity, private val pushed: Boolean = false) : Scree
             add(c)
         }
         if (active.isNotEmpty()) add(a.btn("Add habit", Btn.TONAL, "plus") { HabitEditor.open(a, null) }, top = 6)
+    }
+
+    /** Today's amount vs target, the current book for reading, and a quick Log button. */
+    private fun amountRow(h: Habit): View {
+        val box = a.vbox()
+        val got = repo.amount(h.id, today, today)
+        val r = a.hbox()
+        val col = a.vbox()
+        col.add(a.txt("Today " + HabitUnit.fmt(h.unit, got) + (h.target?.let { " / ${HabitUnit.fmt(h.unit, it)}" } ?: ""), 14f, Th.text, Fonts.medium))
+        if (h.usesBooks) {
+            val b = repo.books(false).firstOrNull()
+            col.add(a.txt(b?.let { "${it.title} · ${it.left} pages left" } ?: "Tap Log to add your book", 12.5f, Th.dim, maxLines = 1), top = 2)
+        }
+        r.add(col, 0, WRAP, 1f)
+        r.add(a.btn("+ Log", Btn.TONAL, color = h.color) { AmountSheet.open(a, h) }.apply { minHeight = a.dp(40); setPadding(a.dp(16), a.dp(6), a.dp(16), a.dp(6)) }, WRAP, WRAP)
+        box.add(r)
+        h.target?.takeIf { it > 0 }?.let { box.addProgress((got / it).coerceIn(0.0, 1.0), h.color, 5, top = 8) }
+        return box
     }
 }
 
@@ -116,6 +140,21 @@ class HabitDetailScreen(a: MainActivity, private val habitId: Long) : Screen(a) 
         stats.add(sr)
         add(stats, bottom = 14)
 
+        if (h.measured) {
+            val lr = a.hbox()
+            lr.add(a.btn(if (h.unit == HabitUnit.COUNT) "Log" else "Log ${h.unit}", color = h.color, icon = "plus") { AmountSheet.open(a, h) }, 0, WRAP, 1f)
+            if (h.usesBooks) lr.add(a.btn("Books", Btn.TONAL, color = h.color) { a.push(BooksScreen(a)) }, WRAP, WRAP, start = 8)
+            add(lr, bottom = 12)
+            if (h.usesBooks) repo.books(false).take(3).forEach { b ->
+                val c = a.card(14) { a.push(BooksScreen(a)) }
+                c.add(a.txt(b.title, 15f, Th.text, Fonts.medium, maxLines = 1))
+                c.addProgress(b.fraction.coerceIn(0.0, 1.0), h.color, 6, top = 8)
+                c.add(a.dimText("Page ${b.currentPage} of ${b.totalPages} · ${b.left} pages left"), top = 6)
+                add(c, bottom = 8)
+            }
+            if (h.showTotals) add(HabitTotals.card(a, h, today), top = 4, bottom = 14)
+        }
+
         val nav = a.hbox()
         nav.add(a.iconBtn("left", Th.text, desc = "Previous month") { month = m.minusMonths(1); a.refresh() }, a.dp(48), a.dp(48))
         nav.add(a.txt(TimeUtil.fmtMonth(m.atDay(1)), 17f, Th.text, Fonts.semibold, center = true), 0, WRAP, 1f)
@@ -143,6 +182,23 @@ class HabitDetailScreen(a: MainActivity, private val habitId: Long) : Screen(a) 
         add(a.btn(if (today in dates) "Done today ✓" else "Mark today done", if (today in dates) Btn.TONAL else Btn.FILLED, color = h.color) {
             repo.setHabit(h.id, today, today !in dates); Hooks.afterChange(a); a.refresh()
         })
+        if (h.measured) {
+            val entries = repo.recentEntries(h.id, 20)
+            if (entries.isNotEmpty()) {
+                add(a.label("Recent logs"), top = 18, bottom = 6)
+                val c = a.card(6)
+                entries.forEach { e ->
+                    val book = e.bookId?.let { repo.book(it)?.title }
+                    c.add(a.listRow("${TimeUtil.fmtDay(e.date)} · ${HabitUnit.fmt(h.unit, e.amount)}", listOfNotNull(book, e.note).joinToString(" · ").ifBlank { null },
+                        trailing = a.iconBtn("trash", Th.faint, 40, "Delete log") {
+                            a.confirm("Delete this log?", "${HabitUnit.fmt(h.unit, e.amount)} on ${TimeUtil.fmtDay(e.date)}", "Delete", danger = true) {
+                                repo.deleteEntry(h, e); Hooks.afterChange(a); a.refresh()
+                            }
+                        }))
+                }
+                add(c)
+            }
+        }
     }
 }
 
@@ -154,15 +210,47 @@ object HabitEditor {
         var active = h?.active ?: true
         val sh = Sheet(a, if (h == null) "New habit" else "Edit habit")
         val name = a.field("Habit, e.g. Walking", h?.name)
+        var unitPreset: ((String?, Double?) -> kotlin.Unit)? = null
         sh.add(name)
         if (h == null) {
             val ideas = Flow(a)
             val existing = repo.habits(false).map { it.name.lowercase() }.toSet()
-            Seed.HABIT_IDEAS.filter { it.lowercase() !in existing }.forEach { idea -> ideas.addView(a.chip(idea, false) { name.setText(idea); name.setSelection(idea.length) }) }
+            Seed.HABIT_IDEAS.filter { it.lowercase() !in existing }.forEach { idea -> ideas.addView(a.chip(idea, false) {
+                name.setText(idea); name.setSelection(idea.length)
+                Seed.IDEA_UNITS[idea]?.let { (u, t) -> unitPreset?.invoke(u, t) }
+            }) }
             sh.add(ideas)
         }
-        val trigger = a.field("Trigger (optional), e.g. After breakfast → 20 min walk", h?.trigger)
+        val trigger = a.field("Trigger or time (optional), e.g. At night", h?.trigger)
         sh.add(trigger)
+
+        // What to count (optional)
+        val modes = listOf("Done only" to null, "Minutes" to HabitUnit.MINUTES, "Pages (books)" to HabitUnit.PAGES, "Count" to HabitUnit.COUNT, "Own unit" to "")
+        var unit: String? = h?.unit
+        var targetForChain = h?.targetForChain ?: false
+        var showTotals = h?.showTotals ?: true
+        val customUnit = a.field("Unit, e.g. rounds, km, glasses", unit?.takeIf { it !in listOf(HabitUnit.MINUTES, HabitUnit.PAGES, HabitUnit.COUNT) })
+        val target = a.field("Daily target (optional), e.g. 30", h?.target?.let { if (it == Math.floor(it)) it.toLong().toString() else it.toString() }, numeric = true, decimal = true)
+        val track = a.vbox()
+        fun modeOf(u: String?) = when (u) { null -> "Done only"; HabitUnit.MINUTES -> "Minutes"; HabitUnit.PAGES -> "Pages (books)"; HabitUnit.COUNT -> "Count"; else -> "Own unit" }
+        fun renderTrack() {
+            track.removeAllViews()
+            track.add(a.label("What to count · optional"), bottom = 6)
+            track.add(a.choice(modes.map { it.first }, modeOf(unit)) { m ->
+                unit = when (m) { "Done only" -> null; "Own unit" -> customUnit.value.ifBlank { "" }; else -> modes.first { it.first == m }.second }
+                renderTrack()
+            }, bottom = 8)
+            if (unit != null) {
+                if (modeOf(unit) == "Own unit") track.add(customUnit, bottom = 8)
+                track.add(target, bottom = 4)
+                if (unit == HabitUnit.PAGES) track.add(a.dimText("Add your books (title + total pages) and each log moves the book forward, showing pages left."), top = 2, bottom = 4)
+                track.add(a.switchRow("Chain needs the daily target", "Off: any amount counts as done for the day.", targetForChain) { targetForChain = it })
+                track.add(a.switchRow("Show totals", "Today, this week, month, year and all-time totals, plus a monthly chart.", showTotals) { showTotals = it })
+            }
+        }
+        renderTrack()
+        unitPreset = { u, t -> unit = u; if (t != null) target.setText(if (t == Math.floor(t)) t.toLong().toString() else t.toString()); renderTrack() }
+        sh.add(track)
         sh.add(a.label("Colour"), bottom = 6)
         val row = Flow(a)
         fun render() {
@@ -193,8 +281,11 @@ object HabitEditor {
         }
         sh.actions("Save") {
             if (name.value.isBlank()) { a.toast("Give the habit a name"); return@actions }
-            if (h == null) repo.addHabit(name.value, trigger.value.ifBlank { null }, color)
-            else repo.updateHabit(h.copy(name = name.value, trigger = trigger.value.ifBlank { null }, active = active, color = color))
+            val u = if (unit != null && modeOf(unit) == "Own unit") customUnit.value.ifBlank { null } else unit
+            val t = if (u == null) null else target.value.toDoubleOrNull()?.takeIf { it > 0 }
+            if (h == null) repo.addHabit(name.value, trigger.value.ifBlank { null }, color, u, t, targetForChain, showTotals)
+            else repo.updateHabit(h.copy(name = name.value, trigger = trigger.value.ifBlank { null }, active = active, color = color,
+                unit = u, target = t, targetForChain = targetForChain, showTotals = showTotals))
             sh.dismiss(); Hooks.afterChange(a); a.refresh()
         }
         sh.show()

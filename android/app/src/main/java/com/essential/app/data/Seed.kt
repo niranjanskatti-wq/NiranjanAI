@@ -84,12 +84,29 @@ object Seed {
     )
 
     /** Starter habits (rename, delete or add your own on the Habits tab). */
-    val HABITS = listOf("Walking" to "", "Meditation" to "")
+    data class H(val name: String, val trigger: String?, val unit: String?, val target: Double?)
+
+    /** Starter habits; every one can be renamed, changed, paused or deleted. */
+    val STARTER = listOf(
+        H("Walking", null, HabitUnit.MINUTES, 30.0),
+        H("Meditation", null, HabitUnit.MINUTES, 20.0),
+        H("Reading", null, HabitUnit.PAGES, 10.0),
+        H("Pranayam", null, HabitUnit.MINUTES, 15.0),
+        H("Full breathing (fast)", "At night", HabitUnit.MINUTES, 10.0)
+    )
+    val HABITS get() = STARTER.map { it.name to (it.trigger ?: "") }
 
     /** Ready-made habit ideas offered when adding a habit. */
     val HABIT_COLORS = listOf(0xFF7FD1B9, 0xFF8AB4F8, 0xFFE6C07B, 0xFFB39DDB, 0xFFF2A285, 0xFFE88A8A, 0xFF9FD3E6, 0xFFC5D88A).map { it.toInt() }
 
-    val HABIT_IDEAS = listOf("Walking", "Meditation", "Exercise", "Reading 20 min", "Drink 3L water", "No phone first hour",
+    /** Suggested unit and daily target when an idea chip is picked. */
+    val IDEA_UNITS: Map<String, Pair<String?, Double?>> = mapOf(
+        "Walking" to (HabitUnit.MINUTES to 30.0), "Meditation" to (HabitUnit.MINUTES to 20.0), "Reading" to (HabitUnit.PAGES to 10.0),
+        "Pranayam" to (HabitUnit.MINUTES to 15.0), "Full breathing (fast)" to (HabitUnit.MINUTES to 10.0), "Exercise" to (HabitUnit.MINUTES to 30.0),
+        "Yoga" to (HabitUnit.MINUTES to 20.0), "Stretching" to (HabitUnit.MINUTES to 10.0), "Drink 3L water" to ("glasses" to 12.0),
+        "Journaling" to (HabitUnit.MINUTES to 10.0), "Japa" to ("rounds" to 1.0))
+
+    val HABIT_IDEAS = listOf("Walking", "Meditation", "Reading", "Pranayam", "Full breathing (fast)", "Japa", "Exercise", "Drink 3L water", "No phone first hour",
         "Sleep on time", "Journaling", "Yoga", "Stretching", "Gratitude", "Learn something new")
 
     val RULES: List<Triple<String, String, String?>> = emptyList()
@@ -115,6 +132,22 @@ object Seed {
         "Real estate: calls, visits, meetings" to "Work block", "Astrology consultations" to "Evening work block",
         "Meetings / site visits" to "Meetings / visits")
 
+    /** Adds any starter habit not already present (by name), and gives Walking/Meditation minutes if unset. */
+    fun addStarterHabits(db: SQLiteDatabase) {
+        val now = TimeUtil.nowMillis()
+        val existing = db.rawQuery("SELECT name FROM habit", null).use { c -> val l = HashSet<String>(); while (c.moveToNext()) l.add(c.getString(0).lowercase()); l }
+        var sort = db.rawQuery("SELECT COUNT(*) FROM habit", null).use { c -> c.moveToFirst(); c.getInt(0) }
+        STARTER.forEach { h ->
+            if (h.name.lowercase() in existing) {
+                db.execSQL("UPDATE habit SET unit=?, target=? WHERE lower(name)=? AND unit IS NULL", arrayOf(h.unit, h.target, h.name.lowercase()))
+            } else {
+                db.insert("habit", null, cv("name" to h.name, "trigger" to h.trigger, "sort" to sort, "color" to HABIT_COLORS[sort % HABIT_COLORS.size],
+                    "unit" to h.unit, "target" to h.target, "updated_at" to now))
+                sort++
+            }
+        }
+    }
+
     fun seed(db: SQLiteDatabase) {
         val now = TimeUtil.nowMillis()
         val vid = HashMap<String, Long>()
@@ -132,7 +165,7 @@ object Seed {
         tpl("Sprint Day", Mode.MAX, "1,2,3,4,5,6", 1, MAX)
         tpl("Sunday", Mode.NORMAL, "7", 2, SUNDAY)
         tpl("Travel Day", Mode.NORMAL, "", 3, TRAVEL)
-        HABITS.forEachIndexed { i, (n, trig) -> db.insert("habit", null, cv("name" to n, "trigger" to trig.ifEmpty { null }, "sort" to i, "color" to HABIT_COLORS[i % HABIT_COLORS.size], "updated_at" to now)) }
+        addStarterHabits(db)
         RULES.forEach { (k, c, v) -> db.insert("keyword_rule", null, cv("keywords" to k, "category" to c, "venture_id" to v?.let { vid[it] }, "updated_at" to now)) }
         db.insert("keyword_rule", null, cv("keywords" to TRIVIAL_RULE, "category" to Cat.OTHER, "type" to Type.TRIVIAL, "updated_at" to now))
     }
