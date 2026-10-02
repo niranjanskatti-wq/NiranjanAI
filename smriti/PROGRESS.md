@@ -316,6 +316,14 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Native SmsScheduler.kt: exact alarms, notification with a compose intent, re-armed after restart; ScheduledSms
   table (schema v10)
 
+### Google Drive backup
+- Settings › Backup & restore › Google Drive › Choose Drive folder: Android's "Save to" screen, pick Drive and a
+  folder once; Smriti keeps permission to that one file and overwrites it after every backup (Drive keeps old
+  versions 30 days). No Google sign-in or setup. Save to Drive now / Change / Turn off
+- Backups made in the background are copied to Drive the next time Smriti opens
+- Automatic backup: every day or every week
+- Native DriveBackup.kt + "smriti/drive" channel (ACTION_CREATE_DOCUMENT + persistable permission)
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

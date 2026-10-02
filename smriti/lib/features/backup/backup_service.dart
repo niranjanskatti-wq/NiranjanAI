@@ -97,11 +97,13 @@ class BackupService {
     return files;
   }
 
-  /// Makes a weekly backup if the last one is 7 or more days old.
+  /// Makes a backup when the last one is older than the chosen interval
+  /// (Settings: daily or weekly, weekly by default).
   Future<bool> autoIfDue() async {
     if (await db.getSetting('autoBackup') == 'false') return false;
+    final every = int.tryParse(await db.getSetting('backupEvery') ?? '') ?? 7;
     final last = DateTime.tryParse(await db.getSetting('lastBackup') ?? '');
-    if (last != null && DateTime.now().difference(last).inDays < 7) return false;
+    if (last != null && DateTime.now().difference(last).inHours < every * 24 - 2) return false;
     try {
       await create(automatic: true);
       return true;

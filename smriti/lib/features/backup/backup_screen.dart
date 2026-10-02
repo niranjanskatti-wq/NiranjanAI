@@ -14,6 +14,7 @@ import '../../data/providers.dart';
 import '../../widgets/common.dart';
 import '../reminders/notification_service.dart';
 import 'backup_service.dart';
+import 'drive_backup.dart';
 
 final _when = DateFormat('d MMM yyyy, h:mm a');
 
@@ -28,7 +29,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   List<File> _files = const [];
   String _folder = '';
   bool _auto = true, _busy = false;
-  DateTime? _last;
+  DateTime? _last, _driveLast;
+  int _every = 7;
+  String? _driveName, _driveError;
 
   @override
   void initState() {
@@ -48,12 +51,21 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final files = await BackupService.list(dir);
     final auto = await db.getSetting('autoBackup') != 'false';
     final last = DateTime.tryParse(await db.getSetting('lastBackup') ?? '');
+    final every = int.tryParse(await db.getSetting('backupEvery') ?? '') ?? 7;
+    final driveOn = await DriveBackup.uri(db) != null;
+    final driveName = driveOn ? await db.getSetting('driveName') : null;
+    final driveLast = DateTime.tryParse(await db.getSetting('driveLast') ?? '');
+    final driveError = await db.getSetting('driveError');
     if (mounted) {
       setState(() {
         _files = files;
         _folder = dir.path;
         _auto = auto;
         _last = last;
+        _every = every;
+        _driveName = driveOn ? (driveName ?? 'Smriti backup.zip') : null;
+        _driveLast = driveLast;
+        _driveError = (driveError?.isEmpty ?? true) ? null : driveError;
       });
     }
   }
@@ -61,9 +73,11 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Future<void> _backupNow() async {
     setState(() => _busy = true);
     try {
-      final f = await BackupService(ref.read(databaseProvider)).create();
+      final db = ref.read(databaseProvider);
+      final f = await BackupService(db).create();
+      final drive = await DriveBackup.uri(db) != null && await DriveBackup.upload(db, f);
       HapticFeedback.lightImpact();
-      if (mounted) showToast(context, 'Saved ${p.basename(f.path)}');
+      if (mounted) showToast(context, drive ? 'Saved, and copied to Google Drive' : 'Saved ${p.basename(f.path)}');
     } catch (e) {
       if (mounted) showToast(context, 'Backup failed: $e');
     }
@@ -99,6 +113,86 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     exit(0);
   }
 
+  Widget _driveCard(BuildContext context) {
+    final c = context.c;
+    final db = ref.read(databaseProvider);
+    final on = _driveName != null;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Row(children: [
+            Icon(Icons.add_to_drive_rounded, color: on ? c.call : c.muted),
+            const SizedBox(width: 10),
+            Expanded(child: Text('Google Drive', style: context.text.titleMedium)),
+            if (on) Badge2(_driveLast == null ? 'Set' : 'On'),
+          ]),
+          const SizedBox(height: 6),
+          Text(
+            on
+                ? 'Every backup is also saved to "$_driveName" in your Drive, safe even if you lose the phone. '
+                    'Drive keeps older versions for 30 days.\n${DriveBackup.describe(_driveLast)}'
+                : 'Keep a copy in Google Drive, safe even if you lose or reset the phone. Choose the Drive '
+                    'folder once; after that every backup goes there by itself.',
+            style: context.text.bodySmall,
+          ),
+          if (_driveError != null) ...[
+            const SizedBox(height: 6),
+            Text(_driveError!, style: context.text.bodySmall?.copyWith(color: c.alert)),
+          ],
+          const SizedBox(height: 10),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            FilledButton.tonalIcon(
+              onPressed: _busy
+                  ? null
+                  : () async {
+                      if (!on && mounted) {
+                        await showDialog<void>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Choose your Google Drive'),
+                            content: const Text(
+                                'On the next screen tap ☰ (top left) and choose Drive, pick a folder (for example '
+                                '"My Drive"), then tap Save. Smriti will keep that file up to date.'),
+                            actions: [FilledButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))],
+                          ),
+                        );
+                      }
+                      final name = await DriveBackup.choose(db);
+                      if (name == null) return;
+                      setState(() => _busy = true);
+                      try {
+                        final f = _files.isNotEmpty ? _files.first : await BackupService(db).create();
+                        final ok = await DriveBackup.upload(db, f);
+                        if (mounted) showToast(this.context, ok ? 'Saved to Google Drive' : 'Could not save to Drive');
+                      } finally {
+                        if (mounted) setState(() => _busy = false);
+                      }
+                      _refresh();
+                    },
+              icon: const Icon(Icons.folder_open_rounded),
+              label: Text(on ? 'Change Drive file' : 'Choose Drive folder'),
+            ),
+            if (on)
+              OutlinedButton.icon(
+                onPressed: _busy ? null : _backupNow,
+                icon: const Icon(Icons.cloud_upload_outlined),
+                label: const Text('Save to Drive now'),
+              ),
+            if (on)
+              TextButton(
+                onPressed: () async {
+                  await DriveBackup.turnOff(db);
+                  _refresh();
+                },
+                child: const Text('Turn off'),
+              ),
+          ]),
+        ]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -111,16 +205,36 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               style: context.text.bodyMedium),
           const SizedBox(height: 12),
           Card(
-            child: SwitchListTile(
-              title: const Text('Automatic weekly backup'),
-              subtitle: Text(_last == null ? 'No backup yet' : 'Last: ${_when.format(_last!)}'),
-              value: _auto,
-              onChanged: (v) async {
-                await ref.read(databaseProvider).setSetting('autoBackup', '$v');
-                _refresh();
-              },
-            ),
+            child: Column(children: [
+              SwitchListTile(
+                title: const Text('Automatic backup'),
+                subtitle: Text(_last == null ? 'No backup yet' : 'Last: ${_when.format(_last!)}'),
+                value: _auto,
+                onChanged: (v) async {
+                  await ref.read(databaseProvider).setSetting('autoBackup', '$v');
+                  _refresh();
+                },
+              ),
+              if (_auto)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: SegmentedButton<int>(
+                    showSelectedIcon: false,
+                    segments: const [
+                      ButtonSegment(value: 1, label: Text('Every day')),
+                      ButtonSegment(value: 7, label: Text('Every week')),
+                    ],
+                    selected: {_every},
+                    onSelectionChanged: (s) async {
+                      await ref.read(databaseProvider).setSetting('backupEvery', '${s.first}');
+                      _refresh();
+                    },
+                  ),
+                ),
+            ]),
           ),
+          const SizedBox(height: 8),
+          _driveCard(context),
           const SizedBox(height: 8),
           FilledButton.icon(
             onPressed: _busy ? null : _backupNow,

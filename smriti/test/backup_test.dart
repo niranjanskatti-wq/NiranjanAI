@@ -51,6 +51,14 @@ void main() {
     await db.setSetting('lastBackup', DateTime.now().subtract(const Duration(days: 8)).toIso8601String());
     expect(await svc.autoIfDue(), isTrue);
 
+    // Daily: a day-old backup is replaced; weekly would wait.
+    await db.setSetting('lastBackup', DateTime.now().subtract(const Duration(days: 1)).toIso8601String());
+    expect(await svc.autoIfDue(), isFalse, reason: 'weekly by default');
+    await db.setSetting('backupEvery', '1');
+    expect(await svc.autoIfDue(), isTrue);
+    expect(await svc.autoIfDue(), isFalse, reason: 'already done today');
+    await db.setSetting('backupEvery', '7');
+
     // Old ones are pruned.
     for (var i = 0; i < 5; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 1100));

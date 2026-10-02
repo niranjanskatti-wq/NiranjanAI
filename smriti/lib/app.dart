@@ -13,6 +13,7 @@ import 'features/autocall/auto_call.dart';
 import 'features/autosms/auto_sms.dart';
 import 'features/business/business_calendar.dart';
 import 'features/highlight/highlight.dart';
+import 'features/backup/drive_backup.dart';
 import 'features/backup/backup_screen.dart';
 import 'features/backup/backup_service.dart';
 import 'features/calendar/calendar_screen.dart';
@@ -248,7 +249,11 @@ class _SmritiAppState extends ConsumerState<SmritiApp> with WidgetsBindingObserv
     if (NotificationService.supported) Duplicates.cleanSafely(ref.read(databaseProvider));
     AutoSms.syncSoon(ref.read(databaseProvider));
     AlarmScheduler.syncSoon(ref.read(databaseProvider));
-    if (NotificationService.supported) BackupService(ref.read(databaseProvider)).autoIfDue();
+    if (NotificationService.supported) {
+      // A backup made in the background is copied to Google Drive here.
+      final db = ref.read(databaseProvider);
+      BackupService(db).autoIfDue().then((_) => DriveBackup.catchUp(db));
+    }
     _publishWidget();
     CalendarSync.syncSoon(ref.read(databaseProvider));
   }

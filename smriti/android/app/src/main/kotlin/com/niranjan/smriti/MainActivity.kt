@@ -18,6 +18,8 @@ import io.flutter.plugin.common.MethodChannel
  * Shows over the lock screen only while the midnight alarm is on screen,
  * so the rest of Smriti never appears over a locked phone.
  */
+private const val PICK_DRIVE = 7311
+
 class MainActivity : FlutterFragmentActivity() {
     private val channelName = "smriti/window"
 
@@ -85,6 +87,29 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
+    private var pendingPick: MethodChannel.Result? = null
+
+    @Deprecated("Uses the activity result for the one-time Google Drive file pick")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != PICK_DRIVE) return
+        val r = pendingPick ?: return
+        pendingPick = null
+        val uri = data?.data
+        if (resultCode != RESULT_OK || uri == null) {
+            r.success(null)
+            return
+        }
+        try {
+            contentResolver.takePersistableUriPermission(
+                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+            )
+        } catch (_: Exception) {
+        }
+        r.success(uri.toString())
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName).setMethodCallHandler { call, result ->
@@ -100,6 +125,37 @@ class MainActivity : FlutterFragmentActivity() {
                     val a = call.arguments as Map<String, Any?>
                     result.success(placeCall(a["number"] as String, a["speaker"] as Boolean? ?: false))
                 }
+                else -> result.notImplemented()
+            }
+        }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "smriti/drive").setMethodCallHandler { call, result ->
+            @Suppress("UNCHECKED_CAST")
+            val a = call.arguments as? Map<String, Any?> ?: emptyMap()
+            when (call.method) {
+                "pick" -> {
+                    pendingPick?.error("cancelled", "Another pick started", null)
+                    pendingPick = result
+                    val i = Intent(Intent.ACTION_CREATE_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("application/zip")
+                        .putExtra(Intent.EXTRA_TITLE, a["title"] as? String ?: "Smriti backup.zip")
+                    try {
+                        startActivityForResult(i, PICK_DRIVE)
+                    } catch (e: Exception) {
+                        pendingPick = null
+                        result.success(null)
+                    }
+                }
+                "write" -> {
+                    val uri = a["uri"] as String
+                    val path = a["path"] as String
+                    Thread {
+                        val ok = DriveBackup.write(applicationContext, uri, path)
+                        Handler(Looper.getMainLooper()).post { result.success(ok) }
+                    }.start()
+                }
+                "name" -> result.success(DriveBackup.name(applicationContext, a["uri"] as String))
+                "allowed" -> result.success(DriveBackup.allowed(applicationContext, a["uri"] as String))
                 else -> result.notImplemented()
             }
         }
