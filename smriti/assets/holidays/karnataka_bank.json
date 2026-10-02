@@ -1,0 +1,1202 @@
+{
+ "about": "Karnataka bank holidays. Dates for moon-based festivals are worked out from the almanac and can differ by a day from the official notification; Muslim festival dates depend on the moon sighting. You can add, rename or remove any holiday in the app. Sundays and 2nd/4th Saturdays are added by the app.",
+ "years": [
+  2026,
+  2036
+ ],
+ "holidays": [
+  {
+   "date": "2026-01-14",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2026-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2026-02-15",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2026-03-19",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2026-03-20",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2026-03-31",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2026-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2026-04-03",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2026-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2026-04-19",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2026-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2026-05-27",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2026-06-26",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2026-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2026-08-26",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2026-09-14",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2026-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2026-10-10",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2026-10-19",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2026-10-20",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2026-10-26",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2026-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2026-11-08",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2026-11-10",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2026-11-27",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2026-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2027-01-15",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2027-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2027-03-06",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2027-03-10",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2027-03-26",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2027-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2027-04-07",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2027-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2027-04-18",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2027-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2027-05-09",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2027-05-17",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2027-06-15",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2027-08-15",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2027-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2027-09-04",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2027-09-29",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2027-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2027-10-08",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2027-10-09",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2027-10-15",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2027-10-28",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2027-10-30",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2027-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2027-11-16",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2027-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2028-01-15",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2028-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2028-02-23",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2028-02-27",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2028-03-27",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2028-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2028-04-07",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2028-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2028-04-14",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2028-04-27",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2028-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2028-05-05",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2028-06-03",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2028-08-03",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2028-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2028-08-23",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2028-09-18",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2028-09-26",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2028-09-27",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2028-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2028-10-03",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2028-10-17",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2028-10-18",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2028-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2028-11-05",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2028-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2029-01-14",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2029-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2029-02-11",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2029-02-15",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2029-03-30",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2029-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2029-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2029-04-14",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2029-04-24",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2029-04-26",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2029-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2029-05-16",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2029-05-24",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2029-07-24",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2029-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2029-09-11",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2029-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2029-10-07",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2029-10-15",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2029-10-16",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2029-10-22",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2029-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2029-11-05",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2029-11-06",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2029-11-24",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2029-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2030-01-14",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2030-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2030-02-05",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2030-03-02",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2030-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2030-04-03",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2030-04-14",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2030-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2030-04-16",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2030-04-19",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2030-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2030-05-05",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2030-05-13",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2030-07-13",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2030-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2030-09-01",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2030-09-27",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2030-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2030-10-05",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2030-10-06",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2030-10-11",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2030-10-25",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2030-10-27",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2030-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2030-11-13",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2030-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2031-01-15",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2031-01-25",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2031-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2031-02-20",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2031-03-24",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2031-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2031-04-03",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2031-04-05",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2031-04-11",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2031-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2031-04-24",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2031-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2031-05-02",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2031-07-02",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2031-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2031-09-20",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2031-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2031-10-15",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2031-10-24",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2031-10-25",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2031-10-30",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2031-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2031-11-13",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2031-11-15",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2031-12-02",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2031-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2032-01-14",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2032-01-15",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2032-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2032-03-10",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2032-03-22",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2032-03-26",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2032-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2032-04-10",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2032-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2032-04-21",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2032-04-23",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2032-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2032-05-12",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2032-06-21",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2032-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2032-09-08",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2032-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2032-10-04",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2032-10-13",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2032-10-14",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2032-10-18",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2032-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2032-11-02",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2032-11-04",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2032-11-20",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2032-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2033-01-03",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2033-01-14",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2033-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2033-02-27",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2033-03-12",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2033-03-31",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2033-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2033-04-10",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2033-04-12",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2033-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2033-04-15",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2033-05-01",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2033-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2033-06-10",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2033-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2033-08-28",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2033-09-23",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2033-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2033-10-02",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2033-10-03",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2033-10-08",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2033-10-22",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2033-10-24",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2033-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2033-11-09",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2033-12-23",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2033-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2034-01-14",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2034-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2034-02-17",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2034-03-01",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2034-03-21",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2034-03-30",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2034-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2034-04-01",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2034-04-07",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2034-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2034-04-21",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2034-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2034-05-30",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2034-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2034-09-16",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2034-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2034-10-11",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2034-10-21",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2034-10-22",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2034-10-27",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2034-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2034-11-09",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2034-11-12",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2034-11-28",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2034-12-12",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2034-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2035-01-15",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2035-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2035-02-18",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2035-03-08",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2035-03-20",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2035-03-23",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2035-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2035-04-09",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2035-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2035-04-20",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2035-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2035-05-10",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2035-05-20",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2035-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2035-09-05",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2035-10-01",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2035-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2035-10-10",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2035-10-11",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2035-10-17",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2035-10-30",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2035-11-01",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2035-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2035-11-18",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2035-12-02",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2035-12-25",
+   "name": "Christmas"
+  },
+  {
+   "date": "2036-01-15",
+   "name": "Makara Sankranti"
+  },
+  {
+   "date": "2036-01-26",
+   "name": "Republic Day"
+  },
+  {
+   "date": "2036-02-08",
+   "name": "Bakrid (Eid ul-Adha)",
+   "approx": true
+  },
+  {
+   "date": "2036-02-25",
+   "name": "Maha Shivaratri"
+  },
+  {
+   "date": "2036-03-08",
+   "name": "Last day of Muharram",
+   "approx": true
+  },
+  {
+   "date": "2036-03-28",
+   "name": "Ugadi"
+  },
+  {
+   "date": "2036-04-01",
+   "name": "Bank closing of accounts (banks only)"
+  },
+  {
+   "date": "2036-04-08",
+   "name": "Mahaveer Jayanti"
+  },
+  {
+   "date": "2036-04-11",
+   "name": "Good Friday"
+  },
+  {
+   "date": "2036-04-14",
+   "name": "Dr. B.R. Ambedkar Jayanti"
+  },
+  {
+   "date": "2036-04-29",
+   "name": "Basava Jayanti / Akshaya Tritiya"
+  },
+  {
+   "date": "2036-05-01",
+   "name": "May Day"
+  },
+  {
+   "date": "2036-05-08",
+   "name": "Eid-e-Milad",
+   "approx": true
+  },
+  {
+   "date": "2036-08-15",
+   "name": "Independence Day"
+  },
+  {
+   "date": "2036-08-24",
+   "name": "Varasiddhi Vinayaka Vrata (Ganesh Chaturthi)"
+  },
+  {
+   "date": "2036-09-19",
+   "name": "Mahalaya Amavasya"
+  },
+  {
+   "date": "2036-09-28",
+   "name": "Mahanavami / Ayudha Puja"
+  },
+  {
+   "date": "2036-09-29",
+   "name": "Vijayadashami"
+  },
+  {
+   "date": "2036-10-02",
+   "name": "Gandhi Jayanti"
+  },
+  {
+   "date": "2036-10-05",
+   "name": "Maharshi Valmiki Jayanti"
+  },
+  {
+   "date": "2036-10-18",
+   "name": "Naraka Chaturdashi"
+  },
+  {
+   "date": "2036-10-20",
+   "name": "Balipadyami, Deepavali"
+  },
+  {
+   "date": "2036-11-01",
+   "name": "Kannada Rajyotsava"
+  },
+  {
+   "date": "2036-11-06",
+   "name": "Kanakadasa Jayanti"
+  },
+  {
+   "date": "2036-11-20",
+   "name": "Khutub-E-Ramzan (Eid ul-Fitr)",
+   "approx": true
+  },
+  {
+   "date": "2036-12-25",
+   "name": "Christmas"
+  }
+ ]
+}

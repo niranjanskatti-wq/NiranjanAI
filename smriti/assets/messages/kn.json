@@ -1,0 +1,1458 @@
+{
+ "language": "kn",
+ "about": "Smriti message library. Edit freely: change text, add lines, or remove them. Placeholders: {name} {nickname} {relation} {age} {age_th} {years_married} {years_th} {couple_names} {festival} {my_name}.",
+ "messages": [
+  {
+   "id": "kn.birthday.001",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು {nickname}! ನಾನು ಇವತ್ತು ಏನಾಗಿದ್ದೀನೋ ಅದೆಲ್ಲಾ ನಿಮ್ಮಿಂದಲೇ. ಯಾವಾಗಲೂ ಹೀಗೇ ನಗ್ತಾ ಇರಿ ❤️🙏"
+  },
+  {
+   "id": "kn.birthday.002",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "blessing",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ದೇವರು ನಿಮಗೆ ಆರೋಗ್ಯ, ಸಂತೋಷ ಕೊಟ್ಟು ಕಾಪಾಡಲಿ. ನಿಮ್ಮ ಆಶೀರ್ವಾದ ಸದಾ ಇರಲಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.003",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "short",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಲವ್ ಯೂ ❤️"
+  },
+  {
+   "id": "kn.birthday.004",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಇಷ್ಟು ವರ್ಷ ನನ್ನನ್ನ ಸಹಿಸ್ಕೊಂಡಿದ್ದಕ್ಕೆ ಥ್ಯಾಂಕ್ಸ್, ಸುಲಭ ಇರಲಿಲ್ಲ ಗೊತ್ತು 😄❤️"
+  },
+  {
+   "id": "kn.birthday.005",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "ನಮಗೋಸ್ಕರ ನೀವು ಮಾಡಿದ ತ್ಯಾಗಕ್ಕೆ ಬೆಲೆ ಕಟ್ಟೋಕಾಗಲ್ಲ. ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname} 🙏❤️"
+  },
+  {
+   "id": "kn.birthday.006",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ ಚಿನ್ನ! ನಿನ್ನ ಜೊತೆ ಇರೋ ಪ್ರತಿ ದಿನಾನೂ ಸ್ಪೆಷಲ್, ಇವತ್ತು ಇನ್ನೂ ಸ್ಪೆಷಲ್ ❤️"
+  },
+  {
+   "id": "kn.birthday.007",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ! ನನ್ನ ಬೆಡ್‌ಶೀಟ್ ಮತ್ತು ನನ್ನ ಹೃದಯ ಎರಡನ್ನೂ ಕದ್ದಿರೋ ನಿನಗೆ 😄❤️"
+  },
+  {
+   "id": "kn.birthday.008",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು ನನ್ನ ಪ್ರೀತಿಯ {nickname} ❤️"
+  },
+  {
+   "id": "kn.birthday.009",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "ನೀನಿದ್ರೆ ಜೀವನ ಹಗುರ ಅನ್ಸುತ್ತೆ. ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ, ಯಾವಾಗಲೂ ಹೀಗೇ ಜೊತೆಯಲ್ಲಿರು ❤️"
+  },
+  {
+   "id": "kn.birthday.010",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "ನೀನು ನನ್ನ ಜೀವನದಲ್ಲಿ ಇರೋದಕ್ಕೆ ದೇವರಿಗೆ ಥ್ಯಾಂಕ್ಸ್. ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname} ❤️"
+  },
+  {
+   "id": "kn.birthday.011",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "blessing",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು ಮಗು! ದೇವರು ನಿನಗೆ ಒಳ್ಳೇ ಆರೋಗ್ಯ, ಬುದ್ಧಿ, ಯಶಸ್ಸು ಕೊಡಲಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.012",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "emotional",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ನೀನು ಬೆಳೆಯೋದನ್ನ ನೋಡೋದೇ ನನ್ನ ದೊಡ್ಡ ಖುಷಿ ❤️"
+  },
+  {
+   "id": "kn.birthday.013",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಎಷ್ಟೇ ಉದ್ದ ಬೆಳೆದರೂ ನನಗೆ ನೀನು ಇನ್ನೂ ಪುಟ್ಟ ಮಗುನೇ 😄"
+  },
+  {
+   "id": "kn.birthday.014",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "short",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಚೆನ್ನಾಗಿ ಎಂಜಾಯ್ ಮಾಡು 🎉"
+  },
+  {
+   "id": "kn.birthday.015",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "blessing",
+   "text": "ಖುಷಿಯಾಗಿರು, ಮುಂದೆ ಬರು, ಯಾವತ್ತೂ ಒಳ್ಳೇತನ ಬಿಡಬೇಡ. ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname} 🙏"
+  },
+  {
+   "id": "kn.birthday.016",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಜಗಳಾನೂ ನಿನ್ನ ಜೊತೆನೇ, ಮಜಾನೂ ನಿನ್ನ ಜೊತೆನೇ 😄"
+  },
+  {
+   "id": "kn.birthday.017",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ನೀನು ನನ್ನ ಮೊದಲ ಫ್ರೆಂಡ್, ಯಾವಾಗಲೂ ಇರ್ತೀಯ ❤️"
+  },
+  {
+   "id": "kn.birthday.018",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಪಾರ್ಟಿ ಯಾವಾಗ? 😉🎉"
+  },
+  {
+   "id": "kn.birthday.019",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ! ಅಮ್ಮನ ಫೇವರಿಟ್ ನಾನೇ, ಇವತ್ತು ಒಂದಿನ ಮಾತ್ರ ನಿಂಗೆ ಬಿಟ್ಟುಕೊಡ್ತೀನಿ 😄"
+  },
+  {
+   "id": "kn.birthday.020",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "blessing",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಈ ವರ್ಷ ನಿನ್ನ ಎಲ್ಲಾ ಕನಸುಗಳು ನನಸಾಗಲಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.021",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು {nickname}! ನಿಮ್ಮ ಆಶೀರ್ವಾದ ಯಾವಾಗಲೂ ನಮ್ಮ ಮೇಲಿರಲಿ. ದೇವರು ನಿಮಗೆ ಆಯುರಾರೋಗ್ಯ ಕೊಡಲಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.022",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ನಿಮ್ಮ ಕಥೆಗಳು, ನಿಮ್ಮ ಕೈಯಡುಗೆ — ಅವೇ ನನ್ನ ಸಿಹಿ ನೆನಪುಗಳು ❤️"
+  },
+  {
+   "id": "kn.birthday.023",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "short",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಆರೋಗ್ಯ ಚೆನ್ನಾಗಿ ನೋಡ್ಕೊಳ್ಳಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.024",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಇವತ್ತಿಗೂ ನಾನು ಸಣ್ಣ ಆಗಿದೀನಿ ಅಂತ ಇನ್ನೂ ಮೂರು ದೋಸೆ ಹಾಕೋದು ನೀವೇ 😄❤️"
+  },
+  {
+   "id": "kn.birthday.025",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ನೀವು ನಮ್ಮ ಮನೆಯ ಜೀವ. ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು, ಯಾವಾಗಲೂ ಆರೋಗ್ಯವಾಗಿರಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.026",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "blessing",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು {nickname}! ದೇವರು ನಿಮಗೆ ಸದಾ ಆರೋಗ್ಯ, ನೆಮ್ಮದಿ ಕೊಡಲಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.027",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "short",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ನಿಮ್ಮ ದಿನ ಚೆನ್ನಾಗಿರಲಿ 🎂"
+  },
+  {
+   "id": "kn.birthday.028",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "emotional",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ನನ್ನನ್ನ ಯಾವಾಗಲೂ ನಿಮ್ಮ ಮಕ್ಕಳ ತರಾನೇ ನೋಡ್ಕೊಂಡಿದ್ದಕ್ಕೆ ಥ್ಯಾಂಕ್ಸ್ 🙏"
+  },
+  {
+   "id": "kn.birthday.029",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "formal",
+   "text": "ತಮಗೆ ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು. ಮುಂದಿನ ವರ್ಷ ಸುಖ, ಶಾಂತಿ, ಸಮೃದ್ಧಿ ತರಲಿ."
+  },
+  {
+   "id": "kn.birthday.030",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಪ್ರತಿ ಫಂಕ್ಷನ್‌ನ ಜೀವ ನೀವೇ 😄"
+  },
+  {
+   "id": "kn.birthday.031",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಕೇಕ್ ತಿಂದು ಮಜಾ ಮಾಡು 🎂🎉"
+  },
+  {
+   "id": "kn.birthday.032",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "blessing",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಚೆನ್ನಾಗಿ ಓದು, ಚೆನ್ನಾಗಿ ಆಡು, ಯಾವಾಗಲೂ ಖುಷಿಯಾಗಿರು 🙏"
+  },
+  {
+   "id": "kn.birthday.033",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಇವತ್ತು ಎಷ್ಟು ಬೇಕಾದ್ರೂ ಕೇಕ್ ತಿನ್ನು, ಅಮ್ಮಂಗೆ ಹೇಳ್ಬೇಡ 😄"
+  },
+  {
+   "id": "kn.birthday.034",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "emotional",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ನಿನ್ನೆ ಮೊನ್ನೆ ಎತ್ತಿಕೊಂಡಿದ್ದ ಹಾಗಿದೆ, ಇವತ್ತು ಇಷ್ಟು ದೊಡ್ಡದಾಗಿಬಿಟ್ಟೆ ❤️"
+  },
+  {
+   "id": "kn.birthday.035",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "short",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು ಪುಟ್ಟ {nickname}! 🥳"
+  },
+  {
+   "id": "kn.birthday.036",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಚೆನ್ನಾಗಿ ಎಂಜಾಯ್ ಮಾಡು 🎉"
+  },
+  {
+   "id": "kn.birthday.037",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ! ಪ್ರತಿ ಮದುವೆಯಲ್ಲೂ ನಾವಿಬ್ಬರೂ ಒಟ್ಟಿಗೆ ಸಿಕ್ಕಿಹಾಕಿಕೊಳ್ತಿದ್ದದ್ದು ನೆನಪಿದೆಯಾ? 😄"
+  },
+  {
+   "id": "kn.birthday.038",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "emotional",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಕಸಿನ್‌ಗಿಂತ ಜಾಸ್ತಿ ಫ್ರೆಂಡ್ ನೀನು ❤️"
+  },
+  {
+   "id": "kn.birthday.039",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "blessing",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ಚೆನ್ನಾಗಿ ಬೆಳೆದು, ಖುಷಿಯಾಗಿರು 🙏"
+  },
+  {
+   "id": "kn.birthday.040",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ವರ್ಷ ಪೂರ್ತಿ ಹೀಗೇ ಮಜಾ ಮಾಡ್ತಾ ಇರು 🎉"
+  },
+  {
+   "id": "kn.birthday.041",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ವಯಸ್ಸು ಜಾಸ್ತಿ ಆಗ್ತಿದೆ, ಬುದ್ಧಿ ಯಾವಾಗ ಬರುತ್ತೆ? 😄🎂"
+  },
+  {
+   "id": "kn.birthday.042",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "emotional",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಎಲ್ಲಾ ಕಷ್ಟದಲ್ಲೂ ಜೊತೆ ನಿಂತಿದ್ದಕ್ಕೆ ಥ್ಯಾಂಕ್ಸ್ ❤️"
+  },
+  {
+   "id": "kn.birthday.043",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ! ಪಾರ್ಟಿ ಕೊಡ್ಲಿಲ್ಲ ಅಂದ್ರೆ ಫ್ರೆಂಡ್‌ಶಿಪ್ ಕಟ್ 😄🎉"
+  },
+  {
+   "id": "kn.birthday.044",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "poetic",
+   "text": "ಕೆಲವು ಫ್ರೆಂಡ್ಸ್ ಫ್ಯಾಮಿಲಿ ಆಗ್ಬಿಡ್ತಾರೆ, ನೀನು ಅಂಥಾ ಫ್ರೆಂಡ್. ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname} ❤️"
+  },
+  {
+   "id": "kn.birthday.045",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "blessing",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ನಿನ್ನ ಎಲ್ಲಾ ಆಸೆಗಳು ಈಡೇರಲಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.046",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "ತಮಗೆ ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು {name}. ಮುಂದಿನ ವರ್ಷ ಯಶಸ್ಸು ಮತ್ತು ಸಂತೋಷ ತರಲಿ."
+  },
+  {
+   "id": "kn.birthday.047",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {name}! ನಿಮ್ಮ ದಿನ ಚೆನ್ನಾಗಿರಲಿ 🎉"
+  },
+  {
+   "id": "kn.birthday.048",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {name}. ನಿಮ್ಮ ಜೊತೆ ಕೆಲಸ ಮಾಡೋದು ಖುಷಿಯ ವಿಷಯ."
+  },
+  {
+   "id": "kn.birthday.049",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {name}. ಆರೋಗ್ಯವಾಗಿರಿ, ಖುಷಿಯಾಗಿರಿ."
+  },
+  {
+   "id": "kn.birthday.050",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಯಾವಾಗಲೂ ಖುಷಿಯಾಗಿರಿ 🎂"
+  },
+  {
+   "id": "kn.birthday.051",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! ದೇವರು ಎಲ್ಲಾ ಒಳ್ಳೇದು ಮಾಡಲಿ 🙏"
+  },
+  {
+   "id": "kn.birthday.052",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}! 🎉"
+  },
+  {
+   "id": "kn.milestone_birthday.001",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "{age}ನೇ ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು {nickname}! ಎಂಥಾ ಸುಂದರ ಪಯಣ, ಮುಂದೆ ಇನ್ನೂ ಚೆನ್ನಾಗಿರಲಿ 🎉"
+  },
+  {
+   "id": "kn.milestone_birthday.002",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "parent",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "{age} ವರ್ಷಗಳ ಪ್ರೀತಿ, ಆಶೀರ್ವಾದ! ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}, ದೇವರು ನಿಮಗೆ ಶತಾಯುಷ್ಯ ಕೊಡಲಿ 🙏"
+  },
+  {
+   "id": "kn.milestone_birthday.003",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "{age} ಆಯ್ತು! ಆದ್ರೆ ಮನಸ್ಸು ಇನ್ನೂ ಹದಿನಾರು 😄 ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ {nickname}"
+  },
+  {
+   "id": "kn.milestone_birthday.004",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "young",
+    "child"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ {age}ನೇ ಬರ್ತ್‌ಡೇ {nickname}! ಈಗ ದೊಡ್ಡವರಾಗಿಬಿಟ್ಟೆ… ಹೆಚ್ಚು ಕಡಿಮೆ 😄"
+  },
+  {
+   "id": "kn.anniversary.001",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "ಮದುವೆ ವಾರ್ಷಿಕೋತ್ಸವದ ಶುಭಾಶಯಗಳು ಚಿನ್ನ! ಪ್ರತಿ ನಗುವಿಗೂ, ಪ್ರತಿ ಕಷ್ಟದಲ್ಲೂ ಜೊತೆ ನಿಂತಿದ್ದಕ್ಕೂ ಥ್ಯಾಂಕ್ಸ್ ❤️"
+  },
+  {
+   "id": "kn.anniversary.002",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ! ಮತ್ತೆ ಆಯ್ಕೆ ಮಾಡೋದಿದ್ರೂ ಉತ್ತರ ನೀನೇ ❤️"
+  },
+  {
+   "id": "kn.anniversary.003",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ! {years_married} ವರ್ಷದಿಂದ ನನ್ನ ಗೊರಕೆ ಸಹಿಸ್ಕೊಂಡಿದ್ದಕ್ಕೆ ಸಲಾಂ 😄❤️"
+  },
+  {
+   "id": "kn.anniversary.004",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "{years_married} ವರ್ಷ, ಒಂದು ಮನೆ, ಲೆಕ್ಕವಿಲ್ಲದ ನೆನಪುಗಳು. ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ ❤️"
+  },
+  {
+   "id": "kn.anniversary.005",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ! ಪ್ರತಿ ವರ್ಷ ಇನ್ನೂ ಜಾಸ್ತಿ ಪ್ರೀತಿ ❤️"
+  },
+  {
+   "id": "kn.anniversary.006",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "ನಿನ್ನನ್ನ ಮದುವೆ ಆಗಿದ್ದು ನನ್ನ ಜೀವನದ ಅತ್ಯುತ್ತಮ ನಿರ್ಧಾರ. ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ ❤️"
+  },
+  {
+   "id": "kn.couple_anniversary.001",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಮದುವೆ ವಾರ್ಷಿಕೋತ್ಸವದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ನಿಮ್ಮ ಜೋಡಿ ಸದಾ ಹೀಗೇ ಇರಲಿ 💐"
+  },
+  {
+   "id": "kn.couple_anniversary.002",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ {couple_names}! 🎉"
+  },
+  {
+   "id": "kn.couple_anniversary.003",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "ಎರಡು ಹೃದಯ, ಒಂದೇ ಪಯಣ. ನಿಮ್ಮಿಬ್ಬರಿಗೂ ವಾರ್ಷಿಕೋತ್ಸವದ ಶುಭಾಶಯಗಳು 💕"
+  },
+  {
+   "id": "kn.couple_anniversary.004",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ಮದುವೆಯ {years_married}ನೇ ವಾರ್ಷಿಕೋತ್ಸವದ ಶುಭಾಶಯಗಳು! ನೀವಿಬ್ಬರೂ ಸದಾ ಆರೋಗ್ಯವಾಗಿ, ಜೊತೆಯಾಗಿರಿ 🙏"
+  },
+  {
+   "id": "kn.couple_anniversary.005",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "ನಿಮ್ಮ ಪ್ರೀತಿಯೇ ನಮ್ಮ ಮನೆಯ ಅಡಿಪಾಯ. ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ ❤️🙏"
+  },
+  {
+   "id": "kn.couple_anniversary.006",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "short",
+   "text": "ಜಗತ್ತಿನ ಸ್ವೀಟೆಸ್ಟ್ ಜೋಡಿಗೆ ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ 💐"
+  },
+  {
+   "id": "kn.couple_anniversary.007",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಆನಿವರ್ಸರಿ! ಇವತ್ತಿಗೂ ಎಲ್ಲರ ಫೇವರಿಟ್ ಜೋಡಿ ನೀವೇ 😄❤️"
+  },
+  {
+   "id": "kn.work_anniversary.001",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "ಕೆಲಸದ ವಾರ್ಷಿಕೋತ್ಸವದ ಶುಭಾಶಯಗಳು {name}! ನಿಮ್ಮ ಶ್ರಮ ಎಲ್ಲರಿಗೂ ಸ್ಫೂರ್ತಿ."
+  },
+  {
+   "id": "kn.work_anniversary.002",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ವರ್ಕ್ ಆನಿವರ್ಸರಿ ಶುಭಾಶಯಗಳು {nickname}! ಹೀಗೇ ಮುಂದೆ ಬರ್ತಾ ಇರು 👏"
+  },
+  {
+   "id": "kn.work_anniversary.003",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ವರ್ಕ್ ಆನಿವರ್ಸರಿ ಶುಭಾಶಯಗಳು! ಇನ್ನೊಂದು ವರ್ಷ ಮೀಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬದುಕುಳಿದಿದ್ದಕ್ಕೆ 😄"
+  },
+  {
+   "id": "kn.engagement.001",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ನಿಶ್ಚಿತಾರ್ಥದ ಶುಭಾಶಯಗಳು {nickname}! 💍"
+  },
+  {
+   "id": "kn.engagement.002",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ನಿಶ್ಚಿತಾರ್ಥಕ್ಕೆ ಶುಭಾಶಯಗಳು! ನಿಮ್ಮಿಬ್ಬರ ಹೊಸ ಜೀವನ ಖುಷಿಯಿಂದ ತುಂಬಿರಲಿ 🙏"
+  },
+  {
+   "id": "kn.engagement.003",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಕಂಗ್ರಾಟ್ಸ್! ಈಗ ಮದುವೆ ತಯಾರಿ ಮತ್ತು ಫ್ಯಾಮಿಲಿ ಗ್ರೂಪ್ ಚರ್ಚೆ ಶುರು 😄"
+  },
+  {
+   "id": "kn.congratulations.001",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಅಭಿನಂದನೆಗಳು {nickname}! ನಿನ್ನ ಬಗ್ಗೆ ಹೆಮ್ಮೆ ಆಗ್ತಿದೆ 🎉"
+  },
+  {
+   "id": "kn.congratulations.002",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ನಿನ್ನ ಶ್ರಮಕ್ಕೆ ಫಲ ಸಿಕ್ತು! ಅಭಿನಂದನೆಗಳು {nickname}, ತುಂಬಾ ಖುಷಿ ಆಯ್ತು ❤️"
+  },
+  {
+   "id": "kn.congratulations.003",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಕಂಗ್ರಾಟ್ಸ್ {nickname}! ಪಾರ್ಟಿ ಯಾವಾಗ? 😄🎉"
+  },
+  {
+   "id": "kn.congratulations.004",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "ಈ ಸಾಧನೆಗೆ ಹೃತ್ಪೂರ್ವಕ ಅಭಿನಂದನೆಗಳು {name}."
+  },
+  {
+   "id": "kn.congratulations.005",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಅಭಿನಂದನೆಗಳು! ಹೀಗೇ ಇನ್ನೂ ಎತ್ತರಕ್ಕೆ ಬೆಳೆ, ದೇವರು ಒಳ್ಳೇದು ಮಾಡಲಿ 🙏"
+  },
+  {
+   "id": "kn.belated.001",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ತಡವಾದ್ರೂ, ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! 🎂"
+  },
+  {
+   "id": "kn.belated.002",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಬಿಲೇಟೆಡ್ ಹ್ಯಾಪಿ ಬರ್ತ್‌ಡೇ! ಲೇಟ್ ಅಲ್ಲ, ನಿನ್ನ ಸೆಲೆಬ್ರೇಶನ್ ಇನ್ನೊಂದು ದಿನ ಜಾಸ್ತಿ ಮಾಡಿದೆ ಅಷ್ಟೇ 😄"
+  },
+  {
+   "id": "kn.belated.003",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ಕ್ಷಮಿಸು {nickname}, ನಿನ್ನ ಸ್ಪೆಷಲ್ ದಿನ ಮರೆತುಹೋಯ್ತು. ಆದ್ರೆ ಹಾರೈಕೆ ಅದೇ ❤️"
+  },
+  {
+   "id": "kn.belated.004",
+   "occasion": "belated",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "ತಡವಾಗಿ ವಿಶ್ ಮಾಡ್ತಿರೋದಕ್ಕೆ ಕ್ಷಮಿಸಿ {nickname}, ನಿಮ್ಮ ಆಶೀರ್ವಾದ ಇರಲಿ 🙏"
+  },
+  {
+   "id": "kn.belated.005",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಬಿಲೇಟೆಡ್ ವಿಶಸ್ {nickname}! ನಿನ್ನ ದಿನ ಚೆನ್ನಾಗಿ ಆಯ್ತು ಅಂದ್ಕೊಳ್ತೀನಿ 🌸"
+  },
+  {
+   "id": "kn.thank_you.001",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಶುಭಾಶಯಗಳಿಗೆ ತುಂಬಾ ಥ್ಯಾಂಕ್ಸ್! 🙏😊"
+  },
+  {
+   "id": "kn.thank_you.002",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ನಿಮ್ಮ ಹಾರೈಕೆ ನನ್ನ ದಿನವನ್ನ ಸ್ಪೆಷಲ್ ಮಾಡಿತು. ಮನಸಾರೆ ಧನ್ಯವಾದಗಳು ❤️"
+  },
+  {
+   "id": "kn.thank_you.003",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಥ್ಯಾಂಕ್ಸ್! ವಯಸ್ಸು ಜಾಸ್ತಿ ಆಯ್ತು, ಆದ್ರೆ ನಿಮ್ಮಂಥ ಫ್ರೆಂಡ್ಸ್ ಇರೋದ್ರಿಂದ ಮನಸ್ಸು ಇನ್ನೂ ಯಂಗ್ 😄"
+  },
+  {
+   "id": "kn.thank_you.004",
+   "occasion": "thank_you",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ನಿಮ್ಮ ಆಶೀರ್ವಾದಕ್ಕೆ ಧನ್ಯವಾದಗಳು! ಯಾವಾಗಲೂ ಹೀಗೇ ಜೊತೆಯಲ್ಲಿರಿ 🙏"
+  },
+  {
+   "id": "kn.thank_you.005",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ನೆನಪಿಟ್ಟು ವಿಶ್ ಮಾಡಿದ್ದಕ್ಕೆ ಥ್ಯಾಂಕ್ಸ್! 😊"
+  },
+  {
+   "id": "kn.thank_you.006",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "ತಮ್ಮ ಶುಭಾಶಯಗಳಿಗೆ ಹೃತ್ಪೂರ್ವಕ ಧನ್ಯವಾದಗಳು."
+  },
+  {
+   "id": "kn.general.001",
+   "occasion": "general",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ನಿಮಗೆ ಶುಭವಾಗಲಿ {nickname}! 😊"
+  },
+  {
+   "id": "kn.festival.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "{festival} ಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ನಿಮ್ಮ ಮನೆಯಲ್ಲಿ ಸುಖ, ಸಮೃದ್ಧಿ ತುಂಬಿರಲಿ 🙏"
+  },
+  {
+   "id": "kn.festival.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ನಿಮಗೂ ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕೂ {festival} ಶುಭಾಶಯಗಳು! 🌸"
+  },
+  {
+   "id": "kn.festival.new_year.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಹೊಸ ವರ್ಷದ ಶುಭಾಶಯಗಳು {nickname}! 🎉",
+   "festival": "new_year"
+  },
+  {
+   "id": "kn.festival.new_year.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಹೊಸ ವರ್ಷ ನಿಮಗೆ ಆರೋಗ್ಯ, ಸಂತೋಷ, ಯಶಸ್ಸು ತರಲಿ 🙏",
+   "festival": "new_year"
+  },
+  {
+   "id": "kn.festival.new_year.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ನ್ಯೂ ಇಯರ್! ಈ ಸಲದ ರೆಸಲ್ಯೂಶನ್ ಕನಿಷ್ಠ ಫೆಬ್ರವರಿ ತನಕ ಆದ್ರೂ ಇರಲಿ 😄",
+   "festival": "new_year"
+  },
+  {
+   "id": "kn.festival.makar_sankranti.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಎಳ್ಳು ಬೆಲ್ಲ ತಿಂದು ಒಳ್ಳೆ ಮಾತಾಡಿ! ಸಂಕ್ರಾಂತಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು 😊",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "kn.festival.makar_sankranti.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಮಕರ ಸಂಕ್ರಾಂತಿಯ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ಎಳ್ಳು ಬೆಲ್ಲದಂತೆ ಜೀವನ ಸಿಹಿಯಾಗಿರಲಿ ☀️",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "kn.festival.makar_sankranti.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಸಂಕ್ರಾಂತಿ! ಗಾಳಿಪಟ ಎತ್ತರಕ್ಕೆ ಹಾರಿಸು, ಟೆನ್ಶನ್ ಕೆಳಗಿಡು 😄🪁",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "kn.festival.makar_sankranti.004",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ಸಂಕ್ರಾಂತಿ ಶುಭಾಶಯಗಳು! ನಮ್ಮ ಎಳ್ಳು ಬೆಲ್ಲ ಸ್ವೀಕರಿಸಿ ಆಶೀರ್ವದಿಸಿ 🙏",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "kn.festival.republic_day.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಗಣರಾಜ್ಯೋತ್ಸವದ ಶುಭಾಶಯಗಳು! ಜೈ ಹಿಂದ್ 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "kn.festival.republic_day.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "ತಮಗೆ ಗಣರಾಜ್ಯೋತ್ಸವದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು.",
+   "festival": "republic_day"
+  },
+  {
+   "id": "kn.festival.holi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಹೋಳಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ಜೀವನ ಯಾವಾಗಲೂ ಹೀಗೇ ರಂಗಾಗಿರಲಿ 🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "kn.festival.holi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಹೋಳಿ! ಬಣ್ಣ ರೆಡಿ ಇದೆ, ತಪ್ಪಿಸ್ಕೊಳ್ಳೋಕೆ ಆಗಲ್ಲ 😄🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "kn.festival.holi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಬಣ್ಣಗಳ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ನಿಮ್ಮ ಜೀವನದಲ್ಲಿ ಖುಷಿಯ ಬಣ್ಣ ತುಂಬಿರಲಿ 🌈",
+   "festival": "holi"
+  },
+  {
+   "id": "kn.festival.ugadi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಯುಗಾದಿ ಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ಹೊಸ ವರ್ಷ ನಿಮಗೆ ಸುಖ, ಶಾಂತಿ, ಸಮೃದ್ಧಿ ತರಲಿ 🙏",
+   "festival": "ugadi"
+  },
+  {
+   "id": "kn.festival.ugadi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "ಬೇವು ಬೆಲ್ಲದ ಹಾಗೆ ಈ ವರ್ಷ ಎಲ್ಲಾ ಸ್ವಲ್ಪ ಸ್ವಲ್ಪ ಇರಲಿ — ಆದ್ರೆ ಸಿಹಿ ಜಾಸ್ತಿ 🌿",
+   "festival": "ugadi"
+  },
+  {
+   "id": "kn.festival.ugadi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಯುಗಾದಿ ಶುಭಾಶಯಗಳು {nickname}! 🌿",
+   "festival": "ugadi"
+  },
+  {
+   "id": "kn.festival.ugadi.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಯುಗಾದಿ! ಈ ವರ್ಷ ಬೇವಿಗಿಂತ ಬೆಲ್ಲ ಜಾಸ್ತಿ ಇರಲಿ 😄",
+   "festival": "ugadi"
+  },
+  {
+   "id": "kn.festival.ugadi.005",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ಯುಗಾದಿ ಶುಭಾಶಯಗಳು! ಹೊಸ ವರ್ಷಕ್ಕೆ ನಮ್ಮನ್ನ ಆಶೀರ್ವದಿಸಿ 🙏",
+   "festival": "ugadi"
+  },
+  {
+   "id": "kn.festival.ugadi.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ಯುಗಾದಿ ಶುಭಾಶಯಗಳು {nickname}! ಇವತ್ತು ಮನೆಯ ಒಬ್ಬಟ್ಟು ತುಂಬಾ ನೆನಪಾಗ್ತಿದೆ ❤️",
+   "festival": "ugadi"
+  },
+  {
+   "id": "kn.festival.ram_navami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಶ್ರೀರಾಮ ನವಮಿಯ ಶುಭಾಶಯಗಳು! ಶ್ರೀರಾಮ ನಿಮಗೆ ಸುಖ, ಶಾಂತಿ ಕೊಡಲಿ 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "kn.festival.ram_navami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಜೈ ಶ್ರೀರಾಮ್! ರಾಮನವಮಿ ಶುಭಾಶಯಗಳು 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "kn.festival.ram_navami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ರಾಮನವಮಿ ಶುಭಾಶಯಗಳು! ಪಾನಕ, ಕೋಸಂಬರಿ ನೆನಪಾಗ್ತಿದೆ ❤️",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "kn.festival.raksha_bandhan.001",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "ರಕ್ಷಾಬಂಧನದ ಶುಭಾಶಯಗಳು! ಎಷ್ಟೇ ದೂರ ಇದ್ರೂ ನೀನು ಯಾವಾಗಲೂ ನನ್ನ ಬೆಸ್ಟ್ ಫ್ರೆಂಡ್ ❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "kn.festival.raksha_bandhan.002",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ರಾಖಿ! ರಾಖಿ ಕಟ್ಟಿದ್ದಾಯ್ತು, ಈಗ ಗಿಫ್ಟ್ ಎಲ್ಲಿ? 😄🎁",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "kn.festival.raksha_bandhan.003",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "ರಕ್ಷಾಬಂಧನದ ಶುಭಾಶಯಗಳು {nickname}! 🧵❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "kn.festival.raksha_bandhan.004",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "blessing",
+   "text": "ಹ್ಯಾಪಿ ರಾಖಿ! ನಮ್ಮ ಬಂಧ ಯಾವಾಗಲೂ ಹೀಗೇ ಗಟ್ಟಿಯಾಗಿರಲಿ 🙏",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "kn.festival.independence_day.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಸ್ವಾತಂತ್ರ್ಯ ದಿನಾಚರಣೆಯ ಶುಭಾಶಯಗಳು! ಜೈ ಹಿಂದ್ 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "kn.festival.independence_day.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ಸ್ವಾತಂತ್ರ್ಯ ತಂದುಕೊಟ್ಟವರಿಗೆ ನಮನ. ಸ್ವಾತಂತ್ರ್ಯ ದಿನದ ಶುಭಾಶಯಗಳು 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "kn.festival.krishna_janmashtami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಶ್ರೀಕೃಷ್ಣ ಜನ್ಮಾಷ್ಟಮಿಯ ಶುಭಾಶಯಗಳು! ಕೃಷ್ಣ ನಿಮ್ಮ ಜೀವನದಲ್ಲಿ ಪ್ರೀತಿ, ಖುಷಿ ತುಂಬಲಿ 🙏🪈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "kn.festival.krishna_janmashtami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಗೋಕುಲಾಷ್ಟಮಿ ಶುಭಾಶಯಗಳು {nickname}! 🪈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "kn.festival.krishna_janmashtami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ಜನ್ಮಾಷ್ಟಮಿ ಶುಭಾಶಯಗಳು! ಮನೆಯ ಪುಟ್ಟ ಹೆಜ್ಜೆಗಳು, ಚಕ್ಕುಲಿ ತುಂಬಾ ನೆನಪಾಗ್ತಿವೆ ❤️",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "kn.festival.ganesh_chaturthi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಗೌರಿ ಗಣೇಶ ಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ವಿನಾಯಕ ನಿಮ್ಮ ಎಲ್ಲಾ ವಿಘ್ನಗಳನ್ನ ದೂರ ಮಾಡಲಿ 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "kn.festival.ganesh_chaturthi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಗಣೇಶ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! 🌺",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "kn.festival.ganesh_chaturthi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ಗಣೇಶ ಹಬ್ಬ! ಜೀವನ ಮೋದಕದ ಹಾಗೆ ಸಿಹಿಯಾಗಿರಲಿ, ಮೋದಕಾನೂ ಅಷ್ಟೇ ಸಿಗಲಿ 😄",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "kn.festival.ganesh_chaturthi.004",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ಗಣೇಶ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ವಿನಾಯಕ ನಿಮ್ಮನ್ನ ಯಾವಾಗಲೂ ಆರೋಗ್ಯವಾಗಿಡಲಿ 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "kn.festival.vijayadashami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ನಾಡಹಬ್ಬ ದಸರಾದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ಚಾಮುಂಡೇಶ್ವರಿ ನಿಮಗೆ ಶಕ್ತಿ, ಯಶಸ್ಸು ಕೊಡಲಿ 🙏",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "kn.festival.vijayadashami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ವಿಜಯದಶಮಿ ಶುಭಾಶಯಗಳು {nickname}! 🌼",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "kn.festival.vijayadashami.003",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ದಸರಾ ಶುಭಾಶಯಗಳು! ನಮ್ಮ ಬನ್ನಿ ಸ್ವೀಕರಿಸಿ ಆಶೀರ್ವದಿಸಿ 🙏",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "kn.festival.vijayadashami.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ದಸರಾ ಶುಭಾಶಯಗಳು! ಮೈಸೂರಿನ ದೀಪಾಲಂಕಾರ, ಮನೆಯ ಗೊಂಬೆ ತುಂಬಾ ನೆನಪಾಗ್ತಿವೆ ❤️",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "kn.festival.diwali_lakshmi_puja.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ದೀಪಾವಳಿ ಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ಲಕ್ಷ್ಮಿ ನಿಮ್ಮ ಮನೆಗೆ ಸುಖ, ಸಮೃದ್ಧಿ ತರಲಿ 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "kn.festival.diwali_lakshmi_puja.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಹ್ಯಾಪಿ ದೀಪಾವಳಿ {nickname}! 🪔✨",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "kn.festival.diwali_lakshmi_puja.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ಹ್ಯಾಪಿ ದೀಪಾವಳಿ! ಸ್ವೀಟ್ಸ್ ಜಾಸ್ತಿ, ಕ್ಯಾಲೊರಿ ಕಮ್ಮಿ ಆಗಲಿ 😄🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "kn.festival.diwali_lakshmi_puja.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "ದೀಪಗಳ ಬೆಳಕು ಮನೆ ತುಂಬಲಿ, ಸಿಹಿ ಮನಸ್ಸು ತುಂಬಲಿ. ದೀಪಾವಳಿ ಶುಭಾಶಯಗಳು 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "kn.festival.diwali_lakshmi_puja.005",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ದೀಪಾವಳಿ ಶುಭಾಶಯಗಳು! ನಿಮ್ಮ ಆಶೀರ್ವಾದ ಯಾವಾಗಲೂ ಇರಲಿ 🙏🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "kn.festival.christmas.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಮೆರ್ರಿ ಕ್ರಿಸ್‌ಮಸ್ {nickname}! 🎄",
+   "festival": "christmas"
+  },
+  {
+   "id": "kn.festival.christmas.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಕ್ರಿಸ್‌ಮಸ್ ಶುಭಾಶಯಗಳು! ನಿಮ್ಮ ಜೀವನ ಪ್ರೀತಿ, ಶಾಂತಿಯಿಂದ ತುಂಬಿರಲಿ 🎄",
+   "festival": "christmas"
+  },
+  {
+   "id": "kn.festival.maha_shivaratri.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಮಹಾ ಶಿವರಾತ್ರಿಯ ಶುಭಾಶಯಗಳು! ಓಂ ನಮಃ ಶಿವಾಯ 🙏",
+   "festival": "maha_shivaratri"
+  },
+  {
+   "id": "kn.festival.varamahalakshmi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ವರಮಹಾಲಕ್ಷ್ಮಿ ಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ಲಕ್ಷ್ಮಿ ನಿಮ್ಮ ಮನೆಯಲ್ಲಿ ಸದಾ ನೆಲೆಸಿರಲಿ 🙏",
+   "festival": "varamahalakshmi"
+  },
+  {
+   "id": "kn.festival.varamahalakshmi.002",
+   "occasion": "festival",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "ವರಮಹಾಲಕ್ಷ್ಮಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ನಮ್ಮ ಮನೆಯ ಲಕ್ಷ್ಮಿ ನೀನೇ ❤️🙏",
+   "festival": "varamahalakshmi"
+  },
+  {
+   "id": "kn.festival.gowri_habba.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಗೌರಿ ಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ಸ್ವರ್ಣಗೌರಿ ನಿಮಗೆ ಸೌಭಾಗ್ಯ, ಸಂತೋಷ ಕೊಡಲಿ 🙏",
+   "festival": "gowri_habba"
+  },
+  {
+   "id": "kn.festival.gowri_habba.002",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "ಗೌರಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ನಮ್ಮ ಬಾಗಿನ ಸ್ವೀಕರಿಸಿ ಆಶೀರ್ವದಿಸಿ 🙏",
+   "festival": "gowri_habba"
+  },
+  {
+   "id": "kn.festival.nag_panchami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ನಾಗರ ಪಂಚಮಿಯ ಶುಭಾಶಯಗಳು! ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕೆ ಒಳ್ಳೇದಾಗಲಿ 🙏",
+   "festival": "nag_panchami"
+  },
+  {
+   "id": "kn.festival.balipratipada.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "ಬಲಿಪಾಡ್ಯಮಿಯ ಶುಭಾಶಯಗಳು! ಹೊಸ ವರ್ಷ ಸಮೃದ್ಧಿ ತರಲಿ 🪔",
+   "festival": "balipratipada"
+  },
+  {
+   "id": "kn.festival.naraka_chaturdashi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "ನರಕ ಚತುರ್ದಶಿ ಶುಭಾಶಯಗಳು! ಬೆಳಿಗ್ಗೆ ಎಣ್ಣೆ ಸ್ನಾನ — ಇವತ್ತು ಯಾವ ನೆಪಾನೂ ನಡೆಯಲ್ಲ 😄🪔",
+   "festival": "naraka_chaturdashi"
+  },
+  {
+   "id": "kn.festival.kannada_rajyotsava.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ಕನ್ನಡ ರಾಜ್ಯೋತ್ಸವದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು! ಸಿರಿಗನ್ನಡಂ ಗೆಲ್ಗೆ, ಸಿರಿಗನ್ನಡಂ ಬಾಳ್ಗೆ 💛❤️",
+   "festival": "kannada_rajyotsava"
+  },
+  {
+   "id": "kn.festival.kannada_rajyotsava.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "ಕನ್ನಡ ರಾಜ್ಯೋತ್ಸವದ ಶುಭಾಶಯಗಳು {nickname}! 💛❤️",
+   "festival": "kannada_rajyotsava"
+  },
+  {
+   "id": "kn.festival.kannada_rajyotsava.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "ಎಲ್ಲಾದರು ಇರು, ಎಂತಾದರು ಇರು, ಎಂದೆಂದಿಗೂ ನೀ ಕನ್ನಡವಾಗಿರು. ರಾಜ್ಯೋತ್ಸವದ ಶುಭಾಶಯಗಳು 💛❤️",
+   "festival": "kannada_rajyotsava"
+  },
+  {
+   "id": "kn.festival.guru_purnima.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "ಗುರು ಪೂರ್ಣಿಮೆಯ ಶುಭಾಶಯಗಳು! ನೀವು ಕಲಿಸಿದ್ದಕ್ಕೆಲ್ಲಾ ಮನಸಾರೆ ಧನ್ಯವಾದ 🙏",
+   "festival": "guru_purnima"
+  },
+  {
+   "id": "kn.festival.bhai_dooj.001",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "ಭಾಯಿ ದೂಜ್ ಶುಭಾಶಯಗಳು {nickname}! ದೇವರು ನಿನಗೆ ದೀರ್ಘಾಯುಷ್ಯ ಕೊಡಲಿ ❤️🙏",
+   "festival": "bhai_dooj"
+  }
+ ]
+}

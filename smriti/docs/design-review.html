@@ -1,0 +1,1048 @@
+<title>Smriti Design Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column (max 1040px) with a sticky section index; specimens and phone mockups break into wrapping grids. */
+:root {
+  --bg: #F8F5EE;          /* page ivory */
+  --surface: #FFFFFF;
+  --sunk: #F0EBE0;
+  --fg: #1C1B1F;          /* charcoal ink */
+  --muted: #6B665C;
+  --line: #E2DACB;
+  --gold: #C9A45C;        /* gold fill */
+  --gold-ink: #8A6A2B;    /* gold used as text on light */
+  --ok: #2F7D57;
+  --warn: #A5462F;
+  --serif: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --sans: "Manrope", "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --indic: "Noto Sans Devanagari", "Noto Sans Kannada", "Manrope", system-ui, sans-serif;
+  --r-s: 10px; --r-m: 16px; --r-l: 24px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121214; --surface: #1B1A1F; --sunk: #232228; --fg: #F2EDE2; --muted: #A59F92;
+    --line: #34323A; --gold: #D6B26E; --gold-ink: #E2C27F; --ok: #6CC49A; --warn: #E88A73;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121214; --surface: #1B1A1F; --sunk: #232228; --fg: #F2EDE2; --muted: #A59F92;
+  --line: #34323A; --gold: #D6B26E; --gold-ink: #E2C27F; --ok: #6CC49A; --warn: #E88A73;
+  color-scheme: dark;
+}
+
+/* ---------- App specimen tokens (used inside mockups; both themes shown side by side) ---------- */
+.app-dark {
+  --a-bg: #121214; --a-surface: #1C1B20; --a-raised: #27262C; --a-text: #F4EFE4; --a-muted: #A8A294;
+  --a-line: #34323A; --a-gold: #D6B26E; --a-gold-text: #E2C27F; --a-on-gold: #1A1408;
+  --a-call: #5CC08F; --a-alert: #E88A73; --a-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+.app-light {
+  --a-bg: #FAF7F0; --a-surface: #FFFFFF; --a-raised: #F1ECE1; --a-text: #1C1B1F; --a-muted: #6E685D;
+  --a-line: #E4DDCF; --a-gold: #C9A45C; --a-gold-text: #8A6A2B; --a-on-gold: #1A1408;
+  --a-call: #2F8A5E; --a-alert: #B4452F; --a-shadow: 0 8px 24px rgba(60,45,20,.10);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(40px, 7vw, 64px); letter-spacing: -0.01em; }
+h2 { font-size: clamp(30px, 4.5vw, 40px); }
+h3 { font-size: 24px; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--gold-ink); }
+code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.86em; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-ink); }
+.muted { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.section { display: flex; flex-direction: column; gap: 24px; padding-block: 56px 8px; border-top: 1px solid var(--line); margin-top: 56px; scroll-margin-top: 64px; }
+
+/* header */
+.masthead { display: flex; flex-direction: column; gap: 18px; }
+.status { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--line); }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+.lede { font-size: 18px; max-width: 60ch; }
+.approve-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 8px; }
+.approve-list a { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r-m); background: var(--surface); text-decoration: none; color: var(--fg); }
+.approve-list a:hover, .approve-list a:focus-visible { border-color: var(--gold); outline: none; }
+.approve-list strong { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+.approve-list span { font-size: 13px; color: var(--muted); }
+
+nav.index { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); margin-top: 32px; }
+nav.index ul { list-style: none; margin: 0; padding: 10px 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+nav.index a { display: block; white-space: nowrap; padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
+nav.index a:hover, nav.index a:focus-visible { color: var(--fg); background: var(--sunk); outline: none; }
+
+/* tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-m); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+th { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; background: var(--sunk); }
+tr:last-child td { border-bottom: 0; }
+td.n { width: 44px; color: var(--muted); font-variant-numeric: tabular-nums; }
+td.name { font-weight: 600; white-space: nowrap; }
+.phase-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 12px; }
+.phase-head h3 { font-size: 26px; }
+.pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.pill.gold { color: var(--gold-ink); border-color: var(--gold); background: transparent; }
+
+/* colour swatches */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.theme-card { border-radius: var(--r-l); padding: 20px; display: flex; flex-direction: column; gap: 14px; background: var(--a-bg); color: var(--a-text); border: 1px solid var(--a-line); }
+.theme-card h4 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 600; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.sw { display: flex; flex-direction: column; gap: 6px; font-size: 12px; min-width: 0; }
+.sw i { display: block; height: 44px; border-radius: 10px; border: 1px solid var(--a-line); }
+.sw b { font-weight: 600; }
+.sw span { color: var(--a-muted); font-family: ui-monospace, Menlo, monospace; font-size: 11px; }
+.cat-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.cat { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: 13px; font-weight: 600; }
+.cat i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+
+/* type specimens */
+.type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.type-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.type-card .big { font-size: 56px; line-height: 1; }
+.type-card .meta { font-size: 12px; color: var(--muted); }
+.scale-row { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.scale-row:last-child { border-bottom: 0; }
+.scale-row .meta { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.indic-sample { font-family: var(--indic); font-size: 17px; line-height: 1.7; }
+
+/* ---------- Phone mockups ---------- */
+.phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; justify-items: center; }
+.phone-fig { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; max-width: 320px; }
+.phone-fig figcaption { font-size: 13px; color: var(--muted); text-align: center; }
+.phone-fig figcaption b { color: var(--fg); display: block; font-size: 14px; }
+figure { margin: 0; }
+.phone { width: 100%; max-width: 300px; aspect-ratio: 9 / 19; border-radius: 40px; padding: 10px; background: #0A0A0B; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+.screen { position: relative; height: 100%; border-radius: 31px; overflow: hidden; background: var(--a-bg); color: var(--a-text); font-family: var(--sans); font-size: 12px; line-height: 1.4; display: flex; flex-direction: column; }
+.sbar { display: flex; justify-content: space-between; padding: 12px 22px 4px; font-size: 11px; font-weight: 600; color: var(--a-text); }
+.scroll { flex: 1; overflow: hidden; padding: 6px 14px 0; display: flex; flex-direction: column; gap: 10px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; }
+.greet { font-size: 11px; color: var(--a-muted); }
+.wordmark { font-family: var(--serif); font-size: 24px; font-weight: 600; letter-spacing: 0.01em; }
+.iconbtn { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--a-surface); border: 1px solid var(--a-line); color: var(--a-text); }
+.ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ico.fill { fill: currentColor; stroke: none; }
+
+.hero { border-radius: 22px; padding: 14px; background: linear-gradient(160deg, var(--a-raised), var(--a-surface) 70%); border: 1px solid var(--a-line); box-shadow: var(--a-shadow); display: flex; flex-direction: column; gap: 10px; }
+.hero-top { display: flex; gap: 12px; align-items: center; }
+.avatar { flex: none; border-radius: 50%; display: grid; place-items: center; font-family: var(--serif); font-weight: 600; color: var(--a-on-gold); }
+.av-lg { width: 58px; height: 58px; font-size: 24px; box-shadow: 0 0 0 2px var(--a-bg), 0 0 0 3.5px var(--a-gold); }
+.av-sm { width: 34px; height: 34px; font-size: 15px; }
+.av-xl { width: 88px; height: 88px; font-size: 38px; box-shadow: 0 0 0 3px var(--a-bg), 0 0 0 5px var(--a-gold); }
+.g1 { background: linear-gradient(135deg, #E9CF97, #B98D45); }
+.g2 { background: linear-gradient(135deg, #EBB7C6, #C0718C); }
+.g3 { background: linear-gradient(135deg, #B8CBE3, #6F8FB8); }
+.g4 { background: linear-gradient(135deg, #F2C48E, #D27E2B); }
+.hero-name { font-family: var(--serif); font-size: 24px; font-weight: 600; line-height: 1.05; }
+.sub { font-size: 11px; color: var(--a-muted); }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px; background: var(--a-gold); color: var(--a-on-gold); }
+.countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.cd { background: var(--a-bg); border: 1px solid var(--a-line); border-radius: 12px; padding: 6px 0 5px; text-align: center; }
+.cd b { display: block; font-family: var(--sans); font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.cd span { font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em; color: var(--a-muted); text-transform: uppercase; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.abtn { display: flex; align-items: center; justify-content: center; gap: 6px; height: 38px; border-radius: 12px; font-weight: 700; font-size: 12px; border: 1px solid transparent; }
+.abtn.call { background: transparent; border-color: var(--a-call); color: var(--a-call); }
+.abtn.share { background: var(--a-gold); color: var(--a-on-gold); }
+.abtn.ghost { background: var(--a-surface); border-color: var(--a-line); color: var(--a-text); }
+.chips { display: flex; gap: 6px; overflow: hidden; }
+.chip { flex: none; padding: 5px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 600; border: 1px solid var(--a-line); color: var(--a-muted); background: var(--a-surface); }
+.chip.on { background: var(--a-text); color: var(--a-bg); border-color: var(--a-text); }
+.list-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--a-muted); padding-top: 2px; }
+.row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; background: var(--a-surface); border: 1px solid var(--a-line); border-radius: 14px; }
+.row .mid { flex: 1; min-width: 0; }
+.row .t { font-weight: 700; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .s { font-size: 10px; color: var(--a-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.days { text-align: right; flex: none; }
+.days b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; line-height: 1; }
+.days span { font-size: 9px; color: var(--a-muted); }
+.mini { display: flex; gap: 4px; flex: none; }
+.mini span { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--a-line); }
+.mini .c { color: var(--a-call); }
+.mini .sh { color: var(--a-gold-text); }
+.stars { color: var(--a-gold); letter-spacing: 1px; font-size: 10px; }
+.stars .off { color: var(--a-line); }
+.sq-icon { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; color: #fff; }
+.tabbar { display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 6px 14px; border-top: 1px solid var(--a-line); background: var(--a-surface); }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9px; color: var(--a-muted); font-weight: 600; }
+.tab.on { color: var(--a-gold-text); }
+.fab { position: absolute; right: 16px; bottom: 70px; width: 46px; height: 46px; border-radius: 16px; background: var(--a-gold); color: var(--a-on-gold); display: grid; place-items: center; box-shadow: var(--a-shadow); }
+
+/* profile */
+.profile-head { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 4px; text-align: center; }
+.profile-head .hero-name { font-size: 28px; }
+.btn-row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tile { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 9px 4px; border-radius: 14px; background: var(--a-surface); border: 1px solid var(--a-line); font-size: 10.5px; font-weight: 700; }
+.tile.call { color: var(--a-call); }
+.tile.share { background: var(--a-gold); color: var(--a-on-gold); border-color: var(--a-gold); }
+.card { background: var(--a-surface); border: 1px solid var(--a-line); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.card h5 { margin: 0; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--a-muted); font-weight: 700; }
+.kv { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
+.kv span { color: var(--a-muted); }
+.ev { display: flex; align-items: center; gap: 10px; }
+.ev .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.gift { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.box { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid var(--a-muted); flex: none; display: grid; place-items: center; }
+.box.on { background: var(--a-gold); border-color: var(--a-gold); color: var(--a-on-gold); }
+
+/* sheet */
+.dim { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--a-surface); border-radius: 26px 26px 0 0; padding: 10px 16px 20px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--a-line); }
+.grab { width: 36px; height: 4px; border-radius: 4px; background: var(--a-line); align-self: center; }
+.sheet-title { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+.msg { background: var(--a-raised); border-radius: 14px; padding: 10px 12px; font-size: 11.5px; line-height: 1.5; }
+.msg-actions { display: flex; gap: 14px; font-size: 11px; font-weight: 700; color: var(--a-gold-text); }
+.big-opt { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 14px; border: 1px solid var(--a-line); background: var(--a-bg); font-weight: 700; font-size: 13px; }
+.big-opt small { display: block; font-weight: 500; font-size: 10px; color: var(--a-muted); }
+.big-opt .sq-icon { width: 36px; height: 36px; border-radius: 12px; }
+.more { text-align: center; font-size: 11px; font-weight: 700; color: var(--a-muted); }
+
+/* alarm */
+.alarm { background: radial-gradient(120% 70% at 50% 30%, #2A2418 0%, #121214 70%); }
+.alarm .scroll { justify-content: space-between; padding: 18px 18px 26px; align-items: center; text-align: center; }
+.ring { width: 190px; max-width: 100%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; position: relative; }
+.ring::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(214,178,110,.25); }
+.ring::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid transparent; border-top-color: #D6B26E; border-right-color: #D6B26E; transform: rotate(20deg); }
+.ring .secs { font-family: var(--sans); font-size: 64px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; color: #F4EFE4; }
+.ring small { display: block; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: #A8A294; margin-top: 6px; }
+.alarm-name { font-family: var(--serif); font-size: 30px; font-weight: 600; color: #F4EFE4; line-height: 1.1; }
+.alarm .sub { color: #A8A294; }
+.alarm-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.alarm-btns .abtn { height: 52px; border-radius: 16px; font-size: 14px; }
+.snooze { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.snooze span { padding: 6px 12px; border-radius: 999px; border: 1px solid #34323A; color: #A8A294; font-size: 10.5px; font-weight: 600; }
+.tick { animation: tick 1s steps(1) infinite; }
+@keyframes tick { 50% { opacity: .55; } }
+
+/* components grid */
+.comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.comp { border-radius: var(--r-m); padding: 18px; display: flex; flex-direction: column; gap: 12px; background: var(--a-bg); color: var(--a-text); border: 1px solid var(--a-line); min-width: 0; }
+.comp .label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--a-muted); }
+.comp p { font-size: 13px; color: var(--a-muted); }
+.toast { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--a-text); color: var(--a-bg); font-size: 12px; font-weight: 700; }
+.wished-chip { display: inline-flex; align-self: flex-start; align-items: center; gap: 10px; padding: 7px 8px 7px 14px; border-radius: 999px; border: 1px solid var(--a-gold); color: var(--a-gold-text); font-size: 12px; font-weight: 700; }
+.wished-chip em { font-style: normal; color: var(--a-muted); font-weight: 600; padding: 2px 8px; border-left: 1px solid var(--a-line); }
+.progress { height: 8px; border-radius: 8px; background: var(--a-raised); overflow: hidden; }
+.progress i { display: block; height: 100%; width: 30%; background: var(--a-gold); border-radius: 8px; }
+.toggle { width: 38px; height: 22px; border-radius: 22px; background: var(--a-gold); position: relative; flex: none; }
+.toggle::after { content: ""; position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--a-on-gold); }
+.toggle.off { background: var(--a-raised); border: 1px solid var(--a-line); }
+.toggle.off::after { left: 3px; right: auto; top: 2px; background: var(--a-muted); }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--a-line); }
+.set-row:last-child { border-bottom: 0; }
+.set-row small { display: block; color: var(--a-muted); font-size: 11px; }
+.time-pill { font-variant-numeric: tabular-nums; font-weight: 700; padding: 3px 9px; border-radius: 8px; background: var(--a-raised); font-size: 12px; }
+.empty { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; }
+.empty .glyph { font-family: var(--serif); font-size: 40px; color: var(--a-gold-text); line-height: 1; }
+.empty strong { font-family: var(--serif); font-size: 20px; font-weight: 600; }
+
+/* token tables */
+.token-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.token-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.token-card h4 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 600; }
+.token-card ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.radius-demo { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.radius-demo i { display: block; width: 46px; height: 46px; background: var(--sunk); border: 1px solid var(--line); }
+.radius-demo span { font-size: 11px; color: var(--muted); display: block; text-align: center; margin-top: 4px; }
+
+/* data model */
+.entity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.entity { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.entity header { padding: 14px 16px 10px; display: flex; flex-direction: column; gap: 2px; border-bottom: 1px solid var(--line); background: var(--sunk); }
+.entity header b { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+.entity header span { font-size: 13px; color: var(--muted); }
+.entity dl { margin: 0; padding: 6px 16px 12px; display: grid; grid-template-columns: minmax(110px, auto) 1fr; gap: 0 12px; font-size: 13px; }
+.entity dt { font-family: ui-monospace, Menlo, monospace; font-size: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); color: var(--fg); overflow-wrap: anywhere; }
+.entity dd { margin: 0; padding: 6px 0; border-bottom: 1px dashed var(--line); color: var(--muted); }
+.entity dt:nth-last-of-type(1), .entity dd:last-of-type { border-bottom: 0; }
+.diagram { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 16px; overflow-x: auto; }
+pre.code { margin: 0; background: var(--sunk); border: 1px solid var(--line); border-radius: var(--r-m); padding: 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.rule b { font-size: 15px; }
+.rule p { font-size: 14px; color: var(--muted); }
+
+.note { border: 1px solid var(--gold); border-radius: var(--r-m); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; background: var(--surface); }
+.note b { color: var(--gold-ink); }
+.qs { display: flex; flex-direction: column; gap: 12px; counter-reset: q; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.q b { font-size: 16px; }
+.q p { color: var(--muted); font-size: 14px; }
+ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+@media (max-width: 520px) {
+  .scale-row { grid-template-columns: 1fr; gap: 2px; }
+  .wrap { padding-inline: 16px; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M3.5 20.5 5 16a8.5 8.5 0 1 1 3.5 3.3z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/></symbol>
+    <symbol id="i-sms" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h14M6 17v2M18 17v2M4 13l2-6h12l2 6v4H4z"/><circle cx="8" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></symbol>
+    <symbol id="i-lamp" viewBox="0 0 24 24"><path d="M12 3c1.5 2 2.5 3.4 2.5 5a2.5 2.5 0 0 1-5 0C9.5 6.4 10.5 5 12 3"/><path d="M4 14h16l-2 4a3 3 0 0 1-2.7 2H8.7A3 3 0 0 1 6 18z"/><path d="M12 11v3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="masthead">
+    <span class="status">Waiting for your approval · no code written yet</span>
+    <p class="eyebrow">Smriti · design review before Phase 1</p>
+    <h1>Smriti</h1>
+    <p class="lede">A private countdown app for the birthdays, anniversaries, festivals and dates that matter to you. This page covers the three things you asked to approve before any code is written.</p>
+    <div class="approve-list">
+      <a href="#screens"><strong>1 · Screen list</strong><span>All 45 screens, grouped by the phase that builds them.</span></a>
+      <a href="#model"><strong>2 · Data model</strong><span>What the app stores and how dates, repeats and numbers behave.</span></a>
+      <a href="#design"><strong>3 · Design system</strong><span>Colours, fonts, components and four sample screens.</span></a>
+    </div>
+  </header>
+
+  <nav class="index" aria-label="Sections">
+    <ul>
+      <li><a href="#design">Design system</a></li>
+      <li><a href="#mockups">Sample screens</a></li>
+      <li><a href="#screens">Screen list</a></li>
+      <li><a href="#model">Data model</a></li>
+      <li><a href="#files">Editable files</a></li>
+      <li><a href="#festivals">Festival dates</a></li>
+      <li><a href="#tech">Tech &amp; permissions</a></li>
+      <li><a href="#decide">Decisions for you</a></li>
+    </ul>
+  </nav>
+
+  <!-- ================= DESIGN SYSTEM ================= -->
+  <section class="section" id="design">
+    <p class="eyebrow">Part 3 · Design system</p>
+    <h2>Calm luxury, like an heirloom diary</h2>
+    <p>Deep charcoal at night and warm ivory by day, with gold reserved for the moments that matter: the next event, the Share button and milestone badges. Names are set in an elegant serif and everything else in a clean, highly legible sans. Nothing flashes or competes. The countdown and the person's face lead each screen.</p>
+
+    <h3>Colours</h3>
+    <div class="swatch-grid">
+      <div class="theme-card app-dark">
+        <h4>Dark · Charcoal</h4>
+        <div class="swatches">
+          <div class="sw"><i style="background:#121214"></i><b>Background</b><span>#121214</span></div>
+          <div class="sw"><i style="background:#1C1B20"></i><b>Card</b><span>#1C1B20</span></div>
+          <div class="sw"><i style="background:#27262C"></i><b>Raised</b><span>#27262C</span></div>
+          <div class="sw"><i style="background:#F4EFE4"></i><b>Text</b><span>#F4EFE4</span></div>
+          <div class="sw"><i style="background:#A8A294"></i><b>Muted text</b><span>#A8A294</span></div>
+          <div class="sw"><i style="background:#D6B26E"></i><b>Gold</b><span>#D6B26E</span></div>
+          <div class="sw"><i style="background:#5CC08F"></i><b>Call green</b><span>#5CC08F</span></div>
+          <div class="sw"><i style="background:#E88A73"></i><b>Missed / alert</b><span>#E88A73</span></div>
+        </div>
+      </div>
+      <div class="theme-card app-light">
+        <h4>Light · Ivory</h4>
+        <div class="swatches">
+          <div class="sw"><i style="background:#FAF7F0"></i><b>Background</b><span>#FAF7F0</span></div>
+          <div class="sw"><i style="background:#FFFFFF"></i><b>Card</b><span>#FFFFFF</span></div>
+          <div class="sw"><i style="background:#F1ECE1"></i><b>Raised</b><span>#F1ECE1</span></div>
+          <div class="sw"><i style="background:#1C1B1F"></i><b>Text</b><span>#1C1B1F</span></div>
+          <div class="sw"><i style="background:#6E685D"></i><b>Muted text</b><span>#6E685D</span></div>
+          <div class="sw"><i style="background:#C9A45C"></i><b>Gold (fills)</b><span>#C9A45C</span></div>
+          <div class="sw"><i style="background:#8A6A2B"></i><b>Gold (text)</b><span>#8A6A2B</span></div>
+          <div class="sw"><i style="background:#2F8A5E"></i><b>Call green</b><span>#2F8A5E</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="muted">Gold text on ivory is darkened to <span class="mono">#8A6A2B</span> so it stays readable. All text meets the WCAG AA contrast standard in both themes. The app follows your phone's dark/light setting, and you can override it in Settings.</p>
+
+    <h3>Event colours</h3>
+    <p>Each kind of event has its own colour. They show up as calendar dots, list icons and the thin ring on a card.</p>
+    <div class="cat-row">
+      <span class="cat"><i style="background:#D4789A"></i>Birthday · rose</span>
+      <span class="cat"><i style="background:#C9A45C"></i>Anniversary · gold</span>
+      <span class="cat"><i style="background:#E0892E"></i>Festival · saffron</span>
+      <span class="cat"><i style="background:#5E86B8"></i>Important date · slate blue</span>
+      <span class="cat"><i style="background:#6E9E7A"></i>Other / custom · sage</span>
+    </div>
+
+    <h3>Fonts</h3>
+    <div class="type-grid">
+      <div class="type-card">
+        <span class="eyebrow">Names &amp; headings</span>
+        <span class="big" style="font-family:var(--serif);font-weight:600">Appa</span>
+        <span style="font-family:var(--serif);font-size:22px;font-style:italic">Turning sixty on Saturday</span>
+        <span class="meta">Cormorant Garamond · 600 · elegant, high-contrast serif</span>
+      </div>
+      <div class="type-card">
+        <span class="eyebrow">Body, buttons, numbers</span>
+        <span class="big" style="font-weight:600;font-variant-numeric:tabular-nums">04:11:26</span>
+        <span>Birthday · Sat, 3 Oct · 4 days left</span>
+        <span class="meta">Manrope · 400–700 · clean and readable, with equal-width digits so the countdown doesn't jiggle</span>
+      </div>
+      <div class="type-card">
+        <span class="eyebrow">Hindi &amp; Kannada messages</span>
+        <span class="indic-sample">जन्मदिन मुबारक हो पापा! आप हमेशा ऐसे ही मुस्कुराते रहिए 🙏</span>
+        <span class="indic-sample">ಹುಟ್ಟುಹಬ್ಬದ ಹಾರ್ದಿಕ ಶುಭಾಶಯಗಳು ಅಪ್ಪ! ನಿಮ್ಮ ಆಶೀರ್ವಾದ ಯಾವಾಗಲೂ ಇರಲಿ 🙏</span>
+        <span class="meta">Noto Sans Devanagari &amp; Noto Sans Kannada · matched to Manrope</span>
+      </div>
+    </div>
+    <div class="type-card">
+      <span class="eyebrow">Type scale (sizes on the phone)</span>
+      <div class="scale-row"><span class="meta">Display · 40<br>serif 600</span><span style="font-family:var(--serif);font-size:40px;font-weight:600;line-height:1.1">Appa</span></div>
+      <div class="scale-row"><span class="meta">Heading · 28<br>serif 600</span><span style="font-family:var(--serif);font-size:28px;font-weight:600">Upcoming this month</span></div>
+      <div class="scale-row"><span class="meta">Section · 22<br>serif 600</span><span style="font-family:var(--serif);font-size:22px;font-weight:600">Gift ideas</span></div>
+      <div class="scale-row"><span class="meta">Countdown · 44<br>sans 600 tabular</span><span style="font-size:44px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1">04 : 11 : 26 : 08</span></div>
+      <div class="scale-row"><span class="meta">Title · 17<br>sans 600</span><span style="font-size:17px;font-weight:600">Chinnu's birthday</span></div>
+      <div class="scale-row"><span class="meta">Body · 15<br>sans 400</span><span>Niece · Mon, 12 Oct · turns 13</span></div>
+      <div class="scale-row"><span class="meta">Label · 12<br>sans 700 caps</span><span class="eyebrow" style="color:var(--muted)">Missed this week</span></div>
+    </div>
+    <p class="muted">All fonts are bundled inside the app, so they work offline and nothing downloads at runtime. Text respects your phone's font-size setting.</p>
+
+    <h3>Spacing, shape, depth, motion</h3>
+    <div class="token-grid">
+      <div class="token-card">
+        <h4>Spacing</h4>
+        <p class="muted" style="font-size:14px">An 8-point rhythm: 4 · 8 · 12 · 16 · 24 · 32 · 48. Screen edges use 16. Cards have 16 inside and 12 between them.</p>
+      </div>
+      <div class="token-card">
+        <h4>Rounded corners</h4>
+        <div class="radius-demo">
+          <div><i style="border-radius:8px"></i><span>8 · chips</span></div>
+          <div><i style="border-radius:14px"></i><span>14 · buttons</span></div>
+          <div><i style="border-radius:20px"></i><span>20 · cards</span></div>
+          <div><i style="border-radius:28px"></i><span>28 · sheets</span></div>
+        </div>
+      </div>
+      <div class="token-card">
+        <h4>Depth</h4>
+        <p class="muted" style="font-size:14px">One soft shadow, used only on the hero card, floating buttons and sheets. List rows use a hairline border instead, which keeps the screen calm.</p>
+      </div>
+      <div class="token-card">
+        <h4>Motion &amp; touch</h4>
+        <ul>
+          <li>Countdown digits flip in 250 ms</li>
+          <li>Confetti on the day, once per open</li>
+          <li>Light haptic tap on Call, Share, Save</li>
+          <li>Screens slide in 300 ms</li>
+          <li>All motion turns off if your phone's "reduce animations" is on</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Core components</h3>
+    <div class="comp-grid">
+      <div class="comp app-dark">
+        <span class="label">Call &amp; Share buttons</span>
+        <div class="btn-row">
+          <span class="abtn call"><svg class="ico"><use href="#i-phone"/></svg>Call</span>
+          <span class="abtn share"><svg class="ico"><use href="#i-send"/></svg>Share</span>
+        </div>
+        <p>Call is a green outline and Share is solid gold. They always sit in the same order, so your thumb learns where they are.</p>
+      </div>
+      <div class="comp app-light">
+        <span class="label">Filter chips</span>
+        <div class="chips" style="flex-wrap:wrap">
+          <span class="chip on">Today</span><span class="chip">This week</span><span class="chip">This month</span><span class="chip">All</span><span class="chip">People</span><span class="chip">Festivals</span><span class="chip">Important dates</span>
+        </div>
+        <p>One tap filters the list. The active chip turns solid.</p>
+      </div>
+      <div class="comp app-dark">
+        <span class="label">Upcoming row</span>
+        <div class="row">
+          <span class="avatar av-sm g2">C</span>
+          <div class="mid"><div class="t">Chinnu · Birthday</div><div class="s">Niece · Mon 12 Oct · turns 13 <span class="stars">★★★★<span class="off">★</span></span></div></div>
+          <div class="days"><b>13</b><span>days</span></div>
+        </div>
+        <p>Photo, name, what and when, stars, and days left. Swipe the row, or use the small icons, to Call or Share.</p>
+      </div>
+      <div class="comp app-light">
+        <span class="label">"Mark as wished?" chip &amp; toast</span>
+        <span class="wished-chip"><svg class="ico"><use href="#i-check"/></svg>Mark Appa as wished?<em>Dismiss</em></span>
+        <span class="toast"><svg class="ico"><use href="#i-copy"/></svg>Copied</span>
+        <p>Shows up after you come back from WhatsApp or a call. It never blocks the screen.</p>
+      </div>
+      <div class="comp app-dark">
+        <span class="label">Reminder toggles</span>
+        <div>
+          <div class="set-row"><span>Midnight alarm<small>Tick-tock at 11:59:50 PM</small></span><span class="toggle"></span></div>
+          <div class="set-row"><span>Morning reminder</span><span style="display:flex;gap:8px;align-items:center"><span class="time-pill">8:00 AM</span><span class="toggle"></span></span></div>
+          <div class="set-row"><span>7 days before</span><span class="toggle off"></span></div>
+        </div>
+        <p>One plain page per event: a switch and a time for each reminder, and nothing hidden.</p>
+      </div>
+      <div class="comp app-light">
+        <span class="label">Wish Mode progress &amp; empty state</span>
+        <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>Diwali wishes</span><span style="font-variant-numeric:tabular-nums">12 of 40 wished</span></div>
+        <div class="progress"><i></i></div>
+        <div class="empty">
+          <span class="glyph">✦</span>
+          <strong>No one here yet</strong>
+          <p style="text-align:center">Add the first person you never want to forget.</p>
+          <span class="abtn share" style="padding:0 16px">Pick from contacts</span>
+        </div>
+      </div>
+    </div>
+    <p class="muted">Icons: rounded line icons (the Phosphor set, bundled). WhatsApp, Telegram and SMS use their own recognisable marks in the Share sheet.</p>
+  </section>
+
+  <!-- ================= MOCKUPS ================= -->
+  <section class="section" id="mockups">
+    <p class="eyebrow">Sample screens · example data</p>
+    <h2>How the design comes together</h2>
+    <p>Four key screens drawn in the design system. The names and dates are examples. The hero countdown below is live.</p>
+
+    <div class="phones">
+      <!-- Home -->
+      <figure class="phone-fig">
+        <div class="phone app-dark"><div class="screen">
+          <div class="sbar"><span>9:41</span><span>●●● 5G</span></div>
+          <div class="scroll">
+            <div class="topbar">
+              <div><div class="greet">Good morning, Niranjan</div><div class="wordmark">Smriti</div></div>
+              <span class="iconbtn"><svg class="ico"><use href="#i-search"/></svg></span>
+            </div>
+            <div class="hero">
+              <div class="hero-top">
+                <span class="avatar av-lg g1">A</span>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <span class="hero-name">Appa</span>
+                  <span class="sub">Father · Birthday · Sat, 3 Oct</span>
+                  <span class="badge">✦ Turning 60!</span>
+                </div>
+              </div>
+              <div class="countdown" id="cd" aria-label="Countdown">
+                <div class="cd"><b data-u="d">04</b><span>Days</span></div>
+                <div class="cd"><b data-u="h">11</b><span>Hrs</span></div>
+                <div class="cd"><b data-u="m">26</b><span>Min</span></div>
+                <div class="cd"><b data-u="s">08</b><span>Sec</span></div>
+              </div>
+              <div class="btn-row">
+                <span class="abtn call"><svg class="ico"><use href="#i-phone"/></svg>Call</span>
+                <span class="abtn share"><svg class="ico"><use href="#i-send"/></svg>Share</span>
+              </div>
+            </div>
+            <div class="chips"><span class="chip">Today</span><span class="chip">This week</span><span class="chip on">This month</span><span class="chip">All</span><span class="chip">Festivals</span></div>
+            <span class="list-label">Coming up</span>
+            <div class="row">
+              <span class="avatar av-sm g2">C</span>
+              <div class="mid"><div class="t">Chinnu</div><div class="s">Niece · Birthday · 12 Oct <span class="stars">★★★★<span class="off">★</span></span></div></div>
+              <div class="days"><b>13</b><span>days</span></div>
+            </div>
+            <div class="row">
+              <span class="sq-icon" style="background:#E0892E"><svg class="ico"><use href="#i-lamp"/></svg></span>
+              <div class="mid"><div class="t">Dasara</div><div class="s">Festival · Tue, 20 Oct</div></div>
+              <div class="days"><b>21</b><span>days</span></div>
+            </div>
+            <div class="row">
+              <span class="sq-icon" style="background:#5E86B8"><svg class="ico"><use href="#i-car"/></svg></span>
+              <div class="mid"><div class="t">Car insurance</div><div class="s">Renewal · 28 Oct <svg class="ico" style="width:10px;height:10px;vertical-align:-1px"><use href="#i-bell"/></svg></div></div>
+              <div class="days"><b>29</b><span>days</span></div>
+            </div>
+          </div>
+          <span class="fab"><svg class="ico" style="width:20px;height:20px"><use href="#i-plus"/></svg></span>
+          <div class="tabbar">
+            <span class="tab on"><svg class="ico"><use href="#i-home"/></svg>Home</span>
+            <span class="tab"><svg class="ico"><use href="#i-cal"/></svg>Calendar</span>
+            <span class="tab"><svg class="ico"><use href="#i-people"/></svg>People</span>
+            <span class="tab"><svg class="ico"><use href="#i-book"/></svg>Messages</span>
+            <span class="tab"><svg class="ico"><use href="#i-gear"/></svg>Settings</span>
+          </div>
+        </div></div>
+        <figcaption><b>Home · dark</b>Hero countdown for the next event, then everything coming up.</figcaption>
+      </figure>
+
+      <!-- Profile -->
+      <figure class="phone-fig">
+        <div class="phone app-light"><div class="screen">
+          <div class="sbar"><span>9:41</span><span>●●● 5G</span></div>
+          <div class="scroll">
+            <div class="topbar">
+              <span class="iconbtn"><svg class="ico"><use href="#i-back"/></svg></span>
+              <span style="font-size:11px;font-weight:700;color:var(--a-gold-text)">Edit</span>
+            </div>
+            <div class="profile-head">
+              <span class="avatar av-xl g1">A</span>
+              <span class="hero-name">Appa</span>
+              <span class="sub">Ramesh Katti · Father · <span class="stars">★★★★★</span></span>
+            </div>
+            <div class="btn-row3">
+              <span class="tile call"><svg class="ico"><use href="#i-phone"/></svg>Call</span>
+              <span class="tile share"><svg class="ico"><use href="#i-send"/></svg>Share</span>
+              <span class="tile"><svg class="ico"><use href="#i-bell"/></svg>Reminders</span>
+            </div>
+            <div class="card">
+              <h5>Events</h5>
+              <div class="ev"><span class="dot" style="background:#D4789A"></span><div style="flex:1"><b style="font-size:11.5px">Birthday</b><div class="sub">3 Oct · turning 60 · in 4 days</div></div><span class="badge">60</span></div>
+              <div class="ev"><span class="dot" style="background:#C9A45C"></span><div style="flex:1"><b style="font-size:11.5px">Anniversary with Amma</b><div class="sub">21 May · 35 years</div></div></div>
+            </div>
+            <div class="card">
+              <h5>Gift ideas</h5>
+              <div class="gift"><span class="box on"><svg class="ico" style="width:10px;height:10px"><use href="#i-check"/></svg></span>Reading glasses stand</div>
+              <div class="gift"><span class="box"></span>Mysore Pak from Guru Sweets</div>
+            </div>
+            <div class="card">
+              <h5>Details</h5>
+              <div class="kv"><span>Call</span><b>+91 98450 12345</b></div>
+              <div class="kv"><span>WhatsApp</span><b>Same as call</b></div>
+              <div class="kv"><span>Last wished</span><b>3 Oct 2025 · WhatsApp</b></div>
+            </div>
+          </div>
+        </div></div>
+        <figcaption><b>Person profile · light</b>Everything about one person, with Call and Share at the top.</figcaption>
+      </figure>
+
+      <!-- Share sheet -->
+      <figure class="phone-fig">
+        <div class="phone app-dark"><div class="screen">
+          <div class="sbar"><span>9:41</span><span>●●● 5G</span></div>
+          <div class="scroll" style="opacity:.5">
+            <div class="wordmark">Smriti</div>
+            <div class="hero" style="height:150px"></div>
+          </div>
+          <div class="dim"></div>
+          <div class="sheet">
+            <span class="grab"></span>
+            <span class="sheet-title">Wish Appa</span>
+            <div class="msg">Happy 60th birthday, Appa! Everything good in me started with you. Wishing you health, peace and many more years of your jokes at the dinner table. 🙏</div>
+            <div class="msg-actions"><span>Change message</span><span>Edit</span><span style="margin-left:auto;color:var(--a-muted)">English ▾</span></div>
+            <div class="big-opt"><span class="sq-icon" style="background:#25A35A"><svg class="ico"><use href="#i-chat"/></svg></span><span>WhatsApp<small>Opens Appa's chat, message ready</small></span></div>
+            <div class="big-opt"><span class="sq-icon" style="background:#5E86B8"><svg class="ico"><use href="#i-sms"/></svg></span><span>Text message<small>Opens SMS to +91 98450 12345</small></span></div>
+            <div class="big-opt"><span class="sq-icon" style="background:#6E685D"><svg class="ico"><use href="#i-copy"/></svg></span><span>Copy message<small>Paste it anywhere</small></span></div>
+            <span class="more">More: family group · email · Telegram · other apps</span>
+          </div>
+        </div></div>
+        <figcaption><b>Share sheet · dark</b>Three big choices, with the message shown first so you can change it.</figcaption>
+      </figure>
+
+      <!-- Alarm -->
+      <figure class="phone-fig">
+        <div class="phone app-dark"><div class="screen alarm">
+          <div class="sbar" style="color:#F4EFE4"><span>11:59</span><span>🔒</span></div>
+          <div class="scroll">
+            <span class="sub" style="letter-spacing:.16em;text-transform:uppercase;font-size:9.5px;font-weight:700">Midnight alarm · Sat 3 Oct</span>
+            <div class="ring"><div><span class="secs tick">07</span><small>seconds to midnight</small></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+              <span class="alarm-name">Appa turns 60</span>
+              <span class="sub">Be the first to wish him</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;width:100%">
+              <div class="alarm-btns">
+                <span class="abtn call" style="border-color:#5CC08F;color:#5CC08F"><svg class="ico"><use href="#i-phone"/></svg>Call</span>
+                <span class="abtn share" style="background:#D6B26E;color:#1A1408"><svg class="ico"><use href="#i-send"/></svg>Send wish</span>
+              </div>
+              <div class="snooze"><span>Snooze 10 min</span><span>1 hour</span><span>Morning</span></div>
+            </div>
+          </div>
+        </div></div>
+        <figcaption><b>Midnight alarm · lock screen</b>A 10-second tick-tock, then a chime at 12:00, with big buttons.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= SCREENS ================= -->
+  <section class="section" id="screens">
+    <p class="eyebrow">Part 1 · Screen list</p>
+    <h2>45 screens across 8 phases</h2>
+    <p>The bottom bar has five tabs: <b>Home</b>, <b>Calendar</b>, <b>People</b>, <b>Messages</b> and <b>Settings</b>. The gold <b>+</b> button on Home adds a person or an event. Each phase adds the screens listed under it. Phase 8 adds no new screens: it's polish and a full test on your phone.</p>
+
+    <div class="phase-head"><h3>Phase 1 · People, events, countdown</h3><span class="pill gold">14 screens</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td class="name">Welcome</td><td>First launch only: your name (used in messages as {my_name}), your own birthday and anniversary (optional), and a plain explanation of why the app asks for contacts.</td></tr>
+        <tr><td class="n">2</td><td class="name">Home</td><td>Hero card with a live countdown, Today banner, filter chips (Today, This week, This month, All · People, Festivals, Important dates), the upcoming list and the + button.</td></tr>
+        <tr><td class="n">3</td><td class="name">Search</td><td>Search by name, nickname, relationship or event title. Results show as you type.</td></tr>
+        <tr><td class="n">4</td><td class="name">People</td><td>Everyone, sortable by name, stars or next date. Filter by relationship or stars. Links to Archived.</td></tr>
+        <tr><td class="n">5</td><td class="name">Person profile</td><td>Photo, name, nickname, relationship, stars, Call and Share, their events, notes, likes and dislikes, sizes, favourite sweets, gift ideas. Wish history and photo memories are added in later phases.</td></tr>
+        <tr><td class="n">6</td><td class="name">Add / edit person</td><td>Choose "Pick from contacts" or "Add manually". Plus relationship, stars, birth year, notes, and a time zone under More options.</td></tr>
+        <tr><td class="n">7</td><td class="name">Choose numbers</td><td>When a contact has several numbers, pick which one to call and which one is on WhatsApp. Also used for "Link to a different contact" and "Unlink".</td></tr>
+        <tr><td class="n">8</td><td class="name">Bulk add from contacts</td><td>Tick many contacts at once, then quickly type each person's dates in one list.</td></tr>
+        <tr><td class="n">9</td><td class="name">Import contact birthdays</td><td>Finds birthdays already saved in your phone contacts. Duplicates are flagged before anything is added.</td></tr>
+        <tr><td class="n">10</td><td class="name">Add / edit event</td><td>Type, date, repeat (yearly, monthly, one-time), stars and person(s). A couple event links two people, and a non-person event has a title and category. More options hold time zone, "Send wishes to" and the 29 Feb choice.</td></tr>
+        <tr><td class="n">11</td><td class="name">Event detail</td><td>Countdown, date, who it's for, reminders summary, Call and Share, notes.</td></tr>
+        <tr><td class="n">12</td><td class="name">Calendar</td><td>A month grid with coloured dots per event type. Tap a day to see its events. The Export button is added in Phase 6.</td></tr>
+        <tr><td class="n">13</td><td class="name">Archived people</td><td>People you keep but hide from the main lists. Restore with one tap.</td></tr>
+        <tr><td class="n">14</td><td class="name">Settings</td><td>Starts small: your profile, theme, default reminders. Each later phase adds its own section here.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="phase-head"><h3>Phase 2 · Call, Share, wish history</h3><span class="pill gold">5 screens</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td class="n">15</td><td class="name">Share sheet</td><td>The message preview with Change and Edit, then WhatsApp, Text message and Copy. Shows a gentle notice if the number isn't on WhatsApp.</td></tr>
+        <tr><td class="n">16</td><td class="name">More share options</td><td>WhatsApp group (via the share sheet), email, Telegram, and the phone's own share menu.</td></tr>
+        <tr><td class="n">17</td><td class="name">Wish history</td><td>Per person: every call and wish, with date, method and the message used.</td></tr>
+        <tr><td class="n">18</td><td class="name">Missed</td><td>Events from the last 7 days that aren't marked as wished. Also appears as a section on Home.</td></tr>
+        <tr><td class="n">19</td><td class="name">Not wished in 12+ months</td><td>A simple list sorted by stars, so no one quietly slips away.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="phase-head"><h3>Phase 3 · Reminders &amp; alarms</h3><span class="pill gold">7 screens</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td class="n">20</td><td class="name">Event reminders</td><td>Toggles and times: midnight alarm, morning, custom time, days-before (any number), gift reminder, sound, belated nudge, and their midnight or yours.</td></tr>
+        <tr><td class="n">21</td><td class="name">Apply reminders to…</td><td>Copy this event's reminders to chosen people, a group or everyone, or copy from another person.</td></tr>
+        <tr><td class="n">22</td><td class="name">Midnight alarm</td><td>Full screen, even when the phone is locked. 10-second tick-tock, a chime, Call and Send wish, and Snooze (10 min, 1 hour, morning).</td></tr>
+        <tr><td class="n">23</td><td class="name">Belated nudge</td><td>"You missed Ravi's birthday yesterday", with belated messages ready plus Call and Share.</td></tr>
+        <tr><td class="n">24</td><td class="name">Month summary</td><td>Opens from the notification on the 1st of each month: every event this month.</td></tr>
+        <tr><td class="n">25</td><td class="name">Make alarms reliable</td><td>Step-by-step, with pictures for your phone brand (Xiaomi, Vivo, Oppo, Realme, Samsung, OnePlus…), to stop the phone from killing alarms.</td></tr>
+        <tr><td class="n">26</td><td class="name">Reminder defaults &amp; sounds</td><td>Default reminders for new events, morning time, and a sound preview for tick-tock, soft bell, temple bell, chime, birthday tune and vibrate-only.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="phase-head"><h3>Phase 4 · Messages</h3><span class="pill gold">4 screens</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td class="n">27</td><td class="name">Message library</td><td>Browse 600+ messages by relationship, occasion, tone and language. Favourites and "My messages" appear at the top.</td></tr>
+        <tr><td class="n">28</td><td class="name">Edit / create message</td><td>Write or adjust a template, with tap-to-insert placeholders like {name} and {age}.</td></tr>
+        <tr><td class="n">29</td><td class="name">Prepare message for an event</td><td>Draft days in advance and save it. It's then used automatically by Share. Also has "Surprise me".</td></tr>
+        <tr><td class="n">30</td><td class="name">Thank-you replies</td><td>On your own birthday: ready-made thank-yous in English, Hindi and Kannada, sent via WhatsApp, SMS or Copy.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="phase-head"><h3>Phase 5 · Festivals &amp; Wish Mode</h3><span class="pill gold">5 screens</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td class="n">31</td><td class="name">Festivals</td><td>All festivals with an on/off switch each and the next date, plus a big "Add my own festival" button.</td></tr>
+        <tr><td class="n">32</td><td class="name">Edit / add festival</td><td>Change the date for any year, rename it, delete one you added, or set who to suggest (e.g. brothers and sisters for Raksha Bandhan). A festival you add can repeat on the same date every year, or you can enter its date for each year. Changes are saved in the app and never overwritten by updates. A small "Reset to calendar date" link undoes an edit.</td></tr>
+        <tr><td class="n">33</td><td class="name">Start Wish Mode</td><td>Choose who: a group, a star rating, selected people or everyone.</td></tr>
+        <tr><td class="n">34</td><td class="name">Wish Mode</td><td>One person at a time with photo, name and message. WhatsApp, Text, Copy, Call, Edit, Skip, Next and a progress bar. Pause any time.</td></tr>
+        <tr><td class="n">35</td><td class="name">Today's wishes</td><td>The same flow for everyone with an event today, in order.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="phase-head"><h3>Phase 6 · Export, backup, cards, memories</h3><span class="pill gold">5 screens</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td class="n">36</td><td class="name">Export to Excel</td><td>Filters (everyone, people, group, stars, month, type) and whether to include numbers and notes. Then save to Downloads or share.</td></tr>
+        <tr><td class="n">37</td><td class="name">Import from Excel</td><td>Download a blank template, pick a file, then check the preview (errors in red, duplicates flagged) before confirming.</td></tr>
+        <tr><td class="n">38</td><td class="name">Backup &amp; restore</td><td>Weekly automatic backup (keeps the last 4), "Back up now", "Restore", and the backup folder location.</td></tr>
+        <tr><td class="n">39</td><td class="name">Greeting card</td><td>Pick one of 20+ designs. Your message and their photo fill in. Share to WhatsApp or save to the gallery.</td></tr>
+        <tr><td class="n">40</td><td class="name">Photo memories</td><td>A gallery per person, grouped by year. Add photos from each celebration.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="phase-head"><h3>Phase 7 · Widget, gifts, groups, lock, calendar sync</h3><span class="pill gold">5 screens + widget</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Screen</th><th>What it's for</th></tr></thead>
+      <tbody>
+        <tr><td class="n">41</td><td class="name">Gift planner</td><td>All upcoming gifts: ideas, budget per event and a "purchased" tick.</td></tr>
+        <tr><td class="n">42</td><td class="name">Groups</td><td>Create "Family", "College friends" and so on, and add members. Groups are used in filters, Wish Mode and export.</td></tr>
+        <tr><td class="n">43</td><td class="name">App lock</td><td>A fingerprint screen when the app opens, if turned on.</td></tr>
+        <tr><td class="n">44</td><td class="name">Calendar sync</td><td>One-way copy of your events into your phone's Google Calendar. Optional.</td></tr>
+        <tr><td class="n">45</td><td class="name">Home-screen widget</td><td>The next countdown on your phone's home screen. Tap it for Call or Share.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ================= DATA MODEL ================= -->
+  <section class="section" id="model">
+    <p class="eyebrow">Part 2 · Data model</p>
+    <h2>What Smriti stores</h2>
+    <p>Everything lives in one database file on your phone. Nothing goes to the internet unless you turn on calendar sync. Here's how the pieces connect:</p>
+
+    <div class="diagram">
+<pre class="mermaid">
+erDiagram
+  PERSON ||--o{ EVENT_PERSON : "is in"
+  EVENT ||--|{ EVENT_PERSON : "belongs to 1 or 2"
+  EVENT ||--o{ REMINDER : has
+  EVENT }o--o| PERSON : "send wishes to"
+  PERSON ||--o{ WISH_LOG : "was wished"
+  EVENT ||--o{ WISH_LOG : "for"
+  PERSON ||--o{ GIFT_IDEA : has
+  PERSON ||--o{ PHOTO_MEMORY : has
+  PERSON }o--o{ GROUP : "member of"
+  FESTIVAL ||--o{ WISH_SESSION : "starts"
+  WISH_SESSION ||--|{ WISH_SESSION_ITEM : contains
+  WISH_SESSION_ITEM }o--|| PERSON : "is for"
+  MESSAGE_TEMPLATE ||--o{ WISH_LOG : "used in"
+</pre>
+    </div>
+
+    <div class="entity-grid">
+      <div class="entity">
+        <header><b>Person</b><span>Anyone you want to remember, including yourself</span></header>
+        <dl>
+          <dt>name, nickname</dt><dd>"Ramesh Katti", "Appa"</dd>
+          <dt>photo</dt><dd>Saved inside the app, so it's never lost if the contact changes</dd>
+          <dt>relationship</dt><dd>One of the 23 you listed, or Custom with its own label</dd>
+          <dt>stars</dt><dd>1–5. Used only for sorting and filtering</dd>
+          <dt>birthYear</dt><dd>Optional. Enables "Turning 60!"</dd>
+          <dt>callNumber</dt><dd>Stored as +91XXXXXXXXXX</dd>
+          <dt>whatsappNumber</dt><dd>Empty means "same as call"</dd>
+          <dt>whatsappApp</dt><dd>WhatsApp, WhatsApp Business, or ask</dd>
+          <dt>timeZone</dt><dd>Empty means yours. e.g. America/New_York</dd>
+          <dt>notes, likes, dislikes, clothingSize, favouriteSweets</dt><dd>Free text</dd>
+          <dt>contactId</dt><dd>Link to your phone contact, or empty</dd>
+          <dt>editedFields</dt><dd>Which fields you changed by hand. Sync never overwrites these silently</dd>
+          <dt>isMe, isArchived</dt><dd>Your own profile · hidden from main lists</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>Event</b><span>A birthday, anniversary, renewal or any date</span></header>
+        <dl>
+          <dt>kind</dt><dd>Person · Couple (two people) · Non-person</dd>
+          <dt>type</dt><dd>Birthday, Wedding anniversary, Engagement, Work anniversary, Graduation, First meeting, Insurance, Vehicle service, Passport, Licence, Bill, Policy, Rent, Subscription, Custom</dd>
+          <dt>title, icon</dt><dd>For non-person events, e.g. "Car insurance"</dd>
+          <dt>day, month, year?</dt><dd>Year is optional for yearly events and required for one-time ones</dd>
+          <dt>repeat</dt><dd>Yearly · Monthly · One-time</dd>
+          <dt>feb29Rule</dt><dd>For 29 Feb dates in normal years: 28 Feb or 1 Mar</dd>
+          <dt>stars</dt><dd>Optional. Own rating, separate from the person's</dd>
+          <dt>sendWishesTo</dt><dd>Another person whose number Call and Share use. The message still names the event's person</dd>
+          <dt>alarmClock</dt><dd>My midnight or their midnight</dd>
+          <dt>draftMessage</dt><dd>Your pre-written message, ready for one-tap Share</dd>
+          <dt>sound, belatedNudge</dt><dd>Per event</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>EventPerson</b><span>Links an event to its person, or both people of a couple</span></header>
+        <dl>
+          <dt>eventId, personId</dt><dd>One row for normal events, two for a couple</dd>
+          <dt>role</dt><dd>Primary or partner. Sets the order in "Ravi &amp; Priya"</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>Reminder</b><span>One row per reminder you switch on</span></header>
+        <dl>
+          <dt>eventId</dt><dd>Which event</dd>
+          <dt>kind</dt><dd>Midnight · Morning · Custom time · Days before · Gift</dd>
+          <dt>daysBefore</dt><dd>0 on the day, or any number</dd>
+          <dt>time</dt><dd>e.g. 08:00</dd>
+          <dt>enabled</dt><dd>On or off</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>ScheduledAlarm</b><span>The app's own to-do list of alarms</span></header>
+        <dl>
+          <dt>reminderId</dt><dd>Where it came from</dd>
+          <dt>firesAt</dt><dd>Exact moment, stored in universal time so time zones never drift</dd>
+          <dt>status</dt><dd>Waiting, fired, snoozed or dismissed</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>WishLog</b><span>Your wish history</span></header>
+        <dl>
+          <dt>personId</dt><dd>Who received it (may be the "send wishes to" person)</dd>
+          <dt>eventId / festivalId</dt><dd>What it was for</dd>
+          <dt>year</dt><dd>Which year's celebration</dd>
+          <dt>method</dt><dd>Call, WhatsApp, SMS, Copy, Card, Other</dd>
+          <dt>messageText, templateId</dt><dd>What was sent, so "Surprise me" avoids repeats</dd>
+          <dt>confirmed</dt><dd>True once you tap "Mark as wished"</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>Message templates</b><span>600+ built-in (editable file) plus your own</span></header>
+        <dl>
+          <dt>id</dt><dd>e.g. bday.father.emotional.en.07</dd>
+          <dt>relationships</dt><dd>Which relations it suits</dd>
+          <dt>occasion</dt><dd>Birthday, Anniversary, Milestone, Belated, Festival: Diwali…</dd>
+          <dt>tone, language</dt><dd>Emotional, Funny, Short, Formal, Poetic, Blessing · en/hi/kn</dd>
+          <dt>text</dt><dd>With placeholders such as {nickname}</dd>
+          <dt>favourite, myEdit</dt><dd>Stored separately, so updating the file never loses your edits</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>Festival</b><span>Built-in list (editable file) plus your own</span></header>
+        <dl>
+          <dt>id, names</dt><dd>diwali · Diwali / दिवाली / ದೀಪಾವಳಿ</dd>
+          <dt>dates</dt><dd>One date per year, 2026–2036</dd>
+          <dt>suggest</dt><dd>Relations to pre-select in Wish Mode</dd>
+          <dt>enabled, dateOverrides</dt><dd>Your on/off switch and date corrections</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>WishSession + items</b><span>A Wish Mode run you can pause</span></header>
+        <dl>
+          <dt>source</dt><dd>Festival, Today, or custom</dd>
+          <dt>items</dt><dd>Person, order, message, and status: waiting, wished or skipped</dd>
+        </dl>
+      </div>
+
+      <div class="entity">
+        <header><b>Smaller tables</b><span>Added in later phases</span></header>
+        <dl>
+          <dt>Group, PersonGroup</dt><dd>Your groups and who's in them</dd>
+          <dt>GiftIdea</dt><dd>Idea, budget, purchased, for which event and year</dd>
+          <dt>PhotoMemory</dt><dd>Photo file, year, caption</dd>
+          <dt>ContactNotice</dt><dd>"Chinnu's number changed", shown once</dd>
+          <dt>Settings</dt><dd>Your name, defaults, theme, app lock, backup folder</dd>
+        </dl>
+      </div>
+    </div>
+
+    <h3>Rules the app follows</h3>
+    <div class="rules">
+      <div class="rule"><b>29 February birthdays</b><p>In non-leap years, the event falls on 28 Feb or 1 Mar, whichever you chose for that event.</p></div>
+      <div class="rule"><b>Monthly on the 31st</b><p>In shorter months it falls on the last day: 30 Apr, 28 or 29 Feb.</p></div>
+      <div class="rule"><b>One-time events</b><p>Count down once. Afterwards they move to a "Past" list and never repeat.</p></div>
+      <div class="rule"><b>Age and years</b><p>"Turning 60" and "35 years married" appear only when a year is known. Milestones (18, 25, 50, 60, 75, 80; silver and golden anniversaries) get a badge.</p></div>
+      <div class="rule"><b>Phone numbers</b><p>98450 12345, 098450 12345, +91 98450 12345 and 91-9845012345 are all saved as +919845012345. Numbers from other countries keep their own code.</p></div>
+      <div class="rule"><b>Time zones</b><p>For someone abroad, "their midnight" is worked out in their city's time, including daylight saving, and then shown in yours.</p></div>
+      <div class="rule"><b>Contact sync</b><p>Matched by the phone's contact ID, never by name. If you edited a number by hand, a changed contact shows a notice instead of overwriting it.</p></div>
+      <div class="rule"><b>Stars never gate anything</b><p>No reminder, alarm or feature checks stars. They're used only by sorting and filters.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= FILES ================= -->
+  <section class="section" id="files">
+    <p class="eyebrow">Editable data files</p>
+    <h2>Messages and festivals live outside the code</h2>
+    <p>As you asked, they sit in <span class="mono">assets/messages/</span> and <span class="mono">assets/festivals/</span> as plain files you can open in any text editor. One file per language keeps them easy to find. Changes take effect in the next build of the app.</p>
+    <pre class="code">assets/
+  messages/
+    en.json      ← English (≈ 250 messages)
+    hi.json      ← Hindi   (≈ 200)
+    kn.json      ← Kannada (≈ 200)
+  festivals/
+    festivals.json</pre>
+    <p>What one message looks like:</p>
+    <pre class="code">{
+  "id": "bday.parent.emotional.kn.03",
+  "occasion": "birthday",
+  "relations": ["father", "mother"],
+  "tone": "emotional",
+  "text": "ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು {nickname}! ನೀವು ನಮ್ಮ ಜೀವನದ ದೊಡ್ಡ ಶಕ್ತಿ. ಸದಾ ಆರೋಗ್ಯವಾಗಿ, ನಗುನಗುತ್ತಾ ಇರಿ 🙏"
+}</pre>
+    <p>What one festival looks like (the real file has every year from 2026 to 2036):</p>
+    <pre class="code">{
+  "id": "diwali",
+  "name": { "en": "Diwali", "hi": "दिवाली", "kn": "ದೀಪಾವಳಿ" },
+  "lunar": true,
+  "suggest": ["all"],
+  "dates": { "2026": "2026-11-08", "2027": "2027-10-29", "…": "…" }
+}</pre>
+  </section>
+
+  <!-- ================= FESTIVALS ================= -->
+  <section class="section" id="festivals">
+    <p class="eyebrow">Festival dates · Mahalakshmi calendar system</p>
+    <h2>Festival dates for 2026–2036</h2>
+    <p>Hindu festival dates are calculated with the same rules the Mahalakshmi calendar uses: lunar months that end on the new moon, sunrise at Mumbai, and the traditional rule for which part of the day each festival needs (morning, midday, afternoon, evening or midnight). Eid has been removed.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Festival</th><th>2026</th><th>2027</th><th>2028</th><th>2029</th><th>2030</th><th>2031</th><th>2032</th><th>2033</th><th>2034</th><th>2035</th><th>2036</th></tr></thead>
+      <tbody style="font-variant-numeric:tabular-nums;white-space:nowrap">
+        <tr><td class="name">Makar Sankranti</td><td>14 Jan</td><td>15 Jan</td><td>15 Jan</td><td>14 Jan</td><td>14 Jan</td><td>15 Jan</td><td>15 Jan</td><td>14 Jan</td><td>14 Jan</td><td>15 Jan</td><td>15 Jan</td></tr>
+        <tr><td class="name">Holi (colours)</td><td>4 Mar</td><td>22 Mar</td><td>11 Mar</td><td>1 Mar</td><td>20 Mar</td><td>9 Mar</td><td>27 Mar</td><td>16 Mar</td><td>5 Mar</td><td>24 Mar</td><td>12 Mar</td></tr>
+        <tr><td class="name">Ugadi / Gudi Padwa</td><td>19 Mar</td><td>7 Apr</td><td>27 Mar</td><td>14 Apr</td><td>3 Apr</td><td>24 Mar</td><td>10 Apr</td><td>31 Mar</td><td>21 Mar</td><td>9 Apr</td><td>28 Mar</td></tr>
+        <tr><td class="name">Ram Navami</td><td>26 Mar</td><td>15 Apr</td><td>3 Apr</td><td>22 Apr</td><td>12 Apr</td><td>1 Apr</td><td>18 Apr</td><td>7 Apr</td><td>28 Mar</td><td>16 Apr</td><td>5 Apr</td></tr>
+        <tr><td class="name">Raksha Bandhan</td><td>28 Aug</td><td>17 Aug</td><td>5 Aug</td><td>23 Aug</td><td>13 Aug</td><td>2 Aug</td><td>20 Aug</td><td>10 Aug</td><td>29 Aug</td><td>18 Aug</td><td>6 Aug</td></tr>
+        <tr><td class="name">Krishna Janmashtami</td><td>4 Sep</td><td>24 Aug</td><td>13 Aug</td><td>31 Aug</td><td>20 Aug</td><td>9 Aug</td><td>27 Aug</td><td>17 Aug</td><td>5 Sep</td><td>26 Aug</td><td>14 Aug</td></tr>
+        <tr><td class="name">Ganesh Chaturthi</td><td>14 Sep</td><td>4 Sep</td><td>23 Aug</td><td>11 Sep</td><td>1 Sep</td><td>20 Sep</td><td>8 Sep</td><td>28 Aug</td><td>16 Sep</td><td>5 Sep</td><td>24 Aug</td></tr>
+        <tr><td class="name">Dasara</td><td>20 Oct</td><td>9 Oct</td><td>27 Sep</td><td>16 Oct</td><td>6 Oct</td><td>25 Oct</td><td>14 Oct</td><td>3 Oct</td><td>22 Oct</td><td>11 Oct</td><td>29 Sep</td></tr>
+        <tr><td class="name">Diwali (Lakshmi Puja)</td><td>8 Nov</td><td>29 Oct</td><td>17 Oct</td><td>5 Nov</td><td>26 Oct</td><td>14 Nov</td><td>2 Nov</td><td>22 Oct</td><td>10 Nov</td><td>30 Oct</td><td>19 Oct</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">New Year, Republic Day, Independence Day and Christmas have fixed dates and are switched on too. Sixteen more are in the file but switched off at first, so you can turn on the ones you want: Maha Shivaratri, Holika Dahan, Hanuman Jayanti, Akshaya Tritiya, Guru Purnima, Nag Panchami, Varamahalakshmi, Gowri Habba, Anant Chaturdashi, Navratri, Dhanteras, Naraka Chaturdashi, Balipratipada, Bhai Dooj, Gandhi Jayanti and Kannada Rajyotsava.</p>
+    <div class="rules">
+      <div class="rule"><b>Matches Marathi calendars</b><p>For 2024 and 2025, all 23 calculated festivals match the dates Marathi calendars printed. That includes Diwali on 1 Nov 2024 and 21 Oct 2025, where Marathi calendars differ from North Indian ones by a day.</p></div>
+      <div class="rule"><b>Checked against published lists</b><p>2026 and 2027 match published festival lists. Ganesh Chaturthi, Holi and Diwali for 2028–2035 also match where published dates exist, and full-moon start and end times agree to within a minute.</p></div>
+      <div class="rule"><b>One correction</b><p>Holi 2026 is set to 4 March, the day colours were actually played because of the lunar eclipse on 3 March. It's in the past, so it doesn't affect any reminders.</p></div>
+      <div class="rule"><b>Please glance at your calendar</b><p>The Mahalakshmi website is blocked from my computer, so I couldn't open their printed pages directly. If you have the 2026 or 2027 calendar at home, compare a few dates. Any date can be corrected in the app or in the file.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= TECH ================= -->
+  <section class="section" id="tech">
+    <p class="eyebrow">Under the hood</p>
+    <h2>Tech choices &amp; phone permissions</h2>
+    <div class="token-grid">
+      <div class="token-card">
+        <h4>Building blocks</h4>
+        <ul>
+          <li><b>Flutter</b>, Android now, iOS-ready structure</li>
+          <li><b>Drift (SQLite)</b> database. I picked it over Isar, which is no longer actively maintained</li>
+          <li><b>Riverpod</b> to keep screens in sync</li>
+          <li><b>Local notifications + exact alarms</b> for reminders</li>
+          <li><b>Automated tests</b> for every date rule above</li>
+        </ul>
+      </div>
+      <div class="token-card">
+        <h4>Permissions the app will ask for</h4>
+        <ul>
+          <li>Notifications and exact alarms</li>
+          <li>Full-screen alerts (midnight alarm on lock screen)</li>
+          <li>Run after restart (re-sets all alarms)</li>
+          <li>Phone calls (direct dialling)</li>
+          <li>Contacts (read only)</li>
+          <li>Ignore battery optimisation</li>
+          <li>Fingerprint (Phase 7) · Calendar (Phase 7, optional)</li>
+        </ul>
+        <p class="muted" style="font-size:13px">Each one is asked for only when first needed, with a sentence explaining why.</p>
+      </div>
+    </div>
+    <div class="note">
+      <b>Three things I'd like you to know up front</b>
+      <ul class="plain">
+        <li><b>Festival dates follow the Mahalakshmi calendar's system</b> (the Marathi almanac rules). Eid has been removed. See <a href="#festivals">Festival dates</a> for the full list and how it was checked.</li>
+        <li><b>Google Calendar sync:</b> I recommend writing to the Google Calendar already on your phone. That needs no sign-in or Google developer setup and gives the same result. A direct sign-in is also possible but needs extra setup.</li>
+        <li><b>Hindi and Kannada messages:</b> I'll write them the way people actually text. In Phase 4 I'll show you a sample of 20 to check before writing the rest.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= DECISIONS ================= -->
+  <section class="section" id="decide">
+    <p class="eyebrow">Your turn</p>
+    <h2>What I need from you</h2>
+    <div class="qs">
+      <div class="q"><b>1 · Approve, or tell me what to change</b><p>Reply "approved" to start Phase 1, or name anything on this page you'd like different: colours, fonts, a screen, a field.</p></div>
+      <div class="q"><b>2 · Where should the code live?</b><p>Recommended: a new, private GitHub project called "smriti", kept apart from your NiranjanAI website. The alternative is a folder inside NiranjanAI.</p></div>
+      <div class="q"><b>3 · How do you want to get the app onto your phone?</b><p>Recommended: GitHub builds the APK for you after every phase, and you download it straight onto your phone. No Mac setup needed. The alternative is building on your Mac, which needs Android Studio finished and a USB cable.</p></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var el = document.getElementById("cd");
+  if (!el) return;
+  function nextOct3() {
+    var now = new Date();
+    var t = new Date(now.getFullYear(), 9, 3, 0, 0, 0);
+    if (t - now <= 0) t = new Date(now.getFullYear() + 1, 9, 3, 0, 0, 0);
+    return t;
+  }
+  var target = nextOct3();
+  var parts = {};
+  el.querySelectorAll("[data-u]").forEach(function (b) { parts[b.getAttribute("data-u")] = b; });
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function tick() {
+    var diff = Math.max(0, Math.floor((target - new Date()) / 1000));
+    parts.d.textContent = pad(Math.floor(diff / 86400));
+    parts.h.textContent = pad(Math.floor(diff % 86400 / 3600));
+    parts.m.textContent = pad(Math.floor(diff % 3600 / 60));
+    parts.s.textContent = pad(diff % 60);
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>

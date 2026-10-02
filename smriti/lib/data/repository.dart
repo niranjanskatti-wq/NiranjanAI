@@ -1,0 +1,332 @@
+import 'package:drift/drift.dart';
+
+import '../features/reminders/reminder_model.dart';
+import 'database.dart';
+import 'enums.dart';
+import 'models.dart';
+
+/// All reads and writes the screens need, on top of [AppDatabase].
+class Repository {
+  Repository(this.db);
+
+  final AppDatabase db;
+
+  // ---------- people ----------
+  Stream<List<Person>> watchPeople({bool archived = false}) => (db.select(db.people)
+        ..where((p) => p.isMe.equals(false) & p.isArchived.equals(archived))
+        ..orderBy([(p) => OrderingTerm(expression: p.name.lower())]))
+      .watch();
+
+  Stream<Person?> watchPerson(int id) =>
+      (db.select(db.people)..where((p) => p.id.equals(id))).watchSingleOrNull();
+
+  Future<Person?> getPerson(int id) =>
+      (db.select(db.people)..where((p) => p.id.equals(id))).getSingleOrNull();
+
+  Stream<Person?> watchMe() =>
+      (db.select(db.people)..where((p) => p.isMe.equals(true))..limit(1)).watchSingleOrNull();
+
+  Future<Person?> getMe() =>
+      (db.select(db.people)..where((p) => p.isMe.equals(true))..limit(1)).getSingleOrNull();
+
+  Future<List<Person>> linkedPeople() =>
+      (db.select(db.people)..where((p) => p.contactId.isNotNull())).get();
+
+  Future<List<Person>> allPeople() => db.select(db.people).get();
+
+  Future<int> insertPerson(PeopleCompanion p) => db.into(db.people).insert(p);
+
+  Future<void> updatePerson(int id, PeopleCompanion p) =>
+      (db.update(db.people)..where((t) => t.id.equals(id)))
+          .write(p.copyWith(updatedAt: Value(DateTime.now())));
+
+  Future<void> setArchived(int id, bool archived) =>
+      updatePerson(id, PeopleCompanion(isArchived: Value(archived)));
+
+  /// Deletes a person and any event that no longer has anyone attached.
+  Future<void> deletePerson(int id) => db.transaction(() async {
+        final eventIds = await (db.select(db.eventPeople)..where((l) => l.personId.equals(id)))
+            .map((l) => l.eventId)
+            .get();
+        await (db.delete(db.people)..where((p) => p.id.equals(id))).go();
+        for (final eid in eventIds) {
+          final left = await (db.select(db.eventPeople)..where((l) => l.eventId.equals(eid))).get();
+          if (left.isEmpty) await (db.delete(db.events)..where((e) => e.id.equals(eid))).go();
+        }
+      });
+
+  // ---------- events ----------
+  Stream<List<EventEntry>> watchEntries() {
+    final q = db.select(db.events).join([
+      leftOuterJoin(db.eventPeople, db.eventPeople.eventId.equalsExp(db.events.id)),
+      leftOuterJoin(db.people, db.people.id.equalsExp(db.eventPeople.personId)),
+    ])
+      ..orderBy([OrderingTerm(expression: db.eventPeople.role)]);
+    return q.watch().map(_group);
+  }
+
+  Stream<List<EventEntry>> watchEntriesForPerson(int personId) =>
+      watchEntries().map((all) => all.where((e) => e.people.any((p) => p.id == personId)).toList());
+
+  Stream<EventEntry?> watchEntry(int eventId) =>
+      watchEntries().map((all) => all.where((e) => e.event.id == eventId).firstOrNull);
+
+  List<EventEntry> _group(List<TypedResult> rows) {
+    final events = <int, Event>{};
+    final people = <int, List<Person>>{};
+    for (final r in rows) {
+      final e = r.readTable(db.events);
+      events[e.id] = e;
+      final p = r.readTableOrNull(db.people);
+      final list = people.putIfAbsent(e.id, () => []);
+      if (p != null) list.add(p);
+    }
+    return [for (final e in events.values) EventEntry(e, people[e.id] ?? const [])];
+  }
+
+  /// Creates or updates an event and sets its people (primary first).
+  /// New events get the default reminders from Settings.
+  Future<int> saveEvent({int? id, required EventsCompanion data, required List<int> personIds}) =>
+      db.transaction(() async {
+        final eventId = id ?? await db.into(db.events).insert(data);
+        if (id == null) {
+          final other = data.kind.present && data.kind.value == EventKind.other.name;
+          final specs = other
+              ? decodeSpecs(await db.getSetting('defaultOtherReminders'), defaultOtherReminders)
+              : decodeSpecs(await db.getSetting('defaultPersonReminders'), defaultPersonReminders);
+          await _writeReminders(eventId, specs);
+        }
+        if (id != null) {
+          await (db.update(db.events)..where((e) => e.id.equals(id))).write(data);
+        }
+        await (db.delete(db.eventPeople)..where((l) => l.eventId.equals(eventId))).go();
+        for (var i = 0; i < personIds.length; i++) {
+          await db.into(db.eventPeople).insert(
+                EventPeopleCompanion.insert(eventId: eventId, personId: personIds[i], role: Value(i)),
+              );
+        }
+        return eventId;
+      });
+
+  Future<void> deleteEvent(int id) => (db.delete(db.events)..where((e) => e.id.equals(id))).go();
+
+  /// True when this person already has an event of [type] on [month]/[day].
+  Future<bool> hasEvent(int personId, EventType type, int month, int day) async {
+    final q = db.select(db.events).join([
+      innerJoin(db.eventPeople, db.eventPeople.eventId.equalsExp(db.events.id)),
+    ])
+      ..where(db.eventPeople.personId.equals(personId) &
+          db.events.type.equals(type.name) &
+          db.events.month.equals(month) &
+          db.events.day.equals(day));
+    return (await q.get()).isNotEmpty;
+  }
+
+  // ---------- reminders ----------
+  Stream<List<Reminder>> watchReminders(int eventId) =>
+      (db.select(db.reminders)..where((r) => r.eventId.equals(eventId))).watch();
+
+  Stream<List<Reminder>> watchAllReminders() => db.select(db.reminders).watch();
+
+  Future<List<Reminder>> allReminders() => db.select(db.reminders).get();
+
+  Future<List<ReminderSpec>> remindersFor(int eventId) async =>
+      (await (db.select(db.reminders)..where((r) => r.eventId.equals(eventId))).get())
+          .map(ReminderSpec.fromRow)
+          .toList();
+
+  Future<void> _writeReminders(int eventId, List<ReminderSpec> specs) async {
+    await (db.delete(db.reminders)..where((r) => r.eventId.equals(eventId))).go();
+    for (final s in specs) {
+      await db.into(db.reminders).insert(RemindersCompanion.insert(
+            eventId: eventId,
+            kind: s.kind.name,
+            daysBefore: Value(s.daysBefore),
+            minuteOfDay: Value(s.minute),
+            enabled: Value(s.enabled),
+          ));
+    }
+  }
+
+  Future<void> setReminders(int eventId, List<ReminderSpec> specs) =>
+      db.transaction(() => _writeReminders(eventId, specs));
+
+  /// Copies [specs] to many events at once ("Apply these reminders to…").
+  Future<void> setRemindersForMany(Iterable<int> eventIds, List<ReminderSpec> specs) =>
+      db.transaction(() async {
+        for (final id in eventIds) {
+          await _writeReminders(id, specs);
+        }
+      });
+
+  /// One birth year for a person: saved on the person and on their birthday dates,
+  /// so the profile and the date editor always show the same year.
+  Future<void> setBirthYear(int personId, int? year) => db.transaction(() async {
+        await (db.update(db.people)..where((p) => p.id.equals(personId))).write(PeopleCompanion(birthYear: Value(year)));
+        final ids = (await (db.select(db.eventPeople)..where((ep) => ep.personId.equals(personId))).get())
+            .map((ep) => ep.eventId)
+            .toList();
+        if (ids.isEmpty) return;
+        await (db.update(db.events)
+              ..where((e) => e.id.isIn(ids) & e.type.equals(EventType.birthday.name) & e.kind.equals(EventKind.person.name)))
+            .write(EventsCompanion(year: Value(year)));
+      });
+
+  Future<void> updateEvent(int id, EventsCompanion data) =>
+      (db.update(db.events)..where((e) => e.id.equals(id))).write(data);
+
+  // ---------- gift ideas ----------
+  Stream<List<GiftIdea>> watchGifts(int personId) => (db.select(db.giftIdeas)
+        ..where((g) => g.personId.equals(personId))
+        ..orderBy([(g) => OrderingTerm(expression: g.createdAt)]))
+      .watch();
+
+  Stream<List<GiftIdea>> watchAllGifts() =>
+      (db.select(db.giftIdeas)..orderBy([(g) => OrderingTerm(expression: g.createdAt)])).watch();
+
+  Future<void> addGift(int personId, String idea, {int? budget, int? eventId}) => db.into(db.giftIdeas).insert(
+      GiftIdeasCompanion.insert(personId: personId, idea: idea, budget: Value(budget), eventId: Value(eventId)));
+
+  Future<void> updateGift(int id, {required String idea, int? budget, int? eventId, bool? purchased}) =>
+      (db.update(db.giftIdeas)..where((g) => g.id.equals(id))).write(GiftIdeasCompanion(
+        idea: Value(idea),
+        budget: Value(budget),
+        eventId: Value(eventId),
+        purchased: purchased == null ? const Value.absent() : Value(purchased),
+      ));
+
+  Future<void> setGiftPurchased(int id, bool purchased) =>
+      (db.update(db.giftIdeas)..where((g) => g.id.equals(id)))
+          .write(GiftIdeasCompanion(purchased: Value(purchased)));
+
+  Future<void> deleteGift(int id) => (db.delete(db.giftIdeas)..where((g) => g.id.equals(id))).go();
+
+  // ---------- groups ----------
+  Stream<List<PersonGroup>> watchGroups() =>
+      (db.select(db.groups)..orderBy([(g) => OrderingTerm(expression: g.name.lower())])).watch();
+
+  /// groupId → member person ids.
+  Stream<Map<int, Set<int>>> watchGroupMembers() => db.select(db.groupMembers).watch().map((rows) {
+        final out = <int, Set<int>>{};
+        for (final r in rows) {
+          (out[r.groupId] ??= {}).add(r.personId);
+        }
+        return out;
+      });
+
+  Future<int> addGroup(String name, {int color = 0}) =>
+      db.into(db.groups).insert(GroupsCompanion.insert(name: name, color: Value(color)));
+
+  Future<void> renameGroup(int id, String name) =>
+      (db.update(db.groups)..where((g) => g.id.equals(id))).write(GroupsCompanion(name: Value(name)));
+
+  Future<void> deleteGroup(int id) => (db.delete(db.groups)..where((g) => g.id.equals(id))).go();
+
+  Future<void> setGroupMembers(int groupId, Set<int> personIds) => db.transaction(() async {
+        await (db.delete(db.groupMembers)..where((m) => m.groupId.equals(groupId))).go();
+        for (final id in personIds) {
+          await db.into(db.groupMembers).insert(GroupMembersCompanion.insert(groupId: groupId, personId: id));
+        }
+      });
+
+  Future<void> setPersonGroups(int personId, Set<int> groupIds) => db.transaction(() async {
+        await (db.delete(db.groupMembers)..where((m) => m.personId.equals(personId))).go();
+        for (final id in groupIds) {
+          await db.into(db.groupMembers).insert(GroupMembersCompanion.insert(groupId: id, personId: personId));
+        }
+      });
+
+  /// Adds [personId] to the group called [name], making the group if needed.
+  Future<void> addToGroupNamed(int personId, String name) async {
+    final n = name.trim();
+    if (n.isEmpty) return;
+    final existing = await (db.select(db.groups)..where((g) => g.name.lower().equals(n.toLowerCase()))).getSingleOrNull();
+    final gid = existing?.id ?? await addGroup(n);
+    await db.into(db.groupMembers).insertOnConflictUpdate(GroupMembersCompanion.insert(groupId: gid, personId: personId));
+  }
+
+  /// personId → names of their groups.
+  Future<Map<int, List<String>>> groupNamesByPerson() async {
+    final q = db.select(db.groupMembers).join([innerJoin(db.groups, db.groups.id.equalsExp(db.groupMembers.groupId))]);
+    final out = <int, List<String>>{};
+    for (final r in await q.get()) {
+      (out[r.readTable(db.groupMembers).personId] ??= []).add(r.readTable(db.groups).name);
+    }
+    for (final l in out.values) {
+      l.sort();
+    }
+    return out;
+  }
+
+  // ---------- wish history ----------
+  Stream<List<WishLog>> watchWishLogs() => (db.select(db.wishLogs)
+        ..orderBy([(w) => OrderingTerm(expression: w.createdAt, mode: OrderingMode.desc)]))
+      .watch();
+
+  Future<List<WishLog>> wishLogsFor(int personId) =>
+      (db.select(db.wishLogs)..where((w) => w.personId.equals(personId))).get();
+
+  Future<int> logWish({
+    int? personId,
+    int? eventId,
+    String? festivalId,
+    String? occasionDate,
+    required String method,
+    String? message,
+    String? templateId,
+    bool confirmed = false,
+  }) =>
+      db.into(db.wishLogs).insert(WishLogsCompanion.insert(
+            personId: Value(personId),
+            eventId: Value(eventId),
+            festivalId: Value(festivalId),
+            occasionDate: Value(occasionDate),
+            method: method,
+            message: Value(message),
+            templateId: Value(templateId),
+            confirmed: Value(confirmed),
+          ));
+
+  /// Marks an occurrence as wished: confirms the latest log for it, or adds one.
+  Future<void> markWished({int? eventId, String? festivalId, required String occasionDate, int? personId}) async {
+    final q = db.select(db.wishLogs)
+      ..where((w) => w.occasionDate.equals(occasionDate))
+      ..orderBy([(w) => OrderingTerm(expression: w.createdAt, mode: OrderingMode.desc)]);
+    if (eventId != null) q.where((w) => w.eventId.equals(eventId));
+    if (festivalId != null) q.where((w) => w.festivalId.equals(festivalId));
+    if (personId != null && festivalId != null) q.where((w) => w.personId.equals(personId));
+    final existing = await q.get();
+    if (existing.isNotEmpty) {
+      await (db.update(db.wishLogs)..where((w) => w.id.equals(existing.first.id)))
+          .write(const WishLogsCompanion(confirmed: Value(true)));
+    } else {
+      await logWish(
+          personId: personId,
+          eventId: eventId,
+          festivalId: festivalId,
+          occasionDate: occasionDate,
+          method: 'manual',
+          confirmed: true);
+    }
+  }
+
+  Future<void> unmarkWished({int? eventId, required String occasionDate}) =>
+      (db.update(db.wishLogs)
+            ..where((w) => w.occasionDate.equals(occasionDate) & (eventId == null ? const Constant(true) : w.eventId.equals(eventId))))
+          .write(const WishLogsCompanion(confirmed: Value(false)));
+
+  Future<void> deleteWishLog(int id) => (db.delete(db.wishLogs)..where((w) => w.id.equals(id))).go();
+
+  // ---------- notices ----------
+  Stream<List<ContactNotice>> watchUnseenNotices() => (db.select(db.contactNotices)
+        ..where((n) => n.seen.equals(false))
+        ..orderBy([(n) => OrderingTerm(expression: n.createdAt, mode: OrderingMode.desc)]))
+      .watch();
+
+  Future<void> addNotice(int personId, String message) => db
+      .into(db.contactNotices)
+      .insert(ContactNoticesCompanion.insert(personId: personId, message: message));
+
+  Future<void> markNoticeSeen(int id) => (db.update(db.contactNotices)..where((n) => n.id.equals(id)))
+      .write(const ContactNoticesCompanion(seen: Value(true)));
+}

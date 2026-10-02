@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_next_name">Smriti · Next up</string>
+    <string name="widget_next_desc">The next date with its countdown, and the three after it</string>
+    <string name="widget_countdown_name">Smriti · Countdown</string>
+    <string name="widget_countdown_desc">A big countdown to the next date</string>
+    <string name="widget_list_name">Smriti · Coming up</string>
+    <string name="widget_list_desc">The next six dates in a list</string>
+    <string name="widget_today_name">Smriti · Today</string>
+    <string name="widget_today_desc">Today\'s birthdays and anniversaries; glows until you mark each one done</string>
+</resources>
