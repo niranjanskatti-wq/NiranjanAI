@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">About</string>
+    <string name="about_text">Your data never leaves this phone. No account, no internet, no ads, no tracking, no analytics. DoseMate is a reminder tool and does not replace advice from your doctor or pharmacist.</string>
+    <string name="accent_amber">Amber</string>
+    <string name="accent_colour">Accent colour</string>
+    <string name="accent_emerald">Emerald</string>
+    <string name="accent_indigo">Indigo</string>
+    <string name="accent_rose">Rose</string>
+    <string name="accent_teal">Teal</string>
+    <string name="accent_violet">Violet</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_snooze">Snooze</string>
+    <string name="action_snooze_min">Snooze %1$d min</string>
+    <string name="action_taken">Taken</string>
+    <string name="action_took_it">I took it</string>
+    <string name="action_undo">Undo</string>
+    <string name="active_courses">Active courses</string>
+    <string name="add_entry">Add entry</string>
+    <string name="add_medicine">Add medicine</string>
+    <string name="add_time">Add time</string>
+    <string name="add_weekly_photo">Add this week\'s photo</string>
+    <string name="adherence">adherence</string>
+    <string name="adherence_pct">%1$d%% adherence</string>
+    <string name="alarm_after_eat">Haven\'t eaten yet? Remind me after I eat:</string>
+    <string name="alarm_mode">Alarm mode</string>
+    <string name="alarm_more">+%1$d more</string>
+    <string name="alarm_show_details">Show details</string>
+    <string name="alarm_slide_taken">Slide to mark taken</string>
+    <string name="alarm_test_label">Test alarm</string>
+    <string name="alarm_time_for_dose">Time for your dose</string>
+    <string name="alarm_tone">Alarm tone</string>
+    <string name="alert_style">Alert style</string>
+    <string name="all_done_text">No more doses scheduled. Well done!</string>
+    <string name="all_done_title">All done</string>
+    <string name="app_lock">App lock</string>
+    <string name="app_lock_hint">Ask for PIN or fingerprint when opening DoseMate</string>
+    <string name="app_name">DoseMate</string>
+    <string name="appearance">Appearance</string>
+    <string name="archive">Archive</string>
+    <string name="archived_count">Archived (%1$d)</string>
+    <string name="archived_short">Archived</string>
+    <string name="archived_toast">Course archived</string>
+    <string name="back">Back</string>
+    <string name="backup">Back up to a file</string>
+    <string name="backup_done">Backup saved</string>
+    <string name="backup_failed">Backup failed</string>
+    <string name="backup_hint">Medicines, history, journal and photos in one .zip file</string>
+    <string name="best_streak">Best streak</string>
+    <string name="by_medicine">By medicine</string>
+    <string name="camera">Camera</string>
+    <string name="cancel">Cancel</string>
+    <string name="celebrate_archive">Archive this course</string>
+    <string name="celebrate_keep">Keep it in my list</string>
+    <string name="celebrate_text">You completed your full course of %1$s.</string>
+    <string name="celebrate_title">Course complete!</string>
+    <string name="change_pin">Change PIN</string>
+    <string name="channel_alarm">Alarms</string>
+    <string name="channel_custom">Reminders (custom sound)</string>
+    <string name="channel_gentle">Gentle reminders</string>
+    <string name="channel_journal">Skin journal</string>
+    <string name="channel_missed">Missed doses</string>
+    <string name="channel_pre">Heads-up reminders</string>
+    <string name="channel_refill">Refill alerts</string>
+    <string name="channel_sound">Reminders with sound</string>
+    <string name="clear_record">Clear record</string>
+    <string name="compare">Compare</string>
+    <string name="compare_days_apart">%1$d days apart</string>
+    <string name="compare_itch_better">Itch improved by %1$d points</string>
+    <string name="compare_itch_same">Itch score unchanged</string>
+    <string name="compare_itch_worse">Itch worse by %1$d points</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="course_finished">Course finished</string>
+    <string name="current_streak">Current streak</string>
+    <string name="data">Data</string>
+    <string name="day_n_of_m">Day %1$d of %2$d</string>
+    <string name="day_n_ongoing">Day %1$d · ongoing</string>
+    <string name="default_snooze">Default snooze</string>
+    <string name="default_style_other">Default alert for creams and others</string>
+    <string name="default_style_tablets">Default alert for tablets</string>
+    <string name="delete">Delete</string>
+    <string name="delete_confirm">This deletes the medicine and its whole history. This cannot be undone.</string>
+    <string name="delete_entry">Delete this entry?</string>
+    <string name="delete_medicine">Delete medicine</string>
+    <string name="diet_note">Diet note</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="dismiss_buttons">Buttons</string>
+    <string name="dismiss_math">Solve a sum</string>
+    <string name="dismiss_method">To silence the alarm</string>
+    <string name="dismiss_slide">Slide</string>
+    <string name="dnd_bypass">Ring through Do Not Disturb</string>
+    <string name="dnd_bypass_hint">Needs Do Not Disturb access. Alarms already ring in silent mode.</string>
+    <string name="doctor_name">Doctor</string>
+    <string name="doctor_report">Doctor report</string>
+    <string name="dose_times">Dose times</string>
+    <string name="dur_days">Number of days</string>
+    <string name="dur_days_n">%1$d days</string>
+    <string name="dur_doses">Number of doses</string>
+    <string name="dur_doses_n">%1$d doses</string>
+    <string name="dur_end_date">End date</string>
+    <string name="dur_ongoing">Ongoing</string>
+    <string name="dur_until">Until %1$s</string>
+    <string name="edit">Edit</string>
+    <string name="edit_entry">Edit entry</string>
+    <string name="edit_medicine">Edit medicine</string>
+    <string name="entries">Entries</string>
+    <string name="error_end_date">Choose an end date</string>
+    <string name="error_name">Enter a name</string>
+    <string name="error_times">Turn on at least one dose time</string>
+    <string name="escalate">Escalate ignored reminders</string>
+    <string name="escalate_hint">A gentle reminder comes back with sound if you miss it</string>
+    <string name="every_n_days_label">Every … days</string>
+    <string name="field_amount">Amount</string>
+    <string name="field_banner">One-time banner (optional)</string>
+    <string name="field_colour">Colour</string>
+    <string name="field_food">Food</string>
+    <string name="field_icon">Icon</string>
+    <string name="field_instructions">Instructions</string>
+    <string name="field_name">Medicine name</string>
+    <string name="field_notes">Notes</string>
+    <string name="field_type">Type</string>
+    <string name="field_unit">Unit</string>
+    <string name="field_warning">Warning (optional)</string>
+    <string name="finish">Finish</string>
+    <string name="flashlight">Blink flashlight</string>
+    <string name="flashlight_hint">Flashes the camera light while the alarm rings</string>
+    <string name="food_after">After food</string>
+    <string name="food_before">Before food</string>
+    <string name="food_none">Any time</string>
+    <string name="food_with">With food</string>
+    <string name="force_volume">Set alarm volume while ringing</string>
+    <string name="force_volume_hint">Raises the phone\'s alarm volume, then restores it</string>
+    <string name="gallery">Gallery</string>
+    <string name="generate_share">Create PDF and share</string>
+    <string name="grant">Allow</string>
+    <string name="granted">Allowed</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="hide_names">Hide medicine names</string>
+    <string name="hide_names_hint">Notifications show \"Time for your medicine\" instead</string>
+    <string name="insights_empty_text">Insights appear after your first few doses.</string>
+    <string name="insights_empty_title">Not enough data yet</string>
+    <string name="itch_scale_hint">0 = no itch · 10 = worst imaginable</string>
+    <string name="itch_score_n">Itch %1$d/10</string>
+    <string name="itch_trend">Itch trend</string>
+    <string name="journal_empty_text">Add a photo every week to see how your skin is improving.</string>
+    <string name="journal_empty_title">Start your skin journal</string>
+    <string name="journal_private">Photos are stored privately inside the app and never appear in your gallery.</string>
+    <string name="language">Language</string>
+    <string name="large_text">Large text</string>
+    <string name="large_text_hint">Makes all text bigger</string>
+    <string name="last_14_days">Last 14 days</string>
+    <string name="last_n_days">%1$d days</string>
+    <string name="late_after">Counted as late after</string>
+    <string name="link_explain">Remind me a set time after another medicine is marked taken (e.g. moisturiser 30 min after a cream).</string>
+    <string name="link_gap">Gap after it is taken</string>
+    <string name="link_none">Not linked</string>
+    <string name="linked_after">%1$d min after %2$s</string>
+    <string name="linked_badge">Linked</string>
+    <string name="manage">Manage</string>
+    <string name="mark_missed">Mark missed</string>
+    <string name="mark_skipped">Mark skipped</string>
+    <string name="mark_taken_on_time">Mark taken (on time)</string>
+    <string name="math_title">Solve to continue</string>
+    <string name="math_wrong">Not quite, try again</string>
+    <string name="max_volume">Alarm volume: %1$d%%</string>
+    <string name="minutes_short">%1$d min</string>
+    <string name="missed_after">Counted as missed after</string>
+    <string name="most_missed_times">Most missed times</string>
+    <string name="next">Next</string>
+    <string name="next_dose">Next dose</string>
+    <string name="no_doses_day">No doses on this day.</string>
+    <string name="nothing_missed">Nothing missed. Great job!</string>
+    <string name="notif_after_food_until">Will remind you after your meal, at %1$s</string>
+    <string name="notif_journal_text">Take this week\'s skin photo and note your itch score.</string>
+    <string name="notif_journal_title">Weekly skin check</string>
+    <string name="notif_missed_text">Dose at %1$s was not marked as taken</string>
+    <string name="notif_missed_title">Missed: %1$s</string>
+    <string name="notif_private_text">Open DoseMate for details</string>
+    <string name="notif_private_title">Time for your medicine</string>
+    <string name="notif_refill_text">Only %1$s left. Time to refill.</string>
+    <string name="notif_refill_title">Running low: %1$s</string>
+    <string name="notif_reminder_n">Reminder %1$d</string>
+    <string name="notif_snoozed_until">Snoozed until %1$s</string>
+    <string name="notif_still_due">Still due: %1$s</string>
+    <string name="oem_oneplus">OnePlus</string>
+    <string name="oem_oppo">Oppo</string>
+    <string name="oem_realme">Realme</string>
+    <string name="oem_samsung">Samsung</string>
+    <string name="oem_vivo">Vivo / iQOO</string>
+    <string name="oem_xiaomi">Xiaomi / Redmi / POCO</string>
+    <string name="off">Off</string>
+    <string name="ok">OK</string>
+    <string name="open_app_settings">Open app settings</string>
+    <string name="open_medicine">Open medicine</string>
+    <string name="open_settings">Open settings</string>
+    <string name="pause">Pause</string>
+    <string name="paused">Paused</string>
+    <string name="period_afternoon">Afternoon</string>
+    <string name="period_evening">Evening</string>
+    <string name="period_morning">Morning</string>
+    <string name="period_night">Night</string>
+    <string name="photo_private_hint">Stored privately, never in your gallery</string>
+    <string name="pin">PIN</string>
+    <string name="pin_hint">4 to 8 digits</string>
+    <string name="pre_after_food">Dinner soon — %1$s at %2$s</string>
+    <string name="pre_alarm">Pre-alarm before the dose</string>
+    <string name="pre_before_food">Before your meal — %1$s at %2$s</string>
+    <string name="pre_generic">Coming up: %1$s at %2$s</string>
+    <string name="pre_private">Medicine coming up at %1$s</string>
+    <string name="pre_title">Coming up</string>
+    <string name="prescribed_on">Prescribed %1$s</string>
+    <string name="prescription">Prescription</string>
+    <string name="preview_tone">Preview</string>
+    <string name="privacy_point_1">No login and no account</string>
+    <string name="privacy_point_2">Works fully offline – no internet permission</string>
+    <string name="privacy_point_3">No ads, tracking or analytics</string>
+    <string name="quiet_alarms_too">Also silence alarm-mode doses</string>
+    <string name="quiet_hours">Quiet hours</string>
+    <string name="quiet_hours_hint">Sound reminders arrive silently during these hours</string>
+    <string name="ramp_time">Volume ramp time</string>
+    <string name="recent_history">Recent history</string>
+    <string name="record_voice">Record</string>
+    <string name="refill_threshold">Refill alert at</string>
+    <string name="reliability">Reliability</string>
+    <string name="reminders">Reminders</string>
+    <string name="remove_photo">Remove photo</string>
+    <string name="repeat_every">Re-remind every</string>
+    <string name="repeat_every_default">Re-remind every (default)</string>
+    <string name="repeat_max">Maximum re-reminders</string>
+    <string name="repeat_max_default">Maximum re-reminders (default)</string>
+    <string name="report_adherence">Adherence history</string>
+    <string name="report_col_course">Course</string>
+    <string name="report_col_dose">Dose</string>
+    <string name="report_col_medicine">Medicine</string>
+    <string name="report_col_schedule">Schedule</string>
+    <string name="report_daily">Daily adherence</string>
+    <string name="report_diet">Diet: %1$s</string>
+    <string name="report_doctor">Doctor: %1$s</string>
+    <string name="report_footer">DoseMate · generated on the patient\'s phone · page %1$d</string>
+    <string name="report_generated">Generated %1$s</string>
+    <string name="report_include">Include</string>
+    <string name="report_intro">Creates a clean PDF you can share with your doctor through any app. Nothing is uploaded.</string>
+    <string name="report_itch">Itch scores</string>
+    <string name="report_medicines">Medicine list</string>
+    <string name="report_missed_list">Missed and skipped doses</string>
+    <string name="report_no_itch">No itch scores in this period.</string>
+    <string name="report_overall">Overall adherence: %1$s</string>
+    <string name="report_period">Period %1$s – %2$s</string>
+    <string name="report_photos">Skin photos</string>
+    <string name="report_range">Period</string>
+    <string name="report_select_photos">Photos to include</string>
+    <string name="report_title">Treatment report</string>
+    <string name="reset">Reset everything</string>
+    <string name="reset_confirm">All medicines, history, journal entries, photos and settings will be erased.</string>
+    <string name="reset_hint">Erase all data on this phone</string>
+    <string name="reset_reload_plan">Reload the pre-loaded treatment plan</string>
+    <string name="restore">Restore from a file</string>
+    <string name="restore_confirm">Replace everything in DoseMate with the contents of this backup?</string>
+    <string name="restore_done">Backup restored</string>
+    <string name="restore_failed">This file could not be restored</string>
+    <string name="restore_hint">Replace current data with a backup</string>
+    <string name="resume">Resume</string>
+    <string name="ring_duration">Ring for</string>
+    <string name="save">Save</string>
+    <string name="sched_custom">Custom times</string>
+    <string name="sched_daily">Daily</string>
+    <string name="sched_every_n_days">Every %1$d days</string>
+    <string name="sched_every_x">Every X days</string>
+    <string name="sched_times_per_day">X times a day</string>
+    <string name="sched_times_per_day_n">%1$d times a day</string>
+    <string name="sched_weekdays">Specific days</string>
+    <string name="sched_weekly">Weekly</string>
+    <string name="sched_weekly_on">Weekly on %1$s</string>
+    <string name="schedule">Schedule</string>
+    <string name="seconds_short">%1$d s</string>
+    <string name="section_alerts">Alerts</string>
+    <string name="section_dose">Dose</string>
+    <string name="section_duration">Course length</string>
+    <string name="section_link">Linked reminder</string>
+    <string name="section_stock">Stock</string>
+    <string name="security">Security</string>
+    <string name="set_pin">Set a PIN</string>
+    <string name="set_prescribed_date">Set prescription date</string>
+    <string name="settings">Settings</string>
+    <string name="setup_battery_text">Android may delay alarms to save battery. Let DoseMate run without restrictions so reminders are never late.</string>
+    <string name="setup_battery_title">Battery optimisation</string>
+    <string name="setup_exact_text">Lets DoseMate ring at exactly the right minute, even when the phone is idle.</string>
+    <string name="setup_exact_title">Exact alarms</string>
+    <string name="setup_fullscreen_text">Shows the alarm screen over the lock screen and wakes the display, like an alarm clock.</string>
+    <string name="setup_fullscreen_title">Full-screen alarms</string>
+    <string name="setup_notif_text">Reminders and the Taken / Snooze / Skip buttons appear as notifications.</string>
+    <string name="setup_notif_title">Notifications</string>
+    <string name="setup_oem_text">Some phones close apps in the background. Follow the steps for your phone so alarms always ring.</string>
+    <string name="setup_oem_title">Phone-specific settings</string>
+    <string name="setup_permissions">Setup and permissions</string>
+    <string name="setup_permissions_hint">Check everything alarms need to be reliable</string>
+    <string name="setup_test_text">Ring a test alarm now to check the sound, the lock-screen alarm and the buttons.</string>
+    <string name="setup_test_title">Test it</string>
+    <string name="setup_welcome_text">Real alarms for your tablets and creams, exactly on time. Let\'s make sure your phone lets them ring.</string>
+    <string name="setup_welcome_title">Welcome to DoseMate</string>
+    <string name="share_again">Share again</string>
+    <string name="share_report">Share report</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="skip_reason_hint">Reason (optional)</string>
+    <string name="skip_title">Skip this dose?</string>
+    <string name="snooze_options">Snooze choices (minutes, comma separated)</string>
+    <string name="snoozed_until">Snoozed · %1$s</string>
+    <string name="start_volume">Starting volume: %1$d%%</string>
+    <string name="starts_on">Starts %1$s</string>
+    <string name="status_due">Due now</string>
+    <string name="status_late">Late</string>
+    <string name="status_late_at">Late · %1$s</string>
+    <string name="status_missed">Missed</string>
+    <string name="status_skipped">Skipped</string>
+    <string name="status_taken">Taken</string>
+    <string name="status_taken_at">Taken · %1$s</string>
+    <string name="status_upcoming">Upcoming</string>
+    <string name="stock_count">In stock</string>
+    <string name="stock_low">Low stock: %1$s</string>
+    <string name="stock_per_dose">Used per dose</string>
+    <string name="stock_remaining">%1$s %2$s left in stock</string>
+    <string name="stop_recording">Stop</string>
+    <string name="style_alarm">Full alarm</string>
+    <string name="style_notification">Notification only</string>
+    <string name="style_same_as_medicine">Same as medicine</string>
+    <string name="style_sound">Notification + sound</string>
+    <string name="tab_history">Calendar</string>
+    <string name="tab_insights">Insights</string>
+    <string name="tab_journal">Journal</string>
+    <string name="tab_medicines">Medicines</string>
+    <string name="tab_today">Today</string>
+    <string name="taken_lower">taken</string>
+    <string name="test_alarm">Test alarm now</string>
+    <string name="test_notification">Test notification</string>
+    <string name="test_reminders">Test reminders</string>
+    <string name="theme">Theme</string>
+    <string name="theme_amoled">AMOLED black</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_system">System</string>
+    <string name="times_per_day_label">Times a day</string>
+    <string name="today_empty_text">Nothing scheduled for today. Enjoy your day!</string>
+    <string name="today_empty_title">No doses today</string>
+    <string name="today_no_meds_text">Add your first medicine to get reliable reminders.</string>
+    <string name="today_no_meds_title">No medicines yet</string>
+    <string name="tone_bells">Calm bells</string>
+    <string name="tone_builtin">Built-in</string>
+    <string name="tone_chime">Soft chime</string>
+    <string name="tone_default">Phone default</string>
+    <string name="tone_digital">Digital</string>
+    <string name="tone_file">My music file</string>
+    <string name="tone_pulse">Pulse</string>
+    <string name="tone_sunrise">Sunrise</string>
+    <string name="tone_system">Phone ringtone</string>
+    <string name="tone_voice">Voice note</string>
+    <string name="tone_voice_note">Voice note</string>
+    <string name="total_doses">%1$d doses in total</string>
+    <string name="track_stock">Track stock</string>
+    <string name="type_capsule">Capsule</string>
+    <string name="type_cream">Cream</string>
+    <string name="type_drops">Drops</string>
+    <string name="type_injection">Injection</string>
+    <string name="type_ointment">Ointment</string>
+    <string name="type_other">Other</string>
+    <string name="type_syrup">Syrup</string>
+    <string name="type_tablet">Tablet</string>
+    <string name="unarchive">Restore</string>
+    <string name="unarchived">Course restored</string>
+    <string name="unlock_title">Unlock DoseMate</string>
+    <string name="use_24h">24-hour time</string>
+    <string name="use_biometric">Use fingerprint / face</string>
+    <string name="use_pin">Use PIN</string>
+    <string name="vib_gentle">Gentle</string>
+    <string name="vib_heartbeat">Heartbeat</string>
+    <string name="vib_none">None</string>
+    <string name="vib_standard">Standard</string>
+    <string name="vib_urgent">Urgent</string>
+    <string name="vibration">Vibration</string>
+    <string name="voice_hint">e.g. \"Take Teczine after dinner\"</string>
+    <string name="weekly_photo_reminder">Weekly photo reminder</string>
+    <string name="weekly_photo_reminder_hint">Every %1$s</string>
+    <string name="whole_course">Whole course</string>
+    <string name="widget_all_done">All done for now</string>
+    <string name="widget_next_desc">Next dose with a live countdown</string>
+    <string name="widget_next_dose">Next dose</string>
+    <string name="widget_no_doses">No doses today</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_today_desc">Today\'s checklist – tap to mark taken</string>
+    <string name="window_from">From %1$s</string>
+    <string name="window_to">To %1$s</string>
+    <string name="wrong_pin">Wrong PIN</string>
+    <string name="your_phone">your phone</string>
+    <plurals name="days_count">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="days_left">
+        <item quantity="one">%d day left</item>
+        <item quantity="other">%d days left</item>
+    </plurals>
+    <plurals name="missed_summary">
+        <item quantity="one">You missed %d dose</item>
+        <item quantity="other">You missed %d doses</item>
+    </plurals>
+    <plurals name="starts_in_days">
+        <item quantity="one">Starts in %d day</item>
+        <item quantity="other">Starts in %d days</item>
+    </plurals>
+    <plurals name="times_count">
+        <item quantity="one">%d time</item>
+        <item quantity="other">%d times</item>
+    </plurals>
+    <string-array name="oem_oneplus_steps">
+        <item>Settings → Battery → Battery optimisation → All apps → DoseMate → Don\'t optimise.</item>
+        <item>Settings → Apps → DoseMate → Battery usage → Allow background activity.</item>
+        <item>Settings → Apps → Special app access → Alarms &amp; reminders → allow DoseMate.</item>
+        <item>Lock DoseMate in Recent apps.</item>
+    </string-array>
+    <string-array name="oem_oppo_steps">
+        <item>Settings → Battery → More settings → turn off Optimise battery use for DoseMate (or choose Allow background activity).</item>
+        <item>Settings → Apps → App management → DoseMate → Auto launch → ON.</item>
+        <item>Same screen → Notifications → allow, including lock screen.</item>
+        <item>Lock DoseMate in Recent apps.</item>
+    </string-array>
+    <string-array name="oem_realme_steps">
+        <item>Settings → Battery → App battery management → DoseMate → Allow background activity and Allow auto launch.</item>
+        <item>Settings → Apps → App management → DoseMate → Notifications → allow all.</item>
+        <item>Settings → Privacy → Permission manager → Display over other apps → allow DoseMate.</item>
+        <item>Lock DoseMate in Recent apps.</item>
+    </string-array>
+    <string-array name="oem_samsung_steps">
+        <item>Settings → Apps → DoseMate → Battery → choose Unrestricted.</item>
+        <item>Settings → Battery → Background usage limits → make sure DoseMate is not in Sleeping or Deep sleeping apps; add it to Never sleeping apps.</item>
+        <item>Settings → Apps → DoseMate → Notifications → allow all, including Alarms.</item>
+        <item>Settings → Apps → DoseMate → Alarms &amp; reminders → Allow.</item>
+    </string-array>
+    <string-array name="oem_vivo_steps">
+        <item>Settings → Battery → Background power consumption management → DoseMate → Allow.</item>
+        <item>i Manager → App manager → Autostart manager → enable DoseMate.</item>
+        <item>Settings → Apps → DoseMate → Permissions → allow Lock screen display and Display pop-up windows.</item>
+        <item>Lock DoseMate in Recent apps (swipe down on its card).</item>
+    </string-array>
+    <string-array name="oem_xiaomi_steps">
+        <item>Settings → Apps → Manage apps → DoseMate → Autostart → turn ON.</item>
+        <item>Same screen → Battery saver → choose No restrictions.</item>
+        <item>Same screen → Other permissions → allow Show on Lock screen and Display pop-up windows while running in the background.</item>
+        <item>Open Recent apps, long-press DoseMate and tap the lock icon so it is not cleared.</item>
+    </string-array>
+    <string-array name="skip_reasons">
+        <item>Ran out</item>
+        <item>Side effects</item>
+        <item>Doctor advised</item>
+        <item>Feeling better</item>
+        <item>Forgot</item>
+    </string-array>
+</resources>

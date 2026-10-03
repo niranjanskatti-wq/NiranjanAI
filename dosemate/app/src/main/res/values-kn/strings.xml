@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">ಆ್ಯಪ್ ಬಗ್ಗೆ</string>
+    <string name="about_text">ನಿಮ್ಮ ಮಾಹಿತಿ ಈ ಫೋನ್‌ನಿಂದ ಎಂದಿಗೂ ಹೊರಹೋಗುವುದಿಲ್ಲ. ಖಾತೆ ಇಲ್ಲ, ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ, ಜಾಹೀರಾತು ಇಲ್ಲ, ಟ್ರ್ಯಾಕಿಂಗ್ ಇಲ್ಲ. DoseMate ಒಂದು ಜ್ಞಾಪನಾ ಸಾಧನ ಮಾತ್ರ; ವೈದ್ಯರು ಅಥವಾ ಫಾರ್ಮಸಿಸ್ಟ್ ಸಲಹೆಗೆ ಬದಲಿಯಲ್ಲ.</string>
+    <string name="accent_amber">ಅಂಬರ್</string>
+    <string name="accent_colour">ಮುಖ್ಯ ಬಣ್ಣ</string>
+    <string name="accent_emerald">ಪಚ್ಚೆ</string>
+    <string name="accent_indigo">ಇಂಡಿಗೋ</string>
+    <string name="accent_rose">ಗುಲಾಬಿ</string>
+    <string name="accent_teal">ಟೀಲ್</string>
+    <string name="accent_violet">ನೇರಳೆ</string>
+    <string name="action_skip">ಬಿಟ್ಟುಬಿಡಿ</string>
+    <string name="action_snooze">ಸ್ನೂಜ್</string>
+    <string name="action_snooze_min">%1$d ನಿಮಿಷ ಸ್ನೂಜ್</string>
+    <string name="action_taken">ತೆಗೆದುಕೊಂಡೆ</string>
+    <string name="action_took_it">ನಾನು ತೆಗೆದುಕೊಂಡೆ</string>
+    <string name="action_undo">ರದ್ದುಮಾಡಿ</string>
+    <string name="active_courses">ಸಕ್ರಿಯ ಕೋರ್ಸ್‌ಗಳು</string>
+    <string name="add_entry">ನಮೂದು ಸೇರಿಸಿ</string>
+    <string name="add_medicine">ಔಷಧಿ ಸೇರಿಸಿ</string>
+    <string name="add_time">ಸಮಯ ಸೇರಿಸಿ</string>
+    <string name="add_weekly_photo">ಈ ವಾರದ ಫೋಟೋ ಸೇರಿಸಿ</string>
+    <string name="adherence">ಪಾಲನೆ</string>
+    <string name="adherence_pct">%1$d%% ಪಾಲನೆ</string>
+    <string name="alarm_after_eat">ಇನ್ನೂ ಊಟ ಮಾಡಿಲ್ಲವೇ? ಊಟದ ನಂತರ ನೆನಪಿಸಿ:</string>
+    <string name="alarm_mode">ಅಲಾರಾಂ ಮೋಡ್</string>
+    <string name="alarm_more">+%1$d ಇನ್ನಷ್ಟು</string>
+    <string name="alarm_show_details">ವಿವರ ತೋರಿಸಿ</string>
+    <string name="alarm_slide_taken">ತೆಗೆದುಕೊಂಡೆ ಎಂದು ಸ್ಲೈಡ್ ಮಾಡಿ</string>
+    <string name="alarm_test_label">ಪರೀಕ್ಷಾ ಅಲಾರಾಂ</string>
+    <string name="alarm_time_for_dose">ಔಷಧಿ ತೆಗೆದುಕೊಳ್ಳುವ ಸಮಯ</string>
+    <string name="alarm_tone">ಅಲಾರಾಂ ಧ್ವನಿ</string>
+    <string name="alert_style">ಎಚ್ಚರಿಕೆ ವಿಧ</string>
+    <string name="all_done_text">ಇನ್ನು ಯಾವುದೇ ಡೋಸ್ ಇಲ್ಲ. ಶಭಾಷ್!</string>
+    <string name="all_done_title">ಎಲ್ಲವೂ ಮುಗಿದಿದೆ</string>
+    <string name="app_lock">ಆ್ಯಪ್ ಲಾಕ್</string>
+    <string name="app_lock_hint">ತೆರೆಯುವಾಗ PIN ಅಥವಾ ಬೆರಳಚ್ಚು ಕೇಳಿ</string>
+    <string name="appearance">ನೋಟ</string>
+    <string name="archive">ಆರ್ಕೈವ್</string>
+    <string name="archived_count">ಆರ್ಕೈವ್ ಮಾಡಿದವು (%1$d)</string>
+    <string name="archived_short">ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ</string>
+    <string name="archived_toast">ಕೋರ್ಸ್ ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ</string>
+    <string name="back">ಹಿಂದೆ</string>
+    <string name="backup">ಫೈಲ್‌ಗೆ ಬ್ಯಾಕಪ್</string>
+    <string name="backup_done">ಬ್ಯಾಕಪ್ ಉಳಿಸಲಾಗಿದೆ</string>
+    <string name="backup_failed">ಬ್ಯಾಕಪ್ ವಿಫಲವಾಯಿತು</string>
+    <string name="backup_hint">ಔಷಧಿಗಳು, ಇತಿಹಾಸ, ಡೈರಿ ಮತ್ತು ಫೋಟೋಗಳು ಒಂದೇ .zip ಫೈಲ್‌ನಲ್ಲಿ</string>
+    <string name="best_streak">ಅತ್ಯುತ್ತಮ ಸರಣಿ</string>
+    <string name="by_medicine">ಔಷಧಿಯ ಪ್ರಕಾರ</string>
+    <string name="camera">ಕ್ಯಾಮೆರಾ</string>
+    <string name="cancel">ರದ್ದು</string>
+    <string name="celebrate_archive">ಈ ಕೋರ್ಸ್ ಆರ್ಕೈವ್ ಮಾಡಿ</string>
+    <string name="celebrate_keep">ಪಟ್ಟಿಯಲ್ಲೇ ಇರಲಿ</string>
+    <string name="celebrate_text">ನೀವು %1$s ನ ಸಂಪೂರ್ಣ ಕೋರ್ಸ್ ಪೂರ್ಣಗೊಳಿಸಿದ್ದೀರಿ.</string>
+    <string name="celebrate_title">ಕೋರ್ಸ್ ಪೂರ್ಣ!</string>
+    <string name="change_pin">PIN ಬದಲಿಸಿ</string>
+    <string name="channel_alarm">ಅಲಾರಾಂಗಳು</string>
+    <string name="channel_custom">ಜ್ಞಾಪನೆಗಳು (ವಿಶೇಷ ಧ್ವನಿ)</string>
+    <string name="channel_gentle">ಮೃದು ಜ್ಞಾಪನೆಗಳು</string>
+    <string name="channel_journal">ಚರ್ಮದ ಡೈರಿ</string>
+    <string name="channel_missed">ತಪ್ಪಿದ ಡೋಸ್‌ಗಳು</string>
+    <string name="channel_pre">ಮುನ್ಸೂಚನೆ ಜ್ಞಾಪನೆಗಳು</string>
+    <string name="channel_refill">ಮರುಪೂರಣ ಎಚ್ಚರಿಕೆ</string>
+    <string name="channel_sound">ಧ್ವನಿಯೊಂದಿಗೆ ಜ್ಞಾಪನೆಗಳು</string>
+    <string name="clear_record">ದಾಖಲೆ ಅಳಿಸಿ</string>
+    <string name="compare">ಹೋಲಿಸಿ</string>
+    <string name="compare_days_apart">%1$d ದಿನಗಳ ಅಂತರ</string>
+    <string name="compare_itch_better">ತುರಿಕೆ %1$d ಅಂಕ ಕಡಿಮೆಯಾಗಿದೆ</string>
+    <string name="compare_itch_same">ತುರಿಕೆ ಅಂಕ ಬದಲಾಗಿಲ್ಲ</string>
+    <string name="compare_itch_worse">ತುರಿಕೆ %1$d ಅಂಕ ಹೆಚ್ಚಾಗಿದೆ</string>
+    <string name="confirm_pin">PIN ದೃಢೀಕರಿಸಿ</string>
+    <string name="course_finished">ಕೋರ್ಸ್ ಮುಗಿದಿದೆ</string>
+    <string name="current_streak">ಪ್ರಸ್ತುತ ಸರಣಿ</string>
+    <string name="data">ಮಾಹಿತಿ</string>
+    <string name="day_n_of_m">%2$d ರಲ್ಲಿ %1$d ನೇ ದಿನ</string>
+    <string name="day_n_ongoing">%1$d ನೇ ದಿನ · ನಿರಂತರ</string>
+    <string name="default_snooze">ಡೀಫಾಲ್ಟ್ ಸ್ನೂಜ್</string>
+    <string name="default_style_other">ಕ್ರೀಮ್ ಮತ್ತು ಇತರೆಗಳಿಗೆ ಡೀಫಾಲ್ಟ್ ಎಚ್ಚರಿಕೆ</string>
+    <string name="default_style_tablets">ಮಾತ್ರೆಗಳಿಗೆ ಡೀಫಾಲ್ಟ್ ಎಚ್ಚರಿಕೆ</string>
+    <string name="delete">ಅಳಿಸಿ</string>
+    <string name="delete_confirm">ಇದು ಔಷಧಿ ಮತ್ತು ಅದರ ಸಂಪೂರ್ಣ ಇತಿಹಾಸವನ್ನು ಅಳಿಸುತ್ತದೆ. ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ.</string>
+    <string name="delete_entry">ಈ ನಮೂದನ್ನು ಅಳಿಸಬೇಕೇ?</string>
+    <string name="delete_medicine">ಔಷಧಿ ಅಳಿಸಿ</string>
+    <string name="diet_note">ಆಹಾರ ಸೂಚನೆ</string>
+    <string name="dismiss">ಮುಚ್ಚಿ</string>
+    <string name="dismiss_buttons">ಬಟನ್‌ಗಳು</string>
+    <string name="dismiss_math">ಲೆಕ್ಕ ಬಿಡಿಸಿ</string>
+    <string name="dismiss_method">ಅಲಾರಾಂ ನಿಲ್ಲಿಸಲು</string>
+    <string name="dismiss_slide">ಸ್ಲೈಡ್</string>
+    <string name="dnd_bypass">ಡು ನಾಟ್ ಡಿಸ್ಟರ್ಬ್ ಮೀರಿ ರಿಂಗ್ ಮಾಡಿ</string>
+    <string name="dnd_bypass_hint">ಡು ನಾಟ್ ಡಿಸ್ಟರ್ಬ್ ಅನುಮತಿ ಬೇಕು. ಸೈಲೆಂಟ್ ಮೋಡ್‌ನಲ್ಲೂ ಅಲಾರಾಂ ರಿಂಗ್ ಆಗುತ್ತದೆ.</string>
+    <string name="doctor_name">ವೈದ್ಯರು</string>
+    <string name="doctor_report">ವೈದ್ಯರ ವರದಿ</string>
+    <string name="dose_times">ಡೋಸ್ ಸಮಯಗಳು</string>
+    <string name="dur_days">ದಿನಗಳ ಸಂಖ್ಯೆ</string>
+    <string name="dur_days_n">%1$d ದಿನಗಳು</string>
+    <string name="dur_doses">ಡೋಸ್‌ಗಳ ಸಂಖ್ಯೆ</string>
+    <string name="dur_doses_n">%1$d ಡೋಸ್‌ಗಳು</string>
+    <string name="dur_end_date">ಕೊನೆಯ ದಿನಾಂಕ</string>
+    <string name="dur_ongoing">ನಿರಂತರ</string>
+    <string name="dur_until">%1$s ವರೆಗೆ</string>
+    <string name="edit">ತಿದ್ದಿ</string>
+    <string name="edit_entry">ನಮೂದು ತಿದ್ದಿ</string>
+    <string name="edit_medicine">ಔಷಧಿ ತಿದ್ದಿ</string>
+    <string name="entries">ನಮೂದುಗಳು</string>
+    <string name="error_end_date">ಕೊನೆಯ ದಿನಾಂಕ ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="error_name">ಹೆಸರು ನಮೂದಿಸಿ</string>
+    <string name="error_times">ಕನಿಷ್ಠ ಒಂದು ಡೋಸ್ ಸಮಯ ಆನ್ ಮಾಡಿ</string>
+    <string name="escalate">ಗಮನಿಸದ ಜ್ಞಾಪನೆಗಳನ್ನು ಹೆಚ್ಚಿಸಿ</string>
+    <string name="escalate_hint">ಮೃದು ಜ್ಞಾಪನೆ ತಪ್ಪಿದರೆ ಧ್ವನಿಯೊಂದಿಗೆ ಮತ್ತೆ ಬರುತ್ತದೆ</string>
+    <string name="every_n_days_label">ಪ್ರತಿ … ದಿನಕ್ಕೊಮ್ಮೆ</string>
+    <string name="field_amount">ಪ್ರಮಾಣ</string>
+    <string name="field_banner">ಒಂದು ಬಾರಿಯ ಸೂಚನೆ (ಐಚ್ಛಿಕ)</string>
+    <string name="field_colour">ಬಣ್ಣ</string>
+    <string name="field_food">ಆಹಾರ</string>
+    <string name="field_icon">ಚಿಹ್ನೆ</string>
+    <string name="field_instructions">ಸೂಚನೆಗಳು</string>
+    <string name="field_name">ಔಷಧಿಯ ಹೆಸರು</string>
+    <string name="field_notes">ಟಿಪ್ಪಣಿಗಳು</string>
+    <string name="field_type">ವಿಧ</string>
+    <string name="field_unit">ಘಟಕ</string>
+    <string name="field_warning">ಎಚ್ಚರಿಕೆ (ಐಚ್ಛಿಕ)</string>
+    <string name="finish">ಮುಗಿಸಿ</string>
+    <string name="flashlight">ಫ್ಲ್ಯಾಶ್‌ಲೈಟ್ ಮಿನುಗಿಸಿ</string>
+    <string name="flashlight_hint">ಅಲಾರಾಂ ರಿಂಗ್ ಆಗುವಾಗ ಕ್ಯಾಮೆರಾ ಬೆಳಕು ಮಿನುಗುತ್ತದೆ</string>
+    <string name="food_after">ಊಟದ ನಂತರ</string>
+    <string name="food_before">ಊಟದ ಮೊದಲು</string>
+    <string name="food_none">ಯಾವಾಗ ಬೇಕಾದರೂ</string>
+    <string name="food_with">ಊಟದೊಂದಿಗೆ</string>
+    <string name="force_volume">ರಿಂಗ್ ಆಗುವಾಗ ಅಲಾರಾಂ ಧ್ವನಿ ಹೊಂದಿಸಿ</string>
+    <string name="force_volume_hint">ಫೋನ್‌ನ ಅಲಾರಾಂ ಧ್ವನಿ ಹೆಚ್ಚಿಸಿ ನಂತರ ಹಿಂದಿನಂತೆ ಮಾಡುತ್ತದೆ</string>
+    <string name="gallery">ಗ್ಯಾಲರಿ</string>
+    <string name="generate_share">PDF ರಚಿಸಿ ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="grant">ಅನುಮತಿಸಿ</string>
+    <string name="granted">ಅನುಮತಿಸಲಾಗಿದೆ</string>
+    <string name="greeting_afternoon">ಶುಭ ಮಧ್ಯಾಹ್ನ</string>
+    <string name="greeting_evening">ಶುಭ ಸಂಜೆ</string>
+    <string name="greeting_morning">ಶುಭೋದಯ</string>
+    <string name="hide_names">ಔಷಧಿ ಹೆಸರು ಮರೆಮಾಡಿ</string>
+    <string name="hide_names_hint">ಅಧಿಸೂಚನೆಗಳಲ್ಲಿ \"ಔಷಧಿ ಸಮಯ\" ಎಂದು ಮಾತ್ರ ತೋರಿಸುತ್ತದೆ</string>
+    <string name="insights_empty_text">ಮೊದಲ ಕೆಲವು ಡೋಸ್‌ಗಳ ನಂತರ ಒಳನೋಟಗಳು ಕಾಣಿಸುತ್ತವೆ.</string>
+    <string name="insights_empty_title">ಇನ್ನೂ ಸಾಕಷ್ಟು ಮಾಹಿತಿ ಇಲ್ಲ</string>
+    <string name="itch_scale_hint">0 = ತುರಿಕೆ ಇಲ್ಲ · 10 = ಅತಿ ಹೆಚ್ಚು</string>
+    <string name="itch_score_n">ತುರಿಕೆ %1$d/10</string>
+    <string name="itch_trend">ತುರಿಕೆ ಪ್ರವೃತ್ತಿ</string>
+    <string name="journal_empty_text">ಚರ್ಮ ಸುಧಾರಣೆ ನೋಡಲು ಪ್ರತಿ ವಾರ ಒಂದು ಫೋಟೋ ಸೇರಿಸಿ.</string>
+    <string name="journal_empty_title">ನಿಮ್ಮ ಚರ್ಮದ ಡೈರಿ ಆರಂಭಿಸಿ</string>
+    <string name="journal_private">ಫೋಟೋಗಳು ಆ್ಯಪ್ ಒಳಗೆ ಖಾಸಗಿಯಾಗಿ ಉಳಿಯುತ್ತವೆ, ಗ್ಯಾಲರಿಯಲ್ಲಿ ಕಾಣುವುದಿಲ್ಲ.</string>
+    <string name="language">ಭಾಷೆ</string>
+    <string name="large_text">ದೊಡ್ಡ ಅಕ್ಷರ</string>
+    <string name="large_text_hint">ಎಲ್ಲಾ ಅಕ್ಷರಗಳನ್ನು ದೊಡ್ಡದಾಗಿಸುತ್ತದೆ</string>
+    <string name="last_14_days">ಕಳೆದ 14 ದಿನಗಳು</string>
+    <string name="last_n_days">%1$d ದಿನಗಳು</string>
+    <string name="late_after">ತಡ ಎಂದು ಪರಿಗಣಿಸುವುದು</string>
+    <string name="link_explain">ಇನ್ನೊಂದು ಔಷಧಿ ತೆಗೆದುಕೊಂಡ ನಿರ್ದಿಷ್ಟ ಸಮಯದ ನಂತರ ನೆನಪಿಸಿ (ಉದಾ: ಕ್ರೀಮ್ ಹಚ್ಚಿದ 30 ನಿಮಿಷದ ನಂತರ ಮಾಯಿಶ್ಚರೈಸರ್).</string>
+    <string name="link_gap">ತೆಗೆದುಕೊಂಡ ನಂತರದ ಅಂತರ</string>
+    <string name="link_none">ಲಿಂಕ್ ಇಲ್ಲ</string>
+    <string name="linked_after">%2$s ನಂತರ %1$d ನಿಮಿಷ</string>
+    <string name="linked_badge">ಲಿಂಕ್</string>
+    <string name="manage">ನಿರ್ವಹಿಸಿ</string>
+    <string name="mark_missed">ತಪ್ಪಿದೆ ಎಂದು ಗುರುತಿಸಿ</string>
+    <string name="mark_skipped">ಬಿಟ್ಟಿದೆ ಎಂದು ಗುರುತಿಸಿ</string>
+    <string name="mark_taken_on_time">ಸಮಯಕ್ಕೆ ತೆಗೆದುಕೊಂಡೆ</string>
+    <string name="math_title">ಮುಂದುವರಿಯಲು ಬಿಡಿಸಿ</string>
+    <string name="math_wrong">ಸರಿಯಿಲ್ಲ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</string>
+    <string name="max_volume">ಅಲಾರಾಂ ಧ್ವನಿ: %1$d%%</string>
+    <string name="minutes_short">%1$d ನಿಮಿಷ</string>
+    <string name="missed_after">ತಪ್ಪಿದೆ ಎಂದು ಪರಿಗಣಿಸುವುದು</string>
+    <string name="most_missed_times">ಹೆಚ್ಚು ತಪ್ಪಿದ ಸಮಯಗಳು</string>
+    <string name="next">ಮುಂದೆ</string>
+    <string name="next_dose">ಮುಂದಿನ ಡೋಸ್</string>
+    <string name="no_doses_day">ಈ ದಿನ ಯಾವುದೇ ಡೋಸ್ ಇಲ್ಲ.</string>
+    <string name="nothing_missed">ಏನೂ ತಪ್ಪಿಲ್ಲ. ಉತ್ತಮ ಕೆಲಸ!</string>
+    <string name="notif_after_food_until">ಊಟದ ನಂತರ %1$s ಕ್ಕೆ ನೆನಪಿಸುತ್ತೇವೆ</string>
+    <string name="notif_journal_text">ಈ ವಾರದ ಚರ್ಮದ ಫೋಟೋ ತೆಗೆದು ತುರಿಕೆ ಅಂಕ ದಾಖಲಿಸಿ.</string>
+    <string name="notif_journal_title">ವಾರದ ಚರ್ಮ ಪರಿಶೀಲನೆ</string>
+    <string name="notif_missed_text">%1$s ರ ಡೋಸ್ ತೆಗೆದುಕೊಂಡಿಲ್ಲ</string>
+    <string name="notif_missed_title">ತಪ್ಪಿದೆ: %1$s</string>
+    <string name="notif_private_text">ವಿವರಗಳಿಗೆ DoseMate ತೆರೆಯಿರಿ</string>
+    <string name="notif_private_title">ಔಷಧಿ ಸಮಯ</string>
+    <string name="notif_refill_text">ಕೇವಲ %1$s ಉಳಿದಿದೆ. ಮರುಪೂರಣ ಮಾಡಿ.</string>
+    <string name="notif_refill_title">ಕಡಿಮೆಯಾಗುತ್ತಿದೆ: %1$s</string>
+    <string name="notif_reminder_n">ಜ್ಞಾಪನೆ %1$d</string>
+    <string name="notif_snoozed_until">%1$s ವರೆಗೆ ಸ್ನೂಜ್</string>
+    <string name="notif_still_due">ಇನ್ನೂ ಬಾಕಿ: %1$s</string>
+    <string name="oem_oneplus">OnePlus</string>
+    <string name="oem_oppo">Oppo</string>
+    <string name="oem_realme">Realme</string>
+    <string name="oem_samsung">Samsung</string>
+    <string name="oem_vivo">Vivo / iQOO</string>
+    <string name="oem_xiaomi">Xiaomi / Redmi / POCO</string>
+    <string name="off">ಆಫ್</string>
+    <string name="ok">ಸರಿ</string>
+    <string name="open_app_settings">ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್ಸ್ ತೆರೆಯಿರಿ</string>
+    <string name="open_medicine">ಔಷಧಿ ತೆರೆಯಿರಿ</string>
+    <string name="open_settings">ಸೆಟ್ಟಿಂಗ್ಸ್ ತೆರೆಯಿರಿ</string>
+    <string name="pause">ವಿರಾಮ</string>
+    <string name="paused">ವಿರಾಮದಲ್ಲಿದೆ</string>
+    <string name="period_afternoon">ಮಧ್ಯಾಹ್ನ</string>
+    <string name="period_evening">ಸಂಜೆ</string>
+    <string name="period_morning">ಬೆಳಿಗ್ಗೆ</string>
+    <string name="period_night">ರಾತ್ರಿ</string>
+    <string name="photo_private_hint">ಖಾಸಗಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ, ಗ್ಯಾಲರಿಯಲ್ಲಿ ಇಲ್ಲ</string>
+    <string name="pin">PIN</string>
+    <string name="pin_hint">4 ರಿಂದ 8 ಅಂಕಿಗಳು</string>
+    <string name="pre_after_food">ಶೀಘ್ರದಲ್ಲೇ ಊಟ — %2$s ಕ್ಕೆ %1$s</string>
+    <string name="pre_alarm">ಡೋಸ್‌ಗೆ ಮುನ್ನ ಪೂರ್ವ-ಅಲಾರಾಂ</string>
+    <string name="pre_before_food">ಊಟಕ್ಕೆ ಮುನ್ನ — %2$s ಕ್ಕೆ %1$s</string>
+    <string name="pre_generic">ಮುಂದಿನದು: %2$s ಕ್ಕೆ %1$s</string>
+    <string name="pre_private">%1$s ಕ್ಕೆ ಔಷಧಿ ಇದೆ</string>
+    <string name="pre_title">ಶೀಘ್ರದಲ್ಲೇ</string>
+    <string name="prescribed_on">ಸೂಚಿಸಿದ ದಿನ %1$s</string>
+    <string name="prescription">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್</string>
+    <string name="preview_tone">ಕೇಳಿ ನೋಡಿ</string>
+    <string name="privacy_point_1">ಲಾಗಿನ್ ಅಥವಾ ಖಾತೆ ಇಲ್ಲ</string>
+    <string name="privacy_point_2">ಸಂಪೂರ್ಣ ಆಫ್‌ಲೈನ್ – ಇಂಟರ್ನೆಟ್ ಅನುಮತಿ ಇಲ್ಲ</string>
+    <string name="privacy_point_3">ಜಾಹೀರಾತು, ಟ್ರ್ಯಾಕಿಂಗ್ ಅಥವಾ ವಿಶ್ಲೇಷಣೆ ಇಲ್ಲ</string>
+    <string name="quiet_alarms_too">ಅಲಾರಾಂ ಡೋಸ್‌ಗಳನ್ನೂ ಮೌನಗೊಳಿಸಿ</string>
+    <string name="quiet_hours">ಶಾಂತ ಸಮಯ</string>
+    <string name="quiet_hours_hint">ಈ ಸಮಯದಲ್ಲಿ ಧ್ವನಿ ಜ್ಞಾಪನೆಗಳು ಮೌನವಾಗಿ ಬರುತ್ತವೆ</string>
+    <string name="ramp_time">ಧ್ವನಿ ಹೆಚ್ಚಳ ಸಮಯ</string>
+    <string name="recent_history">ಇತ್ತೀಚಿನ ಇತಿಹಾಸ</string>
+    <string name="record_voice">ರೆಕಾರ್ಡ್</string>
+    <string name="refill_threshold">ಮರುಪೂರಣ ಎಚ್ಚರಿಕೆ</string>
+    <string name="reliability">ವಿಶ್ವಾಸಾರ್ಹತೆ</string>
+    <string name="reminders">ಜ್ಞಾಪನೆಗಳು</string>
+    <string name="remove_photo">ಫೋಟೋ ತೆಗೆಯಿರಿ</string>
+    <string name="repeat_every">ಮತ್ತೆ ನೆನಪಿಸುವ ಅಂತರ</string>
+    <string name="repeat_every_default">ಮತ್ತೆ ನೆನಪಿಸುವ ಅಂತರ (ಡೀಫಾಲ್ಟ್)</string>
+    <string name="repeat_max">ಗರಿಷ್ಠ ಮರು-ಜ್ಞಾಪನೆಗಳು</string>
+    <string name="repeat_max_default">ಗರಿಷ್ಠ ಮರು-ಜ್ಞಾಪನೆಗಳು (ಡೀಫಾಲ್ಟ್)</string>
+    <string name="report_adherence">ಪಾಲನೆಯ ಇತಿಹಾಸ</string>
+    <string name="report_col_course">ಕೋರ್ಸ್</string>
+    <string name="report_col_dose">ಡೋಸ್</string>
+    <string name="report_col_medicine">ಔಷಧಿ</string>
+    <string name="report_col_schedule">ವೇಳಾಪಟ್ಟಿ</string>
+    <string name="report_daily">ದೈನಂದಿನ ಪಾಲನೆ</string>
+    <string name="report_diet">ಆಹಾರ: %1$s</string>
+    <string name="report_doctor">ವೈದ್ಯರು: %1$s</string>
+    <string name="report_footer">DoseMate · ರೋಗಿಯ ಫೋನ್‌ನಲ್ಲಿ ರಚಿಸಲಾಗಿದೆ · ಪುಟ %1$d</string>
+    <string name="report_generated">ರಚಿಸಿದ ದಿನ %1$s</string>
+    <string name="report_include">ಸೇರಿಸಿ</string>
+    <string name="report_intro">ವೈದ್ಯರೊಂದಿಗೆ ಯಾವುದೇ ಆ್ಯಪ್ ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಬಹುದಾದ PDF ರಚಿಸುತ್ತದೆ. ಏನನ್ನೂ ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದಿಲ್ಲ.</string>
+    <string name="report_itch">ತುರಿಕೆ ಅಂಕಗಳು</string>
+    <string name="report_medicines">ಔಷಧಿ ಪಟ್ಟಿ</string>
+    <string name="report_missed_list">ತಪ್ಪಿದ ಮತ್ತು ಬಿಟ್ಟ ಡೋಸ್‌ಗಳು</string>
+    <string name="report_no_itch">ಈ ಅವಧಿಯಲ್ಲಿ ತುರಿಕೆ ಅಂಕಗಳಿಲ್ಲ.</string>
+    <string name="report_overall">ಒಟ್ಟು ಪಾಲನೆ: %1$s</string>
+    <string name="report_period">ಅವಧಿ %1$s – %2$s</string>
+    <string name="report_photos">ಚರ್ಮದ ಫೋಟೋಗಳು</string>
+    <string name="report_range">ಅವಧಿ</string>
+    <string name="report_select_photos">ಸೇರಿಸಬೇಕಾದ ಫೋಟೋಗಳು</string>
+    <string name="report_title">ಚಿಕಿತ್ಸಾ ವರದಿ</string>
+    <string name="reset">ಎಲ್ಲವನ್ನೂ ಮರುಹೊಂದಿಸಿ</string>
+    <string name="reset_confirm">ಎಲ್ಲಾ ಔಷಧಿಗಳು, ಇತಿಹಾಸ, ಡೈರಿ, ಫೋಟೋಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್ಸ್ ಅಳಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="reset_hint">ಈ ಫೋನ್‌ನ ಎಲ್ಲಾ ಮಾಹಿತಿ ಅಳಿಸಿ</string>
+    <string name="reset_reload_plan">ಮೊದಲೇ ಇರುವ ಚಿಕಿತ್ಸಾ ಯೋಜನೆ ಮರುಲೋಡ್ ಮಾಡಿ</string>
+    <string name="restore">ಫೈಲ್‌ನಿಂದ ಮರುಸ್ಥಾಪಿಸಿ</string>
+    <string name="restore_confirm">DoseMate ನಲ್ಲಿರುವ ಎಲ್ಲವನ್ನೂ ಈ ಬ್ಯಾಕಪ್‌ನಿಂದ ಬದಲಿಸಬೇಕೇ?</string>
+    <string name="restore_done">ಬ್ಯಾಕಪ್ ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</string>
+    <string name="restore_failed">ಈ ಫೈಲ್ ಮರುಸ್ಥಾಪಿಸಲಾಗಲಿಲ್ಲ</string>
+    <string name="restore_hint">ಪ್ರಸ್ತುತ ಮಾಹಿತಿಯನ್ನು ಬ್ಯಾಕಪ್‌ನಿಂದ ಬದಲಿಸಿ</string>
+    <string name="resume">ಮುಂದುವರಿಸಿ</string>
+    <string name="ring_duration">ರಿಂಗ್ ಅವಧಿ</string>
+    <string name="save">ಉಳಿಸಿ</string>
+    <string name="sched_custom">ನಿಮ್ಮ ಸಮಯಗಳು</string>
+    <string name="sched_daily">ಪ್ರತಿದಿನ</string>
+    <string name="sched_every_n_days">ಪ್ರತಿ %1$d ದಿನಕ್ಕೊಮ್ಮೆ</string>
+    <string name="sched_every_x">ಪ್ರತಿ X ದಿನಕ್ಕೊಮ್ಮೆ</string>
+    <string name="sched_times_per_day">ದಿನಕ್ಕೆ X ಬಾರಿ</string>
+    <string name="sched_times_per_day_n">ದಿನಕ್ಕೆ %1$d ಬಾರಿ</string>
+    <string name="sched_weekdays">ನಿರ್ದಿಷ್ಟ ದಿನಗಳು</string>
+    <string name="sched_weekly">ವಾರಕ್ಕೊಮ್ಮೆ</string>
+    <string name="sched_weekly_on">ಪ್ರತಿ %1$s</string>
+    <string name="schedule">ವೇಳಾಪಟ್ಟಿ</string>
+    <string name="seconds_short">%1$d ಸೆ</string>
+    <string name="section_alerts">ಎಚ್ಚರಿಕೆಗಳು</string>
+    <string name="section_dose">ಡೋಸ್</string>
+    <string name="section_duration">ಕೋರ್ಸ್ ಅವಧಿ</string>
+    <string name="section_link">ಲಿಂಕ್ ಜ್ಞಾಪನೆ</string>
+    <string name="section_stock">ಸ್ಟಾಕ್</string>
+    <string name="security">ಭದ್ರತೆ</string>
+    <string name="set_pin">PIN ಹೊಂದಿಸಿ</string>
+    <string name="set_prescribed_date">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ದಿನಾಂಕ ಹೊಂದಿಸಿ</string>
+    <string name="settings">ಸೆಟ್ಟಿಂಗ್ಸ್</string>
+    <string name="setup_battery_text">ಬ್ಯಾಟರಿ ಉಳಿಸಲು Android ಅಲಾರಾಂಗಳನ್ನು ತಡಮಾಡಬಹುದು. ಜ್ಞಾಪನೆ ತಡವಾಗದಂತೆ DoseMate ಗೆ ನಿರ್ಬಂಧವಿಲ್ಲದೆ ಓಡಲು ಬಿಡಿ.</string>
+    <string name="setup_battery_title">ಬ್ಯಾಟರಿ ಆಪ್ಟಿಮೈಸೇಶನ್</string>
+    <string name="setup_exact_text">ಫೋನ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದ್ದರೂ ಸರಿಯಾದ ನಿಮಿಷಕ್ಕೆ ರಿಂಗ್ ಆಗಲು ಬಿಡುತ್ತದೆ.</string>
+    <string name="setup_exact_title">ನಿಖರ ಅಲಾರಾಂಗಳು</string>
+    <string name="setup_fullscreen_text">ಅಲಾರಾಂ ಗಡಿಯಾರದಂತೆ ಲಾಕ್ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ಅಲಾರಾಂ ತೋರಿಸಿ ಪರದೆಯನ್ನು ಎಬ್ಬಿಸುತ್ತದೆ.</string>
+    <string name="setup_fullscreen_title">ಪೂರ್ಣ ಪರದೆ ಅಲಾರಾಂಗಳು</string>
+    <string name="setup_notif_text">ಜ್ಞಾಪನೆಗಳು ಮತ್ತು ತೆಗೆದುಕೊಂಡೆ / ಸ್ನೂಜ್ / ಬಿಟ್ಟುಬಿಡಿ ಬಟನ್‌ಗಳು ಅಧಿಸೂಚನೆಯಾಗಿ ಬರುತ್ತವೆ.</string>
+    <string name="setup_notif_title">ಅಧಿಸೂಚನೆಗಳು</string>
+    <string name="setup_oem_text">ಕೆಲವು ಫೋನ್‌ಗಳು ಹಿನ್ನೆಲೆಯ ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಚ್ಚುತ್ತವೆ. ಅಲಾರಾಂ ಯಾವಾಗಲೂ ರಿಂಗ್ ಆಗಲು ನಿಮ್ಮ ಫೋನ್‌ನ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.</string>
+    <string name="setup_oem_title">ಫೋನ್-ನಿರ್ದಿಷ್ಟ ಸೆಟ್ಟಿಂಗ್ಸ್</string>
+    <string name="setup_permissions">ಸೆಟಪ್ ಮತ್ತು ಅನುಮತಿಗಳು</string>
+    <string name="setup_permissions_hint">ಅಲಾರಾಂಗಳಿಗೆ ಬೇಕಾದ ಎಲ್ಲವನ್ನೂ ಪರಿಶೀಲಿಸಿ</string>
+    <string name="setup_test_text">ಧ್ವನಿ, ಲಾಕ್ ಸ್ಕ್ರೀನ್ ಅಲಾರಾಂ ಮತ್ತು ಬಟನ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಈಗ ಪರೀಕ್ಷಾ ಅಲಾರಾಂ ರಿಂಗ್ ಮಾಡಿ.</string>
+    <string name="setup_test_title">ಪರೀಕ್ಷಿಸಿ</string>
+    <string name="setup_welcome_text">ನಿಮ್ಮ ಮಾತ್ರೆ ಮತ್ತು ಕ್ರೀಮ್‌ಗಳಿಗೆ ಸರಿಯಾದ ಸಮಯಕ್ಕೆ ನಿಜವಾದ ಅಲಾರಾಂಗಳು. ನಿಮ್ಮ ಫೋನ್ ಅವುಗಳನ್ನು ರಿಂಗ್ ಮಾಡಲು ಬಿಡುತ್ತದೆಯೇ ಎಂದು ನೋಡೋಣ.</string>
+    <string name="setup_welcome_title">DoseMate ಗೆ ಸ್ವಾಗತ</string>
+    <string name="share_again">ಮತ್ತೆ ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="share_report">ವರದಿ ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="skip_for_now">ಈಗ ಬಿಟ್ಟುಬಿಡಿ</string>
+    <string name="skip_reason_hint">ಕಾರಣ (ಐಚ್ಛಿಕ)</string>
+    <string name="skip_title">ಈ ಡೋಸ್ ಬಿಡಬೇಕೇ?</string>
+    <string name="snooze_options">ಸ್ನೂಜ್ ಆಯ್ಕೆಗಳು (ನಿಮಿಷ, ಅಲ್ಪವಿರಾಮದಿಂದ)</string>
+    <string name="snoozed_until">ಸ್ನೂಜ್ · %1$s</string>
+    <string name="start_volume">ಆರಂಭದ ಧ್ವನಿ: %1$d%%</string>
+    <string name="starts_on">ಆರಂಭ %1$s</string>
+    <string name="status_due">ಈಗ ಬಾಕಿ</string>
+    <string name="status_late">ತಡ</string>
+    <string name="status_late_at">ತಡ · %1$s</string>
+    <string name="status_missed">ತಪ್ಪಿದೆ</string>
+    <string name="status_skipped">ಬಿಟ್ಟಿದೆ</string>
+    <string name="status_taken">ತೆಗೆದುಕೊಂಡಿದೆ</string>
+    <string name="status_taken_at">ತೆಗೆದುಕೊಂಡಿದೆ · %1$s</string>
+    <string name="status_upcoming">ಮುಂಬರುವ</string>
+    <string name="stock_count">ಸ್ಟಾಕ್‌ನಲ್ಲಿ</string>
+    <string name="stock_low">ಸ್ಟಾಕ್ ಕಡಿಮೆ: %1$s</string>
+    <string name="stock_per_dose">ಪ್ರತಿ ಡೋಸ್‌ಗೆ ಬಳಕೆ</string>
+    <string name="stock_remaining">ಸ್ಟಾಕ್‌ನಲ್ಲಿ %1$s %2$s ಉಳಿದಿದೆ</string>
+    <string name="stop_recording">ನಿಲ್ಲಿಸಿ</string>
+    <string name="style_alarm">ಪೂರ್ಣ ಅಲಾರಾಂ</string>
+    <string name="style_notification">ಅಧಿಸೂಚನೆ ಮಾತ್ರ</string>
+    <string name="style_same_as_medicine">ಔಷಧಿಯಂತೆಯೇ</string>
+    <string name="style_sound">ಅಧಿಸೂಚನೆ + ಧ್ವನಿ</string>
+    <string name="tab_history">ಕ್ಯಾಲೆಂಡರ್</string>
+    <string name="tab_insights">ಒಳನೋಟ</string>
+    <string name="tab_journal">ಡೈರಿ</string>
+    <string name="tab_medicines">ಔಷಧಿಗಳು</string>
+    <string name="tab_today">ಇಂದು</string>
+    <string name="taken_lower">ತೆಗೆದುಕೊಂಡಿದೆ</string>
+    <string name="test_alarm">ಈಗ ಪರೀಕ್ಷಾ ಅಲಾರಾಂ</string>
+    <string name="test_notification">ಪರೀಕ್ಷಾ ಅಧಿಸೂಚನೆ</string>
+    <string name="test_reminders">ಜ್ಞಾಪನೆ ಪರೀಕ್ಷೆ</string>
+    <string name="theme">ಥೀಮ್</string>
+    <string name="theme_amoled">AMOLED ಕಪ್ಪು</string>
+    <string name="theme_dark">ಗಾಢ</string>
+    <string name="theme_light">ತಿಳಿ</string>
+    <string name="theme_system">ಸಿಸ್ಟಮ್</string>
+    <string name="times_per_day_label">ದಿನಕ್ಕೆ ಎಷ್ಟು ಬಾರಿ</string>
+    <string name="today_empty_text">ಇಂದು ಏನೂ ನಿಗದಿಯಾಗಿಲ್ಲ. ನಿಮ್ಮ ದಿನ ಶುಭವಾಗಲಿ!</string>
+    <string name="today_empty_title">ಇಂದು ಡೋಸ್ ಇಲ್ಲ</string>
+    <string name="today_no_meds_text">ವಿಶ್ವಾಸಾರ್ಹ ಜ್ಞಾಪನೆಗಳಿಗಾಗಿ ನಿಮ್ಮ ಮೊದಲ ಔಷಧಿ ಸೇರಿಸಿ.</string>
+    <string name="today_no_meds_title">ಇನ್ನೂ ಔಷಧಿಗಳಿಲ್ಲ</string>
+    <string name="tone_bells">ಶಾಂತ ಗಂಟೆ</string>
+    <string name="tone_builtin">ಅಂತರ್ನಿರ್ಮಿತ</string>
+    <string name="tone_chime">ಮೃದು ಚೈಮ್</string>
+    <string name="tone_default">ಫೋನ್ ಡೀಫಾಲ್ಟ್</string>
+    <string name="tone_digital">ಡಿಜಿಟಲ್</string>
+    <string name="tone_file">ನನ್ನ ಸಂಗೀತ ಫೈಲ್</string>
+    <string name="tone_pulse">ಪಲ್ಸ್</string>
+    <string name="tone_sunrise">ಸೂರ್ಯೋದಯ</string>
+    <string name="tone_system">ಫೋನ್ ರಿಂಗ್‌ಟೋನ್</string>
+    <string name="tone_voice">ಧ್ವನಿ ಟಿಪ್ಪಣಿ</string>
+    <string name="tone_voice_note">ಧ್ವನಿ ಟಿಪ್ಪಣಿ</string>
+    <string name="total_doses">ಒಟ್ಟು %1$d ಡೋಸ್‌ಗಳು</string>
+    <string name="track_stock">ಸ್ಟಾಕ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</string>
+    <string name="type_capsule">ಕ್ಯಾಪ್ಸೂಲ್</string>
+    <string name="type_cream">ಕ್ರೀಮ್</string>
+    <string name="type_drops">ಹನಿಗಳು</string>
+    <string name="type_injection">ಇಂಜೆಕ್ಷನ್</string>
+    <string name="type_ointment">ಮುಲಾಮು</string>
+    <string name="type_other">ಇತರೆ</string>
+    <string name="type_syrup">ಸಿರಪ್</string>
+    <string name="type_tablet">ಮಾತ್ರೆ</string>
+    <string name="unarchive">ಮರುಸ್ಥಾಪಿಸಿ</string>
+    <string name="unarchived">ಕೋರ್ಸ್ ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</string>
+    <string name="unlock_title">DoseMate ಅನ್‌ಲಾಕ್ ಮಾಡಿ</string>
+    <string name="use_24h">24-ಗಂಟೆ ಸಮಯ</string>
+    <string name="use_biometric">ಬೆರಳಚ್ಚು / ಮುಖ ಬಳಸಿ</string>
+    <string name="use_pin">PIN ಬಳಸಿ</string>
+    <string name="vib_gentle">ಮೃದು</string>
+    <string name="vib_heartbeat">ಹೃದಯ ಬಡಿತ</string>
+    <string name="vib_none">ಇಲ್ಲ</string>
+    <string name="vib_standard">ಸಾಮಾನ್ಯ</string>
+    <string name="vib_urgent">ತುರ್ತು</string>
+    <string name="vibration">ಕಂಪನ</string>
+    <string name="voice_hint">ಉದಾ: \"ಊಟದ ನಂತರ Teczine ತೆಗೆದುಕೊಳ್ಳಿ\"</string>
+    <string name="weekly_photo_reminder">ವಾರದ ಫೋಟೋ ಜ್ಞಾಪನೆ</string>
+    <string name="weekly_photo_reminder_hint">ಪ್ರತಿ %1$s</string>
+    <string name="whole_course">ಸಂಪೂರ್ಣ ಕೋರ್ಸ್</string>
+    <string name="widget_all_done">ಸದ್ಯಕ್ಕೆ ಎಲ್ಲವೂ ಮುಗಿದಿದೆ</string>
+    <string name="widget_next_desc">ಲೈವ್ ಕೌಂಟ್‌ಡೌನ್‌ನೊಂದಿಗೆ ಮುಂದಿನ ಡೋಸ್</string>
+    <string name="widget_next_dose">ಮುಂದಿನ ಡೋಸ್</string>
+    <string name="widget_no_doses">ಇಂದು ಡೋಸ್ ಇಲ್ಲ</string>
+    <string name="widget_today">ಇಂದು</string>
+    <string name="widget_today_desc">ಇಂದಿನ ಪಟ್ಟಿ – ತೆಗೆದುಕೊಂಡೆ ಎಂದು ಗುರುತಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</string>
+    <string name="window_from">%1$s ರಿಂದ</string>
+    <string name="window_to">%1$s ವರೆಗೆ</string>
+    <string name="wrong_pin">ತಪ್ಪು PIN</string>
+    <string name="your_phone">ನಿಮ್ಮ ಫೋನ್</string>
+    <plurals name="days_count">
+        <item quantity="one">%d ದಿನ</item>
+        <item quantity="other">%d ದಿನಗಳು</item>
+    </plurals>
+    <plurals name="days_left">
+        <item quantity="one">%d ದಿನ ಉಳಿದಿದೆ</item>
+        <item quantity="other">%d ದಿನಗಳು ಉಳಿದಿವೆ</item>
+    </plurals>
+    <plurals name="missed_summary">
+        <item quantity="one">ನೀವು %d ಡೋಸ್ ತಪ್ಪಿಸಿದ್ದೀರಿ</item>
+        <item quantity="other">ನೀವು %d ಡೋಸ್‌ಗಳನ್ನು ತಪ್ಪಿಸಿದ್ದೀರಿ</item>
+    </plurals>
+    <plurals name="starts_in_days">
+        <item quantity="one">%d ದಿನದಲ್ಲಿ ಆರಂಭ</item>
+        <item quantity="other">%d ದಿನಗಳಲ್ಲಿ ಆರಂಭ</item>
+    </plurals>
+    <plurals name="times_count">
+        <item quantity="one">%d ಬಾರಿ</item>
+        <item quantity="other">%d ಬಾರಿ</item>
+    </plurals>
+    <string-array name="oem_oneplus_steps">
+        <item>Settings → Battery → Battery optimisation → All apps → DoseMate → Don\'t optimise.</item>
+        <item>Settings → Apps → DoseMate → Battery usage → Allow background activity.</item>
+        <item>Settings → Apps → Special app access → Alarms &amp; reminders → DoseMate ಅನುಮತಿಸಿ.</item>
+        <item>Recent apps ನಲ್ಲಿ DoseMate ಅನ್ನು ಲಾಕ್ ಮಾಡಿ.</item>
+    </string-array>
+    <string-array name="oem_oppo_steps">
+        <item>Settings → Battery → More settings → DoseMate ಗೆ Optimise battery use ಆಫ್ ಮಾಡಿ.</item>
+        <item>Settings → Apps → App management → DoseMate → Auto launch → ON.</item>
+        <item>ಅದೇ ಪರದೆ → Notifications → ಲಾಕ್ ಸ್ಕ್ರೀನ್ ಸೇರಿ ಎಲ್ಲವನ್ನೂ ಅನುಮತಿಸಿ.</item>
+        <item>Recent apps ನಲ್ಲಿ DoseMate ಅನ್ನು ಲಾಕ್ ಮಾಡಿ.</item>
+    </string-array>
+    <string-array name="oem_realme_steps">
+        <item>Settings → Battery → App battery management → DoseMate → Allow background activity ಮತ್ತು Allow auto launch.</item>
+        <item>Settings → Apps → App management → DoseMate → Notifications → ಎಲ್ಲವನ್ನೂ ಅನುಮತಿಸಿ.</item>
+        <item>Settings → Privacy → Permission manager → Display over other apps → DoseMate ಅನುಮತಿಸಿ.</item>
+        <item>Recent apps ನಲ್ಲಿ DoseMate ಅನ್ನು ಲಾಕ್ ಮಾಡಿ.</item>
+    </string-array>
+    <string-array name="oem_samsung_steps">
+        <item>Settings → Apps → DoseMate → Battery → Unrestricted ಆಯ್ಕೆಮಾಡಿ.</item>
+        <item>Settings → Battery → Background usage limits → DoseMate ಅನ್ನು Sleeping ಪಟ್ಟಿಯಿಂದ ತೆಗೆದು Never sleeping apps ಗೆ ಸೇರಿಸಿ.</item>
+        <item>Settings → Apps → DoseMate → Notifications → ಎಲ್ಲವನ್ನೂ ಅನುಮತಿಸಿ.</item>
+        <item>Settings → Apps → DoseMate → Alarms &amp; reminders → Allow.</item>
+    </string-array>
+    <string-array name="oem_vivo_steps">
+        <item>Settings → Battery → Background power consumption management → DoseMate → Allow.</item>
+        <item>i Manager → App manager → Autostart manager → DoseMate ಸಕ್ರಿಯಗೊಳಿಸಿ.</item>
+        <item>Settings → Apps → DoseMate → Permissions → Lock screen display ಮತ್ತು pop-up windows ಅನುಮತಿಸಿ.</item>
+        <item>Recent apps ನಲ್ಲಿ DoseMate ಅನ್ನು ಲಾಕ್ ಮಾಡಿ.</item>
+    </string-array>
+    <string-array name="oem_xiaomi_steps">
+        <item>Settings → Apps → Manage apps → DoseMate → Autostart → ON ಮಾಡಿ.</item>
+        <item>ಅದೇ ಪರದೆ → Battery saver → No restrictions ಆಯ್ಕೆಮಾಡಿ.</item>
+        <item>ಅದೇ ಪರದೆ → Other permissions → Show on Lock screen ಮತ್ತು pop-up windows ಅನುಮತಿಸಿ.</item>
+        <item>Recent apps ನಲ್ಲಿ DoseMate ಅನ್ನು ಲಾಕ್ ಮಾಡಿ.</item>
+    </string-array>
+    <string-array name="skip_reasons">
+        <item>ಮುಗಿದಿದೆ</item>
+        <item>ಅಡ್ಡಪರಿಣಾಮ</item>
+        <item>ವೈದ್ಯರ ಸಲಹೆ</item>
+        <item>ಉತ್ತಮವಾಗಿದೆ</item>
+        <item>ಮರೆತೆ</item>
+    </string-array>
+</resources>
