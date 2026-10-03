@@ -92,6 +92,7 @@
     <string name="dnd_bypass_hint">Needs Do Not Disturb access. Alarms already ring in silent mode.</string>
     <string name="doctor_name">Doctor</string>
     <string name="doctor_report">Doctor report</string>
+    <string name="dose_n_of_m">Dose %1$d of %2$d</string>
     <string name="dose_times">Dose times</string>
     <string name="dur_days">Number of days</string>
     <string name="dur_days_n">%1$d days</string>
@@ -137,6 +138,7 @@
     <string name="greeting_afternoon">Good afternoon</string>
     <string name="greeting_evening">Good evening</string>
     <string name="greeting_morning">Good morning</string>
+    <string name="greeting_night">Good night</string>
     <string name="hide_names">Hide medicine names</string>
     <string name="hide_names_hint">Notifications show \"Time for your medicine\" instead</string>
     <string name="insights_empty_text">Insights appear after your first few doses.</string>
@@ -399,6 +401,10 @@
     <plurals name="days_left">
         <item quantity="one">%d day left</item>
         <item quantity="other">%d days left</item>
+    </plurals>
+    <plurals name="doses_left">
+        <item quantity="one">%d dose left</item>
+        <item quantity="other">%d doses left</item>
     </plurals>
     <plurals name="missed_summary">
         <item quantity="one">You missed %d dose</item>

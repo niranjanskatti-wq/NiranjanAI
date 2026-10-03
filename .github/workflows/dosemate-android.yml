@@ -15,6 +15,9 @@ concurrency:
   group: dosemate-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -56,3 +59,16 @@ jobs:
         with:
           name: dosemate-apks
           path: dosemate/app/build/outputs/apk/**/*.apk
+
+      - name: Publish latest APK to GitHub Releases
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk DoseMate.apk
+          gh release delete dosemate-latest --yes --cleanup-tag || true
+          gh release create dosemate-latest DoseMate.apk \
+            --target "${{ github.sha }}" \
+            --title "DoseMate (latest build)" \
+            --notes "Latest DoseMate build from ${{ github.ref_name }} (${{ github.sha }}). Download DoseMate.apk and open it on your phone to install." \
+            --prerelease

@@ -109,7 +109,7 @@ private fun MainScaffold(viewModel: MainViewModel) {
         NavHost(
             navController = nav,
             startDestination = "today",
-            modifier = Modifier.padding(bottom = padding.calculateBottomPadding()).consumeWindowInsets(padding),
+            modifier = Modifier.padding(bottom = padding.calculateBottomPadding()).consumeWindowInsets(androidx.compose.foundation.layout.PaddingValues(bottom = padding.calculateBottomPadding())),
             enterTransition = { fadeIn() + slideInHorizontally { it / 12 } },
             exitTransition = { fadeOut() },
             popEnterTransition = { fadeIn() },

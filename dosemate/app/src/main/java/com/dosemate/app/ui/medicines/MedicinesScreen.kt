@@ -173,8 +173,17 @@ private fun PrescriptionCard(settings: AppSettings) {
 fun progressText(p: CourseProgress): String = when {
     p.notStarted -> pluralStringResource(R.plurals.starts_in_days, p.daysUntilStart, p.daysUntilStart)
     p.finished -> stringResource(R.string.course_finished)
+    p.totalDoses != null -> stringResource(R.string.dose_n_of_m, p.doseNumber ?: 0, p.totalDoses ?: 0)
     p.totalDays == null -> stringResource(R.string.day_n_ongoing, p.dayNumber)
     else -> stringResource(R.string.day_n_of_m, p.dayNumber, p.totalDays ?: 0)
+}
+
+/** "3 doses left" for dose-based courses, otherwise "16 days left". */
+@Composable
+fun remainingText(p: CourseProgress): String? {
+    if (p.finished || p.notStarted) return null
+    p.dosesRemaining?.let { return pluralStringResource(R.plurals.doses_left, it, it) }
+    return p.daysRemaining?.let { pluralStringResource(R.plurals.days_left, it, it) }
 }
 
 @Composable
@@ -201,9 +210,8 @@ private fun MedicineRow(med: MedicineWithTimes, photoDir: File, onClick: () -> U
         Spacer(Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(progressText(progress), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
-            progress.daysRemaining?.takeIf { !progress.finished && !progress.notStarted }?.let {
-                Text(pluralStringResource(R.plurals.days_left, it, it), style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            remainingText(progress)?.let {
+                Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         if (progress.totalDays != null) {

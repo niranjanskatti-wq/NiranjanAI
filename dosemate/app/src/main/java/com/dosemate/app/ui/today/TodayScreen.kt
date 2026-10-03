@@ -202,7 +202,8 @@ private fun greeting(): String {
         when (hour) {
             in 4..11 -> R.string.greeting_morning
             in 12..16 -> R.string.greeting_afternoon
-            else -> R.string.greeting_evening
+            in 17..21 -> R.string.greeting_evening
+            else -> R.string.greeting_night
         },
     )
 }

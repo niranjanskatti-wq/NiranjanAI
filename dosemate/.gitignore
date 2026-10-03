@@ -12,3 +12,5 @@ build/
 keystore.properties
 *.jks
 *.keystore
+# Shared debug key so CI-built debug APKs update in place (not secret).
+!app/debug.keystore

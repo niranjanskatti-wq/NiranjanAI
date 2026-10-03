@@ -167,6 +167,17 @@ class ScheduleEngine(val schedule: Schedule) {
         }
         val finished = today.isAfter(last)
         val day = elapsed.coerceAtMost(totalDays)
+        if (doseCap != null) {
+            // Courses defined by a number of doses (e.g. weekly x 4) read as "Dose 2 of 4".
+            val taken = occurrencesBetween(start, today).size.coerceAtMost(doseCap)
+            val done = finished || (taken >= doseCap && !today.isBefore(last))
+            return CourseProgress(
+                dayNumber = day, totalDays = totalDays, daysRemaining = (totalDays - day).coerceAtLeast(0),
+                fraction = if (done) 1f else taken.toFloat() / doseCap,
+                notStarted = false, finished = finished,
+                doseNumber = taken, totalDoses = doseCap, dosesRemaining = (doseCap - taken).coerceAtLeast(0),
+            )
+        }
         return CourseProgress(
             dayNumber = day,
             totalDays = totalDays,
@@ -192,6 +203,10 @@ data class CourseProgress(
     val notStarted: Boolean,
     val finished: Boolean,
     val daysUntilStart: Int = 0,
+    /** Set only for courses measured in doses. */
+    val doseNumber: Int? = null,
+    val totalDoses: Int? = null,
+    val dosesRemaining: Int? = null,
 )
 
 /** Helpers for building dose times. */

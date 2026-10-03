@@ -198,8 +198,8 @@ fun MedicineDetailScreen(onBack: () -> Unit, onEdit: (Long) -> Unit, viewModel: 
                         Spacer(Modifier.width(18.dp))
                         Column {
                             Text(progressText(progress), style = MaterialTheme.typography.titleMedium)
-                            progress.daysRemaining?.let {
-                                Text(androidx.compose.ui.res.pluralStringResource(R.plurals.days_left, it, it),
+                            remainingText(progress)?.let {
+                                Text(it,
                                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             engine.totalDoses?.let {

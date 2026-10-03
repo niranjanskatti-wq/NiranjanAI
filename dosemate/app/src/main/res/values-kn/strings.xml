@@ -91,6 +91,7 @@
     <string name="dnd_bypass_hint">ಡು ನಾಟ್ ಡಿಸ್ಟರ್ಬ್ ಅನುಮತಿ ಬೇಕು. ಸೈಲೆಂಟ್ ಮೋಡ್‌ನಲ್ಲೂ ಅಲಾರಾಂ ರಿಂಗ್ ಆಗುತ್ತದೆ.</string>
     <string name="doctor_name">ವೈದ್ಯರು</string>
     <string name="doctor_report">ವೈದ್ಯರ ವರದಿ</string>
+    <string name="dose_n_of_m">%2$d ರಲ್ಲಿ %1$d ನೇ ಡೋಸ್</string>
     <string name="dose_times">ಡೋಸ್ ಸಮಯಗಳು</string>
     <string name="dur_days">ದಿನಗಳ ಸಂಖ್ಯೆ</string>
     <string name="dur_days_n">%1$d ದಿನಗಳು</string>
@@ -136,6 +137,7 @@
     <string name="greeting_afternoon">ಶುಭ ಮಧ್ಯಾಹ್ನ</string>
     <string name="greeting_evening">ಶುಭ ಸಂಜೆ</string>
     <string name="greeting_morning">ಶುಭೋದಯ</string>
+    <string name="greeting_night">ಶುಭ ರಾತ್ರಿ</string>
     <string name="hide_names">ಔಷಧಿ ಹೆಸರು ಮರೆಮಾಡಿ</string>
     <string name="hide_names_hint">ಅಧಿಸೂಚನೆಗಳಲ್ಲಿ \"ಔಷಧಿ ಸಮಯ\" ಎಂದು ಮಾತ್ರ ತೋರಿಸುತ್ತದೆ</string>
     <string name="insights_empty_text">ಮೊದಲ ಕೆಲವು ಡೋಸ್‌ಗಳ ನಂತರ ಒಳನೋಟಗಳು ಕಾಣಿಸುತ್ತವೆ.</string>
@@ -398,6 +400,10 @@
     <plurals name="days_left">
         <item quantity="one">%d ದಿನ ಉಳಿದಿದೆ</item>
         <item quantity="other">%d ದಿನಗಳು ಉಳಿದಿವೆ</item>
+    </plurals>
+    <plurals name="doses_left">
+        <item quantity="one">%d ಡೋಸ್ ಉಳಿದಿದೆ</item>
+        <item quantity="other">%d ಡೋಸ್‌ಗಳು ಉಳಿದಿವೆ</item>
     </plurals>
     <plurals name="missed_summary">
         <item quantity="one">ನೀವು %d ಡೋಸ್ ತಪ್ಪಿಸಿದ್ದೀರಿ</item>

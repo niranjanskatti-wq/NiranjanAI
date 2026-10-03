@@ -129,6 +129,20 @@ class ScheduleEngineTest {
     }
 
     @Test
+    fun `dose based course reads dose n of total`() {
+        val engine = ScheduleEngine(
+            Schedule(ScheduleType.WEEKLY, listOf(slot(1, 9)), start, durationType = DurationType.DOSES, durationDoses = 4),
+        )
+        val first = engine.progress(start)
+        assertEquals(1, first.doseNumber)
+        assertEquals(4, first.totalDoses)
+        assertEquals(3, first.dosesRemaining)
+        assertEquals(1, engine.progress(start.plusDays(6)).doseNumber)
+        assertEquals(2, engine.progress(start.plusDays(7)).doseNumber)
+        assertEquals(0, engine.progress(start.plusWeeks(3)).dosesRemaining)
+    }
+
+    @Test
     fun `ongoing course never ends`() {
         val engine = ScheduleEngine(Schedule(ScheduleType.DAILY, listOf(slot(1, 8)), start))
         assertNull(engine.lastDate)
