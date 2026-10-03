@@ -174,7 +174,7 @@ fun progressText(p: CourseProgress): String = when {
     p.notStarted -> pluralStringResource(R.plurals.starts_in_days, p.daysUntilStart, p.daysUntilStart)
     p.finished -> stringResource(R.string.course_finished)
     p.totalDays == null -> stringResource(R.string.day_n_ongoing, p.dayNumber)
-    else -> stringResource(R.string.day_n_of_m, p.dayNumber, p.totalDays)
+    else -> stringResource(R.string.day_n_of_m, p.dayNumber, p.totalDays ?: 0)
 }
 
 @Composable

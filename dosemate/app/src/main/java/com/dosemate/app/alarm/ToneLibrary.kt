@@ -44,7 +44,7 @@ class ToneLibrary @Inject constructor(
     private val photos: PhotoStore,
 ) {
     /** Resolves a medicine's tone to a playable Uri, or null to use the system default. */
-    fun resolve(type: ToneType, value: String?, forAlarm: Boolean): Uri? = when (type) {
+    fun resolve(type: ToneType, value: String?, forAlarm: Boolean): Uri = when (type) {
         ToneType.DEFAULT -> defaultUri(forAlarm)
         ToneType.BUILTIN -> BuiltInTone.entries.firstOrNull { it.id == value }?.let { Uri.fromFile(builtIn(it)) }
         ToneType.SYSTEM -> value?.let(Uri::parse)

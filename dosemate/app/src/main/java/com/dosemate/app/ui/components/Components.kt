@@ -34,7 +34,7 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.LocalPharmacy
 import androidx.compose.material.icons.rounded.Medication
-import androidx.compose.material.icons.rounded.MedicationLiquid
+import androidx.compose.material.icons.rounded.LocalDrink
 import androidx.compose.material.icons.rounded.Sanitizer
 import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.Vaccines
@@ -69,6 +69,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -96,7 +97,7 @@ fun medIcon(icon: MedIcon): ImageVector = when (icon) {
     MedIcon.CAPSULE -> Icons.Rounded.LocalPharmacy
     MedIcon.TUBE -> Icons.Rounded.Sanitizer
     MedIcon.DROPPER -> Icons.Rounded.WaterDrop
-    MedIcon.BOTTLE -> Icons.Rounded.MedicationLiquid
+    MedIcon.BOTTLE -> Icons.Rounded.LocalDrink
     MedIcon.SYRINGE -> Icons.Rounded.Vaccines
     MedIcon.LEAF -> Icons.Rounded.Spa
     MedIcon.HEART -> Icons.Rounded.Favorite
@@ -430,7 +431,7 @@ fun Confetti(modifier: Modifier = Modifier) {
 }
 
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.rotateRect(color: Color, at: Offset, degrees: Float) {
-    androidx.compose.ui.graphics.drawscope.rotate(degrees, at) {
+    rotate(degrees, at) {
         drawRect(color, topLeft = at, size = androidx.compose.ui.geometry.Size(18f, 10f))
     }
 }
