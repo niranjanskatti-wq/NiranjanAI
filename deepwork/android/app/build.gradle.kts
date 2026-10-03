@@ -26,6 +26,13 @@ android {
         versionName = flutter.versionName
     }
 
+    // Store native libraries compressed: a much smaller APK, unpacked once at install.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     // Release signing comes from android/key.properties (written by the build
     // workflow, never committed). Without it, the debug key is used so local
     // builds still work.

@@ -14,6 +14,7 @@ Open this link on the phone and install the APK:
 
 Android will ask you to allow "Install unknown apps" for your browser the first time. Every build is
 signed with the same key, so a new APK installs as an update and keeps your data.
+The APK is built for 64-bit ARM phones (practically every Android phone from 2017 on).
 
 Each build is also published on its own as `deepwork-build-N` under
 [Releases](https://github.com/niranjanskatti-wq/NiranjanAI/releases).
@@ -78,7 +79,7 @@ cd deepwork
 flutter pub get
 flutter analyze
 flutter test --exclude-tags screenshots
-flutter build apk --release
+flutter build apk --release --target-platform android-arm64
 ```
 
 Without `android/key.properties`, the release APK is signed with the debug key, so it won't

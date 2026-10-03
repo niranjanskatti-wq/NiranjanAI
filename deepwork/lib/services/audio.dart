@@ -33,7 +33,7 @@ class AmbientPlayer {
     _player = p;
     current = sound;
     try {
-      await p.setAsset('assets/sounds/$sound.wav');
+      await p.setAsset('assets/sounds/$sound.ogg');
       await p.setLoopMode(LoopMode.one);
       await p.setVolume(0);
       unawaited(p.play());
@@ -84,7 +84,7 @@ Future<void> playChime({bool breakOver = false}) async {
   if (!soundEnabled) return;
   final p = AudioPlayer();
   try {
-    await p.setAsset(breakOver ? 'assets/sounds/chime_break.wav' : 'assets/sounds/chime_complete.wav');
+    await p.setAsset(breakOver ? 'assets/sounds/chime_break.ogg' : 'assets/sounds/chime_complete.ogg');
     await p.setVolume(0.8);
     await p.play();
   } catch (_) {

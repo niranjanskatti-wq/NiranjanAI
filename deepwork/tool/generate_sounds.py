@@ -1,12 +1,15 @@
-"""Generates Deepwork's ambient loops and chimes as WAV files (assets/sounds).
+"""Generates Deepwork's ambient loops and chimes as Ogg Vorbis files (assets/sounds).
 
 Everything is synthesized, so the sounds ship with the app and need no downloads.
-Run: python3 tool/generate_sounds.py
+Each sound is rendered to WAV, then encoded with ffmpeg to keep the APK small.
+Run: python3 tool/generate_sounds.py   (needs ffmpeg with libvorbis)
 """
 import math
 import os
 import random
 import struct
+import subprocess
+import tempfile
 import wave
 
 SR = 22050
@@ -16,11 +19,13 @@ OUT = os.path.join(os.path.dirname(__file__), '..', 'assets', 'sounds')
 def write(name, data):
     peak = max(1e-9, max(abs(x) for x in data))
     path = os.path.join(OUT, name)
-    with wave.open(path, 'wb') as w:
-        w.setnchannels(1)
-        w.setsampwidth(2)
-        w.setframerate(SR)
-        w.writeframes(b''.join(struct.pack('<h', int(max(-1, min(1, x / peak * 0.85)) * 32000)) for x in data))
+    with tempfile.NamedTemporaryFile(suffix='.ogg') as tmp:
+        with wave.open(tmp.name, 'wb') as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(SR)
+            w.writeframes(b''.join(struct.pack('<h', int(max(-1, min(1, x / peak * 0.85)) * 32000)) for x in data))
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', tmp.name, '-c:a', 'libvorbis', '-q:a', '3', path], check=True)
     print('wrote', path, len(data) / SR, 's')
 
 
@@ -119,9 +124,9 @@ def chime(notes):
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     rng = random.Random(42)
-    write('white.wav', seamless(white(6, rng)))
-    write('brown.wav', seamless(brown(8, rng)))
-    write('rain.wav', seamless(rain(14, rng)))
-    write('cafe.wav', seamless(cafe(16, rng)))
-    write('chime_complete.wav', chime([659.25, 987.77]))
-    write('chime_break.wav', chime([523.25, 783.99]))
+    write('white.ogg', seamless(white(6, rng)))
+    write('brown.ogg', seamless(brown(8, rng)))
+    write('rain.ogg', seamless(rain(14, rng)))
+    write('cafe.ogg', seamless(cafe(16, rng)))
+    write('chime_complete.ogg', chime([659.25, 987.77]))
+    write('chime_break.ogg', chime([523.25, 783.99]))
