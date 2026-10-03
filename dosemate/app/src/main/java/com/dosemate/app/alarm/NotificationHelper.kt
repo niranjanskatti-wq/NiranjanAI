@@ -136,7 +136,7 @@ class NotificationHelper @Inject constructor(
         val reasons = c.resources.getStringArray(R.array.skip_reasons)
         val remoteInput = RemoteInput.Builder(AlarmContract.KEY_SKIP_REASON)
             .setLabel(c.getString(R.string.skip_reason_hint))
-            .setChoices(reasons)
+            .setChoices(arrayOf<CharSequence>(*reasons))
             .build()
         val skipAction = NotificationCompat.Action.Builder(
             R.drawable.ic_skip, c.getString(R.string.action_skip),

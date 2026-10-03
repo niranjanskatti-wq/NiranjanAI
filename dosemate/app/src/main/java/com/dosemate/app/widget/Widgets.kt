@@ -59,7 +59,7 @@ import com.dosemate.app.util.LocaleHelper
 import com.dosemate.app.util.TimeFormat
 import com.dosemate.core.DoseStatus
 import com.dosemate.core.TimeMath
-import dagger.EntryPoint
+import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext

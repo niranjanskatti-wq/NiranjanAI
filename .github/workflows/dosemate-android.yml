@@ -33,13 +33,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Unit tests (scheduling engine + app)
-        run: ./gradlew --no-daemon --stacktrace :core:scheduling:test :app:testDebugUnitTest
+        run: ./gradlew --no-daemon :core:scheduling:test :app:testDebugUnitTest
 
       - name: Build debug APK
-        run: ./gradlew --no-daemon --stacktrace :app:assembleDebug
+        run: ./gradlew --no-daemon :app:assembleDebug
 
       - name: Build release APK (unsigned unless signing secrets are configured)
-        run: ./gradlew --no-daemon --stacktrace :app:assembleRelease
+        run: ./gradlew --no-daemon :app:assembleRelease
 
       - name: Upload test reports
         if: always()
