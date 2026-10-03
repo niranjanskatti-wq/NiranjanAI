@@ -120,6 +120,26 @@ class ScreenshotTest : AppTestBase() {
             idle(); save(t.window.decorView, "29-meditation-timer", fullHeight = false)
             com.essential.app.core.HabitTimer.finish(app, save = false)
         }
+        run {
+            val pr = repo.habits().first { it.name == "Pranayam" }
+            val x = com.essential.app.data.UserAlarm(0, "", 6 * 60, 127, true, pr.id, "alarm", 10, true, null)
+            val pid = repo.saveAlarm(x)
+            repo.saveAlarm(x.copy(minute = 21 * 60 + 30, habitId = repo.habits().first { it.name.startsWith("Full") }.id))
+            repo.saveAlarm(x.copy(label = "Wake up", minute = 4 * 60 + 45, habitId = null, days = 0b0011111))
+            repo.saveAlarm(x.copy(label = "Sleep", minute = 22 * 60, habitId = null, style = "reminder"))
+            com.essential.app.notify.UserAlarms.changed(app)
+            push(a, AlarmsScreen(a, pushed = true), "31-alarms")
+            AlarmEditor.open(a, repo.alarm(pid)) { }; sheet("32-alarm-editor")
+            push(a, HabitDetailScreen(a, pr.id), "33-habit-alarms")
+            a.selectTab("habits"); shoot(a, "34-habits-with-alarms")
+            a.selectTab("settings"); shoot(a, "35-settings-tabs")
+            TabsSheet.open(a); sheet("36-arrange-tabs")
+            val r = Robolectric.buildActivity(com.essential.app.ui.AlarmRingActivity::class.java,
+                android.content.Intent(app, com.essential.app.ui.AlarmRingActivity::class.java).putExtra("alarm_id", pid)).setup().get()
+            idle(); save(r.window.decorView, "37-alarm-ringing", fullHeight = false)
+            r.finish()
+            a.selectTab("tools")
+        }
         LogHourSheet.open(a, LocalDate.of(2026, 10, 1), 10); sheet("20-log-hour-sheet")
         ModeSheet.open(a, LocalDate.of(2026, 10, 1)); sheet("21-mode-sheet")
         ScoreSheet.open(a, LocalDate.of(2026, 10, 1)); sheet("22-score-sheet")

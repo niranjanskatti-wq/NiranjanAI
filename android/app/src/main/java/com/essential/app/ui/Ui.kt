@@ -19,6 +19,7 @@ import android.text.InputType
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
@@ -411,4 +412,63 @@ fun Activity.pickTime(title: String, initial: Int, onPick: (Int) -> Unit) {
 fun Activity.pickDate(initial: java.time.LocalDate, onPick: (java.time.LocalDate) -> Unit) {
     android.app.DatePickerDialog(this, if (Th.dark) android.R.style.Theme_DeviceDefault_Dialog_Alert else android.R.style.Theme_DeviceDefault_Light_Dialog_Alert,
         { _, y, m, d -> onPick(java.time.LocalDate.of(y, m + 1, d)) }, initial.year, initial.monthValue - 1, initial.dayOfMonth).show()
+}
+
+/**
+ * A vertical list you reorder by dragging each row's handle (≡) up or down.
+ * [onDrop] gets the keys in their new order when the finger lifts.
+ */
+@android.annotation.SuppressLint("ClickableViewAccessibility", "ViewConstructor")
+class DragList(ctx: Context, private val onDrop: (List<String>) -> kotlin.Unit) : LinearLayout(ctx) {
+    private var dragging: View? = null
+    private var lastY = 0f
+
+    init { orientation = VERTICAL }
+
+    fun keys(): List<String> = (0 until childCount).map { getChildAt(it).tag as String }
+
+    /** Add a row; touching [handle] starts the drag. */
+    fun addRow(key: String, row: View, handle: View) {
+        row.tag = key
+        handle.setOnTouchListener { _, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    dragging = row; lastY = e.rawY
+                    parent?.requestDisallowInterceptTouchEvent(true)
+                    row.elevation = dp(8).toFloat(); row.background = rounded(Th.surface3, dp(14).toFloat()); row.haptic()
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> { dragging?.let { drag(it, e.rawY - lastY) }; lastY = e.rawY; true }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    val r = dragging ?: return@setOnTouchListener true
+                    dragging = null
+                    r.animate().translationY(0f).setDuration(120).withEndAction { r.elevation = 0f; r.background = null }.start()
+                    parent?.requestDisallowInterceptTouchEvent(false)
+                    onDrop(keys())
+                    true
+                }
+                else -> false
+            }
+        }
+        addView(row, LayoutParams(MATCH, WRAP))
+    }
+
+    private fun drag(row: View, dy: Float) {
+        row.translationY += dy
+        val i = indexOfChild(row)
+        if (row.translationY > 0 && i < childCount - 1) {
+            val next = getChildAt(i + 1)
+            if (row.translationY > next.height / 2f) { removeView(next); addView(next, i); row.translationY -= next.height; row.haptic() }
+        } else if (row.translationY < 0 && i > 0) {
+            val prev = getChildAt(i - 1)
+            if (-row.translationY > prev.height / 2f) { removeView(prev); addView(prev, i); row.translationY += prev.height; row.haptic() }
+        }
+    }
+
+    /** Move a row without touch (tests, accessibility). */
+    fun move(key: String, to: Int) {
+        val v = (0 until childCount).map { getChildAt(it) }.firstOrNull { it.tag == key } ?: return
+        removeView(v); addView(v, to.coerceIn(0, childCount))
+        onDrop(keys())
+    }
 }

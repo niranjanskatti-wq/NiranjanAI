@@ -58,6 +58,7 @@ object Alarms {
     /** Arm the next reminder. Safe to call often. */
     fun schedule(ctx: Context) {
         val repo = Repo.get(ctx)
+        UserAlarms.schedule(ctx)
         if (!repo.settings.bool("onboarded")) return
         val now = TimeUtil.nowMillis()
         val next = Planner.events(repo, now).firstOrNull() ?: return
@@ -120,6 +121,7 @@ class AlarmReceiver : BroadcastReceiver() {
         try {
             when (intent.action) {
                 Alarms.ACTION_FIRE -> Alarms.handleDue(ctx)
+                UserAlarms.ACTION -> UserAlarms.handleDue(ctx)
                 Alarms.ACTION_SNOOZE -> {
                     val date = LocalDate.parse(intent.getStringExtra("date") ?: return)
                     val hour = intent.getIntExtra("hour", -1)
@@ -141,6 +143,7 @@ class SystemEventReceiver : BroadcastReceiver() {
         val repo = Repo.get(ctx)
         if (intent.action == Intent.ACTION_TIMEZONE_CHANGED || intent.action == Intent.ACTION_TIME_CHANGED) {
             repo.settings.set("last_alarm_handled", TimeUtil.nowMillis())
+            repo.settings.set("ua_last", TimeUtil.nowMillis())
         }
         TimeUtil.zone = if (repo.settings.bool("use_ist")) TimeUtil.IST else java.time.ZoneId.systemDefault()
         Notifier.ensureChannels(ctx)

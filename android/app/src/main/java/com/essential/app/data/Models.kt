@@ -85,6 +85,19 @@ data class DailyReview(
     val rating: Int?, val tomorrowOneThing: String?
 )
 
+/** An alarm you set: on its own (wake up, sleep) or for a habit (pranayam at 6 AM). */
+data class UserAlarm(
+    val id: Long, val label: String, val minute: Int,
+    /** bit 0 = Monday … bit 6 = Sunday; 0 = once, on [onceDate]. */
+    val days: Int, val enabled: Boolean, val habitId: Long?,
+    /** [STYLE_ALARM] rings until stopped; [STYLE_REMINDER] is a normal notification. */
+    val style: String, val snoozeMin: Int, val vibrate: Boolean, val onceDate: String?
+) {
+    val once get() = days == 0
+    val rings get() = style != STYLE_REMINDER
+    companion object { const val STYLE_ALARM = "alarm"; const val STYLE_REMINDER = "reminder"; const val EVERY_DAY = 127 }
+}
+
 data class Habit(
     val id: Long, val name: String, val trigger: String?, val active: Boolean, val sort: Int, val color: Int = 0,
     /** null = just done / not done; otherwise [HabitUnit.MINUTES], [HabitUnit.PAGES], [HabitUnit.COUNT] or any word you choose. */

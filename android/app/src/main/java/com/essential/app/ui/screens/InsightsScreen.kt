@@ -42,6 +42,7 @@ class InsightsScreen(a: MainActivity) : Screen(a) {
         val v = a.vbox()
         val r = a.hbox()
         r.add(a.h1("Insights"), 0, WRAP, 1f)
+        r.add(a.alarmBtn(), WRAP, WRAP, end = 4)
         r.add(a.choice(listOf("7", "30", "90"), "$range") { range = it?.toInt() ?: 30; a.refresh() }, WRAP, WRAP)
         v.add(r, top = 8, bottom = 12)
         val row = a.hbox()

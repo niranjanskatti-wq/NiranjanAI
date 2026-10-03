@@ -31,6 +31,7 @@ class LogScreen(a: MainActivity) : Screen(a) {
             mid.click { a.pickDate(d) { date = it; a.refresh() } }
             nav.add(mid, 0, WRAP, 1f)
             nav.add(a.iconBtn("right", if (d < today) Th.text else Th.faint, desc = "Next day") { if (d < today) { date = d.plusDays(1); a.refresh() } }, a.dp(48), a.dp(48))
+            nav.add(a.alarmBtn(), WRAP, WRAP)
             add(nav, bottom = 10)
 
             val l = logs.values.toList()

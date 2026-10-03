@@ -69,6 +69,10 @@ class Icon(private val name: String, private val color: Int, private val sizePx:
             "copy" -> { c.drawRoundRect(RectF(8.5f, 8.5f, 19.5f, 19.5f), 2f, 2f, p); path.moveTo(15.5f, 8.5f); path.lineTo(15.5f, 4.5f)
                 path.lineTo(4.5f, 4.5f); path.lineTo(4.5f, 15.5f); path.lineTo(8.5f, 15.5f); c.drawPath(path, p) }
             "dot" -> c.drawCircle(12f, 12f, 4f, fill)
+            "alarm" -> { c.drawCircle(12f, 13f, 7f, p); path.moveTo(12f, 9.5f); path.lineTo(12f, 13f); path.lineTo(14.5f, 14.5f)
+                path.moveTo(3.5f, 6.5f); path.lineTo(6.5f, 3.5f); path.moveTo(20.5f, 6.5f); path.lineTo(17.5f, 3.5f)
+                path.moveTo(7f, 19.5f); path.lineTo(5.5f, 21f); path.moveTo(17f, 19.5f); path.lineTo(18.5f, 21f); c.drawPath(path, p) }
+            "drag" -> { for (y in listOf(8f, 12f, 16f)) c.drawLine(5f, y, 19f, y, p) }
             "repeat" -> { path.moveTo(5f, 12f); path.cubicTo(5f, 7f, 9f, 6f, 12f, 6f); path.lineTo(18f, 6f); path.moveTo(15f, 3f); path.lineTo(18f, 6f); path.lineTo(15f, 9f)
                 path.moveTo(19f, 12f); path.cubicTo(19f, 17f, 15f, 18f, 12f, 18f); path.lineTo(6f, 18f); path.moveTo(9f, 15f); path.lineTo(6f, 18f); path.lineTo(9f, 21f); c.drawPath(path, p) }
             else -> c.drawCircle(12f, 12f, 3f, fill)

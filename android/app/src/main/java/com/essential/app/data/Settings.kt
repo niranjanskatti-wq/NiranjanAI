@@ -28,6 +28,7 @@ class Settings private constructor(private val db: Db) {
             "backup_auto" to "0", "backup_tree_uri" to "", "last_auto_backup" to "0",
             "focus_dnd" to "0", "last_alarm_handled" to "0", "sample_loaded" to "0",
             "tabs" to "now,log,habits,insights,tools",
+            "tab_order" to "now,log,habits,alarms,insights,tools,settings",
             "haptics" to "1"
         )
     }

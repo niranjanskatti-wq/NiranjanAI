@@ -49,6 +49,7 @@ class HomeScreen(a: MainActivity) : Screen(a) {
             val intent = repo.intent()
             val head = a.hbox()
             head.add(a.txt(TimeUtil.fmtDayLong(d), 14f, Th.dim, Fonts.medium), 0, WRAP, 1f)
+            head.add(a.alarmBtn(), WRAP, WRAP, end = 4)
             head.add(modeBadge(day), WRAP, WRAP)
             add(head, top = 4, bottom = 10)
             if (intent != null) {

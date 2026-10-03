@@ -16,23 +16,18 @@ import com.essential.app.ui.*
 class SettingsScreen(a: MainActivity) : Screen(a) {
     override fun content(): View = page {
         val s = repo.settings
-        add(a.h1("Settings"), top = 8, bottom = 16)
+        val head = a.hbox()
+        head.add(a.h1("Settings"), 0, WRAP, 1f)
+        head.add(a.alarmBtn(), WRAP, WRAP)
+        add(head, top = 8, bottom = 16)
         if (!Perms.allCritical(a)) add(a.card(12, Th.alpha(Th.yellow, 0.12f)) { a.push(PermissionsScreen(a)) }.apply {
             add(a.txt("Some permissions are off — reminders may be late. Tap to fix.", 14.5f))
         }, bottom = 12)
 
         group("Bottom tabs") {
-            it.add(a.dimText("Choose which tabs appear at the bottom. Settings always stays so you can turn tabs back on."), top = 6, bottom = 2)
-            val on = s.str("tabs").split(',').map { t -> t.trim() }.toMutableSet()
-            val desc = mapOf("now" to "Current block, ONE thing, score", "log" to "Plan vs actual, hour by hour", "habits" to "Daily habit chains and calendars",
-                "insights" to "Charts and weekly report", "tools" to "Goals, focus, sleep, reviews…")
-            MainActivity.ALL_TABS.filter { t -> t.first != "settings" }.forEach { (id, label) ->
-                it.add(a.switchRow(label, desc[id], id in on) { checked ->
-                    if (checked) on.add(id) else on.remove(id)
-                    s.set("tabs", MainActivity.ALL_TABS.map { t -> t.first }.filter { t -> t in on }.joinToString(","))
-                    a.renderNav()
-                })
-            }
+            it.add(a.dimText("Drag ≡ to change the order — the first tab opens when the app starts. Switch tabs on or off. " +
+                "Tip: long-press any tab at the bottom to arrange them from anywhere."), top = 6, bottom = 4)
+            it.add(TabsSheet.list(a))
         }
         group("Your day") {
             it.add(a.listRow("Day & targets", "Wake/sleep, targets per mode, review time", "now") { a.push(TargetsScreen(a)) })
@@ -41,6 +36,7 @@ class SettingsScreen(a: MainActivity) : Screen(a) {
             it.add(a.listRow("My activities", "Add, rename, recolour, archive", "tools") { a.push(VenturesScreen(a)) })
         }
         group("Reminders") {
+            it.add(a.listRow("Alarms", repo.alarms().count { x -> x.enabled }.let { n -> if (n == 0) "Wake-up, pranayam, sleep — add as many as you like" else "$n on" }, "alarm") { a.push(AlarmsScreen(a, pushed = true)) })
             it.add(a.listRow("Notifications", "Which reminders, quiet hours, reliability", "bell") { a.push(NotificationSettingsScreen(a)) })
             it.add(a.listRow("Permissions & reliability", if (Perms.allCritical(a)) "All set" else "Needs attention", "check", if (Perms.allCritical(a)) Th.primary else Th.yellow) { a.push(PermissionsScreen(a)) })
             it.add(a.listRow("Phone-specific settings", Perms.brand().name, "settings") { a.push(PhoneHelpScreen(a)) })

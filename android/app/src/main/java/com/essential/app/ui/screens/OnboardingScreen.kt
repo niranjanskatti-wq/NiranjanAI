@@ -16,7 +16,6 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
     private var endDate = TimeUtil.now().toLocalDate().plusDays(90)
     private val supporting = arrayOf("", "")
     private var loadSample = false
-    private val tabs = repo.settings.str("tabs").split(',').map { it.trim() }.toMutableSet()
 
     override fun content(): View = page {
         setPadding(a.dp(24), a.dp(28), a.dp(24), a.dp(32))
@@ -69,20 +68,13 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
 
     private fun chooseTabs(v: LinearLayout) = with(v) {
         add(a.h1("Choose your tabs"), bottom = 6)
-        add(a.dimText("Turn on only what you'll use. Settings is always there, and you can change this anytime in Settings → Bottom tabs."), bottom = 16)
-        val desc = mapOf("now" to "Current block, ONE thing, daily score", "log" to "Hour by hour: plan vs actual",
-            "habits" to "Daily habit chains and calendars", "insights" to "Charts and weekly report", "tools" to "Goals, focus, sleep, reviews and more")
+        add(a.dimText("Turn on only what you'll use, and drag ≡ to put your favourite first. Settings is always there; change this anytime in Settings → Bottom tabs."), bottom = 16)
         val c = a.card(10)
-        MainActivity.ALL_TABS.filter { it.first != "settings" }.forEach { (id, label) ->
-            c.add(a.switchRow(label, desc[id], id in tabs) { on -> if (on) tabs.add(id) else tabs.remove(id); saveTabs() })
-        }
+        c.add(TabsSheet.list(a))
         add(c, bottom = 20)
-        nav(this, 0, "Continue") { saveTabs(); go(2) }
+        nav(this, 0, "Continue") { go(2) }
     }
 
-    private fun saveTabs() {
-        repo.settings.set("tabs", MainActivity.ALL_TABS.map { it.first }.filter { it in tabs }.joinToString(","))
-    }
 
     private fun intent(v: LinearLayout) = with(v) {
         add(a.h1("A main goal?"), bottom = 6)
@@ -122,7 +114,6 @@ class OnboardingScreen(a: MainActivity) : Screen(a) {
 
     /** Save whatever was filled in (nothing is required) and open the app. */
     private fun done() {
-        saveTabs()
         val today = TimeUtil.logicalDate(TimeUtil.now(), repo.dayStart())
         val goals = (listOf(intentTitle) + supporting).map { it.trim() }.filter { it.isNotEmpty() }
         goals.forEachIndexed { i, g -> repo.addGoal(g, if (i == 0) "intent" else "supporting", today, endDate) }

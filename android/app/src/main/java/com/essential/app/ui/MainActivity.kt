@@ -130,14 +130,21 @@ class MainActivity : Activity() {
 
     companion object {
         /** Every bottom tab. Settings is always shown so tabs can be turned back on. */
-        val ALL_TABS = listOf("now" to "Now", "log" to "Log", "habits" to "Habits", "insights" to "Insights", "tools" to "Tools", "settings" to "Settings")
-        val ICONS = mapOf("now" to "now", "log" to "log", "habits" to "check", "insights" to "insights", "tools" to "tools", "settings" to "settings")
+        val ALL_TABS = listOf("now" to "Now", "log" to "Log", "habits" to "Habits", "alarms" to "Alarms", "insights" to "Insights", "tools" to "Tools", "settings" to "Settings")
+        val ICONS = mapOf("now" to "now", "log" to "log", "habits" to "check", "alarms" to "alarm", "insights" to "insights", "tools" to "tools", "settings" to "settings")
+
+        /** Every tab id in your order (drag to change it in Settings). Unknown ids dropped, new ones added at the end. */
+        fun tabOrder(s: com.essential.app.data.Settings): List<String> {
+            val known = ALL_TABS.map { it.first }
+            val saved = s.str("tab_order").split(',').map { it.trim() }.filter { it in known }.distinct()
+            return saved + known.filter { it !in saved }
+        }
     }
 
-    /** Tabs switched on in Settings, in fixed order, always ending with Settings. */
+    /** Tabs switched on in Settings, in your order. Settings is always included. */
     fun enabledTabs(): List<String> {
         val on = repo.settings.str("tabs").split(',').map { it.trim() }.toSet()
-        return ALL_TABS.map { it.first }.filter { it == "settings" || it in on }
+        return tabOrder(repo.settings).filter { it == "settings" || it in on }
     }
 
     fun homeTab(): String = enabledTabs().first()
@@ -155,6 +162,7 @@ class MainActivity : Activity() {
             item.add(txt(labels[id]!!, 12f, if (on) Th.text else Th.dim, if (on) Fonts.semibold else Fonts.medium, center = true, maxLines = 1), WRAP, WRAP, top = 4, gravity = Gravity.CENTER_HORIZONTAL)
             item.background = ripple(null, dp(20).toFloat())
             item.click(true) { if (sel) refresh() else { stack.clear(); selectTab(id) } }
+            item.setOnLongClickListener { it.haptic(); TabsSheet.open(this); true }
             item.contentDescription = labels[id]
             nav.add(item, 0, WRAP, 1f)
         }
@@ -165,7 +173,7 @@ class MainActivity : Activity() {
         tab = id
         val s = tabs[id] ?: when (id) {
             "now" -> HomeScreen(this); "log" -> LogScreen(this); "habits" -> HabitsScreen(this)
-            "insights" -> InsightsScreen(this); "tools" -> ToolsScreen(this); else -> SettingsScreen(this)
+            "insights" -> InsightsScreen(this); "tools" -> ToolsScreen(this); "alarms" -> AlarmsScreen(this); else -> SettingsScreen(this)
         }.also { tabs[id] = it }
         stack.clear()
         display(s)
@@ -275,6 +283,8 @@ class MainActivity : Activity() {
             "obstacle" -> { selectTab("tools"); push(ObstacleScreen(this)) }
             "report" -> { selectTab("insights"); push(WeeklyReportScreen(this)) }
             "habits" -> selectTab("habits")
+            "habit" -> { selectTab("habits"); i?.getLongExtra("habit_id", 0)?.takeIf { it > 0 && repo.habit(it) != null }?.let { push(HabitDetailScreen(this, it)) } }
+            "alarms" -> if (enabledTabs().contains("alarms")) selectTab("alarms") else { selectTab(homeTab()); push(AlarmsScreen(this, pushed = true)) }
             "uncommit" -> { selectTab("tools"); push(UncommitScreen(this)) }
             "sprint" -> { selectTab("tools"); push(SprintScreen(this)) }
             "settings" -> selectTab("settings")

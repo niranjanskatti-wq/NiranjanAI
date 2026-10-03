@@ -8,7 +8,10 @@ import com.essential.app.ui.*
 /** Tools grouped by the three stages: Explore, Eliminate, Execute. */
 class ToolsScreen(a: MainActivity) : Screen(a) {
     override fun content(): View = page {
-        add(a.h1("Tools"), top = 8, bottom = 4)
+        val head = a.hbox()
+        head.add(a.h1("Tools"), 0, WRAP, 1f)
+        head.add(a.alarmBtn(), WRAP, WRAP)
+        add(head, top = 8, bottom = 4)
         add(a.dimText("Explore what matters. Eliminate the rest. Execute with ease."), bottom = 16)
         val notNow = repo.opportunities().count { it.decision == "Not Now" }
         val noMonth = repo.hoursSaved(today.withDayOfMonth(1), today)
@@ -30,6 +33,7 @@ class ToolsScreen(a: MainActivity) : Screen(a) {
             Triple("Schedule templates", "Weekday, Sprint Day, Sunday, Travel Day", "log") to { a.push(TemplatesScreen(a)) },
             Triple("Sprint & Max Mode", sprint?.let { "Active: ${it.goal} · ends ${TimeUtil.fmtShort(it.end)}" } ?: "Up to 6 weeks, then a recovery week", "bolt") to { a.push(SprintScreen(a)) },
             Triple("Habits", "Daily chains, calendar, streaks", "check") to { a.push(HabitsScreen(a, pushed = true)) },
+            Triple("Alarms", "Wake-up, pranayam, meditation, sleep — as many as you like", "alarm") to { a.push(AlarmsScreen(a, pushed = true)) },
             Triple("Books", "Total pages, where you are, pages left", "log") to { a.push(BooksScreen(a)) },
             Triple("Sleep", "Bedtime, wake, quality vs next-day focus", "moon") to { a.push(SleepScreen(a)) },
             Triple("Time estimates & buffer", "Your planning error and suggested buffer", "timer") to { a.push(BufferScreen(a)) },

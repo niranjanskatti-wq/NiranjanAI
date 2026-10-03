@@ -29,6 +29,9 @@ class ActionReceiver : BroadcastReceiver() {
         const val HT_PAUSE = "com.essential.app.HT_PAUSE"
         const val HT_RESUME = "com.essential.app.HT_RESUME"
         const val HT_FINISH = "com.essential.app.HT_FINISH"
+        const val UA_STOP = "com.essential.app.UA_STOP"
+        const val UA_SNOOZE = "com.essential.app.UA_SNOOZE"
+        const val UA_DONE = "com.essential.app.UA_DONE"
         const val DISTRACTED = "com.essential.app.DISTRACTED"
         const val WIDGET_AS_PLANNED = "com.essential.app.WIDGET_AS_PLANNED"
 
@@ -78,6 +81,16 @@ class ActionReceiver : BroadcastReceiver() {
             HT_PAUSE -> com.essential.app.core.HabitTimer.pause(ctx)
             HT_RESUME -> com.essential.app.core.HabitTimer.resume(ctx)
             HT_FINISH -> { val m = com.essential.app.core.HabitTimer.finish(ctx, save = true); if (m > 0) toast(ctx, "$m min logged") }
+            UA_STOP -> UserAlarms.stop(ctx, intent.getLongExtra("alarm_id", 0))
+            UA_SNOOZE -> {
+                val at = UserAlarms.snooze(ctx, intent.getLongExtra("alarm_id", 0))
+                if (at > 0) toast(ctx, "Snoozed until ${TimeUtil.fmtTimeFull(TimeUtil.minuteOfDay(TimeUtil.at(at)))}")
+            }
+            UA_DONE -> {
+                val id = intent.getLongExtra("alarm_id", 0)
+                UserAlarms.stop(ctx, id)
+                Repo.get(ctx).alarm(id)?.habitId?.let { UserAlarms.markHabitDone(ctx, it) }?.let { haptic(ctx); toast(ctx, "$it done today ✓") }
+            }
             DISTRACTED -> { logDistraction(ctx); haptic(ctx); toast(ctx, "Distraction noted. Back to what matters.") }
             WIDGET_AS_PLANNED -> {
                 val slot = Logging.targetSlot(Repo.get(ctx))

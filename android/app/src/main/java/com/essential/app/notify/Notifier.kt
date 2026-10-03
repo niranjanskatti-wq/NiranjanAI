@@ -7,12 +7,18 @@ import android.app.PendingIntent
 import android.app.RemoteInput
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.widget.RemoteViews
 import com.essential.app.R
 import com.essential.app.core.Days
 import com.essential.app.core.Focus
 import com.essential.app.core.TimeUtil
+import com.essential.app.data.Habit
+import com.essential.app.data.HabitUnit
 import com.essential.app.data.Repo
+import com.essential.app.data.UserAlarm
+import com.essential.app.ui.AlarmRingActivity
 import com.essential.app.ui.FocusActivity
 import com.essential.app.ui.MainActivity
 import java.time.LocalDate
@@ -23,6 +29,7 @@ object Notifier {
     const val CH_WIND = "wind_down"; const val CH_SLEEP = "sleep_log"; const val CH_BACKUP = "backup"; const val CH_TOOLS = "tools"
     const val CH_FOCUS = "focus"; const val CH_TEST = "test"
     const val CH_HTIMER = "habit_timer"; const val CH_HTIMER_DONE = "habit_timer_done"; const val ID_HTIMER = 4100
+    const val CH_ALARM = "user_alarm"; const val CH_ALARM_NV = "user_alarm_no_vibrate"; const val CH_HREMIND = "habit_reminder"
     const val ID_FOCUS = 4000
     const val KEY_REPLY = "reply"
     private const val ACCENT = 0xFF7FD1B9.toInt()
@@ -48,6 +55,17 @@ object Notifier {
         ch(CH_TEST, "Test", NotificationManager.IMPORTANCE_HIGH, "Test notification from Settings")
         ch(CH_HTIMER, "Habit timer", NotificationManager.IMPORTANCE_LOW, "Running meditation / pranayam timer")
         ch(CH_HTIMER_DONE, "Habit timer bell", NotificationManager.IMPORTANCE_HIGH, "Bell when a meditation / pranayam timer ends")
+        ch(CH_HREMIND, "Gentle reminders", NotificationManager.IMPORTANCE_HIGH, "Your alarms set to \"gentle reminder\": one notification sound")
+        val sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        val attrs = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
+        for ((id, vib) in listOf(CH_ALARM to true, CH_ALARM_NV to false)) {
+            val c = NotificationChannel(id, if (vib) "Alarms" else "Alarms (no vibration)", NotificationManager.IMPORTANCE_HIGH)
+            c.description = "Your alarms: rings with the alarm sound until you stop or snooze it"
+            c.setSound(sound, attrs); c.enableVibration(vib)
+            if (vib) c.vibrationPattern = longArrayOf(0, 800, 600, 800, 600)
+            c.setBypassDnd(true); c.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            nm.createNotificationChannel(c)
+        }
     }
 
     fun openApp(ctx: Context, route: String, rc: Int, extras: Intent.() -> Unit = {}): PendingIntent {
@@ -163,6 +181,40 @@ object Notifier {
         nm(ctx).notify(4105, base(ctx, CH_HTIMER_DONE).setContentTitle("$name complete 🔔")
             .setContentText(if (minutes > 0) "$minutes min logged. Well done." else "Time's up.")
             .setContentIntent(openApp(ctx, "habits", 4106)).build())
+    }
+
+    /** An alarm you set. "Alarm" style rings (insistent alarm sound, full screen on the lock screen); "reminder" is one sound. */
+    fun userAlarm(ctx: Context, x: UserAlarm, title: String, text: String, habit: Habit?) {
+        val id = (UserAlarms.ID_BASE + x.id).toInt()
+        val rc = id * 10
+        fun ring(extra: String? = null, req: Int): PendingIntent {
+            val i = Intent(ctx, AlarmRingActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION)
+                .setAction("alarm.${x.id}.$req").putExtra(AlarmRingActivity.EXTRA_ID, x.id)
+            if (extra != null) i.putExtra(extra, true)
+            return PendingIntent.getActivity(ctx, rc + req, i, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        }
+        val b = base(ctx, if (!x.rings) CH_HREMIND else if (x.vibrate) CH_ALARM else CH_ALARM_NV)
+            .setContentTitle(title).setContentText(text).setStyle(Notification.BigTextStyle().bigText(text))
+            .setShowWhen(true).setWhen(TimeUtil.nowMillis())
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
+        if (x.rings) {
+            b.setCategory(Notification.CATEGORY_ALARM).setOngoing(true).setAutoCancel(false)
+                .setFullScreenIntent(ring(req = 1), true).setContentIntent(ring(req = 2))
+                .setTimeoutAfter(10 * 60_000L)
+        } else {
+            b.setCategory(Notification.CATEGORY_REMINDER)
+                .setContentIntent(if (habit != null) openApp(ctx, "habit", rc + 2) { putExtra("habit_id", habit.id) } else openApp(ctx, "alarms", rc + 2))
+        }
+        val extras: Intent.() -> Unit = { putExtra("alarm_id", x.id) }
+        if (habit != null) {
+            if (habit.unit == HabitUnit.MINUTES) b.addAction(Notification.Action.Builder(null, "Start timer", ring(AlarmRingActivity.EXTRA_START_TIMER, 3)).build())
+            b.addAction(Notification.Action.Builder(null, "Done", action(ctx, ActionReceiver.UA_DONE, rc + 4, extras = extras)).build())
+        }
+        b.addAction(Notification.Action.Builder(null, "Snooze ${x.snoozeMin} min", action(ctx, ActionReceiver.UA_SNOOZE, rc + 5, extras = extras)).build())
+        b.addAction(Notification.Action.Builder(null, if (x.rings) "Stop" else "Dismiss", action(ctx, ActionReceiver.UA_STOP, rc + 6, extras = extras)).build())
+        val n = b.build()
+        if (x.rings) n.flags = n.flags or Notification.FLAG_INSISTENT
+        nm(ctx).notify(id, n)
     }
 
     fun focusDone(ctx: Context, minutes: Int, task: String) =

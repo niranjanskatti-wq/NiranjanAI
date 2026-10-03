@@ -45,6 +45,7 @@ class HabitsScreen(a: MainActivity, private val pushed: Boolean = false) : Scree
             val h = a.hbox()
             h.add(a.h1("Habits"), 0, WRAP, 1f)
             if (repo.habits(false).any { it.usesBooks }) h.add(a.btn("Books", Btn.TEXT) { a.push(BooksScreen(a)) }, WRAP, WRAP)
+            h.add(a.alarmBtn(), WRAP, WRAP)
             h.add(a.iconBtn("plus", Th.text, desc = "Add habit") { HabitEditor.open(a, null) }, WRAP, WRAP)
             add(h, top = 8, bottom = 2)
         }
@@ -78,6 +79,9 @@ class HabitsScreen(a: MainActivity, private val pushed: Boolean = false) : Scree
                 best > 0 -> "Fresh start · best $best"
                 else -> "Tick today to start the chain"
             }, 13f, Th.dim), top = 2)
+            val alarms = repo.alarmsFor(h.id).filter { it.enabled }
+            if (alarms.isNotEmpty()) col.add(a.badge(alarms.take(3).joinToString(", ") { TimeUtil.fmtTimeFull(it.minute) } + if (alarms.size > 3) " +${alarms.size - 3}" else "",
+                h.color, "alarm").apply { click(true) { a.push(HabitDetailScreen(a, h.id)) } }, WRAP, WRAP, top = 6)
             r.add(col, 0, WRAP, 1f)
             r.add(TodayToggle.make(a, h.id in doneToday, h.color) { on -> repo.setHabit(h.id, today, on); Hooks.afterChange(a); a.refresh() }, a.dp(48), a.dp(48), start = 8)
             c.add(r)
@@ -157,6 +161,14 @@ class HabitDetailScreen(a: MainActivity, private val habitId: Long) : Screen(a) 
             }
             if (h.showTotals) add(HabitTotals.card(a, h, today), top = 4, bottom = 14)
         }
+
+        val al = a.card(16)
+        val ah = a.hbox()
+        ah.add(a.iconView("alarm", h.color, 20), WRAP, WRAP, end = 8)
+        ah.add(a.h3("Alarms"), 0, WRAP, 1f)
+        al.add(ah, bottom = 8)
+        al.add(HabitAlarms.section(a, h.id))
+        add(al, bottom = 14)
 
         val nav = a.hbox()
         nav.add(a.iconBtn("left", Th.text, desc = "Previous month") { month = m.minusMonths(1); a.refresh() }, a.dp(48), a.dp(48))
@@ -270,6 +282,9 @@ object HabitEditor {
         }
         render()
         sh.add(row)
+        val pendingAlarms = ArrayList<com.essential.app.data.UserAlarm>()
+        sh.add(a.label("Alarms · optional"), top = 4, bottom = 6)
+        sh.add(HabitAlarms.section(a, h?.id, pendingAlarms))
         if (h != null) {
             sh.add(a.switchRow("Active", "Paused habits keep their history but leave the daily list.", active) { active = it })
             val mv = a.hbox()
@@ -287,8 +302,11 @@ object HabitEditor {
             if (name.value.isBlank()) { a.toast("Give the habit a name"); return@actions }
             val u = if (unit != null && modeOf(unit) == "Own unit") customUnit.value.ifBlank { null } else unit
             val t = if (u == null) null else target.value.toDoubleOrNull()?.takeIf { it > 0 }
-            if (h == null) repo.addHabit(name.value, trigger.value.ifBlank { null }, color, u, t, targetForChain, showTotals)
-            else repo.updateHabit(h.copy(name = name.value, trigger = trigger.value.ifBlank { null }, active = active, color = color,
+            if (h == null) {
+                val id = repo.addHabit(name.value, trigger.value.ifBlank { null }, color, u, t, targetForChain, showTotals)
+                pendingAlarms.forEach { x -> repo.saveAlarm(x.copy(habitId = id)) }
+                if (pendingAlarms.isNotEmpty()) com.essential.app.notify.UserAlarms.changed(a)
+            } else repo.updateHabit(h.copy(name = name.value, trigger = trigger.value.ifBlank { null }, active = active, color = color,
                 unit = u, target = t, targetForChain = targetForChain, showTotals = showTotals))
             sh.dismiss(); Hooks.afterChange(a); a.refresh()
         }

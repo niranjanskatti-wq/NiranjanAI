@@ -224,7 +224,20 @@ class Repo private constructor(val ctx: Context) {
         java.util.Collections.swap(list, i, j)
         db.tx { list.forEachIndexed { k, x -> db.update("habit", cv("sort" to k), "id=?", x.id) } }
     }
-    fun deleteHabit(id: Long) = db.tx { db.delete("habit_entry", "habit_id=?", id); db.delete("habit_log", "habit_id=?", id); db.delete("habit", "id=?", id) }
+    fun deleteHabit(id: Long) = db.tx { db.delete("alarm", "habit_id=?", id); db.delete("habit_entry", "habit_id=?", id); db.delete("habit_log", "habit_id=?", id); db.delete("habit", "id=?", id) }
+
+    // ---------------------------------------------------------------- alarms
+    private fun alarm(c: Cursor) = UserAlarm(c.lng("id"), c.s("label"), c.int("minute"), c.int("days"), c.bool("enabled"), c.lngN("habit_id"),
+        c.str("style") ?: UserAlarm.STYLE_ALARM, c.int("snooze_min").takeIf { it > 0 } ?: 10, c.bool("vibrate"), c.str("once_date"))
+    fun alarms(): List<UserAlarm> = db.query("SELECT * FROM alarm ORDER BY minute, id") { alarm(it) }
+    fun alarmsFor(habitId: Long): List<UserAlarm> = db.query("SELECT * FROM alarm WHERE habit_id=? ORDER BY minute, id", habitId) { alarm(it) }
+    fun alarm(id: Long): UserAlarm? = db.one("SELECT * FROM alarm WHERE id=?", id) { alarm(it) }
+    private fun alarmCv(x: UserAlarm) = cv("label" to x.label, "minute" to x.minute, "days" to x.days, "enabled" to x.enabled, "habit_id" to x.habitId,
+        "style" to x.style, "snooze_min" to x.snoozeMin, "vibrate" to x.vibrate, "once_date" to x.onceDate, "updated_at" to TimeUtil.nowMillis())
+    /** Insert when id is 0, otherwise update. Returns the id. */
+    fun saveAlarm(x: UserAlarm): Long = if (x.id == 0L) db.insert("alarm", alarmCv(x)) else { db.update("alarm", alarmCv(x), "id=?", x.id); x.id }
+    fun setAlarmEnabled(id: Long, on: Boolean) = db.update("alarm", cv("enabled" to on, "updated_at" to TimeUtil.nowMillis()), "id=?", id)
+    fun deleteAlarm(id: Long) = db.delete("alarm", "id=?", id)
 
     // ---------------------------------------------------------------- habit amounts & books
     private fun entry(c: Cursor) = HabitEntry(c.lng("id"), c.lng("habit_id"), LocalDate.parse(c.s("date")), c.dbl("amount"), c.lngN("book_id"), c.str("note"))
