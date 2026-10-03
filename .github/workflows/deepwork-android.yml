@@ -1,4 +1,4 @@
-# Builds the Deepwork Android app and publishes the APK as a GitHub release,
+# Builds the Deepwork Flutter Android app and publishes the APK as a GitHub release,
 # so it can be downloaded straight onto the phone.
 name: Deepwork Android build
 
@@ -25,33 +25,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: deepwork/package-lock.json
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: "17"
 
-      # The runner image ships with the Android SDK; just add the platform this app targets.
-      - name: Install Android SDK platform
-        run: |
-          SDKM=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -1)
-          yes | "$SDKM" --licenses > /dev/null || true
-          "$SDKM" "platforms;android-36" "build-tools;36.0.0" > /dev/null
-          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.5"
+          channel: stable
+          cache: true
 
       - name: Install packages
-        run: npm ci
+        run: flutter pub get
 
-      - name: Type-check and build the app
-        run: npm run build
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
 
-      - name: Copy the app into the Android project
-        run: npx cap sync android
+      - name: Run tests
+        run: flutter test --exclude-tags screenshots
 
       # One signing key for every build, so each new APK installs as an update
       # over the last one and keeps the app's data. It lives in the Actions cache
@@ -92,15 +84,12 @@ jobs:
           echo "SIGNING_SHA1=$SHA1" >> "$GITHUB_ENV"
 
       - name: Build APK
-        working-directory: deepwork/android
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleRelease -PversionCode=${{ github.run_number }} --no-daemon --stacktrace
+        run: flutter build apk --release --build-number=${{ github.run_number }}
 
       - name: Name the APK
         run: |
-          cp android/app/build/outputs/apk/release/app-release.apk "../Deepwork-build-${{ github.run_number }}.apk"
-          cp android/app/build/outputs/apk/release/app-release.apk ../Deepwork.apk
+          cp build/app/outputs/flutter-apk/app-release.apk "../Deepwork-build-${{ github.run_number }}.apk"
+          cp build/app/outputs/flutter-apk/app-release.apk ../Deepwork.apk
 
       - name: Publish release
         uses: softprops/action-gh-release@v2

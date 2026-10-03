@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Deepwork mark: a focus ring with a progress arc. Drawn inside the adaptive-icon safe zone. -->
+<!-- Deepwork mark: a focus ring with a progress arc, inside the adaptive-icon safe zone. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group android:translateX="24" android:translateY="24" android:scaleX="1.875" android:scaleY="1.875">
-        <path
-            android:pathData="M16,7.5a8.5,8.5 0,1 1,0 17a8.5,8.5 0,1 1,0 -17"
-            android:strokeColor="#59FFFFFF"
-            android:strokeWidth="2.6"
-            android:fillColor="#00000000" />
-        <path
-            android:pathData="M16,7.5a8.5,8.5 0,0 1,8.5 8.5"
-            android:strokeColor="#FFFFFFFF"
-            android:strokeWidth="2.6"
-            android:strokeLineCap="round"
-            android:fillColor="#00000000" />
-        <path
-            android:pathData="M16,13.6a2.4,2.4 0,1 1,0 4.8a2.4,2.4 0,1 1,0 -4.8"
-            android:fillColor="#FFFFFFFF" />
+        <path android:pathData="M16,7.5a8.5,8.5 0,1 1,0 17a8.5,8.5 0,1 1,0 -17" android:strokeColor="#59FFFFFF" android:strokeWidth="2.6" android:fillColor="#00000000" />
+        <path android:pathData="M16,7.5a8.5,8.5 0,0 1,8.5 8.5" android:strokeColor="#FFFFFFFF" android:strokeWidth="2.6" android:strokeLineCap="round" android:fillColor="#00000000" />
+        <path android:pathData="M16,13.6a2.4,2.4 0,1 1,0 4.8a2.4,2.4 0,1 1,0 -4.8" android:fillColor="#FFFFFFFF" />
     </group>
 </vector>

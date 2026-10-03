@@ -1,9 +1,6 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Deepwork</string>
-    <string name="title_activity_main">Deepwork</string>
-    <string name="package_name">com.niranjan.deepwork</string>
-    <string name="custom_url_scheme">com.niranjan.deepwork</string>
+    <string name="blocker_service_label">Deepwork focus blocking</string>
     <string name="blocker_service_summary">Pauses the apps you choose while a Deepwork focus session is running.</string>
-    <string name="blocker_service_description">Deepwork uses this permission only to see which app is opened during a focus session, so it can show a "stay focused" screen instead of apps you chose to block. It does not read the content of any screen, and nothing leaves your phone.</string>
+    <string name="blocker_service_description">Deepwork uses this permission only to see which app is opened during a focus session, so it can show a "Stay with it" screen instead of apps you chose to pause. It does not read the content of any screen, and nothing leaves your phone.</string>
 </resources>

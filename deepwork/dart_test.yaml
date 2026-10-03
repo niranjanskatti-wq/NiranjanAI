@@ -1,0 +1,3 @@
+tags:
+  # Renders screens to PNG files for visual review (flutter test --tags screenshots --update-goldens).
+  screenshots:
