@@ -22,8 +22,8 @@ android {
         applicationId = "com.dosemate.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.1.0"
+        versionCode = 4
+        versionName = "1.1.1"
         vectorDrawables { useSupportLibrary = true }
     }
 
@@ -55,6 +55,10 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
+            // Shrink the APK we publish for phone installs (about 22 MB -> a few MB).
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
