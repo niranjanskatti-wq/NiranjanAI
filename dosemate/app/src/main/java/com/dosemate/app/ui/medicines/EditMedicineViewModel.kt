@@ -51,7 +51,13 @@ class EditMedicineViewModel @Inject constructor(
     private val engine: ReminderEngine,
     private val photos: PhotoStore,
     private val tones: ToneLibrary,
+    prescriptionRepo: com.dosemate.app.data.repo.PrescriptionRepository,
 ) : ViewModel() {
+
+    /** Prescriptions this medicine can belong to. */
+    val prescriptions: StateFlow<List<com.dosemate.app.data.db.PrescriptionEntity>> =
+        prescriptionRepo.prescriptions.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
 
     val id: Long = savedState.get<Long>("id") ?: 0L
     val isNew = id == 0L
@@ -77,6 +83,13 @@ class EditMedicineViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
+        if (isNew) {
+            viewModelScope.launch {
+                prescriptionRepo.all().firstOrNull()?.let { rx ->
+                    if (draft.prescriptionId == null) draft = draft.copy(prescriptionId = rx.id)
+                }
+            }
+        }
         if (!isNew) {
             viewModelScope.launch {
                 repo.get(id)?.let { med ->

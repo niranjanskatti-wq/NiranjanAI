@@ -64,6 +64,8 @@ data class MedicineEntity(
 
     val linkedMedicineId: Long? = null,
     val linkedGapMinutes: Int = 30,
+    /** The prescription this medicine belongs to (null = none). */
+    val prescriptionId: Long? = null,
 
     val paused: Boolean = false,
     val archived: Boolean = false,
@@ -168,6 +170,17 @@ data class JournalEntryEntity(
     /** File name inside the app's private journal folder. */
     val photoPath: String? = null,
     val itchScore: Int = 0,
+    val notes: String = "",
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+/** A prescription from one doctor. Medicines point to it through [MedicineEntity.prescriptionId]. */
+@Entity(tableName = "prescriptions")
+data class PrescriptionEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val doctorName: String,
+    val date: LocalDate? = null,
+    /** Diet advice and other notes from this doctor. */
     val notes: String = "",
     val createdAt: Long = System.currentTimeMillis(),
 )

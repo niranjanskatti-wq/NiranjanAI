@@ -132,16 +132,14 @@ fun TodayScreen(
                     onDismiss = { viewModel.dismissBanner(med.id) },
                 )
             }
-            if (state.dietNote.isNotBlank()) {
-                item {
-                    BannerCard(
-                        icon = Icons.Rounded.Restaurant,
-                        title = stringResource(R.string.diet_note),
-                        text = state.dietNote,
-                        color = MaterialTheme.colorScheme.primary,
-                        onDismiss = null,
-                    )
-                }
+            items(state.dietNotes, key = { "diet${it.first}${it.second.hashCode()}" }) { (doctor, notes) ->
+                BannerCard(
+                    icon = Icons.Rounded.Restaurant,
+                    title = stringResource(R.string.diet_note) + " · " + doctor,
+                    text = notes,
+                    color = MaterialTheme.colorScheme.primary,
+                    onDismiss = null,
+                )
             }
 
             if (state.loaded && state.items.isEmpty()) {

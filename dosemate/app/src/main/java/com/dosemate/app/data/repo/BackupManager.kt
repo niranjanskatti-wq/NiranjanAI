@@ -13,6 +13,7 @@ import com.dosemate.app.data.db.JournalEntryEntity
 import com.dosemate.app.data.db.MedIcon
 import com.dosemate.app.data.db.MedicineEntity
 import com.dosemate.app.data.db.MedicineType
+import com.dosemate.app.data.db.PrescriptionEntity
 import com.dosemate.app.data.db.ToneType
 import com.dosemate.app.data.db.VibrationPattern
 import com.dosemate.core.AlertStyle
@@ -59,6 +60,7 @@ class BackupManager @Inject constructor(
                 .put("times", JSONArray(db.medicineDao().allTimes().map { timeJson(it) }))
                 .put("logs", JSONArray(db.doseLogDao().all().map { logJson(it) }))
                 .put("journal", JSONArray(db.journalDao().all().map { journalJson(it) }))
+                .put("prescriptions", JSONArray(db.prescriptionDao().all().map { prescriptionJson(it) }))
             context.contentResolver.openOutputStream(uri)?.use { raw ->
                 ZipOutputStream(raw.buffered()).use { zip ->
                     zip.putNextEntry(ZipEntry("data.json"))
@@ -101,6 +103,8 @@ class BackupManager @Inject constructor(
                 db.doseLogDao().deleteAll()
                 db.journalDao().deleteAll()
                 db.medicineDao().deleteAll()
+                db.prescriptionDao().deleteAll()
+                json.optJSONArray("prescriptions")?.let { arr -> db.prescriptionDao().insertAll(arr.objects().map(::prescriptionFrom)) }
                 db.medicineDao().insertAllRaw(json.getJSONArray("medicines").objects().map(::medicineFrom))
                 db.medicineDao().insertAllTimes(json.getJSONArray("times").objects().map(::timeFrom))
                 db.doseLogDao().insertAll(json.getJSONArray("logs").objects().map(::logFrom))
@@ -177,6 +181,7 @@ class BackupManager @Inject constructor(
         put("endDate", m.endDate?.toEpochDay() ?: JSONObject.NULL); put("durationDays", m.durationDays ?: JSONObject.NULL)
         put("durationDoses", m.durationDoses ?: JSONObject.NULL)
         put("linkedMedicineId", m.linkedMedicineId ?: JSONObject.NULL); put("linkedGapMinutes", m.linkedGapMinutes)
+        put("prescriptionId", m.prescriptionId ?: JSONObject.NULL)
         put("paused", m.paused); put("archived", m.archived); put("trackFrom", m.trackFrom.toString())
         put("stockEnabled", m.stockEnabled); put("stockCount", m.stockCount); put("stockPerDose", m.stockPerDose)
         put("refillThreshold", m.refillThreshold); put("refillAlerted", m.refillAlerted)
@@ -198,7 +203,7 @@ class BackupManager @Inject constructor(
         startDate = LocalDate.ofEpochDay(o.getLong("startDate")), durationType = o.enum("durationType", DurationType.ONGOING),
         endDate = o.optLongOrNull("endDate")?.let(LocalDate::ofEpochDay), durationDays = o.optIntOrNull("durationDays"),
         durationDoses = o.optIntOrNull("durationDoses"), linkedMedicineId = o.optLongOrNull("linkedMedicineId"),
-        linkedGapMinutes = o.optInt("linkedGapMinutes", 30), paused = o.optBoolean("paused"), archived = o.optBoolean("archived"),
+        linkedGapMinutes = o.optInt("linkedGapMinutes", 30), prescriptionId = o.optLongOrNull("prescriptionId"), paused = o.optBoolean("paused"), archived = o.optBoolean("archived"),
         trackFrom = o.optStringOrNull("trackFrom")?.let(LocalDateTime::parse) ?: LocalDateTime.now(),
         stockEnabled = o.optBoolean("stockEnabled"), stockCount = o.optDouble("stockCount", 0.0),
         stockPerDose = o.optDouble("stockPerDose", 1.0), refillThreshold = o.optDouble("refillThreshold", 5.0),
@@ -228,6 +233,15 @@ class BackupManager @Inject constructor(
         id = o.getLong("id"), medicineId = o.getLong("medicineId"), slotId = o.getLong("slotId"),
         scheduledAt = LocalDateTime.parse(o.getString("scheduledAt")), status = o.enum("status", LogStatus.TAKEN),
         actionAt = LocalDateTime.parse(o.getString("actionAt")), skipReason = o.optStringOrNull("skipReason"),
+    )
+
+    private fun prescriptionJson(p: PrescriptionEntity) = JSONObject()
+        .put("id", p.id).put("doctorName", p.doctorName).put("date", p.date?.toEpochDay() ?: JSONObject.NULL)
+        .put("notes", p.notes).put("createdAt", p.createdAt)
+
+    private fun prescriptionFrom(o: JSONObject) = PrescriptionEntity(
+        id = o.getLong("id"), doctorName = o.optString("doctorName"),
+        date = o.optLongOrNull("date")?.let(LocalDate::ofEpochDay), notes = o.optString("notes"), createdAt = o.optLong("createdAt"),
     )
 
     private fun journalJson(j: JournalEntryEntity) = JSONObject()

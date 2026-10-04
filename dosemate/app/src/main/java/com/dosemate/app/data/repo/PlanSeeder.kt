@@ -6,6 +6,7 @@ import com.dosemate.app.data.db.FoodRelation
 import com.dosemate.app.data.db.MedIcon
 import com.dosemate.app.data.db.MedicineEntity
 import com.dosemate.app.data.db.MedicineType
+import com.dosemate.app.data.db.PrescriptionEntity
 import com.dosemate.core.AlertStyle
 import com.dosemate.core.DurationType
 import com.dosemate.core.ScheduleType
@@ -19,22 +20,23 @@ import javax.inject.Singleton
 class PlanSeeder @Inject constructor(
     private val medicines: MedicineRepository,
     private val settings: SettingsRepository,
+    private val prescriptions: PrescriptionRepository,
 ) {
     suspend fun seedIfNeeded(start: LocalDate = LocalDate.now()) {
         if (settings.current().seeded) return
         seed(start)
-        settings.update {
-            it.copy(
-                seeded = true,
-                doctorName = "Dr. Vijendran Pragasam",
-                prescribedDate = LocalDate.of(2026, 9, 30),
-                dietNote = "Avoid groundnuts, brinjal, pickles, Ajinomoto, bakery products.",
-            )
-        }
+        settings.update { it.copy(seeded = true) }
     }
 
     suspend fun seed(start: LocalDate) {
         val now = LocalDateTime.now()
+        val rx = prescriptions.save(
+            PrescriptionEntity(
+                doctorName = "Dr. Vijendran Pragasam",
+                date = LocalDate.of(2026, 9, 30),
+                notes = "Avoid groundnuts, brinjal, pickles, Ajinomoto, bakery products.",
+            ),
+        )
         fun time(h: Int, m: Int = 0, enabled: Boolean = true) =
             DoseTimeEntity(medicineId = 0, minuteOfDay = h * 60 + m, enabled = enabled)
 
@@ -52,6 +54,7 @@ class PlanSeeder @Inject constructor(
                 durationType = DurationType.DAYS,
                 durationDays = 21,
                 trackFrom = now,
+                prescriptionId = rx,
                 alertStyle = AlertStyle.SOUND,
             ),
             listOf(time(8)),
@@ -71,6 +74,7 @@ class PlanSeeder @Inject constructor(
                 durationType = DurationType.DAYS,
                 durationDays = 42,
                 trackFrom = now,
+                prescriptionId = rx,
                 alertStyle = AlertStyle.SOUND,
             ),
             listOf(time(21, 30)),
@@ -92,6 +96,7 @@ class PlanSeeder @Inject constructor(
                 linkedMedicineId = pacromaId,
                 linkedGapMinutes = 30,
                 trackFrom = now,
+                prescriptionId = rx,
                 alertStyle = AlertStyle.SOUND,
             ),
             listOf(time(13, enabled = false), time(18, enabled = false), time(22)),
@@ -112,6 +117,7 @@ class PlanSeeder @Inject constructor(
                 durationType = DurationType.DAYS,
                 durationDays = 10,
                 trackFrom = now,
+                prescriptionId = rx,
                 alertStyle = AlertStyle.ALARM,
                 dismissMethod = DismissMethod.SLIDE,
                 stockEnabled = true,
@@ -137,6 +143,7 @@ class PlanSeeder @Inject constructor(
                 durationType = DurationType.DOSES,
                 durationDoses = 4,
                 trackFrom = now,
+                prescriptionId = rx,
                 alertStyle = AlertStyle.ALARM,
                 dismissMethod = DismissMethod.SLIDE,
                 stockEnabled = true,

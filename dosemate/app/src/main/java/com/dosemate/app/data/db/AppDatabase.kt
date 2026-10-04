@@ -79,6 +79,9 @@ interface MedicineDao {
     @Query("UPDATE medicines SET paused = :paused, trackFrom = :trackFrom WHERE id = :id")
     suspend fun setPaused(id: Long, paused: Boolean, trackFrom: LocalDateTime)
 
+    @Query("UPDATE medicines SET prescriptionId = :prescriptionId WHERE prescriptionId IS NULL")
+    suspend fun assignUnlinkedTo(prescriptionId: Long)
+
     @Query("UPDATE medicines SET archived = :archived WHERE id = :id")
     suspend fun setArchived(id: Long, archived: Boolean)
 
@@ -171,6 +174,37 @@ interface ActiveAlertDao {
 }
 
 @Dao
+interface PrescriptionDao {
+    @Query("SELECT * FROM prescriptions ORDER BY date DESC, createdAt DESC")
+    fun observeAll(): Flow<List<PrescriptionEntity>>
+
+    @Query("SELECT * FROM prescriptions ORDER BY date DESC, createdAt DESC")
+    suspend fun all(): List<PrescriptionEntity>
+
+    @Upsert
+    suspend fun upsert(prescription: PrescriptionEntity): Long
+
+    /** Unlinks medicines first so they are kept when a prescription is deleted. */
+    @Transaction
+    suspend fun deleteKeepingMedicines(id: Long) {
+        unlinkMedicines(id)
+        delete(id)
+    }
+
+    @Query("UPDATE medicines SET prescriptionId = NULL WHERE prescriptionId = :id")
+    suspend fun unlinkMedicines(id: Long)
+
+    @Query("DELETE FROM prescriptions WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("DELETE FROM prescriptions")
+    suspend fun deleteAll()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<PrescriptionEntity>)
+}
+
+@Dao
 interface JournalDao {
     @Query("SELECT * FROM journal_entries ORDER BY date DESC, createdAt DESC")
     fun observeAll(): Flow<List<JournalEntryEntity>>
@@ -201,8 +235,9 @@ interface JournalDao {
         DoseLogEntity::class,
         ActiveAlertEntity::class,
         JournalEntryEntity::class,
+        PrescriptionEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -211,4 +246,18 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun doseLogDao(): DoseLogDao
     abstract fun activeAlertDao(): ActiveAlertDao
     abstract fun journalDao(): JournalDao
+    abstract fun prescriptionDao(): PrescriptionDao
+
+    companion object {
+        /** v2: multiple prescriptions. The old single doctor from settings is moved over by [PrescriptionMigrator]. */
+        val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `prescriptions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`doctorName` TEXT NOT NULL, `date` INTEGER, `notes` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)",
+                )
+                db.execSQL("ALTER TABLE `medicines` ADD COLUMN `prescriptionId` INTEGER")
+            }
+        }
+    }
 }

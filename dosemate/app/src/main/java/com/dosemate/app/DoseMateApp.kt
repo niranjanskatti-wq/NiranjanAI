@@ -24,12 +24,14 @@ class DoseMateApp : Application() {
     @Inject lateinit var engine: ReminderEngine
     @Inject lateinit var seeder: PlanSeeder
     @Inject lateinit var medicines: MedicineRepository
+    @Inject lateinit var prescriptions: com.dosemate.app.data.repo.PrescriptionRepository
     @Inject @AppScope lateinit var scope: CoroutineScope
 
     override fun onCreate() {
         super.onCreate()
         notifications.createChannels()
         scope.launch {
+            prescriptions.migrateLegacy()
             seeder.seedIfNeeded()
             engine.rescheduleAll()
         }

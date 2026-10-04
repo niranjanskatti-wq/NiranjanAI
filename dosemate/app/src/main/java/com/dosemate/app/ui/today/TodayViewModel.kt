@@ -34,7 +34,8 @@ data class TodayState(
     val items: List<DoseItem> = emptyList(),
     val next: DoseItem? = null,
     val banners: List<MedicineEntity> = emptyList(),
-    val dietNote: String = "",
+    /** Doctor name to diet/advice notes, one per prescription that has notes. */
+    val dietNotes: List<Pair<String, String>> = emptyList(),
     val recentlyMissed: List<DoseItem> = emptyList(),
     val hasMedicines: Boolean = true,
     val loaded: Boolean = false,
@@ -49,7 +50,9 @@ class TodayViewModel @Inject constructor(
     private val settingsRepo: SettingsRepository,
     private val engine: ReminderEngine,
     photos: PhotoStore,
+    prescriptionRepo: com.dosemate.app.data.repo.PrescriptionRepository,
 ) : ViewModel() {
+    private val rxFlow = prescriptionRepo.prescriptions
 
     val photoDir: File = photos.dir(PhotoStore.MEDICINE)
     private val uiPrefs = context.getSharedPreferences("ui", Context.MODE_PRIVATE)
@@ -69,9 +72,9 @@ class TodayViewModel @Inject constructor(
         medicines.medicines,
         logs.observeBetween(today.minusDays(2), today.plusDays(8)),
         alerts.observeAll(),
-        settingsRepo.settings,
+        combine(settingsRepo.settings, rxFlow) { s, rx -> s to rx },
         combine(ticker, missedSeen) { now, seen -> now to seen },
-    ) { meds, logList, active, settings, (now, seen) ->
+    ) { meds, logList, active, (settings, prescriptions), (now, seen) ->
         val date = now.toLocalDate()
         val items = DoseQueries.dosesOn(date, meds, logList, active, now, settings)
         val yesterday = DoseQueries.dosesOn(date.minusDays(1), meds, logList, active, now, settings)
@@ -84,7 +87,7 @@ class TodayViewModel @Inject constructor(
             items = items,
             next = DoseQueries.nextDose(meds, logList, active, now, settings),
             banners = meds.map { it.medicine }.filter { it.banner.isNotBlank() && !it.bannerDismissed && !it.archived },
-            dietNote = settings.dietNote,
+            dietNotes = prescriptions.filter { it.notes.isNotBlank() }.map { it.doctorName to it.notes },
             recentlyMissed = missed,
             hasMedicines = meds.any { !it.medicine.archived },
             loaded = true,

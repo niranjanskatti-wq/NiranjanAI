@@ -37,6 +37,7 @@ data class ReportData(
     val to: LocalDate,
     val settings: AppSettings,
     val medicines: List<MedicineWithTimes>,
+    val prescriptions: List<com.dosemate.app.data.db.PrescriptionEntity> = emptyList(),
     val dosesByDay: Map<LocalDate, List<DoseItem>>,
     val journal: List<JournalEntryEntity>,
     val photos: List<JournalEntryEntity>,
@@ -137,10 +138,16 @@ class PdfReportGenerator(private val context: Context, private val photoStore: P
             margin + 16f, y + 40f, muted,
         )
         y += 60f
-        val st = data.settings
-        if (st.doctorName.isNotBlank()) paragraph(s(R.string.report_doctor, st.doctorName), bold)
-        st.prescribedDate?.let { paragraph(s(R.string.prescribed_on, TimeFormat.dayMonthYear(it)), text) }
-        if (st.dietNote.isNotBlank()) paragraph(s(R.string.report_diet, st.dietNote), text)
+        // Every prescription (one per doctor/visit).
+        for (rx in data.prescriptions) {
+            paragraph(
+                s(R.string.report_doctor, rx.doctorName) +
+                    (rx.date?.let { "   ·   " + s(R.string.prescribed_on, TimeFormat.dayMonthYear(it)) } ?: ""),
+                bold,
+            )
+            if (rx.notes.isNotBlank()) paragraph(s(R.string.report_diet, rx.notes), text)
+            y += 4f
+        }
     }
 
     private fun medicines(data: ReportData) {
@@ -163,7 +170,8 @@ class PdfReportGenerator(private val context: Context, private val photoStore: P
             ensure(46f)
             val startY = y
             val heights = mutableListOf<Float>()
-            listOf(m.name, context.doseLine(m), times + "\n" + m.instructions, course).forEachIndexed { i, cell ->
+            val doctor = data.prescriptions.firstOrNull { it.id == m.prescriptionId }?.doctorName
+            listOf(m.name + (doctor?.let { "\n$it" } ?: ""), context.doseLine(m), times + "\n" + m.instructions, course).forEachIndexed { i, cell ->
                 y = startY
                 val width = (if (i < 3) cols[i + 1] - cols[i] else pageW - margin - cols[i]) - 8f
                 paragraph(cell, if (i == 0) bold else text, width, cols[i])

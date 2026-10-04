@@ -17,11 +17,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Backup
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DeleteForever
@@ -64,7 +67,10 @@ import com.dosemate.app.BuildConfig
 import com.dosemate.app.R
 import com.dosemate.app.alarm.ReminderEngine
 import com.dosemate.app.data.repo.AppSettings
+import com.dosemate.app.data.db.PrescriptionEntity
 import com.dosemate.app.data.repo.BackupManager
+import com.dosemate.app.data.repo.MedicineRepository
+import com.dosemate.app.data.repo.PrescriptionRepository
 import com.dosemate.app.data.repo.SettingsRepository
 import com.dosemate.app.data.repo.ThemeMode
 import com.dosemate.app.ui.components.AppCard
@@ -85,6 +91,7 @@ import com.dosemate.core.AlertStyle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -95,8 +102,21 @@ class SettingsViewModel @Inject constructor(
     private val repo: SettingsRepository,
     private val engine: ReminderEngine,
     val backup: BackupManager,
+    private val prescriptionRepo: PrescriptionRepository,
+    medicineRepo: MedicineRepository,
 ) : ViewModel() {
     val settings: StateFlow<AppSettings> = repo.settings.stateIn(viewModelScope, SharingStarted.Eagerly, repo.current())
+
+    val prescriptions: StateFlow<List<PrescriptionEntity>> =
+        prescriptionRepo.prescriptions.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Number of medicines per prescription id. */
+    val medicineCounts: StateFlow<Map<Long, Int>> = medicineRepo.medicines
+        .map { list -> list.mapNotNull { it.medicine.prescriptionId }.groupingBy { it }.eachCount() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    fun savePrescription(p: PrescriptionEntity) = viewModelScope.launch { prescriptionRepo.save(p) }
+    fun deletePrescription(id: Long) = viewModelScope.launch { prescriptionRepo.delete(id) }
 
     fun update(transform: (AppSettings) -> AppSettings) = repo.update(transform)
 
@@ -123,7 +143,9 @@ fun SettingsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var timeDialog by remember { mutableStateOf<Int?>(null) } // 0 quiet start, 1 quiet end
-    var prescribedDialog by remember { mutableStateOf(false) }
+    var editingRx by remember { mutableStateOf<PrescriptionEntity?>(null) }
+    val prescriptions by viewModel.prescriptions.collectAsStateWithLifecycle()
+    val rxCounts by viewModel.medicineCounts.collectAsStateWithLifecycle()
     var pinDialog by remember { mutableStateOf(false) }
     var resetDialog by remember { mutableStateOf(false) }
     var restoreUri by remember { mutableStateOf<android.net.Uri?>(null) }
@@ -279,18 +301,23 @@ fun SettingsScreen(
                 }
             }
 
-            // ---- Prescription
+            // ---- Prescriptions (any number of doctors)
             item {
-                SectionHeader(stringResource(R.string.prescription))
-                AppCard {
-                    TextInput(stringResource(R.string.doctor_name), s.doctorName, { v -> viewModel.update { it.copy(doctorName = v) } })
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedButton(onClick = { prescribedDialog = true }, modifier = Modifier.fillMaxWidth()) {
-                        Text(s.prescribedDate?.let { stringResource(R.string.prescribed_on, TimeFormat.dayMonthYear(it)) }
-                            ?: stringResource(R.string.set_prescribed_date))
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    TextInput(stringResource(R.string.diet_note), s.dietNote, { v -> viewModel.update { it.copy(dietNote = v) } }, singleLine = false)
+                SectionHeader(stringResource(R.string.prescriptions))
+                if (prescriptions.isEmpty()) {
+                    Text(stringResource(R.string.no_prescriptions), style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            items(prescriptions, key = { "rx${it.id}" }) { p ->
+                PrescriptionCard(p, rxCounts[p.id] ?: 0) { editingRx = p }
+                Spacer(Modifier.height(8.dp))
+            }
+            item {
+                OutlinedButton(onClick = { editingRx = PrescriptionEntity(doctorName = "") }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Rounded.Add, null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.add_prescription))
                 }
             }
 
@@ -340,10 +367,13 @@ fun SettingsScreen(
             timeDialog = null
         }
     }
-    if (prescribedDialog) {
-        DatePickDialog(s.prescribedDate ?: LocalDate.now(), onDismiss = { prescribedDialog = false }) { d ->
-            viewModel.update { it.copy(prescribedDate = d) }
-        }
+    editingRx?.let { rx ->
+        PrescriptionDialog(
+            initial = rx,
+            onDismiss = { editingRx = null },
+            onSave = { viewModel.savePrescription(it); editingRx = null },
+            onDelete = if (rx.id == 0L) null else ({ viewModel.deletePrescription(rx.id); editingRx = null }),
+        )
     }
     if (pinDialog) {
         PinSetupDialog(onDismiss = { pinDialog = false }) { pin ->

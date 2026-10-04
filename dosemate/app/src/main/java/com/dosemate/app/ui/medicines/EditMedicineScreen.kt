@@ -167,6 +167,7 @@ fun EditMedicineScreen(onBack: () -> Unit, viewModel: EditMedicineViewModel = hi
     val context = LocalContext.current
     val use24h = LocalSettings.current.use24h
     val others by viewModel.others.collectAsStateWithLifecycle()
+    val prescriptions by viewModel.prescriptions.collectAsStateWithLifecycle()
     var timeDialog by remember { mutableStateOf<Int?>(null) }
     var windowDialog by remember { mutableStateOf<Int?>(null) } // 0 = start, 1 = end
     var dateDialog by remember { mutableStateOf<Int?>(null) } // 0 = start, 1 = end
@@ -384,6 +385,40 @@ fun EditMedicineScreen(onBack: () -> Unit, viewModel: EditMedicineViewModel = hi
                         DurationType.DOSES -> Stepper(stringResource(R.string.dur_doses), d.durationDoses ?: 4,
                             { v -> viewModel.update { it.copy(durationDoses = v) } }, 1..1000)
                         DurationType.ONGOING -> Unit
+                    }
+                }
+            }
+
+            // ---- Prescription (which doctor prescribed it)
+            item {
+                SectionHeader(stringResource(R.string.field_prescription))
+                AppCard {
+                    var open by remember { mutableStateOf(false) }
+                    val current = prescriptions.firstOrNull { it.id == d.prescriptionId }
+                    Box {
+                        OutlinedButton(onClick = { open = true }, modifier = Modifier.fillMaxWidth()) {
+                            Text(current?.let { rx -> rx.doctorName + (rx.date?.let { " · " + TimeFormat.dayMonthYear(it) } ?: "") }
+                                ?: stringResource(R.string.prescription_none))
+                        }
+                        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                            DropdownMenuItem(text = { Text(stringResource(R.string.prescription_none)) }, onClick = {
+                                open = false
+                                viewModel.update { it.copy(prescriptionId = null) }
+                            })
+                            prescriptions.forEach { rx ->
+                                DropdownMenuItem(
+                                    text = { Text(rx.doctorName + (rx.date?.let { " · " + TimeFormat.dayMonthYear(it) } ?: "")) },
+                                    onClick = {
+                                        open = false
+                                        viewModel.update { it.copy(prescriptionId = rx.id) }
+                                    },
+                                )
+                            }
+                        }
+                    }
+                    if (prescriptions.isEmpty()) {
+                        Text(stringResource(R.string.prescription_add_hint), style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
                     }
                 }
             }

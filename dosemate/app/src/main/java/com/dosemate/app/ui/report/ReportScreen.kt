@@ -81,6 +81,7 @@ class ReportViewModel @Inject constructor(
     private val journal: JournalRepository,
     private val settingsRepo: SettingsRepository,
     private val photos: PhotoStore,
+    private val prescriptionRepo: com.dosemate.app.data.repo.PrescriptionRepository,
 ) : ViewModel() {
     var rangeDays by mutableStateOf(30)
     var includeMedicines by mutableStateOf(true)
@@ -122,6 +123,7 @@ class ReportViewModel @Inject constructor(
             PdfReportGenerator(localized, photos).generate(
                 ReportData(
                     from = from, to = to, settings = settings,
+                    prescriptions = prescriptionRepo.all(),
                     medicines = meds.filter { m -> !m.medicine.archived || byDay.values.any { list -> list.any { it.med.medicine.id == m.medicine.id } } },
                     dosesByDay = byDay,
                     journal = allEntries,

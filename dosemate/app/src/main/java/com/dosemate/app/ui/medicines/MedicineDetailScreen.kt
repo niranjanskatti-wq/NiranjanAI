@@ -96,7 +96,11 @@ class MedicineDetailViewModel @Inject constructor(
     logs: LogRepository,
     private val engine: ReminderEngine,
     photos: PhotoStore,
+    prescriptionRepo: com.dosemate.app.data.repo.PrescriptionRepository,
 ) : ViewModel() {
+    val prescriptions: StateFlow<List<com.dosemate.app.data.db.PrescriptionEntity>> =
+        prescriptionRepo.prescriptions.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     val id: Long = savedState.get<Long>("id") ?: 0L
     val medicine: StateFlow<MedicineWithTimes?> = repo.observe(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
     val recent: StateFlow<List<DoseLogEntity>> = logs.observeRecent(id, 40).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -137,6 +141,7 @@ fun MedicineDetailScreen(onBack: () -> Unit, onEdit: (Long) -> Unit, viewModel: 
     val med by viewModel.medicine.collectAsStateWithLifecycle()
     val recent by viewModel.recent.collectAsStateWithLifecycle()
     val all by viewModel.all.collectAsStateWithLifecycle()
+    val prescriptions by viewModel.prescriptions.collectAsStateWithLifecycle()
     var confirmDelete by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val use24h = LocalSettings.current.use24h
@@ -172,6 +177,14 @@ fun MedicineDetailScreen(onBack: () -> Unit, onEdit: (Long) -> Unit, viewModel: 
                                 if (m.paused) Pill(stringResource(R.string.paused), StatusColors.Late)
                             }
                         }
+                    }
+                    prescriptions.firstOrNull { it.id == m.prescriptionId }?.let { rx ->
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            stringResource(R.string.prescribed_by, rx.doctorName) +
+                                (rx.date?.let { " · " + TimeFormat.dayMonthYear(it) } ?: ""),
+                            style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary,
+                        )
                     }
                     if (m.instructions.isNotBlank()) {
                         Spacer(Modifier.height(12.dp))

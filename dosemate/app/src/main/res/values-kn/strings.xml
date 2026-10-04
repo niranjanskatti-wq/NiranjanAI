@@ -18,6 +18,7 @@
     <string name="active_courses">ಸಕ್ರಿಯ ಕೋರ್ಸ್‌ಗಳು</string>
     <string name="add_entry">ನಮೂದು ಸೇರಿಸಿ</string>
     <string name="add_medicine">ಔಷಧಿ ಸೇರಿಸಿ</string>
+    <string name="add_prescription">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಸೇರಿಸಿ</string>
     <string name="add_time">ಸಮಯ ಸೇರಿಸಿ</string>
     <string name="add_weekly_photo">ಈ ವಾರದ ಫೋಟೋ ಸೇರಿಸಿ</string>
     <string name="adherence">ಪಾಲನೆ</string>
@@ -81,6 +82,8 @@
     <string name="delete_confirm">ಇದು ಔಷಧಿ ಮತ್ತು ಅದರ ಸಂಪೂರ್ಣ ಇತಿಹಾಸವನ್ನು ಅಳಿಸುತ್ತದೆ. ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ.</string>
     <string name="delete_entry">ಈ ನಮೂದನ್ನು ಅಳಿಸಬೇಕೇ?</string>
     <string name="delete_medicine">ಔಷಧಿ ಅಳಿಸಿ</string>
+    <string name="delete_prescription">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಅಳಿಸಿ</string>
+    <string name="delete_prescription_confirm">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ತೆಗೆಯಲಾಗುತ್ತದೆ. ಅದರ ಔಷಧಿಗಳು ಉಳಿಯುತ್ತವೆ ಮತ್ತು ಇತರೆ ಔಷಧಿಗಳಿಗೆ ಸೇರುತ್ತವೆ.</string>
     <string name="diet_note">ಆಹಾರ ಸೂಚನೆ</string>
     <string name="dismiss">ಮುಚ್ಚಿ</string>
     <string name="dismiss_buttons">ಬಟನ್‌ಗಳು</string>
@@ -103,6 +106,7 @@
     <string name="edit">ತಿದ್ದಿ</string>
     <string name="edit_entry">ನಮೂದು ತಿದ್ದಿ</string>
     <string name="edit_medicine">ಔಷಧಿ ತಿದ್ದಿ</string>
+    <string name="edit_prescription">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ತಿದ್ದಿ</string>
     <string name="entries">ನಮೂದುಗಳು</string>
     <string name="error_end_date">ಕೊನೆಯ ದಿನಾಂಕ ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="error_name">ಹೆಸರು ನಮೂದಿಸಿ</string>
@@ -118,6 +122,7 @@
     <string name="field_instructions">ಸೂಚನೆಗಳು</string>
     <string name="field_name">ಔಷಧಿಯ ಹೆಸರು</string>
     <string name="field_notes">ಟಿಪ್ಪಣಿಗಳು</string>
+    <string name="field_prescription">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್</string>
     <string name="field_type">ವಿಧ</string>
     <string name="field_unit">ಘಟಕ</string>
     <string name="field_warning">ಎಚ್ಚರಿಕೆ (ಐಚ್ಛಿಕ)</string>
@@ -172,6 +177,7 @@
     <string name="next">ಮುಂದೆ</string>
     <string name="next_dose">ಮುಂದಿನ ಡೋಸ್</string>
     <string name="no_doses_day">ಈ ದಿನ ಯಾವುದೇ ಡೋಸ್ ಇಲ್ಲ.</string>
+    <string name="no_prescriptions">ಇನ್ನೂ ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಇಲ್ಲ. ಪ್ರತಿ ವೈದ್ಯರು ಅಥವಾ ಭೇಟಿಗೆ ಒಂದನ್ನು ಸೇರಿಸಿ.</string>
     <string name="nothing_missed">ಏನೂ ತಪ್ಪಿಲ್ಲ. ಉತ್ತಮ ಕೆಲಸ!</string>
     <string name="notif_after_food_until">ಊಟದ ನಂತರ %1$s ಕ್ಕೆ ನೆನಪಿಸುತ್ತೇವೆ</string>
     <string name="notif_journal_text">ಈ ವಾರದ ಚರ್ಮದ ಫೋಟೋ ತೆಗೆದು ತುರಿಕೆ ಅಂಕ ದಾಖಲಿಸಿ.</string>
@@ -196,6 +202,7 @@
     <string name="open_app_settings">ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್ಸ್ ತೆರೆಯಿರಿ</string>
     <string name="open_medicine">ಔಷಧಿ ತೆರೆಯಿರಿ</string>
     <string name="open_settings">ಸೆಟ್ಟಿಂಗ್ಸ್ ತೆರೆಯಿರಿ</string>
+    <string name="other_medicines">ಇತರೆ ಔಷಧಿಗಳು</string>
     <string name="pause">ವಿರಾಮ</string>
     <string name="paused">ವಿರಾಮದಲ್ಲಿದೆ</string>
     <string name="period_afternoon">ಮಧ್ಯಾಹ್ನ</string>
@@ -211,8 +218,13 @@
     <string name="pre_generic">ಮುಂದಿನದು: %2$s ಕ್ಕೆ %1$s</string>
     <string name="pre_private">%1$s ಕ್ಕೆ ಔಷಧಿ ಇದೆ</string>
     <string name="pre_title">ಶೀಘ್ರದಲ್ಲೇ</string>
+    <string name="prescribed_by">%1$s ಸೂಚಿಸಿದ್ದು</string>
     <string name="prescribed_on">ಸೂಚಿಸಿದ ದಿನ %1$s</string>
     <string name="prescription">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್</string>
+    <string name="prescription_add_hint">ಸೆಟ್ಟಿಂಗ್ಸ್ ಅಥವಾ ಔಷಧಿಗಳ ಪರದೆಯಲ್ಲಿ ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಸೇರಿಸಿ.</string>
+    <string name="prescription_none">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಇಲ್ಲ</string>
+    <string name="prescription_notes">ಆಹಾರ ಮತ್ತು ಇತರ ಸಲಹೆ (ಐಚ್ಛಿಕ)</string>
+    <string name="prescriptions">ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್‌ಗಳು</string>
     <string name="preview_tone">ಕೇಳಿ ನೋಡಿ</string>
     <string name="privacy_point_1">ಲಾಗಿನ್ ಅಥವಾ ಖಾತೆ ಇಲ್ಲ</string>
     <string name="privacy_point_2">ಸಂಪೂರ್ಣ ಆಫ್‌ಲೈನ್ – ಇಂಟರ್ನೆಟ್ ಅನುಮತಿ ಇಲ್ಲ</string>
@@ -404,6 +416,10 @@
     <plurals name="doses_left">
         <item quantity="one">%d ಡೋಸ್ ಉಳಿದಿದೆ</item>
         <item quantity="other">%d ಡೋಸ್‌ಗಳು ಉಳಿದಿವೆ</item>
+    </plurals>
+    <plurals name="medicines_count">
+        <item quantity="one">%d ಔಷಧಿ</item>
+        <item quantity="other">%d ಔಷಧಿಗಳು</item>
     </plurals>
     <plurals name="missed_summary">
         <item quantity="one">ನೀವು %d ಡೋಸ್ ತಪ್ಪಿಸಿದ್ದೀರಿ</item>

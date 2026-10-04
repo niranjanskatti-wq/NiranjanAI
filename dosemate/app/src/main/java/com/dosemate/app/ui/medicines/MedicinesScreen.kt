@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,7 +47,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.dosemate.app.R
 import com.dosemate.app.data.db.MedicineWithTimes
+import com.dosemate.app.data.db.PrescriptionEntity
 import com.dosemate.app.data.repo.AppSettings
+import com.dosemate.app.data.repo.PrescriptionRepository
+import com.dosemate.app.ui.settings.PrescriptionCard
+import com.dosemate.app.ui.settings.PrescriptionDialog
 import com.dosemate.app.data.repo.MedicineRepository
 import com.dosemate.app.data.repo.PhotoStore
 import com.dosemate.app.data.repo.SettingsRepository
@@ -70,6 +75,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
 import javax.inject.Inject
@@ -79,7 +85,14 @@ class MedicinesViewModel @Inject constructor(
     repo: MedicineRepository,
     settingsRepo: SettingsRepository,
     photos: PhotoStore,
+    private val prescriptionRepo: PrescriptionRepository,
 ) : ViewModel() {
+    val prescriptions: StateFlow<List<PrescriptionEntity>> =
+        prescriptionRepo.prescriptions.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun savePrescription(p: PrescriptionEntity) = viewModelScope.launch { prescriptionRepo.save(p) }
+    fun deletePrescription(id: Long) = viewModelScope.launch { prescriptionRepo.delete(id) }
+
     val medicines: StateFlow<List<MedicineWithTimes>?> = repo.medicines.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
     val settings: StateFlow<AppSettings> = settingsRepo.settings.stateIn(viewModelScope, SharingStarted.Eagerly, settingsRepo.current())
     val photoDir: File = photos.dir(PhotoStore.MEDICINE)
@@ -93,7 +106,8 @@ fun MedicinesScreen(
     viewModel: MedicinesViewModel = hiltViewModel(),
 ) {
     val meds by viewModel.medicines.collectAsStateWithLifecycle()
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val prescriptions by viewModel.prescriptions.collectAsStateWithLifecycle()
+    var editingRx by remember { mutableStateOf<PrescriptionEntity?>(null) }
     var showArchived by rememberSaveable { mutableStateOf(false) }
     val active = meds.orEmpty().filter { !it.medicine.archived }
     val archived = meds.orEmpty().filter { it.medicine.archived }
@@ -108,20 +122,42 @@ fun MedicinesScreen(
                     Text(stringResource(R.string.tab_medicines), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
                     IconButton(onClick = onOpenSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.settings)) }
                 }
-                if (settings.doctorName.isNotBlank() || settings.prescribedDate != null) {
-                    Spacer(Modifier.height(12.dp))
-                    PrescriptionCard(settings)
-                }
             }
             if (meds != null && active.isEmpty()) {
                 item {
                     EmptyState(Icons.Rounded.Medication, stringResource(R.string.today_no_meds_title), stringResource(R.string.today_no_meds_text))
                 }
             }
-            if (active.isNotEmpty()) item { SectionHeader(stringResource(R.string.active_courses)) }
-            items(active, key = { it.medicine.id }) { med ->
-                MedicineRow(med, viewModel.photoDir) { onOpen(med.medicine.id) }
-                Spacer(Modifier.height(10.dp))
+            // One group per prescription (doctor), then medicines without a prescription.
+            val known = prescriptions.map { it.id }.toSet()
+            prescriptions.forEach { rx ->
+                val group = active.filter { it.medicine.prescriptionId == rx.id }
+                item(key = "rx${rx.id}") {
+                    Spacer(Modifier.height(14.dp))
+                    PrescriptionCard(rx, group.size + archived.count { it.medicine.prescriptionId == rx.id }) { editingRx = rx }
+                    Spacer(Modifier.height(10.dp))
+                }
+                items(group, key = { it.medicine.id }) { med ->
+                    MedicineRow(med, viewModel.photoDir) { onOpen(med.medicine.id) }
+                    Spacer(Modifier.height(10.dp))
+                }
+            }
+            val unlinked = active.filter { it.medicine.prescriptionId == null || it.medicine.prescriptionId !in known }
+            if (unlinked.isNotEmpty()) {
+                item {
+                    SectionHeader(stringResource(if (prescriptions.isEmpty()) R.string.active_courses else R.string.other_medicines))
+                }
+                items(unlinked, key = { it.medicine.id }) { med ->
+                    MedicineRow(med, viewModel.photoDir) { onOpen(med.medicine.id) }
+                    Spacer(Modifier.height(10.dp))
+                }
+            }
+            item {
+                TextButton(onClick = { editingRx = PrescriptionEntity(doctorName = "") }) {
+                    Icon(Icons.Rounded.Add, null)
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.add_prescription))
+                }
             }
             if (archived.isNotEmpty()) {
                 item {
@@ -146,26 +182,14 @@ fun MedicinesScreen(
             text = { Text(stringResource(R.string.add_medicine)) },
         )
     }
-}
 
-@Composable
-private fun PrescriptionCard(settings: AppSettings) {
-    AppCard(containerColor = MaterialTheme.colorScheme.primaryContainer) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Rounded.Person, null, tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.width(12.dp))
-            Column {
-                Text(settings.doctorName, style = MaterialTheme.typography.titleMedium)
-                settings.prescribedDate?.let {
-                    Text(stringResource(R.string.prescribed_on, TimeFormat.dayMonthYear(it)), style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-        }
-        if (settings.dietNote.isNotBlank()) {
-            Spacer(Modifier.height(8.dp))
-            Text(settings.dietNote, style = MaterialTheme.typography.bodyMedium)
-        }
+    editingRx?.let { rx ->
+        PrescriptionDialog(
+            initial = rx,
+            onDismiss = { editingRx = null },
+            onSave = { viewModel.savePrescription(it); editingRx = null },
+            onDelete = if (rx.id == 0L) null else ({ viewModel.deletePrescription(rx.id); editingRx = null }),
+        )
     }
 }
 

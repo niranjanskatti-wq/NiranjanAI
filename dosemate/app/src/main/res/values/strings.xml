@@ -18,6 +18,7 @@
     <string name="active_courses">Active courses</string>
     <string name="add_entry">Add entry</string>
     <string name="add_medicine">Add medicine</string>
+    <string name="add_prescription">Add prescription</string>
     <string name="add_time">Add time</string>
     <string name="add_weekly_photo">Add this week\'s photo</string>
     <string name="adherence">adherence</string>
@@ -82,6 +83,8 @@
     <string name="delete_confirm">This deletes the medicine and its whole history. This cannot be undone.</string>
     <string name="delete_entry">Delete this entry?</string>
     <string name="delete_medicine">Delete medicine</string>
+    <string name="delete_prescription">Delete prescription</string>
+    <string name="delete_prescription_confirm">The prescription is removed. Its medicines are kept and moved to Other medicines.</string>
     <string name="diet_note">Diet note</string>
     <string name="dismiss">Dismiss</string>
     <string name="dismiss_buttons">Buttons</string>
@@ -104,6 +107,7 @@
     <string name="edit">Edit</string>
     <string name="edit_entry">Edit entry</string>
     <string name="edit_medicine">Edit medicine</string>
+    <string name="edit_prescription">Edit prescription</string>
     <string name="entries">Entries</string>
     <string name="error_end_date">Choose an end date</string>
     <string name="error_name">Enter a name</string>
@@ -119,6 +123,7 @@
     <string name="field_instructions">Instructions</string>
     <string name="field_name">Medicine name</string>
     <string name="field_notes">Notes</string>
+    <string name="field_prescription">Prescription</string>
     <string name="field_type">Type</string>
     <string name="field_unit">Unit</string>
     <string name="field_warning">Warning (optional)</string>
@@ -173,6 +178,7 @@
     <string name="next">Next</string>
     <string name="next_dose">Next dose</string>
     <string name="no_doses_day">No doses on this day.</string>
+    <string name="no_prescriptions">No prescriptions yet. Add one for each doctor or visit.</string>
     <string name="nothing_missed">Nothing missed. Great job!</string>
     <string name="notif_after_food_until">Will remind you after your meal, at %1$s</string>
     <string name="notif_journal_text">Take this week\'s skin photo and note your itch score.</string>
@@ -197,6 +203,7 @@
     <string name="open_app_settings">Open app settings</string>
     <string name="open_medicine">Open medicine</string>
     <string name="open_settings">Open settings</string>
+    <string name="other_medicines">Other medicines</string>
     <string name="pause">Pause</string>
     <string name="paused">Paused</string>
     <string name="period_afternoon">Afternoon</string>
@@ -212,8 +219,13 @@
     <string name="pre_generic">Coming up: %1$s at %2$s</string>
     <string name="pre_private">Medicine coming up at %1$s</string>
     <string name="pre_title">Coming up</string>
+    <string name="prescribed_by">Prescribed by %1$s</string>
     <string name="prescribed_on">Prescribed %1$s</string>
     <string name="prescription">Prescription</string>
+    <string name="prescription_add_hint">Add prescriptions in Settings or on the Medicines screen.</string>
+    <string name="prescription_none">No prescription</string>
+    <string name="prescription_notes">Diet and other advice (optional)</string>
+    <string name="prescriptions">Prescriptions</string>
     <string name="preview_tone">Preview</string>
     <string name="privacy_point_1">No login and no account</string>
     <string name="privacy_point_2">Works fully offline – no internet permission</string>
@@ -405,6 +417,10 @@
     <plurals name="doses_left">
         <item quantity="one">%d dose left</item>
         <item quantity="other">%d doses left</item>
+    </plurals>
+    <plurals name="medicines_count">
+        <item quantity="one">%d medicine</item>
+        <item quantity="other">%d medicines</item>
     </plurals>
     <plurals name="missed_summary">
         <item quantity="one">You missed %d dose</item>

@@ -17,6 +17,8 @@ import com.dosemate.app.data.db.JournalEntryEntity
 import com.dosemate.app.data.db.MedicineDao
 import com.dosemate.app.data.db.MedicineEntity
 import com.dosemate.app.data.db.MedicineWithTimes
+import com.dosemate.app.data.db.PrescriptionDao
+import com.dosemate.app.data.db.PrescriptionEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -81,6 +83,34 @@ class LogRepository @Inject constructor(private val dao: DoseLogDao) {
     fun observeAll(): Flow<List<DoseLogEntity>> = dao.observeAll()
     suspend fun all(): List<DoseLogEntity> = dao.all()
     fun observeRecent(medicineId: Long, limit: Int = 30) = dao.observeRecent(medicineId, limit)
+}
+
+@Singleton
+class PrescriptionRepository @Inject constructor(
+    private val dao: PrescriptionDao,
+    private val medicineDao: MedicineDao,
+    private val settings: SettingsRepository,
+) {
+    val prescriptions: Flow<List<PrescriptionEntity>> = dao.observeAll()
+    suspend fun all(): List<PrescriptionEntity> = dao.all()
+    suspend fun save(p: PrescriptionEntity): Long = if (p.id == 0L) dao.upsert(p) else p.id.also { dao.upsert(p) }
+    suspend fun delete(id: Long) = dao.deleteKeepingMedicines(id)
+
+    /**
+     * Older versions kept a single doctor in settings. Move it into the prescriptions table once
+     * and attach every existing medicine to it.
+     */
+    suspend fun migrateLegacy() {
+        val s = settings.current()
+        if (s.doctorName.isBlank() && s.dietNote.isBlank() && s.prescribedDate == null) return
+        if (dao.all().isEmpty()) {
+            val id = dao.upsert(
+                PrescriptionEntity(doctorName = s.doctorName.ifBlank { "Doctor" }, date = s.prescribedDate, notes = s.dietNote),
+            )
+            medicineDao.assignUnlinkedTo(id)
+        }
+        settings.update { it.copy(doctorName = "", prescribedDate = null, dietNote = "") }
+    }
 }
 
 @Singleton

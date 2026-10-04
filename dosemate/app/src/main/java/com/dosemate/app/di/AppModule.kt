@@ -36,12 +36,15 @@ object AppModule {
     @Provides
     @Singleton
     fun database(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "dosemate.db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "dosemate.db")
+            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
 
     @Provides fun medicineDao(db: AppDatabase): MedicineDao = db.medicineDao()
     @Provides fun logDao(db: AppDatabase): DoseLogDao = db.doseLogDao()
     @Provides fun alertDao(db: AppDatabase): ActiveAlertDao = db.activeAlertDao()
     @Provides fun journalDao(db: AppDatabase): JournalDao = db.journalDao()
+    @Provides fun prescriptionDao(db: AppDatabase): com.dosemate.app.data.db.PrescriptionDao = db.prescriptionDao()
 
     @Provides
     @Singleton
