@@ -7,6 +7,7 @@ It has no dependencies and no build step, and once it has loaded it works fully 
 - **Run standalone:** serve `public/swarnacalc/` from any static host (e.g. `cd public && python3 -m http.server`) → `/swarnacalc/index.html`
 - **Install:** open it in Chrome on Android → *Add to Home screen*. After the first load it runs with no internet.
 - **Tests:** `npm test` runs the engine tests with Node's built-in test runner.
+- **Android app (APK):** every change to `public/swarnacalc/` or `swarnacalc-android/` builds an APK on GitHub Actions and publishes it under **Releases → "SwarnaCalc · build N"**. Open that page on your phone, tap the `.apk`, and allow "Install unknown apps" when asked. Newer builds install over older ones and keep your data. `swarnacalc-android/` is a small native shell that bundles the same web app offline and adds native WhatsApp/file sharing, saving to Downloads, and the phone's own voice recogniser.
 
 ### Formula (shown step by step in the app)
 
