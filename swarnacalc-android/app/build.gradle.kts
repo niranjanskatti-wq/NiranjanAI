@@ -17,23 +17,24 @@ android {
         versionName = "1.0.$buildNumber"
     }
 
-    // A fixed key so every new APK installs over the old one and keeps your data.
+    // One signing key for every build (kept in the GitHub Actions cache, never
+    // in the code), so each new APK installs over the last one and keeps data.
+    val buildKey = file("swarnacalc-build.jks")
     signingConfigs {
-        create("release") {
-            storeFile = file("swarnacalc.keystore")
-            storePassword = "swarnacalc"
-            keyAlias = "swarnacalc"
-            keyPassword = "swarnacalc"
+        if (buildKey.exists()) {
+            create("build") {
+                storeFile = buildKey
+                storePassword = "swarnacalc-build"
+                keyAlias = "swarnacalc"
+                keyPassword = "swarnacalc-build"
+            }
         }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
-        }
-        debug {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (buildKey.exists()) signingConfigs.getByName("build") else signingConfigs.getByName("debug")
         }
     }
 

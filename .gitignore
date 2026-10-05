@@ -41,7 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 # android build output
-/android/.gradle/
-/android/build/
-/android/app/build/
-/android/local.properties
+/swarnacalc-android/.gradle/
+/swarnacalc-android/build/
+/swarnacalc-android/app/build/
+/swarnacalc-android/local.properties
+/swarnacalc-android/app/*.jks
