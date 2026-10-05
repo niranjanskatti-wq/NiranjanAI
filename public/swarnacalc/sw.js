@@ -1,6 +1,6 @@
 // SwarnaCalc service worker: precache the whole app so it runs 100% offline.
 // Bump VERSION whenever any file below changes.
-const VERSION = 'swarnacalc-v1';
+const VERSION = 'swarnacalc-v2';
 const ASSETS = [
   './',
   './index.html',

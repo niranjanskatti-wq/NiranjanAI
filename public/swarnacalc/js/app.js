@@ -4,7 +4,7 @@ import { uid, defaultSettings, mergeSettings, newItem, newOldGold, newEstimate, 
 import { calcEstimate, calcItem, reverseCalc, fairCheck, findMetal, purityPct } from './engine.js';
 import * as store from './store.js';
 import { t as translate, LANGUAGES } from './i18n.js';
-import { buildWhatsAppText, shareText, shareFile, renderImageCard, renderPdf, downloadBlob } from './share.js';
+import { buildWhatsAppText, shareText, shareFile, renderImageCard, renderPdf, downloadBlob, copyText } from './share.js';
 import * as ai from './ai.js';
 
 // ---------------------------------------------------------------------------
@@ -1299,8 +1299,8 @@ function openShareMenu() {
       try {
         if (x === 'wa') { close(); await shareText(text, ''); }
         if (x === 'wa-cust') { close(); await shareText(text, S.est.customer.phone); }
-        if (x === 'sys') { close(); if (navigator.share) await navigator.share({ text }).catch(() => {}); else await shareText(text); }
-        if (x === 'copy') { await navigator.clipboard.writeText(text); toast(t('copied')); }
+        if (x === 'sys') { close(); await shareText(text, '', { whatsapp: false }); }
+        if (x === 'copy') { await copyText(text); toast(t('copied')); }
         if (x === 'img') { toast(t('generating')); const blob = await renderImageCard(shareCtx(), S.est, S.res); close(); await shareFile(blob, `estimate-${fileStamp()}.png`, text); }
         if (x === 'pdf') { toast(t('generating')); const blob = await renderPdf(shareCtx(), S.est, S.res); close(); await shareFile(blob, `estimate-${fileStamp()}.pdf`, ''); }
         if (x === 'fields') { close(); S.view = 'settings'; render(); const d = $$('details.set')[8]; if (d) { d.open = true; d.scrollIntoView({ behavior: 'smooth' }); } }
@@ -1374,7 +1374,8 @@ async function boot() {
   const splash = $('#splash');
   setTimeout(() => { splash.classList.add('hide'); setTimeout(() => splash.remove(), 600); }, 700);
   store.requestPersistence();
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  // The Android app ships the files inside the APK, so it needs no service worker.
+  if ('serviceWorker' in navigator && location.protocol !== 'file:' && !window.SwarnaAndroid) {
     navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW', err));
   }
   const net = () => document.body.classList.toggle('offline', !navigator.onLine);
@@ -1383,5 +1384,12 @@ async function boot() {
 
 boot();
 
-// Exposed for debugging / automated checks
-window.SwarnaCalc = { S, calcEstimate, calcItem };
+// Android back key: close a dialog, then return to the calculator, then exit.
+function back() {
+  if ($('#modal').classList.contains('show')) { $('#modal').classList.remove('show'); $('#modal').innerHTML = ''; return true; }
+  if (S.view !== 'calc') { go('calc'); return true; }
+  return false;
+}
+
+// Exposed for the Android shell and for debugging / automated checks
+window.SwarnaCalc = { S, calcEstimate, calcItem, back };

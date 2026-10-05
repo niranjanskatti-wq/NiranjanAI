@@ -7,10 +7,23 @@ const SDK_URL = 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk/+esm';
 // Voice input (Web Speech API) — English, Kannada, Hindi
 // ---------------------------------------------------------------------------
 export function voiceSupported() {
-  return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  return !!(window.SwarnaAndroid || window.SpeechRecognition || window.webkitSpeechRecognition);
 }
 
+let voiceSeq = 0;
 export function listen(lang = 'en-IN') {
+  // Android app: use the phone's own speech recogniser (works offline when
+  // the language pack is downloaded on the phone).
+  if (window.SwarnaAndroid) {
+    return new Promise((resolve, reject) => {
+      const id = `v${++voiceSeq}`;
+      window.__swarnaVoice = (cbId, text, err) => {
+        if (cbId !== id) return;
+        if (text) resolve(text); else reject(new Error(err || 'no-match'));
+      };
+      window.SwarnaAndroid.startVoice(lang, id);
+    });
+  }
   return new Promise((resolve, reject) => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { reject(new Error('voice-unsupported')); return; }

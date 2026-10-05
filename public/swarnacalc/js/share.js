@@ -66,21 +66,40 @@ export function buildWhatsAppText(ctx, est, res) {
   return L.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
-export async function shareText(text, phone) {
+// Inside the Android app (android/ folder) a native bridge replaces the
+// browser-only Web Share / download APIs.
+const native = () => (typeof window !== 'undefined' ? window.SwarnaAndroid : undefined);
+
+function openUrl(url) {
+  if (native()) native().openUrl(url);
+  else window.open(url, '_blank');
+}
+
+// whatsapp: true → go straight to WhatsApp; false → system share sheet.
+export async function shareText(text, phone, { whatsapp = true } = {}) {
   const digits = (phone || '').replace(/\D/g, '');
   if (digits) {
     const num = digits.length === 10 ? '91' + digits : digits;
-    window.open(`https://wa.me/${num}?text=${encodeURIComponent(text)}`, '_blank');
+    openUrl(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
     return 'wa';
   }
+  if (native()) { native().shareText(text, whatsapp ? 'com.whatsapp' : ''); return 'shared'; }
   if (navigator.share) {
     try { await navigator.share({ text }); return 'shared'; } catch (e) { if (e.name === 'AbortError') return 'cancel'; }
   }
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  openUrl(`https://wa.me/?text=${encodeURIComponent(text)}`);
   return 'wa';
 }
 
+async function blobToBase64(blob) {
+  const buf = new Uint8Array(await blob.arrayBuffer());
+  let bin = '';
+  for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
 export async function shareFile(blob, filename, text) {
+  if (native()) { native().shareFile(await blobToBase64(blob), filename, blob.type, text || ''); return 'shared'; }
   const file = new File([blob], filename, { type: blob.type });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], title: filename, text }); return 'shared'; } catch (e) { if (e.name === 'AbortError') return 'cancel'; }
@@ -89,12 +108,18 @@ export async function shareFile(blob, filename, text) {
   return 'downloaded';
 }
 
-export function downloadBlob(blob, filename) {
+export async function downloadBlob(blob, filename) {
+  if (native()) { native().saveFile(await blobToBase64(blob), filename, blob.type || 'application/octet-stream'); return; }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = filename;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+export function copyText(text) {
+  if (native()) { native().copyText(text); return Promise.resolve(); }
+  return navigator.clipboard.writeText(text);
 }
 
 // ---------------------------------------------------------------------------
