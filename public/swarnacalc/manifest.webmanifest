@@ -1,0 +1,25 @@
+{
+  "name": "SwarnaCalc – Gold & Jewellery Price Calculator",
+  "short_name": "SwarnaCalc",
+  "description": "Offline gold & jewellery price calculator for India with WhatsApp sharing.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0a08",
+  "theme_color": "#0b0a08",
+  "lang": "en-IN",
+  "categories": ["finance", "shopping", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Buy jewellery", "url": "./index.html?mode=buy", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Exchange old gold", "url": "./index.html?mode=exchange", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "My budget", "url": "./index.html?mode=reverse", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

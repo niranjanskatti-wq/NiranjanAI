@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SwarnaCalc – Gold &amp; Jewellery Price Calculator</title>
+  <meta name="description" content="Offline gold and jewellery price calculator for India: net weight, wastage (VA), making, stones, hallmark, GST, old gold exchange. Share estimates on WhatsApp.">
+  <meta name="theme-color" content="#0b0a08">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SwarnaCalc">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="modulepreload" href="js/app.js">
+</head>
+<body>
+  <div id="splash" aria-hidden="true">
+    <img src="icons/icon.svg" alt="" width="112" height="112">
+    <h1>SwarnaCalc</h1>
+    <p>ಸ್ವರ್ಣ · स्वर्ण · Swarna</p>
+  </div>
+
+  <header id="hdr">
+    <div class="brand">
+      <img src="icons/icon.svg" alt="" width="34" height="34">
+      <div><b>SwarnaCalc</b><button id="hdr-sub" class="hdr-sub" type="button"></button></div>
+    </div>
+    <span class="offline-pill" title="Offline">● offline</span>
+    <button id="new-btn" class="btn ghost sm" type="button" aria-label="New estimate">＋ New</button>
+  </header>
+
+  <main id="view" aria-live="polite"></main>
+
+  <div id="totalbar" class="totalbar" hidden></div>
+
+  <nav id="nav" aria-label="Main">
+    <button data-view="calc" type="button"><span>🧮</span><small data-label="calc">Calculate</small></button>
+    <button data-view="history" type="button"><span>📜</span><small data-label="history">History</small></button>
+    <button data-view="compare" type="button"><span>⚖️</span><small data-label="compare">Compare</small></button>
+    <button data-view="rates" type="button"><span>📈</span><small data-label="rates">Rates</small></button>
+    <button data-view="settings" type="button"><span>⚙️</span><small data-label="settings">Settings</small></button>
+  </nav>
+
+  <div id="modal" class="modal"></div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <noscript><p style="padding:2rem;color:#d4af37">SwarnaCalc needs JavaScript enabled.</p></noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
