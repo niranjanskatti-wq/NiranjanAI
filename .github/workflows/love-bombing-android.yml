@@ -1,0 +1,86 @@
+name: Love Bombing Android APK
+
+on:
+  push:
+    paths:
+      - "love-bombing-android/**"
+      - ".github/workflows/love-bombing-android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: love-bombing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: love-bombing-android
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check bundled content is in sync with sources
+        run: |
+          python3 tools/build_content.py
+          git diff --exit-code -- app/src/main/assets
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Use signing key from secrets (if configured)
+        env:
+          KEYSTORE_B64: ${{ secrets.LB_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "LB_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build signed release APK
+        env:
+          LB_VERSION_CODE: ${{ github.run_number }}
+          LB_KEYSTORE_PASSWORD: ${{ secrets.LB_KEYSTORE_PASSWORD }}
+          LB_KEY_ALIAS: ${{ secrets.LB_KEY_ALIAS }}
+          LB_KEY_PASSWORD: ${{ secrets.LB_KEY_PASSWORD }}
+        run: |
+          # Empty secrets fall back to the bundled keystore defaults.
+          [ -z "$LB_KEYSTORE_PASSWORD" ] && unset LB_KEYSTORE_PASSWORD
+          [ -z "$LB_KEY_ALIAS" ] && unset LB_KEY_ALIAS
+          [ -z "$LB_KEY_PASSWORD" ] && unset LB_KEY_PASSWORD
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk "LoveBombing-1.0.${{ github.run_number }}.apk"
+
+      - name: Verify the APK is offline-only and signed
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          APK="LoveBombing-1.0.${{ github.run_number }}.apk"
+          "$BT/aapt2" dump permissions "$APK" | tee permissions.txt
+          if grep -q "android.permission.INTERNET" permissions.txt; then
+            echo "::error::INTERNET permission found in the APK"; exit 1
+          fi
+          "$BT/apksigner" verify --print-certs "$APK"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LoveBombing-apk
+          path: love-bombing-android/LoveBombing-*.apk
+
+      - name: Publish APK as a downloadable release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="love-bombing-v1.0.${{ github.run_number }}"
+          gh release create "$TAG" LoveBombing-*.apk \
+            --target "$GITHUB_SHA" --prerelease \
+            --title "Love Bombing 1.0.${{ github.run_number }}" \
+            --notes "Signed APK. On your phone: download, open, and allow installing from this source. Works fully offline."

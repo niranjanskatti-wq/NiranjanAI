@@ -1,0 +1,60 @@
+diwali|Happy Diwali, {name}. You're the brightest light in our home. 🪔
+diwali|Happy Diwali, love. May this year bring us more light, more laughter and more us.
+diwali|Every diya in the house is nice, but you're still the one lighting it up. Happy Diwali.
+diwali|Happy Diwali, beautiful. Thank you for making our home glow, every day of the year.
+diwali|Rangoli, sweets, family, and you in that saree. Best Diwali already. Happy Diwali, {name}.
+diwali|Happy Diwali, love. Lakshmi visited our home the day you walked in.
+diwali|Wishing my wife a Diwali full of sweets, sparkle and a husband who helps with the cleaning. Happy Diwali!
+diwali|Happy Diwali, {name}. Here's to new beginnings, old traditions and us.
+valentines|Happy Valentine's Day, {name}. I don't need a special day to love you, but I'll take it.
+valentines|Happy Valentine's, love. You're still my favourite date after all these years.
+valentines|Roses are red, you're still my favourite. Happy Valentine's Day, {name}.
+valentines|Happy Valentine's Day to the woman who makes every day feel like the fourteenth.
+valentines|Be my Valentine? Again? Forever? Happy Valentine's Day, love.
+valentines|Happy Valentine's Day, beautiful. Dinner's booked. Dress up, I'm showing off my wife.
+valentines|No chocolate is as sweet as you. Happy Valentine's Day, {name}. (I still got you chocolate.)
+valentines|Happy Valentine's Day, love. Married you, and I'd still chase you. ❤️
+newyear|Happy New Year, {name}. Same resolution as every year: love you more.
+newyear|Happy New Year, love. Here's to 365 more days of us.
+newyear|New year, same lucky man. Happy New Year, beautiful.
+newyear|Happy New Year, {name}. Let's make this our best year yet.
+newyear|First text of the year goes to my favourite person. Happy New Year, love.
+newyear|Happy New Year! Here's to new memories, old jokes and you in every chapter.
+ugadi|Happy Ugadi, {name}. Here's to a new year full of sweetness and just a little bit of bevu-bella spice.
+ugadi|Happy Ugadi, love. Like the pachadi, life with you has every flavour and I love all of it.
+ugadi|Happy Ugadi, beautiful. New year, new beginnings, same forever.
+ugadi|Wishing my wife a happy Ugadi. Thank you for making every new year better than the last.
+ugadi|Happy Ugadi, {name}. May this year bring us health, happiness and lots of holige.
+karvachauth|Happy Karva Chauth, {name}. Thank you for your love and your prayers. I'm praying for you too.
+karvachauth|You fast for me, I'd do anything for you. Happy Karva Chauth, love.
+karvachauth|Happy Karva Chauth, beautiful. The moon's coming out, but you're already the prettiest thing in the sky.
+karvachauth|Today I'm reminded how lucky I am. Happy Karva Chauth, {name}. Dinner's ready when the moon is.
+karvachauth|Happy Karva Chauth, love. Hang in there. I've got your favourite food waiting.
+karvachauth|Happy Karva Chauth. Your love keeps me going every single day, {name}.
+holi|Happy Holi, {name}! Fair warning: I'm coming for you with the pink.
+holi|Happy Holi, love. My life's been colourful ever since you walked in.
+holi|Happy Holi, beautiful. You're the brightest colour in my life.
+holi|Happy Holi! Gujiya, colours and you. Perfect day.
+holi|Happy Holi, {name}. Let's play, laugh and then spend an hour scrubbing each other clean.
+navratri|Happy Navratri, {name}. Nine nights, and you'll be the most beautiful at every garba.
+navratri|Happy Navratri, love. Save me a dance tonight.
+dussehra|Happy Dussehra, {name}. Here's to good always winning. Like me, winning you.
+dussehra|Happy Dussehra, love. May every hurdle this year fall as easily as Ravan.
+ganesh|Happy Ganesh Chaturthi, {name}. May Bappa bless our home with joy. And modaks.
+ganesh|Happy Ganesh Chaturthi, love. Grateful for you and all our blessings.
+ganesh|Ganpati Bappa Morya! Happy Ganesh Chaturthi, beautiful.
+sankranti|Happy Makar Sankranti, {name}. Til-gud ghya, god god bola. Sweet words for my sweet wife.
+sankranti|Happy Sankranti, love. Let's fly kites and watch you beat me again.
+pongal|Happy Pongal, {name}. May our home always overflow with love, like the pongal pot.
+onam|Happy Onam, {name}. You look stunning in that kasavu saree, just saying.
+onam|Happy Onam, love. Here's to a sadya full of flavour and a year full of joy.
+christmas|Merry Christmas, {name}. You're the best gift under any tree.
+christmas|Merry Christmas, love. Cake, carols and cuddles. My kind of holiday.
+christmas|Merry Christmas, beautiful. Grateful for every moment with you this year.
+womensday|Happy Women's Day, {name}. You're the strongest woman I know, and I'm proud to be yours.
+womensday|Happy Women's Day, love. Today and every day, you inspire me.
+womensday|Happy Women's Day to the woman who does it all. Today, I'm doing the dishes.
+teej|Happy Teej, {name}. Your mehendi looks beautiful. So do you.
+teej|Happy Teej, love. Thank you for your prayers and your endless love.
+general|Happy festival, {name}! Celebrations are always better with you by my side.
+general|Wishing my wife a festive day full of joy, good food and great company. That's me.
