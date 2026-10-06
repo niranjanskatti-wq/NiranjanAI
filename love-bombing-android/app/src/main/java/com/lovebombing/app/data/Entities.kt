@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 data class Settings(
     @PrimaryKey val id: Int = 1,
     val onboarded: Boolean = false,
-    val wifeName: String = "",
+    val wifeName: String = "Shanta",
     /** Epoch day of her birthday (year is used only for display). */
     val birthday: Long? = null,
     val anniversary: Long? = null,

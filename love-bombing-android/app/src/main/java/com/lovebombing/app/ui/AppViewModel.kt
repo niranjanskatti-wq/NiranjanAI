@@ -4,8 +4,14 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import android.content.Context
 import com.lovebombing.app.LoveBombingApp
+import com.lovebombing.app.data.AutoPlanSetting
 import com.lovebombing.app.data.Message
+import com.lovebombing.app.data.PlanItem
+import com.lovebombing.app.data.PlanStatus
+import com.lovebombing.app.data.PlanStatusRow
+import java.time.LocalDate
 import com.lovebombing.app.data.Plan
 import com.lovebombing.app.data.SentMessage
 import com.lovebombing.app.data.Settings
@@ -46,6 +52,33 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     val wishlist: StateFlow<List<WishlistItem>> = repo.dao.wishlistFlow()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val autoPlans: StateFlow<Map<String, AutoPlanSetting>> = repo.dao.autoPlansFlow()
+        .map { list -> list.associateBy { it.templateId } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    val statuses: StateFlow<Map<String, PlanStatusRow>> = repo.dao.statusFlow()
+        .map { list -> list.associateBy { it.key } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    private val uiPrefs = app.getSharedPreferences("ui_state", Context.MODE_PRIVATE)
+
+    /** Home shows long, heartfelt messages instead of short texts when true. */
+    val preferLong = MutableStateFlow(uiPrefs.getBoolean("prefer_long", false))
+
+    fun setPreferLong(value: Boolean) {
+        preferLong.value = value
+        homeOffset.value = 0
+        uiPrefs.edit().putBoolean("prefer_long", value).apply()
+    }
+
+    fun setStatus(item: PlanItem, status: PlanStatus) = viewModelScope.launch { repo.setStatus(item, status) }
+
+    fun moveItem(item: PlanItem, date: LocalDate, minuteOfDay: Int) = viewModelScope.launch { repo.moveItem(item, date, minuteOfDay) }
+
+    fun saveAutoPlan(setting: AutoPlanSetting) = viewModelScope.launch { repo.saveAutoPlan(setting) }
+
+    fun setAllAutoPlans(enabled: Boolean) = viewModelScope.launch { repo.setAllAutoPlans(enabled) }
 
     private val _suggestion = MutableStateFlow<SuggestionRequest?>(null)
     val suggestion = _suggestion.asStateFlow()

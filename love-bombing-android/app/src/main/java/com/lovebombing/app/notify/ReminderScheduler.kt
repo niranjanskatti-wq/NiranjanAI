@@ -11,14 +11,19 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.lovebombing.app.MainActivity
 import com.lovebombing.app.R
+import com.lovebombing.app.data.AppDao
 import com.lovebombing.app.data.AppDatabase
+import com.lovebombing.app.data.AutoPlanSetting
 import com.lovebombing.app.data.Content
 import com.lovebombing.app.data.EventKind
 import com.lovebombing.app.data.Plan
+import com.lovebombing.app.data.PlanStatus
+import com.lovebombing.app.data.PlanStatusRow
 import com.lovebombing.app.data.PlanType
 import com.lovebombing.app.data.Settings
 import com.lovebombing.app.data.eventsBetween
 import com.lovebombing.app.data.formatMinutes
+import com.lovebombing.app.data.planItems
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -32,7 +37,22 @@ data class Reminder(
     /** Message category to suggest when the notification is tapped. */
     val suggestCategory: String? = null,
     val festivalKey: String? = null,
+    /** Set for plan reminders: lets the notification offer Done / Skip. */
+    val planKey: String? = null,
 )
+
+/** Everything the reminder engine reads from the database. */
+data class ReminderData(
+    val settings: Settings,
+    val plans: List<Plan>,
+    val autos: Map<String, AutoPlanSetting>,
+    val statuses: Map<String, PlanStatusRow>,
+)
+
+suspend fun AppDao.reminderData(): ReminderData? {
+    val s = settings() ?: return null
+    return ReminderData(s, allPlans(), allAutoPlans().associateBy { it.templateId }, allStatuses().associateBy { it.key })
+}
 
 /**
  * All reminders are kept in a single AlarmManager chain: we always arm one alarm
@@ -49,7 +69,8 @@ object ReminderScheduler {
     private const val LOOKAHEAD_DAYS = 400L
 
     /** Reminders whose time falls in (fromExclusive, toInclusive]. */
-    fun remindersBetween(context: Context, settings: Settings, plans: List<Plan>, fromExclusive: Long, toInclusive: Long): List<Reminder> {
+    fun remindersBetween(context: Context, data: ReminderData, fromExclusive: Long, toInclusive: Long): List<Reminder> {
+        val settings = data.settings
         val zone = ZoneId.systemDefault()
         val content = Content.get(context)
         val name = settings.wifeName.trim().ifEmpty { "her" }
@@ -74,7 +95,8 @@ object ReminderScheduler {
         }
 
         // Event reminders: look at events up to 7 days past the window so "7 days before" is found.
-        val events = eventsBetween(startDay, endDay.plusDays(8), settings, plans, content.festivals)
+        val items = planItems(startDay, endDay.plusDays(8), settings, data.plans, data.autos, data.statuses, content.festivals)
+        val events = eventsBetween(startDay, endDay.plusDays(8), settings, items, content.festivals)
         for (e in events) {
             when (e.kind) {
                 EventKind.BIRTHDAY, EventKind.ANNIVERSARY -> {
@@ -95,17 +117,19 @@ object ReminderScheduler {
                         "Plan something special for $name: an outfit, sweets, flowers or a small gift."))
                 }
                 EventKind.PLAN -> {
-                    val p = e.plan ?: continue
-                    if (!settings.plansOn) continue
-                    val type = PlanType.of(p.type)
-                    val start = at(e.date, p.minuteOfDay)
+                    val p = e.item ?: continue
+                    if (!settings.plansOn || p.status != PlanStatus.PENDING) continue
+                    val type = p.type
+                    val start = at(p.date, p.minuteOfDay)
                     val note = p.note.ifBlank { type.label }
-                    val suggest = if (type == PlanType.MESSAGE) (p.messageId?.let { content.message(it)?.category } ?: "Romantic") else null
-                    add(Reminder("plan-${p.id}-15", start - 15 * 60 * 1000, "In 15 min: ${p.title}",
-                        "${formatMinutes(p.minuteOfDay)} · $note", suggest))
+                    val suggest = if (type == PlanType.MESSAGE) {
+                        p.messageCategory ?: p.messageId?.let { content.message(it)?.category } ?: "Romantic"
+                    } else null
+                    add(Reminder("plan-${p.key}-15", start - 15 * 60 * 1000, "In 15 min: ${p.title}",
+                        "${formatMinutes(p.minuteOfDay)} · $note", suggest, planKey = p.key))
                     if (type == PlanType.DATE_NIGHT || type == PlanType.GIFT) {
-                        add(Reminder("plan-${p.id}-1d", start - 24 * 60 * 60 * 1000, "Tomorrow: ${p.title}",
-                            "${formatMinutes(p.minuteOfDay)} · $note"))
+                        add(Reminder("plan-${p.key}-1d", start - 24 * 60 * 60 * 1000, "Tomorrow: ${p.title}",
+                            "${formatMinutes(p.minuteOfDay)} · $note", planKey = p.key))
                     }
                 }
             }
@@ -126,13 +150,13 @@ object ReminderScheduler {
     /** Called by [ReminderReceiver]: posts every reminder due since the last run, then arms the next. */
     suspend fun fire(context: Context) {
         val dao = AppDatabase.get(context).dao()
-        val settings = dao.settings()
+        val data = dao.reminderData()
         val now = System.currentTimeMillis()
-        if (settings == null || !settings.onboarded) return
+        if (data == null || !data.settings.onboarded) return
         val last = prefs(context).getLong(KEY_LAST, now - 60_000)
         // Don't replay a pile of stale reminders after the phone was off for a while.
         val from = maxOf(last, now - 30 * 60 * 1000)
-        val due = remindersBetween(context, settings, dao.allPlans(), from, now + 30_000)
+        val due = remindersBetween(context, data, from, now + 30_000)
         due.forEach { post(context, it) }
         val until = maxOf(now + 30_000, due.maxOfOrNull { it.at } ?: 0)
         prefs(context).edit().putLong(KEY_LAST, until).apply()
@@ -141,18 +165,17 @@ object ReminderScheduler {
 
     private suspend fun armNext(context: Context, after: Long) {
         val dao = AppDatabase.get(context).dao()
-        val settings = dao.settings()
+        val data = dao.reminderData()
         val alarm = context.getSystemService(AlarmManager::class.java)
         val pi = alarmIntent(context)
-        if (settings == null || !settings.onboarded) {
+        if (data == null || !data.settings.onboarded) {
             alarm.cancel(pi)
             return
         }
-        val plans = dao.allPlans()
         // Search a short window first (daily reminders), widening only if nothing is found.
         var next: Reminder? = null
         for (days in longArrayOf(2, 30, LOOKAHEAD_DAYS)) {
-            next = remindersBetween(context, settings, plans, after, after + days * 24 * 60 * 60 * 1000).firstOrNull()
+            next = remindersBetween(context, data, after, after + days * 24 * 60 * 60 * 1000).firstOrNull()
             if (next != null) break
         }
         if (next == null) {
@@ -192,7 +215,7 @@ object ReminderScheduler {
         }
         val id = r.key.hashCode()
         val content = PendingIntent.getActivity(context, id, open, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val n = NotificationCompat.Builder(context, if (daily) CHANNEL_DAILY else CHANNEL_EVENTS)
+        val builder = NotificationCompat.Builder(context, if (daily) CHANNEL_DAILY else CHANNEL_EVENTS)
             .setSmallIcon(R.drawable.ic_notification)
             .setColor(0xFFD9546E.toInt())
             .setContentTitle(r.title)
@@ -201,7 +224,11 @@ object ReminderScheduler {
             .setContentIntent(content)
             .setAutoCancel(true)
             .setPriority(if (daily) NotificationCompat.PRIORITY_DEFAULT else NotificationCompat.PRIORITY_HIGH)
-            .build()
+        r.planKey?.let { key ->
+            builder.addAction(0, "Done", PlanActionReceiver.intent(context, key, PlanStatus.DONE, id))
+            builder.addAction(0, "Skip", PlanActionReceiver.intent(context, key, PlanStatus.SKIPPED, id))
+        }
+        val n = builder.build()
         try {
             NotificationManagerCompat.from(context).notify(id, n)
         } catch (_: SecurityException) {

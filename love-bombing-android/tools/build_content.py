@@ -22,7 +22,10 @@ CATEGORIES = [  # (file, display name, required count)
     ("anniversary", "Anniversary", 40),
     ("birthday", "Birthday", 40),
     ("festivals", "Festivals and Special Days", 60),
+    # Appended last so the ids of the original 1000 never change (favourites/history refer to them).
+    ("long_messages", "Long Messages", 100),
 ]
+SHORT_TOTAL = 1000
 
 FESTIVAL_NAMES = {
     "sankranti": "Makar Sankranti / Pongal",
@@ -57,18 +60,25 @@ def main():
         if len(rows) != count:
             fail(f"{fname}: expected {count} messages, found {len(rows)}")
         for row in rows:
-            tag = None
+            tag = theme = None
             if fname == "festivals":
                 tag, row = row.split("|", 1)
+            if fname == "long_messages":
+                theme, row = row.split("|", 1)
+                if theme not in {c[1] for c in CATEGORIES}:
+                    fail("unknown long-message theme: " + theme)
+                row = row.replace("\\n", "\n")
             if row in seen:
                 fail("duplicate message: " + row)
             seen.add(row)
             msg = {"id": len(messages) + 1, "c": name, "t": row}
             if tag:
                 msg["f"] = tag
+            if theme:
+                msg["th"] = theme
             messages.append(msg)
-    if len(messages) != 1000:
-        fail(f"expected 1000 messages, found {len(messages)}")
+    if len(messages) != SHORT_TOTAL + 100:
+        fail(f"expected {SHORT_TOTAL + 100} messages, found {len(messages)}")
 
     moves = lines(os.path.join(SRC, "moves.txt"))
     if len(moves) != 100 or len(set(moves)) != 100:

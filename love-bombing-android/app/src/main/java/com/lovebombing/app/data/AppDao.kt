@@ -68,6 +68,42 @@ abstract class AppDao {
     @Delete
     abstract suspend fun deleteWish(item: WishlistItem)
 
+    @Query("SELECT * FROM auto_plans")
+    abstract fun autoPlansFlow(): Flow<List<AutoPlanSetting>>
+
+    @Query("SELECT * FROM auto_plans")
+    abstract suspend fun allAutoPlans(): List<AutoPlanSetting>
+
+    @Upsert
+    abstract suspend fun saveAutoPlan(setting: AutoPlanSetting)
+
+    @Query("SELECT * FROM plan_status")
+    abstract fun statusFlow(): Flow<List<PlanStatusRow>>
+
+    @Query("SELECT * FROM plan_status")
+    abstract suspend fun allStatuses(): List<PlanStatusRow>
+
+    @Query("SELECT * FROM plan_status WHERE `key` = :key")
+    abstract suspend fun status(key: String): PlanStatusRow?
+
+    @Upsert
+    abstract suspend fun saveStatus(row: PlanStatusRow)
+
+    @Query("DELETE FROM plan_status WHERE `key` = :key")
+    abstract suspend fun deleteStatus(key: String)
+
+    @Query("DELETE FROM auto_plans")
+    abstract suspend fun clearAutoPlans()
+
+    @Query("DELETE FROM plan_status")
+    abstract suspend fun clearStatuses()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insertAllAutoPlans(items: List<AutoPlanSetting>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insertAllStatuses(items: List<PlanStatusRow>)
+
     @Query("DELETE FROM settings")
     abstract suspend fun clearSettings()
 
@@ -103,12 +139,16 @@ abstract class AppDao {
         favorites: List<Favorite>,
         plans: List<Plan>,
         wishlist: List<WishlistItem>,
+        autoPlans: List<AutoPlanSetting>,
+        statuses: List<PlanStatusRow>,
     ) {
-        clearSettings(); clearSent(); clearFavorites(); clearPlans(); clearWishlist()
+        clearSettings(); clearSent(); clearFavorites(); clearPlans(); clearWishlist(); clearAutoPlans(); clearStatuses()
         if (settings != null) saveSettings(settings)
         insertAllSent(sent)
         insertAllFavorites(favorites)
         insertAllPlans(plans)
         insertAllWishlist(wishlist)
+        insertAllAutoPlans(autoPlans)
+        insertAllStatuses(statuses)
     }
 }

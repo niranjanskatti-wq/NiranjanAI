@@ -56,7 +56,10 @@ fun MessagesScreen(vm: AppViewModel) {
     var filter by rememberSaveable { mutableStateOf(ALL) }
     var randomId by rememberSaveable { mutableStateOf<Int?>(null) }
     val sentIds = remember(sent) { sent.mapNotNull { it.messageId }.toSet() }
-    val chips = remember { listOf(ALL, FAVORITES) + content.categories }
+    val chips = remember {
+        listOf(ALL, FAVORITES, com.lovebombing.app.data.Content.LONG_CATEGORY) +
+            content.categories.filter { it != com.lovebombing.app.data.Content.LONG_CATEGORY }
+    }
 
     val shown = remember(query, filter, favorites) {
         val q = query.trim()
@@ -85,7 +88,7 @@ fun MessagesScreen(vm: AppViewModel) {
             value = query,
             onValueChange = { query = it },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-            placeholder = { Text("Search 1000 messages") },
+            placeholder = { Text("Search ${content.messages.size} messages") },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
             trailingIcon = {
                 if (query.isNotEmpty()) IconButton(onClick = { query = "" }) { Icon(Icons.Filled.Clear, contentDescription = "Clear search") }

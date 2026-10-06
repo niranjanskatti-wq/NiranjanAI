@@ -194,7 +194,7 @@ fun SettingsScreen(vm: AppViewModel, settings: Settings) {
             ToggleRow("Birthday", "7 days before, 1 day before and on the day", settings.birthdayOn) { vm.saveSettings(settings.copy(birthdayOn = it)) }
             ToggleRow("Anniversary", "7 days before, 1 day before and on the day", settings.anniversaryOn) { vm.saveSettings(settings.copy(anniversaryOn = it)) }
             ToggleRow("Festivals", "3 days before Diwali, Valentine's, Ugadi and more", settings.festivalsOn) { vm.saveSettings(settings.copy(festivalsOn = it)) }
-            ToggleRow("Your plans", "15 min before; date nights and gifts also 1 day before", settings.plansOn) { vm.saveSettings(settings.copy(plansOn = it)) }
+            ToggleRow("Plan reminders", "Automatic routines and your own plans: 15 min before; date nights and gifts also 1 day before", settings.plansOn) { vm.saveSettings(settings.copy(plansOn = it)) }
             if (!notifOk || !exactOk) {
                 HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
                 if (!notifOk) {

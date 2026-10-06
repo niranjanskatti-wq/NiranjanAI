@@ -66,7 +66,7 @@ private val monthFormat = DateTimeFormatter.ofPattern("MMMM yyyy")
 
 @Composable
 fun CalendarScreen(vm: AppViewModel, settings: Settings) {
-    var historyMode by rememberSaveable { mutableStateOf(false) }
+    var mode by rememberSaveable { mutableStateOf(0) }
     var addPlanFor by remember { mutableStateOf<PlanDraft?>(null) }
 
     Column(Modifier.fillMaxSize()) {
@@ -79,9 +79,13 @@ fun CalendarScreen(vm: AppViewModel, settings: Settings) {
             }
         }
         Spacer(Modifier.height(8.dp))
-        ChipRow(listOf(false, true), historyMode, { if (it) "History" else "Month" }, { historyMode = it })
+        ChipRow(listOf(0, 1, 2), mode, { listOf("Month", "Plans", "History")[it] }, { mode = it })
         Spacer(Modifier.height(8.dp))
-        if (historyMode) HistoryList(vm) else MonthView(vm, settings, onAddPlan = { addPlanFor = PlanDraft(date = it) })
+        when (mode) {
+            0 -> MonthView(vm, settings, onAddPlan = { addPlanFor = PlanDraft(date = it) })
+            1 -> PlansView(vm, settings)
+            else -> HistoryList(vm)
+        }
     }
 
     addPlanFor?.let { draft ->
@@ -92,7 +96,6 @@ fun CalendarScreen(vm: AppViewModel, settings: Settings) {
 @Composable
 private fun MonthView(vm: AppViewModel, settings: Settings, onAddPlan: (LocalDate) -> Unit) {
     val sent by vm.sent.collectAsState()
-    val plans by vm.plans.collectAsState()
     val today = LocalDate.now()
     var monthEpoch by rememberSaveable { mutableStateOf(YearMonth.from(today).atDay(1).toEpochDay()) }
     var selectedEpoch by rememberSaveable { mutableStateOf(today.toEpochDay()) }
@@ -103,8 +106,9 @@ private fun MonthView(vm: AppViewModel, settings: Settings, onAddPlan: (LocalDat
     val sentByDay = remember(sent) {
         sent.groupBy { Instant.ofEpochMilli(it.sentAt).atZone(zone).toLocalDate() }
     }
-    val events = remember(month, settings, plans) {
-        eventsBetween(month.atDay(1), month.atEndOfMonth(), settings, plans, vm.content.festivals)
+    val items = rememberPlanItems(vm, settings, month.atDay(1), month.atEndOfMonth())
+    val events = remember(month, settings, items) {
+        eventsBetween(month.atDay(1), month.atEndOfMonth(), settings, items, vm.content.festivals)
     }
     val eventsByDay = remember(events) { events.groupBy { it.date } }
     var confirmDelete by remember { mutableStateOf<Plan?>(null) }
@@ -148,7 +152,11 @@ private fun MonthView(vm: AppViewModel, settings: Settings, onAddPlan: (LocalDat
                 if (dayEvents.isNotEmpty()) {
                     Spacer(Modifier.height(4.dp))
                     Eyebrow("Planned")
-                    dayEvents.forEach { e -> PlannedRow(e, onDelete = { e.plan?.let { confirmDelete = it } }) }
+                    dayEvents.forEach { e ->
+                        val item = e.item
+                        if (item == null) PlannedRow(e)
+                        else PlanItemRow(vm, item, onDelete = item.plan?.let { p -> { confirmDelete = p } })
+                    }
                 }
                 if (daySent.isNotEmpty()) {
                     Spacer(Modifier.height(12.dp))
@@ -230,7 +238,7 @@ private fun DayCell(day: LocalDate, isToday: Boolean, isSelected: Boolean, hasSe
 }
 
 @Composable
-private fun PlannedRow(e: Event, onDelete: () -> Unit) {
+private fun PlannedRow(e: Event) {
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.width(4.dp).height(36.dp).clip(CircleShape).background(if (e.kind == EventKind.FESTIVAL) Marigold else Rose))
         Spacer(Modifier.width(12.dp))
@@ -242,19 +250,12 @@ private fun PlannedRow(e: Event, onDelete: () -> Unit) {
                         EventKind.BIRTHDAY -> "Birthday"
                         EventKind.ANNIVERSARY -> "Anniversary"
                         EventKind.FESTIVAL -> "Festival"
-                        EventKind.PLAN -> PlanType.of(e.plan!!.type).label
+                        EventKind.PLAN -> e.item?.type?.label ?: "Plan"
                     },
                 )
                 e.minuteOfDay?.let { append(" · ").append(formatMinutes(it)) }
-                e.plan?.note?.takeIf { it.isNotBlank() }?.let { append(" · ").append(it) }
             }
             Text(sub, style = MaterialTheme.typography.bodySmall, color = Muted)
-            e.plan?.messageText?.let {
-                Text("“$it”", style = MaterialTheme.typography.bodySmall, color = Plum, modifier = Modifier.padding(top = 2.dp))
-            }
-        }
-        if (e.plan != null) {
-            IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, contentDescription = "Delete plan", tint = Muted) }
         }
     }
 }

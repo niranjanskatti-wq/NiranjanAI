@@ -36,6 +36,43 @@ class Repository(private val context: Context) {
 
     suspend fun deletePlan(plan: Plan) {
         dao.deletePlan(plan)
+        dao.deleteStatus(planKey(plan.id))
+        ReminderScheduler.reschedule(context)
+    }
+
+    suspend fun setStatus(item: PlanItem, status: PlanStatus) {
+        val existing = dao.status(item.key) ?: PlanStatusRow(item.key, status.name)
+        dao.saveStatus(existing.copy(status = status.name, updatedAt = System.currentTimeMillis()))
+        ReminderScheduler.reschedule(context)
+    }
+
+    /** "Change": move one occurrence to a new date/time (the routine itself is untouched). */
+    suspend fun moveItem(item: PlanItem, date: LocalDate, minuteOfDay: Int) {
+        if (item.plan != null) {
+            dao.savePlan(item.plan.copy(dateEpochDay = date.toEpochDay(), minuteOfDay = minuteOfDay))
+            dao.deleteStatus(item.key)
+        } else {
+            val existing = dao.status(item.key) ?: PlanStatusRow(item.key, PlanStatus.PENDING.name)
+            dao.saveStatus(
+                existing.copy(
+                    status = PlanStatus.PENDING.name, epochDay = date.toEpochDay(), minuteOfDay = minuteOfDay,
+                    updatedAt = System.currentTimeMillis(),
+                ),
+            )
+        }
+        ReminderScheduler.reschedule(context)
+    }
+
+    suspend fun saveAutoPlan(setting: AutoPlanSetting) {
+        dao.saveAutoPlan(setting)
+        ReminderScheduler.reschedule(context)
+    }
+
+    suspend fun setAllAutoPlans(enabled: Boolean) {
+        val existing = dao.allAutoPlans().associateBy { it.templateId }
+        AutoPlans.templates.forEach { t ->
+            dao.saveAutoPlan((existing[t.id] ?: AutoPlanSetting(t.id, enabled)).copy(enabled = enabled))
+        }
         ReminderScheduler.reschedule(context)
     }
 
@@ -44,7 +81,7 @@ class Repository(private val context: Context) {
     suspend fun exportTo(uri: Uri) = withContext(Dispatchers.IO) {
         val root = JSONObject()
         root.put("app", "love-bombing")
-        root.put("version", 1)
+        root.put("version", 2)
         root.put("exportedAt", System.currentTimeMillis())
         dao.settings()?.let { s ->
             root.put("settings", JSONObject().apply {
@@ -67,7 +104,7 @@ class Repository(private val context: Context) {
         })
         root.put("plans", JSONArray().apply {
             dao.allPlans().forEach {
-                put(JSONObject().put("type", it.type).put("title", it.title).put("dateEpochDay", it.dateEpochDay)
+                put(JSONObject().put("id", it.id).put("type", it.type).put("title", it.title).put("dateEpochDay", it.dateEpochDay)
                     .put("minuteOfDay", it.minuteOfDay).put("note", it.note)
                     .put("messageId", it.messageId ?: JSONObject.NULL).put("messageText", it.messageText ?: JSONObject.NULL)
                     .put("createdAt", it.createdAt))
@@ -76,6 +113,19 @@ class Repository(private val context: Context) {
         root.put("wishlist", JSONArray().apply {
             dao.allWishlist().forEach {
                 put(JSONObject().put("text", it.text).put("note", it.note).put("createdAt", it.createdAt).put("done", it.done))
+            }
+        })
+        root.put("autoPlans", JSONArray().apply {
+            dao.allAutoPlans().forEach {
+                put(JSONObject().put("templateId", it.templateId).put("enabled", it.enabled)
+                    .put("minuteOfDay", it.minuteOfDay ?: JSONObject.NULL).put("dayOfWeek", it.dayOfWeek ?: JSONObject.NULL))
+            }
+        })
+        root.put("planStatus", JSONArray().apply {
+            dao.allStatuses().forEach {
+                put(JSONObject().put("key", it.key).put("status", it.status)
+                    .put("epochDay", it.epochDay ?: JSONObject.NULL).put("minuteOfDay", it.minuteOfDay ?: JSONObject.NULL)
+                    .put("updatedAt", it.updatedAt))
             }
         })
         val out = context.contentResolver.openOutputStream(uri, "wt") ?: error("Could not open file for writing")
@@ -119,7 +169,7 @@ class Repository(private val context: Context) {
         }
         val favorites = root.arr("favorites").map { Favorite(it.getInt("messageId"), it.optLong("addedAt")) }
         val plans = root.arr("plans").map {
-            Plan(type = it.getString("type"), title = it.getString("title"), dateEpochDay = it.getLong("dateEpochDay"),
+            Plan(id = it.optLong("id", 0), type = it.getString("type"), title = it.getString("title"), dateEpochDay = it.getLong("dateEpochDay"),
                 minuteOfDay = it.getInt("minuteOfDay"), note = it.optString("note"), messageId = it.intOrNull("messageId"),
                 messageText = it.strOrNull("messageText"), createdAt = it.optLong("createdAt", System.currentTimeMillis()))
         }
@@ -127,7 +177,14 @@ class Repository(private val context: Context) {
             WishlistItem(text = it.getString("text"), note = it.optString("note"),
                 createdAt = it.optLong("createdAt", System.currentTimeMillis()), done = it.optBoolean("done"))
         }
-        dao.replaceAll(settings, sent, favorites, plans, wishlist)
+        val autoPlans = root.arr("autoPlans").map {
+            AutoPlanSetting(it.getString("templateId"), it.getBoolean("enabled"), it.intOrNull("minuteOfDay"), it.intOrNull("dayOfWeek"))
+        }
+        val statuses = root.arr("planStatus").map {
+            PlanStatusRow(it.getString("key"), it.getString("status"), it.longOrNull("epochDay"), it.intOrNull("minuteOfDay"),
+                it.optLong("updatedAt", System.currentTimeMillis()))
+        }
+        dao.replaceAll(settings, sent, favorites, plans, wishlist, autoPlans, statuses)
         ReminderScheduler.reschedule(context)
     }
 }
@@ -177,6 +234,15 @@ object Suggest {
         if (usable.isEmpty()) return null
         val seed = day.toEpochDay() * 31 + (category?.hashCode() ?: 0)
         return usable[Math.floorMod(seed + offset, usable.size.toLong()).toInt()]
+    }
+
+    /** A long message that fits [theme] (e.g. "Good Morning"), avoiding recent repeats. */
+    fun pickLong(content: Content, theme: String?, recent: Set<Int>, day: LocalDate, offset: Int): Message? {
+        val long = content.messages.filter { it.isLong }
+        val themed = long.filter { it.theme == theme }.ifEmpty { long }
+        val usable = themed.filter { it.id !in recent }.ifEmpty { themed }
+        if (usable.isEmpty()) return null
+        return usable[Math.floorMod(day.toEpochDay() * 17 + offset, usable.size.toLong()).toInt()]
     }
 
     fun streak(sent: List<SentMessage>, today: LocalDate, zone: ZoneId = ZoneId.systemDefault()): Int {

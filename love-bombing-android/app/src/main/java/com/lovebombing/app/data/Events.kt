@@ -10,16 +10,16 @@ data class Event(
     val title: String,
     val kind: EventKind,
     val minuteOfDay: Int? = null,
-    val plan: Plan? = null,
+    val item: PlanItem? = null,
     val festivalKey: String? = null,
 )
 
-/** Birthday, anniversary, festivals and user plans falling within [start, end]. */
+/** Birthday, anniversary, festivals and plan items falling within [start, end]. */
 fun eventsBetween(
     start: LocalDate,
     end: LocalDate,
     settings: Settings?,
-    plans: List<Plan>,
+    items: List<PlanItem>,
     festivals: List<Festival>,
 ): List<Event> {
     val out = ArrayList<Event>()
@@ -40,9 +40,8 @@ fun eventsBetween(
     }
     festivals.filter { !it.date.isBefore(start) && !it.date.isAfter(end) }
         .forEach { out += Event(it.date, it.name, EventKind.FESTIVAL, festivalKey = it.key) }
-    plans.forEach { p ->
-        val d = LocalDate.ofEpochDay(p.dateEpochDay)
-        if (!d.isBefore(start) && !d.isAfter(end)) out += Event(d, p.title, EventKind.PLAN, p.minuteOfDay, plan = p)
+    items.forEach { i ->
+        if (!i.date.isBefore(start) && !i.date.isAfter(end)) out += Event(i.date, i.title, EventKind.PLAN, i.minuteOfDay, item = i)
     }
     out.sortWith(compareBy<Event>({ it.date }, { it.minuteOfDay ?: -1 }))
     return out

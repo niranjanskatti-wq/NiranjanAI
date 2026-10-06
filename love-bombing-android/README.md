@@ -43,7 +43,8 @@ sources in `tools/content/`:
 
 | File | What | Count |
 |---|---|---|
-| `messages/*.txt` | Messages per category (`{name}` = her saved name) | 1000 |
+| `messages/*.txt` | Short messages per category (`{name}` = her saved name) | 1000 |
+| `messages/long_messages.txt` | Long heartfelt messages, `theme|text` (`\n` = line break) | 100 |
 | `moves.txt` | Daily action ideas | 100 |
 | `gifts.txt` | `title|description|budget|occasions|kind` | 150 |
 | `festivals_computed.json` | Lunar festival dates 2026–2030 | — |
@@ -56,6 +57,17 @@ ayanamsa, amanta months, tithi at the customary observance time, Ujjain) and
 spot-checked against published panchangs. Regional calendars can differ by a day.
 Fixed dates (New Year, Valentine's, Women's Day, Christmas, New Year's Eve) are added
 by `build_content.py`.
+
+## Automatic plans
+
+`data/AutoPlans.kt` defines 18 routines (weekly date night, Friday flowers, Sunday
+breakfast, Monday love note, Sunday long message, monthly surprise gift and day out,
+birthday/anniversary gift + dinner + midnight wish, festival gift + wish, and a few
+that start switched off). They generate plan occurrences on the calendar by
+themselves. Calendar → Plans has an on/off switch and a Change button (day/time) for
+each routine. Every plan, automatic or your own, can be marked **Done**, **Not done**,
+**Skip** or **Change** (move just that occurrence) from Home, the Calendar, or the
+reminder notification itself. Past plans left unmarked count as "Not done".
 
 ## How reminders work
 

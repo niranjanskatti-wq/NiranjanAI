@@ -4,7 +4,16 @@ import android.content.Context
 import org.json.JSONArray
 import java.time.LocalDate
 
-data class Message(val id: Int, val category: String, val text: String, val festivalKey: String?)
+data class Message(
+    val id: Int,
+    val category: String,
+    val text: String,
+    val festivalKey: String?,
+    /** For long messages: the short category it belongs with (e.g. "Good Morning"). */
+    val theme: String? = null,
+) {
+    val isLong get() = category == Content.LONG_CATEGORY
+}
 
 data class Gift(
     val id: Int,
@@ -56,7 +65,10 @@ class Content private constructor(context: Context) {
         val m = read("messages.json")
         messages = List(m.length()) { i ->
             val o = m.getJSONObject(i)
-            Message(o.getInt("id"), o.getString("c"), o.getString("t"), o.optString("f").ifEmpty { null })
+            Message(
+                o.getInt("id"), o.getString("c"), o.getString("t"),
+                o.optString("f").ifEmpty { null }, o.optString("th").ifEmpty { null },
+            )
         }
         byId = messages.associateBy { it.id }
         categories = messages.map { it.category }.distinct()
@@ -91,6 +103,7 @@ class Content private constructor(context: Context) {
 
     companion object {
         const val FESTIVAL_CATEGORY = "Festivals and Special Days"
+        const val LONG_CATEGORY = "Long Messages"
 
         @Volatile private var instance: Content? = null
 

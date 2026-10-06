@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import com.lovebombing.app.R
 import com.lovebombing.app.data.Event
 import com.lovebombing.app.data.EventKind
+import com.lovebombing.app.data.PlanItem
+import com.lovebombing.app.data.PlanStatus
 import com.lovebombing.app.data.Settings
 import com.lovebombing.app.data.Suggest
 import com.lovebombing.app.data.eventsBetween
@@ -46,23 +48,35 @@ import java.time.temporal.ChronoUnit
 fun HomeScreen(vm: AppViewModel, settings: Settings, onOpenTab: (Tab) -> Unit) {
     val sender = LocalSender.current
     val sent by vm.sent.collectAsState()
-    val plans by vm.plans.collectAsState()
     val favorites by vm.favorites.collectAsState()
     val offset by vm.homeOffset.collectAsState()
+    val preferLong by vm.preferLong.collectAsState()
     val content = vm.content
     val today = LocalDate.now()
     val now = LocalTime.now()
 
-    val events = remember(settings, plans, today) {
-        eventsBetween(today, today.plusDays(400), settings, plans, content.festivals)
+    val items = rememberPlanItems(vm, settings, today.minusDays(7), today.plusDays(400))
+    val events = remember(settings, items, today) {
+        eventsBetween(today, today.plusDays(400), settings, items, content.festivals)
+    }
+    // Today's plans, plus anything from the last week still waiting to be marked.
+    val todaysPlans = remember(items, today) {
+        items.filter { it.date == today || (it.date.isBefore(today) && it.status == PlanStatus.PENDING) }
+    }
+    val upcoming = remember(events, today) {
+        events.filter { e ->
+            val i = e.item
+            i == null || (i.date.isAfter(today) && i.status == PlanStatus.PENDING)
+        }.take(3)
     }
     val startOfToday = remember(today) { today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli() }
     // Exclude only messages sent before today, so today's pick stays put (with a tick) after sharing.
     val recent = remember(sent, startOfToday) { Suggest.recentIds(sent.filter { it.sentAt < startOfToday }) }
     val sentIds = remember(sent) { Suggest.recentIds(sent) }
     val (category, festivalKey) = Suggest.categoryFor(today, now, events)
-    val message = remember(category, festivalKey, recent, offset, today) {
-        Suggest.pick(content, category, festivalKey, recent, today, offset)
+    val message = remember(category, festivalKey, recent, offset, today, preferLong) {
+        if (preferLong) Suggest.pickLong(content, category, recent, today, offset)
+        else Suggest.pick(content, category, festivalKey, recent, today, offset)
     }
     val streak = remember(sent, today) { Suggest.streak(sent, today) }
     val sentToday = remember(sent, startOfToday) { sent.any { it.sentAt >= startOfToday } }
@@ -75,7 +89,12 @@ fun HomeScreen(vm: AppViewModel, settings: Settings, onOpenTab: (Tab) -> Unit) {
         item { StreakCard(streak, sentToday) }
         if (message != null) {
             item {
-                Eyebrow("Today's message")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Eyebrow("Today's message")
+                    Spacer(Modifier.weight(1f))
+                    ChipRow(listOf(false, true), preferLong, { if (it) "Long" else "Short" }, { vm.setPreferLong(it) },
+                        modifier = Modifier.padding(end = 0.dp))
+                }
                 Spacer(Modifier.height(8.dp))
                 MessageCard(
                     text = sender.textOf(message),
@@ -89,8 +108,9 @@ fun HomeScreen(vm: AppViewModel, settings: Settings, onOpenTab: (Tab) -> Unit) {
                 )
             }
         }
+        item { TodaysPlansCard(vm, todaysPlans, onOpenCalendar = { onOpenTab(Tab.CALENDAR) }) }
         item { MoveCard(content.moveFor(today)) }
-        item { UpcomingCard(events.take(3), today, onOpenCalendar = { onOpenTab(Tab.CALENDAR) }) }
+        item { UpcomingCard(upcoming, today, onOpenCalendar = { onOpenTab(Tab.CALENDAR) }) }
     }
 }
 
@@ -144,6 +164,25 @@ private fun StreakCard(streak: Int, sentToday: Boolean) {
 }
 
 @Composable
+private fun TodaysPlansCard(vm: AppViewModel, items: List<PlanItem>, onOpenCalendar: () -> Unit) {
+    SectionCard {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Eyebrow("Today's plans")
+            Spacer(Modifier.weight(1f))
+            TextButton(onClick = onOpenCalendar) { Text("All plans") }
+        }
+        if (items.isEmpty()) {
+            Text("Nothing planned for today. Your automatic routines are in Calendar → Plans.",
+                style = MaterialTheme.typography.bodyMedium, color = Muted)
+        }
+        items.forEachIndexed { i, item ->
+            if (i > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            PlanItemRow(vm, item, showDate = item.date != LocalDate.now())
+        }
+    }
+}
+
+@Composable
 private fun MoveCard(move: String) {
     SectionCard(container = MaterialTheme.colorScheme.secondaryContainer) {
         Eyebrow("Today's move", color = Plum)
@@ -182,7 +221,7 @@ fun EventRow(e: Event, today: LocalDate) {
         EventKind.BIRTHDAY -> Rose to "Birthday"
         EventKind.ANNIVERSARY -> Rose to "Anniversary"
         EventKind.FESTIVAL -> Marigold to "Festival"
-        EventKind.PLAN -> Plum to (e.plan?.let { com.lovebombing.app.data.PlanType.of(it.type).label } ?: "Plan")
+        EventKind.PLAN -> Plum to (e.item?.type?.label ?: "Plan")
     }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
         Column(
