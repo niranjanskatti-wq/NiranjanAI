@@ -60,6 +60,33 @@ jobs:
           keyPassword=$KEY_PASSWORD
           PROPS
 
+      # Permanent GoldVault key: every build is signed with the same key, so a
+      # new APK installs as an update over the old one (data is kept). The key
+      # file is stored encrypted in the repo; only the GOLDVAULT_SIGNING_PASSWORD
+      # repository secret can unlock it.
+      - name: Permanent signing key
+        env:
+          GOLDVAULT_SIGNING_PASSWORD: ${{ secrets.GOLDVAULT_SIGNING_PASSWORD }}
+        if: env.GOLDVAULT_SIGNING_PASSWORD != '' && hashFiles('goldvault/android/key.properties') == ''
+        run: |
+          umask 077
+          printf '%s' "$GOLDVAULT_SIGNING_PASSWORD" > "$RUNNER_TEMP/gvpass"
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 \
+            -in android/app/goldvault-release.jks.enc -out android/app/goldvault.jks \
+            -pass "file:$RUNNER_TEMP/gvpass"
+          rm -f "$RUNNER_TEMP/gvpass"
+          cat > android/key.properties <<PROPS
+          storeFile=goldvault.jks
+          storePassword=$GOLDVAULT_SIGNING_PASSWORD
+          keyAlias=goldvault
+          keyPassword=$GOLDVAULT_SIGNING_PASSWORD
+          PROPS
+          echo "Signed with the permanent GoldVault key: updates install over the old app." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Signing warning
+        if: hashFiles('goldvault/android/key.properties') == ''
+        run: echo "::warning::No permanent signing key - this APK will NOT install over an older one. Add the GOLDVAULT_SIGNING_PASSWORD secret."
+
       # One small APK per phone type instead of one big "universal" APK.
       # arm64 = almost every phone from the last ~8 years; armv7 = very old phones.
       # (x86_64 is only for emulators, so it is left out.)
