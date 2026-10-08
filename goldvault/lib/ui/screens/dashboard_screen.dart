@@ -12,6 +12,7 @@ import '../widgets/fields.dart';
 import 'item_form_screen.dart';
 import 'lock_screen.dart';
 import 'out_now_screen.dart';
+import 'reminder_form_screen.dart';
 import 'reminders_screen.dart';
 import 'where_is_screen.dart';
 import '../widgets/tiles.dart';
@@ -65,7 +66,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       byCat.putIfAbsent(i.category, Totals.new).add(i, rates);
     }
     return _Dash(all, byLoc, colors, byOwner, byCat, rates, await repo.recentMovements(limit: 8),
-        await AppServices.I.reminders.listed(horizonDays: 30), await repo.prefs());
+        await AppServices.I.reminders.listed(horizonDays: 60), await repo.prefs());
   }
 
   @override
@@ -90,6 +91,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             actions: [
               IconButton(
                 iconSize: 28,
+                tooltip: context.t('dash.addAlarm'),
+                icon: const Icon(Icons.alarm_add),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReminderFormScreen(kind: 'custom'))),
+              ),
+              IconButton(
+                iconSize: 28,
                 tooltip: context.t('rem.title'),
                 icon: Badge(
                   isLabelVisible: d.due.any((e) => !e.date.isAfter(DateTime.now())),
@@ -104,6 +111,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 120),
             sliver: SliverList.list(children: [
               FadeIn(child: _whereIs(context)),
+              const SizedBox(height: 12),
+              FadeIn(
+                child: GoldCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReminderFormScreen(kind: 'custom'))),
+                  child: Row(children: [
+                    const Icon(Icons.alarm_add, color: GV.gold, size: 30),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(context.t('dash.setAlarm'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 2),
+                        Text(context.t('dash.setAlarmSub'), style: const TextStyle(color: GV.muted, fontSize: 14)),
+                      ]),
+                    ),
+                    const Icon(Icons.chevron_right, color: GV.gold),
+                  ]),
+                ),
+              ),
               const SizedBox(height: 14),
               FadeIn(index: 1, child: _stats(context, d)),
               const SizedBox(height: 12),
@@ -112,19 +138,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 SectionTitle(context.t('dash.breakdown')),
                 FadeIn(index: 3, child: _breakdownCard(context, d)),
               ],
-              if (d.prefs.dashReminders) ...[
-              SectionTitle(context.t('dash.upcoming'),
-                  trailing: TextButton(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemindersScreen())),
-                    child: Text(context.t('common.seeAll')),
+              // Upcoming reminders / alarms – switch on or off right here.
+              _toggleHeader(context, context.t('dash.upcoming'), 'dash_reminders', d.prefs.dashReminders,
+                  extra: IconButton(
+                    tooltip: context.t('dash.addAlarm'),
+                    icon: const Icon(Icons.alarm_add, color: GV.gold, size: 28),
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReminderFormScreen(kind: 'custom'))),
                   )),
-              if (d.due.isEmpty)
-                GoldCard(child: Text(context.t('dash.noReminders'), style: const TextStyle(color: GV.muted)))
-              else
-                GoldCard(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Column(children: [for (final r in d.due.take(4)) DueTile(r)]),
-                ),
+              if (d.prefs.dashReminders) ...[
+                if (_reminders(d).isEmpty)
+                  GoldCard(child: Text(context.t('dash.noReminders'), style: const TextStyle(color: GV.muted)))
+                else
+                  GoldCard(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(children: [
+                      for (final r in _reminders(d).take(5)) DueTile(r),
+                      TextButton(
+                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemindersScreen())),
+                        child: Text(context.t('common.seeAll')),
+                      ),
+                    ]),
+                  ),
+              ],
+              // Coming bank holidays – separate on/off.
+              _toggleHeader(context, context.t('dash.holidays'), 'dash_holidays', d.prefs.dashHolidays),
+              if (d.prefs.dashHolidays) ...[
+                if (_holidays(d).isEmpty)
+                  GoldCard(child: Text(context.t('hol.noneUpcoming'), style: const TextStyle(color: GV.muted)))
+                else
+                  GoldCard(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(children: [
+                      for (final r in _holidays(d).take(4)) DueTile(r, onTap: () => widget.onOpenTab(3)),
+                    ]),
+                  ),
               ],
               if (d.prefs.dashRecent) ...[
               SectionTitle(context.t('dash.recent'),
@@ -143,6 +190,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+
+  static List<DueItem> _reminders(_Dash d) => d.due.where((x) => x.kind != DueKind.holiday).toList();
+  static List<DueItem> _holidays(_Dash d) => d.due.where((x) => x.kind == DueKind.holiday).toList();
+
+  /// Section title with its own on/off switch, so a hidden section can be
+  /// turned back on straight from the home page.
+  Widget _toggleHeader(BuildContext context, String title, String key, bool on, {Widget? extra}) => SectionTitle(
+        title,
+        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          if (on && extra != null) extra,
+          Switch(value: on, onChanged: (v) => AppServices.I.repo.setPref(key, v)),
+        ]),
+      );
 
   Widget _whereIs(BuildContext context) => GoldCard(
         accent: GV.gold,

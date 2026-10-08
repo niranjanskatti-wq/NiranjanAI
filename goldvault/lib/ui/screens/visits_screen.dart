@@ -10,6 +10,8 @@ import '../widgets/common.dart';
 import '../widgets/tiles.dart';
 import '../../services/holiday_calendar.dart';
 import 'holidays_view.dart';
+import '../../services/reminder_engine.dart';
+import 'reminder_form_screen.dart';
 import 'visit_detail_screen.dart';
 import 'visit_form_screen.dart';
 
@@ -21,11 +23,11 @@ class _Ev {
 
 class _Cal {
   final List<Visit> visits;
-  final List<Reminder> planned;
+  final List<DueItem> alarms; // every user alarm/reminder occurrence
   final Map<int, Location> locs;
   final Map<int, int> counts;
   final HolidayCalendar? holidays; // null when hidden on this calendar
-  _Cal(this.visits, this.planned, this.locs, this.counts, this.holidays);
+  _Cal(this.visits, this.alarms, this.locs, this.counts, this.holidays);
 }
 
 class VisitsScreen extends StatefulWidget {
@@ -35,6 +37,17 @@ class VisitsScreen extends StatefulWidget {
 }
 
 class _VisitsScreenState extends State<VisitsScreen> {
+  Future<void> _addAlarm(DateTime day) => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ReminderFormScreen(kind: 'custom', date: day)),
+      );
+
+  Future<void> _editAlarm(int id) async {
+    final r = await AppServices.I.repo.reminder(id);
+    if (r == null || !mounted) return;
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => ReminderFormScreen(existing: r)));
+  }
+
   DateTime _focused = DateTime.now();
   DateTime _selected = Fmt.dateOnly(DateTime.now());
   CalendarFormat _format = CalendarFormat.month;
@@ -42,9 +55,9 @@ class _VisitsScreenState extends State<VisitsScreen> {
 
   Future<_Cal> _load() async {
     final repo = AppServices.I.repo;
-    final planned = (await repo.reminders(includeDone: true)).where((r) => r.kind == 'planned_visit').toList();
+    final alarms = (await AppServices.I.reminders.listed(horizonDays: 400)).where((d) => d.reminderId != null).toList();
     final showHol = (await repo.prefs()).holidaysOnVisitCal;
-    return _Cal(await repo.visits(), planned, await repo.locationMap(), await repo.visitItemCounts(),
+    return _Cal(await repo.visits(), alarms, await repo.locationMap(), await repo.visitItemCounts(),
         showHol ? await HolidayCalendar.load(repo) : null);
   }
 
@@ -92,12 +105,14 @@ class _VisitsScreenState extends State<VisitsScreen> {
           for (final v in d.visits) {
             byDay.putIfAbsent(Fmt.dateOnly(v.date), () => []).add(_Ev(Color(d.locs[v.locationId]?.color ?? 0xFF999999), false));
           }
-          for (final r in d.planned.where((r) => !r.done)) {
-            byDay.putIfAbsent(DateTime.parse(r.dueDate), () => []).add(_Ev(Color(d.locs[r.locationId]?.color ?? 0xFF999999), true));
+          for (final a in d.alarms) {
+            final c = a.locationId == null ? GV.gold : Color(d.locs[a.locationId]?.color ?? GV.gold.toARGB32());
+            byDay.putIfAbsent(a.date, () => []).add(_Ev(c, true));
           }
           final dayVisits = d.visits.where((v) => isSameDay(v.date, _selected)).toList()
             ..sort((a, b) => (a.timeIn ?? '').compareTo(b.timeIn ?? ''));
-          final dayPlanned = d.planned.where((r) => isSameDay(DateTime.parse(r.dueDate), _selected) && !r.done).toList();
+          final dayAlarms = d.alarms.where((a) => isSameDay(a.date, _selected)).toList()
+            ..sort((a, b) => a.notifyAt.compareTo(b.notifyAt));
           final lockers = d.locs.values.where((l) => l.isLocker && !l.isClosed).toList();
 
           return ListView(padding: const EdgeInsets.fromLTRB(12, 0, 12, 120), children: [
@@ -121,6 +136,8 @@ class _VisitsScreenState extends State<VisitsScreen> {
                   _selected = Fmt.dateOnly(sel);
                   _focused = foc;
                 }),
+                // Long-press any date to set an alarm on it.
+                onDayLongPressed: (day, foc) => _addAlarm(Fmt.dateOnly(day)),
                 onFormatChanged: (f) => setState(() => _format = f),
                 onPageChanged: (f) => _focused = f,
                 headerStyle: HeaderStyle(
@@ -190,11 +207,19 @@ class _VisitsScreenState extends State<VisitsScreen> {
                   Row(mainAxisSize: MainAxisSize.min, children: [
                     Container(width: 10, height: 10, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: GV.muted, width: 1.5))),
                     const SizedBox(width: 6),
-                    Text(context.t('visit.plannedLegend'), style: const TextStyle(fontSize: 13.5, color: GV.muted)),
+                    Text(context.t('visit.alarmLegend'), style: const TextStyle(fontSize: 13.5, color: GV.muted)),
                   ]),
                 ]),
               ),
             SectionTitle(Fmt.date(_selected)),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.alarm_add),
+                label: Text(context.t('cal.addAlarm')),
+                onPressed: () => _addAlarm(_selected),
+              ),
+            ),
             if (d.holidays != null && d.holidays!.isClosed(_selected))
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -215,25 +240,29 @@ class _VisitsScreenState extends State<VisitsScreen> {
                   ]),
                 ),
               ),
-            if (dayVisits.isEmpty && dayPlanned.isEmpty)
+            if (dayVisits.isEmpty && dayAlarms.isEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Text(context.t('visit.none'), style: const TextStyle(color: GV.muted)),
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                child: Text(context.t('cal.nothing'), style: const TextStyle(color: GV.muted)),
               ),
-            for (final r in dayPlanned)
+            if (dayAlarms.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: GoldCard(
-                  accent: Color(d.locs[r.locationId]?.color ?? 0xFF999999),
-                  child: Row(children: [
-                    const Icon(Icons.event_available, color: GV.gold, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text('${context.t('rem.planned')}: ${r.title}', style: const TextStyle(fontSize: 16))),
-                    TextButton(
-                      onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => VisitFormScreen(locationId: r.locationId, date: DateTime.parse(r.dueDate)))),
-                      child: Text(context.t('visit.logNow')),
-                    ),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Column(children: [
+                    for (final a in dayAlarms)
+                      DueTile(
+                        a,
+                        onTap: () => _editAlarm(a.reminderId!),
+                        trailing: a.kind == DueKind.plannedVisit
+                            ? TextButton(
+                                onPressed: () => Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => VisitFormScreen(locationId: a.locationId, date: a.date))),
+                                child: Text(context.t('visit.logNow')),
+                              )
+                            : null,
+                      ),
                   ]),
                 ),
               ),

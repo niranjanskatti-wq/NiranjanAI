@@ -603,4 +603,14 @@ const Map<String, String> kn = {
   'rem.repeat.everyNPick': 'ಪ್ರತಿ … ದಿನಕ್ಕೊಮ್ಮೆ (ಆಯ್ಕೆಮಾಡಿ)',
   'ret.after': 'ಎಷ್ಟು ದಿನದ ನಂತರ ಹಿಂದಿರುಗಿಸಬೇಕು',
   'ret.otherDays': 'ಬೇರೆ…',
+
+  // calendar alarms, home toggles
+  'dash.addAlarm': 'ಅಲಾರಂ ಸೇರಿಸಿ',
+  'dash.holidays': 'ಮುಂಬರುವ ಬ್ಯಾಂಕ್ ರಜೆಗಳು',
+  'set.dashHolidays': 'ಮುಖಪುಟ: ಮುಂಬರುವ ಬ್ಯಾಂಕ್ ರಜೆಗಳು',
+  'visit.alarmLegend': 'ಅಲಾರಂ / ಯೋಜಿತ ಭೇಟಿ',
+  'cal.addAlarm': 'ಈ ದಿನಾಂಕಕ್ಕೆ ಅಲಾರಂ',
+  'cal.nothing': 'ಈ ದಿನ ಭೇಟಿ ಅಥವಾ ಅಲಾರಂ ಇಲ್ಲ. ಅಲಾರಂ ಹೊಂದಿಸಲು ಯಾವುದೇ ದಿನಾಂಕವನ್ನು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.',
+  'dash.setAlarm': 'ಅಲಾರಂ ಹೊಂದಿಸಿ',
+  'dash.setAlarmSub': 'ಯಾವುದೇ ದಿನಾಂಕ ಮತ್ತು ಸಮಯ – ಆಭರಣ ಇಡಲು/ತೆಗೆಯಲು, ಭೇಟಿ, ಏನಾದರೂ',
 };

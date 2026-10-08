@@ -606,4 +606,14 @@ const Map<String, String> en = {
   'rem.repeat.everyNPick': 'Every … days (choose)',
   'ret.after': 'Return after',
   'ret.otherDays': 'Other…',
+
+  // calendar alarms, home toggles
+  'dash.addAlarm': 'Add alarm',
+  'dash.holidays': 'Coming bank holidays',
+  'set.dashHolidays': 'Home: coming bank holidays',
+  'visit.alarmLegend': 'Alarm / planned visit',
+  'cal.addAlarm': 'Set alarm on this date',
+  'cal.nothing': 'No visits or alarms on this day. Long-press any date to set an alarm.',
+  'dash.setAlarm': 'Set an alarm',
+  'dash.setAlarmSub': 'Any date and time – keep or take jewellery, visits, anything',
 };

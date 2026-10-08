@@ -64,6 +64,8 @@ class _HolidaysViewState extends State<HolidaysView> {
                 _selected = Fmt.dateOnly(sel);
                 _focused = foc;
               }),
+              onDayLongPressed: (day, foc) => Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => ReminderFormScreen(kind: 'custom', date: Fmt.dateOnly(day)))),
               onFormatChanged: (f) => setState(() => _format = f),
               onPageChanged: (f) => _focused = f,
               headerStyle: HeaderStyle(
@@ -113,6 +115,12 @@ class _HolidaysViewState extends State<HolidaysView> {
                 Text('• ${h.name} (${context.t('hol.off')})', style: const TextStyle(color: GV.muted)),
               const SizedBox(height: 12),
               Wrap(spacing: 10, runSpacing: 10, children: [
+                FilledButton.icon(
+                  icon: const Icon(Icons.alarm_add),
+                  label: Text(context.t('cal.addAlarm')),
+                  onPressed: () => Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => ReminderFormScreen(kind: 'custom', date: _selected))),
+                ),
                 OutlinedButton.icon(
                   icon: const Icon(Icons.add),
                   label: Text(context.t('hol.addHere')),
