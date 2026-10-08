@@ -1,0 +1,70 @@
+name: GoldVault APK
+
+on:
+  push:
+    paths:
+      - 'goldvault/**'
+      - '.github/workflows/goldvault-apk.yml'
+  pull_request:
+    paths:
+      - 'goldvault/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: goldvault
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+
+      - name: Install packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Tests (run fully offline, incl. airplane-mode test)
+        run: flutter test
+
+      # Optional: real release signing. Add repository secrets
+      # ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS,
+      # ANDROID_KEY_PASSWORD. Without them the APK is signed with a debug key.
+      - name: Release signing
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        if: env.KEYSTORE_B64 != ''
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > android/app/goldvault.jks
+          cat > android/key.properties <<PROPS
+          storeFile=goldvault.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          PROPS
+
+      - name: Build APK
+        env:
+          GOOGLE_SERVER_CLIENT_ID: ${{ secrets.GOOGLE_SERVER_CLIENT_ID }}
+        run: flutter build apk --release --dart-define=GOOGLE_SERVER_CLIENT_ID="$GOOGLE_SERVER_CLIENT_ID"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GoldVault-apk
+          path: goldvault/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
