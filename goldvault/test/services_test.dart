@@ -304,6 +304,13 @@ void main() {
       expect(all.map((d) => d.notifyAt).toSet(), {DateTime(2027, 1, 20, 10), DateTime(2026, 12, 21, 10)});
     });
 
+    test('many alarms: daily alarm for a year keeps every occurrence', () async {
+      final id = await repo.saveReminder(const Reminder(kind: 'custom', title: 'Daily check', dueDate: '2026-10-09', time: '08:00', repeat: 'daily'));
+      final all = (await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 8), horizonDays: 365))
+          .where((d) => d.reminderId == id && d.primary);
+      expect(all.length, greaterThan(300));
+    });
+
     test('master switch and per-type switches', () async {
       final sbi = (await repo.locations()).first;
       await repo.saveLocker(id: sbi.id, name: sbi.name, info: const LockerInfo(bank: 'SBI', rentDueDate: '2026-10-20'));

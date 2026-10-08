@@ -73,6 +73,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   String _category = 'Gold';
   String? _purity = '22K';
   String? _type;
+  int _typeKey = 0;
   String? _purchaseDate;
   String _status = Opt.inLocker;
   int? _locationId;
@@ -122,6 +123,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       'occasion': await repo.distinct('occasion'),
       'giftedBy': await repo.distinct('gifted_by'),
       'name': {...Opt.itemTypes.where((e) => e != 'Other'), ...await repo.distinct('item_type')}.toList(),
+      'category': await repo.categories(),
+      'type': await repo.itemTypes(),
     };
     if (_isEdit) {
       _photos = (await repo.photosFor(src!.id!)).map((p) => p.file).toList();
@@ -370,11 +373,15 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
     final purities = Opt.purities[_category] ?? const ['—'];
     return [
       SuggestIn(c['name']!, '${context.t('item.name')} *', _suggest['name'] ?? Opt.itemTypes),
+      Padding(
+        padding: const EdgeInsets.only(top: 6, left: 4),
+        child: Text(context.t('item.nameHelp'), style: const TextStyle(color: GV.muted, fontSize: 13.5)),
+      ),
       gap,
       Text(context.t('item.category'), style: const TextStyle(color: GV.muted, fontSize: 15)),
       const SizedBox(height: 8),
       Wrap(spacing: 8, runSpacing: 8, children: [
-        for (final cat in Opt.categories)
+        for (final cat in {...(_suggest['category'] ?? Opt.categories), _category})
           ChoiceChip(
             label: Text(context.s.opt(cat), style: const TextStyle(fontSize: 16)),
             selected: _category == cat,
@@ -384,6 +391,20 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
               if (_purity != '__custom' && !list.contains(_purity)) _purity = list.isEmpty ? null : list[cat == 'Gold' && list.length > 1 ? 1 : 0];
             }),
           ),
+        // Make your own category: Brass, Copper, Antique, Watches…
+        ActionChip(
+          avatar: const Icon(Icons.add, size: 18, color: GV.gold),
+          label: Text(context.t('item.newCategory'), style: const TextStyle(fontSize: 16)),
+          onPressed: () async {
+            final name = await promptText(context, context.t('item.newCategory'), label: context.t('item.newCategoryHint'));
+            if (name == null) return;
+            setState(() {
+              _category = name;
+              _purity = '—';
+              (_suggest['category'] ??= [...Opt.categories]).add(name);
+            });
+          },
+        ),
       ]),
       gap,
       Row(children: [
@@ -448,10 +469,27 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   List<Widget> _details(BuildContext context) => [
         SectionTitle(context.t('item.details')),
         Pick<String>(
+          key: ValueKey('type$_typeKey'),
           label: context.t('item.type'),
           value: _type,
-          items: [for (final t in Opt.itemTypes) (t, context.s.opt(t))],
-          onChanged: (v) => setState(() => _type = v),
+          items: [
+            for (final t in {...(_suggest['type'] ?? Opt.itemTypes), ?_type}) (t, context.s.opt(t)),
+            ('__new', context.t('item.newType')),
+          ],
+          onChanged: (v) async {
+            if (v == '__new') {
+              final name = await promptText(context, context.t('item.newType'), label: context.t('item.newTypeHint'));
+              setState(() {
+                if (name != null) {
+                  _type = name;
+                  (_suggest['type'] ??= [...Opt.itemTypes]).add(name);
+                }
+                _typeKey++; // redraw the dropdown if cancelled
+              });
+              return;
+            }
+            setState(() => _type = v);
+          },
         ),
         gap,
         TextIn(c['desc']!, context.t('item.description'), lines: 2),

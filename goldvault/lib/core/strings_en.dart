@@ -616,4 +616,11 @@ const Map<String, String> en = {
   'cal.nothing': 'No visits or alarms on this day. Long-press any date to set an alarm.',
   'dash.setAlarm': 'Set an alarm',
   'dash.setAlarmSub': 'Any date and time – keep or take jewellery, visits, anything',
+
+  // custom names / categories / types
+  'item.nameHelp': 'Type any name – e.g. Kasu mala, silver lamp, grandmother\'s ring, watch',
+  'item.newCategory': 'New category',
+  'item.newCategoryHint': 'E.g. Brass, Copper, Antique, Watches, Documents',
+  'item.newType': '+ New type (type your own)',
+  'item.newTypeHint': 'E.g. Vanki, Kamarbandh, Silver plate',
 };

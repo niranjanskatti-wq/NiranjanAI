@@ -152,6 +152,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final locs = await repo.locations(includeClosed: true);
     final all = {for (final l in locs) l.id!: l};
     final owners = await repo.owners();
+    final cats = await repo.categories();
     if (!mounted) return;
     var q = _q;
     final r = await showModalBottomSheet<ItemQuery>(
@@ -180,7 +181,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             Text(context.t('inv.filters'), style: Theme.of(c).textTheme.titleLarge),
             chips<String>(context.t('item.status'), [for (final s in Opt.statuses) (s, context.s.status(s))], q.statuses,
                 (v) => q = q.copyWith(statuses: v)),
-            chips<String>(context.t('item.category'), [for (final s in Opt.categories) (s, context.s.opt(s))], q.categories,
+            chips<String>(context.t('item.category'), [for (final s in cats) (s, context.s.opt(s))], q.categories,
                 (v) => q = q.copyWith(categories: v)),
             chips<int>(context.t('item.location'), [
               for (final l in locs) (l.id!, locLabel(l, all) + (l.isClosed ? ' (${context.t('loc.closed')})' : '')),

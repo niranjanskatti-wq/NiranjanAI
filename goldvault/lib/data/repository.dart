@@ -441,6 +441,14 @@ class VaultRepo {
     return r.map(Item.fromMap).toList();
   }
 
+  /// Built-in categories plus any the family created (e.g. "Brass").
+  Future<List<String>> categories() async =>
+      {...Opt.categories, ...await distinct('category')}.toList();
+
+  /// Built-in ornament types plus custom ones already used.
+  Future<List<String>> itemTypes() async =>
+      {...Opt.itemTypes, ...await distinct('item_type')}.toList();
+
   Future<List<String>> owners() async {
     final r = await db.rawQuery(
         "SELECT DISTINCT owner FROM items WHERE owner IS NOT NULL AND owner != '' ORDER BY owner");
@@ -457,7 +465,7 @@ class VaultRepo {
   }
 
   Future<List<String>> distinct(String column) async {
-    const allowed = {'shop_name', 'occasion', 'gifted_by', 'item_type', 'purity'};
+    const allowed = {'shop_name', 'occasion', 'gifted_by', 'item_type', 'purity', 'category'};
     if (!allowed.contains(column)) return [];
     final r = await db.rawQuery(
         "SELECT DISTINCT $column AS v FROM items WHERE $column IS NOT NULL AND $column != '' ORDER BY v");

@@ -222,6 +222,15 @@ void main() {
     await db.close();
   });
 
+  test('custom names, categories and types are kept and offered again', () async {
+    await repo.createItem(const Item(name: 'Grandmother\'s brass lamp', category: 'Brass', itemType: 'Lamp', status: Opt.atHome)
+        .copyWith(locationId: almirah));
+    expect(await repo.categories(), containsAll([...Opt.categories, 'Brass']));
+    expect(await repo.itemTypes(), contains('Lamp'));
+    expect((await repo.items(const ItemQuery(categories: {'Brass'}))).single.name, "Grandmother's brass lamp");
+    expect(metalOf('Brass', null), Metal.none); // not counted as gold/silver
+  });
+
   test('purity factors', () {
     expect(Opt.purityFactor('24K'), 1);
     expect(Opt.purityFactor('22K'), closeTo(0.9167, 0.001));

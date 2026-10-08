@@ -140,7 +140,7 @@ class ReminderEngine {
           at = next;
         }
       }
-      for (var k = 0; k < 12 && !Fmt.dateOnly(at).isAfter(horizon); k++) {
+      for (var k = 0; k < 400 && !Fmt.dateOnly(at).isAfter(horizon); k++) {
         // Planned visits without a time alert a few days ahead.
         final base = kind == DueKind.plannedVisit && r.time == null
             ? at.subtract(Duration(days: prefs.plannedLeadDays))

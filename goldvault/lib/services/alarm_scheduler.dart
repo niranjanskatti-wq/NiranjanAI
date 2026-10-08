@@ -12,7 +12,9 @@ import 'reminder_engine.dart';
 class AlarmScheduler {
   AlarmScheduler._();
 
-  static const _maxScheduled = 60;
+  // Android allows ~500 pending alarms per app; keep headroom for the
+  // background jobs. Later ones are scheduled automatically as these pass.
+  static const _maxScheduled = 450;
   // Far enough for alerts set months ahead; only the nearest are scheduled.
   static const _horizonDays = 400;
 
