@@ -7,130 +7,117 @@ import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../../services/reminder_engine.dart';
 import '../widgets/common.dart';
-import '../widgets/fields.dart';
 import '../widgets/tiles.dart';
+import 'alert_settings_screen.dart';
+import 'reminder_form_screen.dart';
 
 class RemindersScreen extends StatelessWidget {
   const RemindersScreen({super.key});
 
+  Future<(List<Reminder>, List<DueItem>, Prefs)> _load() async {
+    final repo = AppServices.I.repo;
+    final auto = (await AppServices.I.reminders.upcoming(horizonDays: 60)).where((d) => d.reminderId == null).toList();
+    return (await repo.reminders(), auto, await repo.prefs());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.t('rem.title'))),
+      appBar: AppBar(
+        title: Text(context.t('rem.title')),
+        actions: [
+          IconButton(
+            iconSize: 28,
+            tooltip: context.t('alerts.title'),
+            icon: const Icon(Icons.tune),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AlertSettingsScreen())),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: null,
-        onPressed: () => _add(context),
-        icon: const Icon(Icons.add_alarm),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReminderFormScreen())),
+        icon: const Icon(Icons.alarm_add),
         label: Text(context.t('rem.add')),
       ),
-      body: DataBuilder<(List<DueItem>, int, int)>(
-        load: () async {
-          final e = AppServices.I.reminders;
-          return (await e.upcoming(horizonDays: 90), await e.notReturnedDays(), await e.rentLeadDays());
-        },
+      body: DataBuilder<(List<Reminder>, List<DueItem>, Prefs)>(
+        load: _load,
         builder: (context, r) {
-          final (list, days, lead) = r;
+          final (mine, auto, prefs) = r;
           return ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 120), children: [
-            GoldCard(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(context.t('rem.rules'), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-                const SizedBox(height: 6),
-                Text(context.t('rem.rulesBody', {'days': days, 'lead': lead}), style: const TextStyle(color: GV.muted)),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(onPressed: () => editReminderRules(context), child: Text(context.t('common.change'))),
+            if (!prefs.notifications)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: GoldCard(
+                  accent: GV.danger,
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AlertSettingsScreen())),
+                  child: Row(children: [
+                    const Icon(Icons.notifications_off_outlined, color: GV.danger),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(context.t('alerts.allOff'))),
+                  ]),
                 ),
-              ]),
-            ),
-            const SizedBox(height: 14),
-            if (list.isEmpty)
-              EmptyState(icon: Icons.notifications_none, text: context.t('dash.noReminders'))
+              ),
+            SectionTitle(context.t('rem.mine')),
+            if (mine.isEmpty)
+              GoldCard(child: Text(context.t('rem.mineEmpty'), style: const TextStyle(color: GV.muted)))
+            else
+              GoldCard(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Column(children: [for (final m in mine) _ReminderTile(m, prefs.alertTime)]),
+              ),
+            SectionTitle(context.t('rem.auto')),
+            if (auto.isEmpty)
+              GoldCard(child: Text(context.t('dash.noReminders'), style: const TextStyle(color: GV.muted)))
             else
               GoldCard(
                 padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Column(children: [
-                  for (final d in list)
-                    DueTile(
-                      d,
-                      trailing: d.reminderId == null
-                          ? null
-                          : IconButton(
-                              tooltip: context.t('rem.done'),
-                              icon: const Icon(Icons.check_circle_outline, color: GV.ok, size: 28),
-                              onPressed: () => AppServices.I.repo.setReminderDone(d.reminderId!, true),
-                            ),
-                    ),
-                ]),
+                child: Column(children: [for (final d in auto) DueTile(d)]),
               ),
           ]);
         },
       ),
     );
   }
-
-  Future<void> _add(BuildContext context) async {
-    final title = TextEditingController();
-    var date = DateTime.now().add(const Duration(days: 1));
-    int? loc;
-    final ok = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      builder: (c) => StatefulBuilder(
-        builder: (c, set) => Padding(
-          padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + MediaQuery.of(c).viewInsets.bottom),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text(context.t('rem.add'), style: Theme.of(c).textTheme.titleLarge),
-            gap,
-            TextIn(title, context.t('rem.what'), hint: context.t('rem.whatHint')),
-            gap,
-            DateIn(label: context.t('common.date'), value: Fmt.isoDate(date), allowClear: false, onChanged: (v) => set(() => date = DateTime.parse(v!))),
-            gap,
-            LocationPick(label: context.t('rem.lockerOptional'), value: loc, lockersOnly: true, onChanged: (v) => set(() => loc = v)),
-            const SizedBox(height: 20),
-            FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(context.t('common.save'))),
-          ]),
-        ),
-      ),
-    );
-    if (ok != true) return;
-    final repo = AppServices.I.repo;
-    final l = loc == null ? null : await repo.location(loc!);
-    final text = title.text.trim();
-    if (text.isEmpty && l == null) return;
-    await repo.saveReminder(Reminder(
-      kind: l != null && text.isEmpty ? 'planned_visit' : 'custom',
-      title: text.isEmpty ? l!.name : text,
-      dueDate: Fmt.isoDate(date),
-      locationId: l?.id,
-    ));
-  }
 }
 
-Future<void> editReminderRules(BuildContext context) async {
-  final repo = AppServices.I.repo;
-  final e = AppServices.I.reminders;
-  final days = TextEditingController(text: '${await e.notReturnedDays()}');
-  final lead = TextEditingController(text: '${await e.rentLeadDays()}');
-  if (!context.mounted) return;
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (c) => AlertDialog(
-      title: Text(context.t('rem.rules')),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextIn(days, context.t('rem.notReturnedDays'), number: true, suffix: context.t('common.days')),
-        gap,
-        TextIn(lead, context.t('rem.rentLead'), number: true, suffix: context.t('common.days')),
+class _ReminderTile extends StatelessWidget {
+  const _ReminderTile(this.r, this.defaultTime);
+  final Reminder r;
+  final String defaultTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = AppServices.I.repo;
+    final at = r.at(defaultTime);
+    final overdue = at.isBefore(DateTime.now());
+    final icon = switch (r.kind) { 'keep' => Icons.login, 'take' => Icons.logout, 'planned_visit' => Icons.event_available, _ => Icons.alarm };
+    final color = !r.enabled ? GV.muted : (overdue ? GV.danger : GV.gold);
+    return ListTile(
+      leading: CircleAvatar(backgroundColor: color.withValues(alpha: 0.15), child: Icon(r.alarm ? Icons.alarm_on : icon, color: color)),
+      title: Text(r.title, style: TextStyle(color: r.enabled ? GV.text : GV.muted)),
+      subtitle: Text([
+        '${context.t('rem.kind.${r.kind}')} · ${Fmt.dateTime(at)}',
+        if (r.repeat != 'none') context.t('rem.repeat.${r.repeat}'),
+        if (overdue) context.t('rem.overdue'),
+      ].join(' · ')),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ReminderFormScreen(existing: r))),
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+        Switch(value: r.enabled, onChanged: (v) => repo.setReminderEnabled(r.id!, v)),
+        PopupMenuButton<String>(
+          color: GV.surface2,
+          onSelected: (v) async {
+            if (v == 'done') await repo.setReminderDone(r.id!, true);
+            if (v == 'delete' && context.mounted && await confirm(context, context.t('rem.delete'), r.title, danger: true)) {
+              await repo.deleteReminder(r.id!);
+            }
+          },
+          itemBuilder: (c) => [
+            PopupMenuItem(value: 'done', child: Text(context.t('rem.done'))),
+            PopupMenuItem(value: 'delete', child: Text(context.t('rem.delete'))),
+          ],
+        ),
       ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(c, false), child: Text(context.t('common.cancel'))),
-        FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(context.t('common.save'))),
-      ],
-    ),
-  );
-  if (ok != true) return;
-  final d = int.tryParse(days.text.trim());
-  final l = int.tryParse(lead.text.trim());
-  if (d != null && d > 0) await repo.setSetting('not_returned_days', '$d');
-  if (l != null && l >= 0) await repo.setSetting('rent_lead_days', '$l');
-  repo.revision.value++;
+    );
+  }
 }

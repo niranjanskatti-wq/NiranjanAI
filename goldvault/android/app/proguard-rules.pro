@@ -8,3 +8,9 @@
 -keep class com.google.android.gms.auth.** { *; }
 -keep class androidx.credentials.** { *; }
 -dontwarn com.google.errorprone.annotations.**
+# flutter_local_notifications stores scheduled alarms with Gson (needs generics).
+-keep class com.dexterous.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken

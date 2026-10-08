@@ -12,8 +12,10 @@ Everything (inventory, lockers, visits, reminders, exports) works without intern
 | **Lockers & places** | SBI Locker, HDFC Locker and Home (Almirah / Safe / Drawer) are pre-created. **+ Add Locker** has every field: bank, branch, address, locker no., size, key no., opened date, holders, joint holders, nominee, rent and due date, contact, notes. Each locker gets its own calendar colour. **Close locker** moves the items out first and keeps the history. Each card shows item count, gold and silver weight, and estimated value. |
 | **Ornaments** | Serial numbers assigned automatically (GV-0001…). Four add flows: **Quick add** (fill details later), **Newly purchased** (shop, bill, rate, making charges, GST, total calculator, bill photo), **Full details**, and **Duplicate** (copies the photos too). Up to 5 photos per item. Nine statuses; sold/exchanged/gifted items stay in history instead of being deleted. Search by name, serial, owner, location, tag or HUID. Filter by status, category, location or owner, and sort by weight, name, date and more. |
 | **Visit log** | Log the locker, date, time in/out, who visited and the purpose. Pick the items **deposited** and **withdrawn**, and their locations update automatically. Full movement history per item ("Kept in SBI Bank Locker · 12 Mar 2026, 11:30 AM"). Month/week calendar colour-coded per locker; tap a day to see what moved. Planned visits. A **"Where is my ornament?"** screen. |
-| **Reminders** | Locker rent due (configurable lead time, plus "mark paid" which rolls the date forward a year), items not returned after X days, planned visits, and custom reminders. Local notifications come from a background job that needs no internet. |
-| **Dashboard** | Total gold, silver and item count. Breakdown by location, owner and category. Manual 24K gold, silver and platinum rates per gram give an estimated value adjusted for purity. Recent movements and upcoming reminders. |
+| **Alarms & reminders** | Alarm-style reminders at an exact date and time for **keep jewellery in the locker**, **take jewellery from the locker**, planned visits, and anything else. You can link ornaments and choose a repeat (none, weekly, monthly or yearly). "Ring like an alarm" uses the alarm volume and keeps ringing until opened. Each reminder has its own on/off switch. A "keep" alarm is marked done automatically once its ornaments are deposited. When taking items out during a visit, **"Remind me to put these back"** sets one up. Automatic alerts cover locker rent (lead days, plus "mark paid") and items not returned after X days. Alarms are scheduled exactly with `AlarmManager` (they survive a reboot), and a test-alarm button checks the sound. |
+| **Bank holidays** | A **second calendar** beside the visit log. All Sundays and the 2nd/4th Saturdays are closed (each rule can be switched off). Fixed-date holidays come pre-loaded (Republic Day, Ambedkar Jayanti, May Day, Independence Day, Gandhi Jayanti, Kannada Rajyotsava, Christmas); add festivals yourself, one-off or yearly, and switch any holiday off. Consecutive closed days are joined into one closure ("Bank closed 3 days, Fri–Sun"). You are **warned N days before**, at your alert time, to take out jewellery you need, and each closure has a one-tap "alarm to take jewellery" button. Holidays also show in red on the visit calendar (optional), and planning a visit on a closed day shows a warning. |
+| **Customisable** | *Alerts & alarms* has a master switch plus an on/off switch for rent, planned visits, not-returned, holiday warnings, weekend warnings and backup notifications, with lead days, a default alert time, and alarm-by-default. *Display* turns current prices/estimated value (off by default) and each dashboard section on or off. *Security* sets auto-lock to 30 s, 1, 2 or 5 min, and toggles screenshot blocking and fingerprint unlock. |
+| **Dashboard** | Total gold, silver and item count. Breakdown by location, owner and category. Recent movements and upcoming reminders. *Optional* (off by default): manual 24K gold, silver and platinum rates per gram for an estimated value adjusted for purity. While it is off, no current prices or values appear anywhere (app, PDF, Excel or Sheets). Purchase bill amounts are still kept. |
 | **Google Sheets** | One-way push (the app is the master copy) to an auto-created "GoldVault Inventory" sheet. Tabs: Inventory, Lockers, Locker Visits, Movement History, Locations, plus **one tab per active locker**. Manual "Sync now" and background auto-sync when online. **Share Sheet** gives chosen emails view-only or edit access. |
 | **Export** | Excel (.xlsx, same tabs) and a PDF report, both shareable via WhatsApp or email. Both work offline. |
 | **Drive backup** | Weekly on the day and time you choose (WorkManager), optionally Wi-Fi only, and retried when connectivity returns. The full database and all photos are encrypted with a backup password into a "GoldVault Backups" folder. The last 8 are kept, you get a notification after each one, and "Last backup" appears in settings. **Restore on a new phone** with the backup password. |
@@ -23,7 +25,12 @@ Everything (inventory, lockers, visits, reminders, exports) works without intern
 
 ### Option A: GitHub Actions (no local setup)
 
-`.github/workflows/goldvault-apk.yml` analyses, tests and builds `app-release.apk` on every push that touches `goldvault/`. Download it from the run's **Artifacts** (`GoldVault-apk`).
+`.github/workflows/goldvault-apk.yml` analyses, tests and builds the APKs on every push that touches `goldvault/`. Download them from the run's **Artifacts**:
+
+- **`GoldVault-arm64 (most phones)`**: for any phone from roughly the last 8 years.
+- **`GoldVault-armv7 (very old phones)`**: only if the arm64 one won't install.
+
+Each phone gets an APK built only for its own processor (`--split-per-abi`), instead of one universal APK carrying native libraries for every processor type.
 
 Optional repository secrets:
 
@@ -40,8 +47,10 @@ Requires Flutter 3.47+ and the Android SDK.
 cd goldvault
 flutter pub get
 flutter test
-flutter build apk --release --dart-define=GOOGLE_SERVER_CLIENT_ID=XXXX.apps.googleusercontent.com
-# → build/app/outputs/flutter-apk/app-release.apk
+flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64 \
+  --obfuscate --split-debug-info=build/symbols \
+  --dart-define=GOOGLE_SERVER_CLIENT_ID=XXXX.apps.googleusercontent.com
+# → build/app/outputs/flutter-apk/app-arm64-v8a-release.apk (most phones)
 ```
 
 For release signing, create `android/key.properties` (git-ignored):
@@ -98,6 +107,8 @@ test/         offline, UI flow, repository, services, strings
 
 ## Known limitations
 
+- Festival bank holidays (Ugadi, Ayudha Pooja, Deepavali…) move every year and differ by state, so they are not pre-loaded. Add them from your bank's published holiday list.
+- Alarm-style reminders ring loudly and keep ringing, but they don't take over the lock screen like the phone's own clock app (deliberately, so GoldVault never shows over the lock screen).
 - The PDF report uses Latin fonts. Names typed in Kannada show correctly in the app, Excel and Sheets, but not in the PDF.
 - Restore replaces all data on the phone. Merging two phones is not supported.
 - Sheets sync is one-way. Edits made in the sheet are overwritten on the next sync.

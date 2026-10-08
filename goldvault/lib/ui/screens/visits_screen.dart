@@ -8,6 +8,8 @@ import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../widgets/common.dart';
 import '../widgets/tiles.dart';
+import '../../services/holiday_calendar.dart';
+import 'holidays_view.dart';
 import 'visit_detail_screen.dart';
 import 'visit_form_screen.dart';
 
@@ -22,7 +24,8 @@ class _Cal {
   final List<Reminder> planned;
   final Map<int, Location> locs;
   final Map<int, int> counts;
-  _Cal(this.visits, this.planned, this.locs, this.counts);
+  final HolidayCalendar? holidays; // null when hidden on this calendar
+  _Cal(this.visits, this.planned, this.locs, this.counts, this.holidays);
 }
 
 class VisitsScreen extends StatefulWidget {
@@ -35,24 +38,54 @@ class _VisitsScreenState extends State<VisitsScreen> {
   DateTime _focused = DateTime.now();
   DateTime _selected = Fmt.dateOnly(DateTime.now());
   CalendarFormat _format = CalendarFormat.month;
+  int _tab = 0; // 0 = visit log, 1 = bank holidays
 
   Future<_Cal> _load() async {
     final repo = AppServices.I.repo;
     final planned = (await repo.reminders(includeDone: true)).where((r) => r.kind == 'planned_visit').toList();
-    return _Cal(await repo.visits(), planned, await repo.locationMap(), await repo.visitItemCounts());
+    final showHol = (await repo.prefs()).holidaysOnVisitCal;
+    return _Cal(await repo.visits(), planned, await repo.locationMap(), await repo.visitItemCounts(),
+        showHol ? await HolidayCalendar.load(repo) : null);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.t('visit.title'))),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: null,
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => VisitFormScreen(date: _selected))),
-        icon: const Icon(Icons.add, size: 28),
-        label: Text(context.t('visit.log')),
+      appBar: AppBar(
+        title: Text(context.t('visit.title')),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(64),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<int>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(value: 0, icon: const Icon(Icons.event_note), label: Text(context.t('visit.logTab'))),
+                  ButtonSegment(value: 1, icon: const Icon(Icons.beach_access_outlined), label: Text(context.t('hol.title'))),
+                ],
+                selected: {_tab},
+                onSelectionChanged: (v) => setState(() => _tab = v.first),
+              ),
+            ),
+          ),
+        ),
       ),
-      body: DataBuilder<_Cal>(
+      floatingActionButton: _tab == 0
+          ? FloatingActionButton.extended(
+              heroTag: null,
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => VisitFormScreen(date: _selected))),
+              icon: const Icon(Icons.add, size: 28),
+              label: Text(context.t('visit.log')),
+            )
+          : FloatingActionButton.extended(
+              heroTag: null,
+              onPressed: () => editHoliday(context),
+              icon: const Icon(Icons.add, size: 28),
+              label: Text(context.t('hol.add')),
+            ),
+      body: _tab == 1 ? const HolidaysView() : DataBuilder<_Cal>(
         load: _load,
         builder: (context, d) {
           final byDay = <DateTime, List<_Ev>>{};
@@ -111,6 +144,21 @@ class _VisitsScreenState extends State<VisitsScreen> {
                   selectedTextStyle: const TextStyle(fontSize: 16, color: Color(0xFF1A1405), fontWeight: FontWeight.w800),
                 ),
                 calendarBuilders: CalendarBuilders<_Ev>(
+                  defaultBuilder: (c, day, f) {
+                    final h = d.holidays;
+                    if (h == null || !h.isClosed(day)) return null;
+                    final named = h.namedOn(day).isNotEmpty;
+                    return Center(
+                      child: Text('${day.day}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: holidayRed,
+                            fontWeight: named ? FontWeight.w900 : FontWeight.w500,
+                            decoration: named ? TextDecoration.underline : null,
+                            decorationColor: holidayRed,
+                          )),
+                    );
+                  },
                   markerBuilder: (c, day, events) {
                     if (events.isEmpty) return null;
                     return Positioned(
@@ -147,6 +195,26 @@ class _VisitsScreenState extends State<VisitsScreen> {
                 ]),
               ),
             SectionTitle(Fmt.date(_selected)),
+            if (d.holidays != null && d.holidays!.isClosed(_selected))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: GoldCard(
+                  accent: holidayRed,
+                  padding: const EdgeInsets.all(12),
+                  child: Row(children: [
+                    const Icon(Icons.beach_access, color: holidayRed),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(context.t('hol.closedThatDay', {
+                        'why': [
+                          ...d.holidays!.namedOn(_selected),
+                          if (d.holidays!.weekendOn(_selected) != null) context.t('hol.${d.holidays!.weekendOn(_selected)}'),
+                        ].join(', '),
+                      })),
+                    ),
+                  ]),
+                ),
+              ),
             if (dayVisits.isEmpty && dayPlanned.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),

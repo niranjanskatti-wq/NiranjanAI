@@ -11,6 +11,7 @@ import 'package:goldvault/data/constants.dart';
 import 'package:goldvault/data/models.dart';
 import 'package:goldvault/data/repository.dart';
 import 'package:goldvault/services/backup_service.dart';
+import 'package:goldvault/services/holiday_calendar.dart';
 import 'package:goldvault/services/reminder_engine.dart';
 import 'package:goldvault/services/report_data.dart';
 
@@ -127,17 +128,105 @@ void main() {
       final now = DateTime(2026, 10, 8, 9);
       final due = await engine.upcoming(now: now);
       expect(due.map((d) => d.kind), containsAll([DueKind.rent, DueKind.notReturned, DueKind.plannedVisit]));
+      // Planned visit alarm: the day before, at the default alert time.
+      final planned = due.firstWhere((d) => d.kind == DueKind.plannedVisit);
+      expect(planned.notifyAt, DateTime(2026, 10, 8, 9));
+      // Daily nags (from the background job) are only for overdue rent / items.
       final notify = await engine.dueForNotification(now: now);
-      expect(notify.map((d) => d.kind).toSet(), {DueKind.rent, DueKind.notReturned, DueKind.plannedVisit});
+      expect(notify.map((d) => d.kind).toSet(), {DueKind.rent, DueKind.notReturned});
 
       // Logging the visit completes the plan; returning the chain clears that reminder.
       await repo.logVisit(Visit(locationId: sbi.id!, visitDate: '2026-10-09', timeIn: '10:00'), deposit: [chain.id!]);
       final after = await engine.upcoming(now: now);
-      expect(after.map((d) => d.kind), [DueKind.rent]);
+      // (Kannada Rajyotsava on 1 Nov also shows up as a holiday warning.)
+      expect(after.where((d) => d.kind != DueKind.holiday).map((d) => d.kind), [DueKind.rent]);
+      expect(after.where((d) => d.kind == DueKind.holiday).single.title, 'Kannada Rajyotsava');
 
       // Far from the due date, rent is not yet nagging.
       await repo.markRentPaid(sbi.id!);
       expect(await engine.dueForNotification(now: now), isEmpty);
+    });
+  });
+
+  group('alarms & bank holidays', () {
+    late VaultRepo repo;
+    setUp(() async => repo = await openTestRepo());
+
+    test('bank holiday rules: Sundays, 2nd/4th Saturdays and the holiday list', () async {
+      final cal = await HolidayCalendar.load(repo);
+      expect(cal.namedOn(DateTime(2026, 10, 2)), ['Gandhi Jayanti']);
+      expect(cal.weekendOn(DateTime(2026, 10, 10)), 'sat2'); // 2nd Saturday
+      expect(cal.weekendOn(DateTime(2026, 10, 3)), isNull); // 1st Saturday
+      expect(cal.weekendOn(DateTime(2026, 10, 11)), 'sun');
+      expect(cal.isClosed(DateTime(2026, 10, 12)), isFalse);
+
+      // A festival added by the family joins the weekend into one long closure.
+      await repo.saveHoliday(const Holiday(name: 'Ayudha Pooja', date: '2026-10-23'));
+      final closures = (await HolidayCalendar.load(repo)).closures(DateTime(2026, 10, 20), DateTime(2026, 10, 31));
+      final c = closures.firstWhere((c) => c.hasNamedHoliday);
+      expect(c.start, DateTime(2026, 10, 23)); // Fri
+      expect(c.end, DateTime(2026, 10, 25)); // Sat (4th) + Sun
+      expect(c.days, 3);
+
+      // Warning 2 days before at the alert time, and switchable.
+      final due = await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15), horizonDays: 30);
+      final h = due.firstWhere((d) => d.kind == DueKind.holiday && d.date == DateTime(2026, 10, 23));
+      expect(h.notifyAt, DateTime(2026, 10, 21, 9));
+      expect(h.days, 3);
+      await repo.setPref('holiday_alerts', false);
+      final off = await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15), horizonDays: 30);
+      expect(off.where((d) => d.kind == DueKind.holiday), isEmpty);
+
+      // Rules can be switched off too.
+      await repo.setPref('closed_sat_2_4', false);
+      expect((await HolidayCalendar.load(repo)).isClosed(DateTime(2026, 10, 10)), isFalse);
+    });
+
+    test('alarm reminders: exact time, repeat, on/off, auto-done when kept in locker', () async {
+      final sbi = (await repo.locations()).first;
+      final ring = await repo.createItem(
+          const Item(name: 'Ring', category: 'Gold', status: Opt.atHome, grossWt: 4).copyWith(locationId: (await repo.locations()).last.id));
+      final id = await repo.saveReminder(Reminder(
+        kind: 'keep',
+        title: 'Keep ring in SBI',
+        dueDate: '2026-10-20',
+        time: '18:30',
+        locationId: sbi.id,
+        itemIds: [ring.id!],
+      ));
+      var due = await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15));
+      final k = due.firstWhere((d) => d.reminderId == id);
+      expect(k.kind, DueKind.keep);
+      expect(k.notifyAt, DateTime(2026, 10, 20, 18, 30));
+      expect(k.alarm, isTrue);
+
+      await repo.setReminderEnabled(id, false);
+      due = await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15));
+      expect(due.where((d) => d.reminderId == id), isEmpty);
+      await repo.setReminderEnabled(id, true);
+
+      // Depositing the ring completes the reminder.
+      await repo.logVisit(Visit(locationId: sbi.id!, visitDate: '2026-10-19', timeIn: '11:00'), deposit: [ring.id!]);
+      expect((await repo.reminder(id))!.done, isTrue);
+
+      // Repeating reminders roll forward instead of finishing.
+      final m = await repo.saveReminder(const Reminder(kind: 'custom', title: 'Check locker', dueDate: '2026-10-31', repeat: 'monthly'));
+      due = await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15), horizonDays: 60);
+      expect(due.where((d) => d.reminderId == m).map((d) => d.date), [DateTime(2026, 10, 31), DateTime(2026, 12, 1)]);
+      await repo.setReminderDone(m, true);
+      expect((await repo.reminder(m))!.dueDate, '2026-12-01');
+      expect((await repo.reminder(m))!.done, isFalse);
+    });
+
+    test('master switch and per-type switches', () async {
+      final sbi = (await repo.locations()).first;
+      await repo.saveLocker(id: sbi.id, name: sbi.name, info: const LockerInfo(bank: 'SBI', rentDueDate: '2026-10-20'));
+      expect((await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15))).any((d) => d.kind == DueKind.rent), isTrue);
+      await repo.setPref('rent_alerts', false);
+      expect((await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15))).any((d) => d.kind == DueKind.rent), isFalse);
+      expect((await repo.prefs()).notifications, isTrue);
+      await repo.setPref('notif_enabled', false);
+      expect((await repo.prefs()).notifications, isFalse);
     });
   });
 
@@ -159,6 +248,7 @@ void main() {
         ));
       }
       await repo.saveRates(const Rates(gold24: 7200, silver: 92));
+      await repo.setPref('show_values', true);
     });
 
     test('report has the five sheet tabs plus one per active locker', () async {
@@ -174,6 +264,11 @@ void main() {
       ]);
       expect(tabs.first.rows.length, 30);
       expect(tabs.first.header.first, 'Serial No');
+      expect(tabs.first.header, contains('Est. value (₹)'));
+      await svc.repo.setPref('show_values', false);
+      final hidden = await ReportBuilder(svc.repo).build();
+      expect(hidden.first.header, isNot(contains('Est. value (₹)')));
+      expect(hidden.first.rows.first.length, hidden.first.header.length);
     });
 
     test('Excel export is a valid xlsx with all tabs', () async {

@@ -20,7 +20,7 @@ Future<void> main() async {
   await initializeDateFormatting();
   try {
     final svc = await AppServices.init();
-    final lock = AppLock(svc.secure);
+    final lock = AppLock(svc.secure, timeout: Duration(seconds: (await svc.repo.prefs()).autoLockSeconds));
     await lock.init();
     final ctrl = AppController(svc);
     await ctrl.load();

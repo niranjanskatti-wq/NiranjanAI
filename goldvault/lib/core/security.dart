@@ -9,7 +9,9 @@ class AppLock extends ChangeNotifier with WidgetsBindingObserver {
   AppLock(this.secure, {this.timeout = const Duration(minutes: 1)});
 
   final SecureStore secure;
-  final Duration timeout;
+
+  /// How long the app may stay in the background before it locks.
+  Duration timeout;
   final LocalAuthentication _auth = LocalAuthentication();
 
   bool _locked = true;

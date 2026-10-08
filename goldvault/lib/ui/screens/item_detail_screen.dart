@@ -33,7 +33,7 @@ class ItemDetailScreen extends StatelessWidget {
     final repo = AppServices.I.repo;
     final i = await repo.item(itemId);
     if (i == null) return null;
-    return _Detail(i, await repo.photosFor(itemId), await repo.historyFor(itemId), await repo.locationMap(), await repo.rates());
+    return _Detail(i, await repo.photosFor(itemId), await repo.historyFor(itemId), await repo.locationMap(), await repo.valueRates());
   }
 
   @override

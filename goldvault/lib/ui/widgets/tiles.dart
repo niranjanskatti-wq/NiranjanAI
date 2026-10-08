@@ -62,35 +62,58 @@ class MovementTile extends StatelessWidget {
 }
 
 class DueTile extends StatelessWidget {
-  const DueTile(this.d, {super.key, this.trailing});
+  const DueTile(this.d, {super.key, this.trailing, this.onTap});
   final DueItem d;
   final Widget? trailing;
+  final VoidCallback? onTap;
+
+  static (IconData, String) look(BuildContext context, DueKind k) => switch (k) {
+        DueKind.rent => (Icons.receipt_long_outlined, context.t('rem.rent')),
+        DueKind.notReturned => (Icons.assignment_return_outlined, context.t('rem.notReturned')),
+        DueKind.plannedVisit => (Icons.event_available_outlined, context.t('rem.planned')),
+        DueKind.custom => (Icons.alarm, context.t('rem.custom')),
+        DueKind.keep => (Icons.login, context.t('rem.kind.keep')),
+        DueKind.take => (Icons.logout, context.t('rem.kind.take')),
+        DueKind.holiday => (Icons.beach_access_outlined, context.t('rem.holiday')),
+      };
 
   @override
   Widget build(BuildContext context) {
     final overdue = d.isOverdue(DateTime.now());
-    final (icon, label) = switch (d.kind) {
-      DueKind.rent => (Icons.receipt_long_outlined, context.t('rem.rent')),
-      DueKind.notReturned => (Icons.assignment_return_outlined, context.t('rem.notReturned')),
-      DueKind.plannedVisit => (Icons.event_available_outlined, context.t('rem.planned')),
-      DueKind.custom => (Icons.alarm, context.t('rem.custom')),
+    final (icon, label) = look(context, d.kind);
+    final color = overdue ? GV.danger : (d.kind == DueKind.holiday ? const Color(0xFFEF9A9A) : GV.gold);
+    final title = d.kind == DueKind.holiday
+        ? context.t('hol.closedDays', {'n': d.days}) + (d.title.isEmpty ? '' : ' · ${d.title}')
+        : d.title;
+    final when = d.kind == DueKind.holiday
+        ? (d.subtitle ?? Fmt.date(d.date))
+        : (d.notifyAt.hour != 0 || d.notifyAt.minute != 0) && d.reminderId != null
+            ? Fmt.dateTime(d.notifyAt)
+            : Fmt.date(d.date);
+    final extra = switch (d.kind) {
+      DueKind.notReturned => context.t('rem.outSince', {'date': d.subtitle}),
+      DueKind.holiday => context.t('hol.alertOn', {'date': Fmt.dateTime(d.notifyAt)}),
+      DueKind.plannedVisit => null,
+      _ => d.subtitle,
     };
-    final color = overdue ? GV.danger : GV.gold;
     return ListTile(
-      leading: CircleAvatar(backgroundColor: color.withValues(alpha: 0.15), child: Icon(icon, color: color)),
-      title: Text(d.title),
-      subtitle: Text('$label · ${Fmt.date(d.date)}${overdue ? ' · ${context.t('rem.overdue')}' : ''}'
-          '${d.subtitle != null && d.kind != DueKind.plannedVisit ? '\n${d.kind == DueKind.notReturned ? context.t('rem.outSince', {'date': d.subtitle}) : d.subtitle}' : ''}'),
-      isThreeLine: d.subtitle != null && d.kind != DueKind.plannedVisit,
+      leading: CircleAvatar(
+        backgroundColor: color.withValues(alpha: 0.15),
+        child: Icon(d.alarm ? Icons.alarm_on : icon, color: color),
+      ),
+      title: Text(title),
+      subtitle: Text('$label · $when${overdue ? ' · ${context.t('rem.overdue')}' : ''}${extra == null ? '' : '\n$extra'}'),
+      isThreeLine: extra != null,
       trailing: trailing,
-      onTap: () {
-        final Widget page = switch (d.kind) {
-          DueKind.rent => LocationDetailScreen(locationId: d.locationId!),
-          DueKind.notReturned => ItemDetailScreen(itemId: d.itemId!),
-          _ => const RemindersScreen(),
-        };
-        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-      },
+      onTap: onTap ??
+          () {
+            final Widget page = switch (d.kind) {
+              DueKind.rent => LocationDetailScreen(locationId: d.locationId!),
+              DueKind.notReturned => ItemDetailScreen(itemId: d.itemId!),
+              _ => const RemindersScreen(),
+            };
+            Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+          },
     );
   }
 }

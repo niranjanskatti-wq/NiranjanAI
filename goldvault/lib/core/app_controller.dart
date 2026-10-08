@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../services/alarm_scheduler.dart';
 import '../services/background.dart';
 import 'app_services.dart';
 import 'security.dart';
@@ -16,6 +17,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
 
   final ValueNotifier<String?> syncStatus = ValueNotifier(null);
   Timer? _debounce;
+  Timer? _alarmDebounce;
   bool _syncing = false;
 
   Future<void> load() async {
@@ -27,6 +29,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     // Google is optional and must never block offline start-up.
     unawaited(svc.google.load().then((_) => _autoSync()));
     unawaited(Background.schedule(svc));
+    unawaited(AlarmScheduler.reschedule(svc.repo));
   }
 
   Future<void> setLanguage(String code) async {
@@ -36,6 +39,9 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _onDataChanged() {
+    // Reminders, holidays or settings may have changed: refresh alarms.
+    _alarmDebounce?.cancel();
+    _alarmDebounce = Timer(const Duration(seconds: 2), () => AlarmScheduler.reschedule(svc.repo));
     _debounce?.cancel();
     _debounce = Timer(const Duration(seconds: 20), _autoSync);
   }
@@ -68,6 +74,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     svc.repo.revision.removeListener(_onDataChanged);
     _debounce?.cancel();
+    _alarmDebounce?.cancel();
     super.dispose();
   }
 }

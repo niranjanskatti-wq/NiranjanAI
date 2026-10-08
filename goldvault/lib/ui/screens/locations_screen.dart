@@ -29,7 +29,7 @@ class _LocationsScreenState extends State<LocationsScreen> {
   Future<_Locs> _load() async {
     final repo = AppServices.I.repo;
     return _Locs(await repo.locations(includeClosed: _showClosed), await repo.allLockerInfo(),
-        await repo.totalsByLocation(), (await repo.rates()).isSet);
+        await repo.totalsByLocation(), (await repo.valueRates()).isSet);
   }
 
   /// Totals for a location including its sub-locations.

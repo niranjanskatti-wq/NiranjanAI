@@ -38,7 +38,7 @@ class ReportBuilder {
     final locs = await repo.locationMap();
     final lockers = await repo.allLockerInfo();
     final items = await repo.items(const ItemQuery());
-    final rates = await repo.rates();
+    final rates = await repo.valueRates();
 
     String locName(int? id) {
       if (id == null) return '';
@@ -70,7 +70,7 @@ class ReportBuilder {
           i.makingCharges,
           i.gst,
           i.totalPrice,
-          rates.isSet ? rates.valueOf(i).roundToDouble() : null,
+          if (rates.isSet) rates.valueOf(i).roundToDouble(),
           i.occasion ?? '',
           i.giftedBy ?? '',
           i.tags ?? '',
@@ -78,7 +78,7 @@ class ReportBuilder {
           i.notes ?? '',
         ];
 
-    const itemHeader = [
+    final itemHeader = [
       'Serial No',
       'Name',
       'Type',
@@ -100,7 +100,7 @@ class ReportBuilder {
       'Making (₹)',
       'GST (₹)',
       'Total price (₹)',
-      'Est. value (₹)',
+      if (rates.isSet) 'Est. value (₹)',
       'Occasion',
       'Gifted by',
       'Tags',
@@ -217,22 +217,22 @@ class ReportBuilder {
         t?.items ?? 0,
         _r3(t?.gold),
         _r3(t?.silver),
-        rates.isSet ? (t?.value ?? 0).roundToDouble() : null,
+        if (rates.isSet) (t?.value ?? 0).roundToDouble(),
       ]);
     }
     final out = totals[null];
     if (out != null) {
       locRows.add(['Out (worn / repair / lent / pledged)', '', '', out.items, _r3(out.gold),
-          _r3(out.silver), rates.isSet ? out.value.roundToDouble() : null]);
+          _r3(out.silver), if (rates.isSet) out.value.roundToDouble()]);
     }
-    tables.add(ReportTable('Locations', const [
+    tables.add(ReportTable('Locations', [
       'Location',
       'Type',
       'Status',
       'Items',
       'Gold (g)',
       'Silver (g)',
-      'Est. value (₹)',
+      if (rates.isSet) 'Est. value (₹)',
     ], locRows));
 
     if (includeLockerTabs) {

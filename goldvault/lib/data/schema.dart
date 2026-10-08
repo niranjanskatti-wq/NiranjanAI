@@ -3,7 +3,7 @@ import 'package:sqflite_sqlcipher/sqlite_api.dart';
 import '../core/format.dart';
 import 'constants.dart';
 
-const int kSchemaVersion = 1;
+const int kSchemaVersion = 2;
 
 /// All tables, in dependency order. Used for creation, JSON backup and wipe.
 const List<String> kTables = [
@@ -16,9 +16,53 @@ const List<String> kTables = [
   'movements',
   'reminders',
   'notified',
+  'holidays',
 ];
 
-Future<void> createSchema(DatabaseExecutor db) async {
+/// Upgrades an existing database from [from] to [kSchemaVersion].
+Future<void> upgradeSchema(DatabaseExecutor db, int from) async {
+  if (from < 2) {
+    // Alarm-style reminders (time, repeat, items) + bank holiday calendar.
+    await db.execute('ALTER TABLE reminders ADD COLUMN time TEXT');
+    await db.execute("ALTER TABLE reminders ADD COLUMN repeat TEXT NOT NULL DEFAULT 'none'");
+    await db.execute('ALTER TABLE reminders ADD COLUMN alarm INTEGER NOT NULL DEFAULT 1');
+    await db.execute('ALTER TABLE reminders ADD COLUMN enabled INTEGER NOT NULL DEFAULT 1');
+    await db.execute('ALTER TABLE reminders ADD COLUMN item_ids TEXT');
+    await _createHolidays(db);
+    await seedHolidays(db);
+  }
+}
+
+Future<void> _createHolidays(DatabaseExecutor db) => db.execute('''
+    CREATE TABLE holidays(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      date TEXT,
+      md TEXT,
+      enabled INTEGER NOT NULL DEFAULT 1
+    )''');
+
+/// Fixed-date bank holidays that repeat every year (Karnataka / national).
+/// Festival dates change every year, so the family adds those from their
+/// bank's holiday list (one tap in the Bank holidays calendar).
+const kFixedHolidays = {
+  '01-26': 'Republic Day',
+  '04-14': 'Dr. Ambedkar Jayanti',
+  '05-01': 'May Day',
+  '08-15': 'Independence Day',
+  '10-02': 'Gandhi Jayanti',
+  '11-01': 'Kannada Rajyotsava',
+  '12-25': 'Christmas',
+};
+
+Future<void> seedHolidays(DatabaseExecutor db) async {
+  for (final e in kFixedHolidays.entries) {
+    await db.insert('holidays', {'name': e.value, 'md': e.key, 'enabled': 1});
+  }
+}
+
+/// Creates all tables. [upTo] exists so tests can build an old version.
+Future<void> createSchema(DatabaseExecutor db, {int upTo = kSchemaVersion}) async {
   await db.execute('''
     CREATE TABLE settings(
       key TEXT PRIMARY KEY,
@@ -139,6 +183,7 @@ Future<void> createSchema(DatabaseExecutor db) async {
       key TEXT PRIMARY KEY,
       at TEXT
     )''');
+  if (upTo >= 2) await upgradeSchema(db, 1);
 }
 
 /// Pre-creates SBI locker, HDFC locker and Home with common sub-locations.

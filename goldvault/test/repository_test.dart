@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:goldvault/core/format.dart';
 import 'package:goldvault/data/constants.dart';
 import 'package:goldvault/data/models.dart';
 import 'package:goldvault/data/repository.dart';
+import 'package:goldvault/data/schema.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'helpers.dart';
 
@@ -126,6 +130,9 @@ void main() {
     await repo.createItem(const Item(name: 'Plate', category: 'Silver', purity: '925 silver', grossWt: 100, locationId: 0, status: Opt.inLocker)
         .copyWith(locationId: sbi));
     await repo.saveRates(const Rates(gold24: 7000, silver: 90));
+    // Current prices are hidden unless switched on.
+    expect((await repo.totalsByLocation())[sbi]!.value, 0);
+    await repo.setPref('show_values', true);
     final t = (await repo.totalsByLocation())[sbi]!;
     expect(t.gold, 9.5);
     expect(t.silver, 100);
@@ -188,6 +195,28 @@ void main() {
     await repo.setBillPhoto(i.id!, 'bill.gvp');
     expect((await repo.item(i.id!))!.billPhoto, 'bill.gvp');
     expect(await repo.allPhotoFiles(), containsAll(['c.gvp', 'b.gvp', 'bill.gvp']));
+  });
+
+  test('upgrading a version-1 database keeps data and adds alarms + holidays', () async {
+    final dir = await Directory.systemTemp.createTemp('gv_upgrade');
+    final path = '${dir.path}/v1.db';
+    sqfliteFfiInit();
+    var db = await databaseFactoryFfi.openDatabase(path,
+        options: OpenDatabaseOptions(version: 1, onCreate: (db, v) async {
+          await createSchema(db, upTo: 1);
+          await seedDefaults(db);
+          await db.insert('reminders', {'kind': 'planned_visit', 'title': 'SBI', 'due_date': '2026-11-02'});
+        }));
+    await db.close();
+    db = await databaseFactoryFfi.openDatabase(path,
+        options: OpenDatabaseOptions(version: kSchemaVersion, onUpgrade: (db, from, to) => upgradeSchema(db, from)));
+    final r = VaultRepo(db);
+    final old = (await r.reminders()).single;
+    expect(old.title, 'SBI');
+    expect(old.enabled, isTrue);
+    expect(old.repeat, 'none');
+    expect((await r.holidays()).map((h) => h.name), contains('Kannada Rajyotsava'));
+    await db.close();
   });
 
   test('purity factors', () {

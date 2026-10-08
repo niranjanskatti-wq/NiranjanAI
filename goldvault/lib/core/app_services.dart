@@ -81,6 +81,7 @@ class AppServices {
         await createSchema(db);
         await seedDefaults(db);
       },
+      onUpgrade: (db, from, to) => upgradeSchema(db, from),
     );
     final repo = VaultRepo(db);
     final photos = PhotoStore(Directory(p.join(docs.path, 'photos')), await secure.photoKey());

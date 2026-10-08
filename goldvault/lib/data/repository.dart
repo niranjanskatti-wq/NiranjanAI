@@ -96,11 +96,22 @@ class VaultRepo {
     return {for (final m in r) m['key'] as String: m['value'] as String?};
   }
 
+  Future<Prefs> prefs() async => Prefs(await allSettings());
+
+  Future<void> setPref(String key, Object value) async {
+    await setSetting(key, value is bool ? (value ? '1' : '0') : '$value');
+    revision.value++;
+  }
+
   Future<Rates> rates() async {
     final s = await allSettings();
     double v(String k) => double.tryParse(s[k] ?? '') ?? 0;
     return Rates(gold24: v('rate_gold24'), silver: v('rate_silver'), platinum: v('rate_platinum'));
   }
+
+  /// Rates used for value estimates; empty (no values shown anywhere)
+  /// unless "Show current prices & estimated value" is switched on.
+  Future<Rates> valueRates() async => (await prefs()).showValues ? await rates() : const Rates();
 
   Future<void> saveRates(Rates r) async {
     await setSetting('rate_gold24', r.gold24.toString());
@@ -253,7 +264,7 @@ class VaultRepo {
 
   /// Totals per location id (active items only). Key null = out (worn/lent…).
   Future<Map<int?, Totals>> totalsByLocation() async {
-    final r = await rates();
+    final r = await valueRates();
     final out = <int?, Totals>{};
     for (final i in await items(const ItemQuery())) {
       if (!i.isActive) continue;
@@ -668,8 +679,17 @@ class VaultRepo {
       }
       // A logged visit fulfils any planned visit for this locker on that day.
       await txn.update('reminders', {'done': 1},
-          where: "kind = 'planned_visit' AND location_id = ? AND due_date <= ? AND done = 0",
+          where: "kind = 'planned_visit' AND repeat = 'none' AND location_id = ? AND due_date <= ? AND done = 0",
           whereArgs: [v.locationId, v.visitDate]);
+      // "Put back in locker" reminders are done once all their items are in a locker.
+      final keeps = await txn.query('reminders', where: "kind = 'keep' AND done = 0 AND item_ids IS NOT NULL");
+      for (final k in keeps.map(Reminder.fromMap)) {
+        final rows = await txn.query('items',
+            where: 'id IN (${List.filled(k.itemIds.length, '?').join(',')})', whereArgs: k.itemIds);
+        if (rows.isNotEmpty && rows.every((r) => r['status'] == Opt.inLocker)) {
+          await txn.update('reminders', {'done': 1}, where: 'id = ?', whereArgs: [k.id]);
+        }
+      }
       return vid;
     });
     await _changed();
@@ -751,8 +771,48 @@ class VaultRepo {
     return id;
   }
 
+  Future<Reminder?> reminder(int id) async {
+    final r = await db.query('reminders', where: 'id = ?', whereArgs: [id]);
+    return r.isEmpty ? null : Reminder.fromMap(r.first);
+  }
+
+  /// Marking a repeating reminder done moves it to its next occurrence.
   Future<void> setReminderDone(int id, bool done) async {
-    await db.update('reminders', {'done': done ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
+    final r = await reminder(id);
+    if (r == null) return;
+    final next = done ? r.nextAfter(DateTime.parse(r.dueDate)) : null;
+    if (next != null) {
+      await db.update('reminders', {'due_date': Fmt.isoDate(next), 'done': 0}, where: 'id = ?', whereArgs: [id]);
+    } else {
+      await db.update('reminders', {'done': done ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
+    }
+    await _changed();
+  }
+
+  Future<void> setReminderEnabled(int id, bool enabled) async {
+    await db.update('reminders', {'enabled': enabled ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
+    await _changed();
+  }
+
+  // ---------------------------------------------------------------- holidays
+
+  Future<List<Holiday>> holidays() async =>
+      (await db.query('holidays', orderBy: 'COALESCE(date, md)')).map(Holiday.fromMap).toList();
+
+  Future<int> saveHoliday(Holiday h) async {
+    int id;
+    if (h.id == null) {
+      id = await db.insert('holidays', h.toMap()..remove('id'));
+    } else {
+      id = h.id!;
+      await db.update('holidays', h.toMap(), where: 'id = ?', whereArgs: [h.id]);
+    }
+    await _changed();
+    return id;
+  }
+
+  Future<void> deleteHoliday(int id) async {
+    await db.delete('holidays', where: 'id = ?', whereArgs: [id]);
     await _changed();
   }
 

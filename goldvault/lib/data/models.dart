@@ -480,12 +480,20 @@ class Movement {
       };
 }
 
+/// A user reminder / alarm.
+/// kind: keep (put jewellery in locker), take (take out of locker),
+///       planned_visit, custom.
 class Reminder {
   final int? id;
-  final String kind; // planned_visit / custom
+  final String kind;
   final String title;
-  final String dueDate; // yyyy-MM-dd
+  final String dueDate; // yyyy-MM-dd (next occurrence)
+  final String? time; // HH:mm, null = use the default alert time
+  final String repeat; // none / weekly / monthly / yearly
   final int? locationId;
+  final List<int> itemIds;
+  final bool alarm; // ring like an alarm until opened
+  final bool enabled;
   final bool done;
   final String? notes;
 
@@ -494,17 +502,45 @@ class Reminder {
     required this.kind,
     required this.title,
     required this.dueDate,
+    this.time,
+    this.repeat = 'none',
     this.locationId,
+    this.itemIds = const [],
+    this.alarm = true,
+    this.enabled = true,
     this.done = false,
     this.notes,
   });
+
+  static const kinds = ['keep', 'take', 'planned_visit', 'custom'];
+  static const repeats = ['none', 'weekly', 'monthly', 'yearly'];
+
+  /// When this reminder fires, using [defaultTime] if it has none.
+  DateTime at(String defaultTime) {
+    final d = DateTime.parse(dueDate);
+    final p = (time ?? defaultTime).split(':');
+    return DateTime(d.year, d.month, d.day, int.tryParse(p[0]) ?? 9, p.length > 1 ? int.tryParse(p[1]) ?? 0 : 0);
+  }
+
+  /// The occurrence after [d] for repeating reminders (null if one-off).
+  DateTime? nextAfter(DateTime d) => switch (repeat) {
+        'weekly' => DateTime(d.year, d.month, d.day + 7, d.hour, d.minute),
+        'monthly' => DateTime(d.year, d.month + 1, d.day, d.hour, d.minute),
+        'yearly' => DateTime(d.year + 1, d.month, d.day, d.hour, d.minute),
+        _ => null,
+      };
 
   factory Reminder.fromMap(Map<String, Object?> m) => Reminder(
         id: _i(m['id']),
         kind: m['kind'] as String,
         title: m['title'] as String,
         dueDate: m['due_date'] as String,
+        time: _s(m['time']),
+        repeat: _s(m['repeat']) ?? 'none',
         locationId: _i(m['location_id']),
+        itemIds: (_s(m['item_ids']) ?? '').split(',').map(int.tryParse).whereType<int>().toList(),
+        alarm: (_i(m['alarm']) ?? 1) == 1,
+        enabled: (_i(m['enabled']) ?? 1) == 1,
         done: (_i(m['done']) ?? 0) == 1,
         notes: _s(m['notes']),
       );
@@ -514,10 +550,94 @@ class Reminder {
         'kind': kind,
         'title': title,
         'due_date': dueDate,
+        'time': time,
+        'repeat': repeat,
         'location_id': locationId,
+        'item_ids': itemIds.isEmpty ? null : itemIds.join(','),
+        'alarm': alarm ? 1 : 0,
+        'enabled': enabled ? 1 : 0,
         'done': done ? 1 : 0,
         'notes': _blank(notes),
       };
+
+  Reminder copyWith({String? dueDate, bool? done, bool? enabled}) => Reminder.fromMap({
+        ...toMap(),
+        'id': id,
+        'due_date': dueDate ?? this.dueDate,
+        'done': (done ?? this.done) ? 1 : 0,
+        'enabled': (enabled ?? this.enabled) ? 1 : 0,
+      });
+}
+
+/// A bank holiday: one-off ([date]) or every year ([md] = "MM-dd").
+class Holiday {
+  final int? id;
+  final String name;
+  final String? date;
+  final String? md;
+  final bool enabled;
+  const Holiday({this.id, required this.name, this.date, this.md, this.enabled = true});
+
+  bool get yearly => md != null;
+
+  bool fallsOn(DateTime d) {
+    if (md != null) return md == '${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    return date == '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+  }
+
+  factory Holiday.fromMap(Map<String, Object?> m) => Holiday(
+        id: _i(m['id']),
+        name: m['name'] as String,
+        date: _s(m['date']),
+        md: _s(m['md']),
+        enabled: (_i(m['enabled']) ?? 1) == 1,
+      );
+
+  Map<String, Object?> toMap() => {
+        if (id != null) 'id': id,
+        'name': name.trim(),
+        'date': date,
+        'md': md,
+        'enabled': enabled ? 1 : 0,
+      };
+}
+
+/// Every on/off switch and number the family can customise, with defaults.
+class Prefs {
+  Prefs(this._s);
+  final Map<String, String?> _s;
+
+  bool _b(String k, bool d) => _s[k] == null ? d : _s[k] == '1';
+  int _n(String k, int d) => int.tryParse(_s[k] ?? '') ?? d;
+
+  // Display
+  bool get showValues => _b('show_values', false);
+  bool get dashBreakdown => _b('dash_breakdown', true);
+  bool get dashReminders => _b('dash_reminders', true);
+  bool get dashRecent => _b('dash_recent', true);
+  bool get holidaysOnVisitCal => _b('holidays_on_visit_cal', true);
+
+  // Notifications
+  bool get notifications => _b('notif_enabled', true);
+  String get alertTime => _s['alert_time'] ?? '09:00';
+  bool get alarmByDefault => _b('alarm_default', true);
+  bool get rentAlerts => _b('rent_alerts', true);
+  int get rentLeadDays => _n('rent_lead_days', 15);
+  bool get notReturnedAlerts => _b('not_returned_alerts', true);
+  int get notReturnedDays => _n('not_returned_days', 30);
+  bool get plannedAlerts => _b('planned_alerts', true);
+  int get plannedLeadDays => _n('planned_lead_days', 1);
+  bool get holidayAlerts => _b('holiday_alerts', true);
+  int get holidayLeadDays => _n('holiday_lead_days', 2);
+  bool get holidayWeekendAlerts => _b('holiday_weekend_alerts', false);
+  bool get backupNotifications => _b('backup_notifications', true);
+
+  // Bank holiday rules (RBI: all Sundays, 2nd & 4th Saturdays)
+  bool get sundaysClosed => _b('closed_sundays', true);
+  bool get saturdays24Closed => _b('closed_sat_2_4', true);
+
+  // Security
+  int get autoLockSeconds => _n('auto_lock_seconds', 60);
 }
 
 /// Aggregates shown on location cards and the dashboard.

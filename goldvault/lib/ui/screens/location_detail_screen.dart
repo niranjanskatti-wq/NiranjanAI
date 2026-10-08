@@ -6,11 +6,11 @@ import '../../core/security.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/models.dart';
-import '../../services/reminder_engine.dart';
 import '../widgets/common.dart';
 import '../widgets/tiles.dart';
 import 'item_form_screen.dart';
 import 'locker_form_screen.dart';
+import 'reminder_form_screen.dart';
 import 'visit_detail_screen.dart';
 import 'visit_form_screen.dart';
 
@@ -43,7 +43,7 @@ class LocationDetailScreen extends StatelessWidget {
       await repo.firstPhotos(),
       all,
       l.isLocker ? (await repo.visits(locationId: locationId)).take(10).toList() : const [],
-      await repo.rates(),
+      await repo.valueRates(),
     );
   }
 
@@ -278,15 +278,8 @@ class LocationDetailScreen extends StatelessWidget {
   }
 }
 
-Future<void> planVisit(BuildContext context, Location l) async {
-  final d = await showDatePicker(
-    context: context,
-    initialDate: DateTime.now().add(const Duration(days: 1)),
-    firstDate: DateTime.now().subtract(const Duration(days: 1)),
-    lastDate: DateTime(2100),
-    helpText: context.t('visit.plan'),
-  );
-  if (d == null) return;
-  await AppServices.I.repo.saveReminder(ReminderEngine.planned(l, d));
-  if (context.mounted) toast(context, context.t('visit.planned', {'date': Fmt.date(d)}));
-}
+/// Plan a visit (with an alarm) — warns if the bank is closed that day.
+Future<void> planVisit(BuildContext context, Location l) => Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ReminderFormScreen(kind: 'planned_visit', locationId: l.id)),
+    );

@@ -74,7 +74,7 @@ class ExportService {
 
     final items = (await repo.items(const ItemQuery())).where((i) => i.isActive).toList();
     final locs = await repo.locationMap();
-    final rates = await repo.rates();
+    final rates = await repo.valueRates();
     final all = Totals();
     for (final i in items) {
       all.add(i, rates);

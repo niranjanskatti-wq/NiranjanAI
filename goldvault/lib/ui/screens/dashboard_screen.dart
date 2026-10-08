@@ -24,7 +24,8 @@ class _Dash {
   final Rates rates;
   final List<Movement> recent;
   final List<DueItem> due;
-  _Dash(this.all, this.byLocation, this.locColors, this.byOwner, this.byCategory, this.rates, this.recent, this.due);
+  final Prefs prefs;
+  _Dash(this.all, this.byLocation, this.locColors, this.byOwner, this.byCategory, this.rates, this.recent, this.due, this.prefs);
 }
 
 class DashboardScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<_Dash> _load() async {
     final repo = AppServices.I.repo;
-    final rates = await repo.rates();
+    final rates = await repo.valueRates();
     final items = (await repo.items(const ItemQuery())).where((i) => i.isActive).toList();
     final locs = await repo.locationMap();
     final all = Totals();
@@ -63,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       byCat.putIfAbsent(i.category, Totals.new).add(i, rates);
     }
     return _Dash(all, byLoc, colors, byOwner, byCat, rates, await repo.recentMovements(limit: 8),
-        await AppServices.I.reminders.upcoming(horizonDays: 30));
+        await AppServices.I.reminders.upcoming(horizonDays: 30), await repo.prefs());
   }
 
   @override
@@ -105,9 +106,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 14),
               FadeIn(index: 1, child: _stats(context, d)),
               const SizedBox(height: 12),
-              FadeIn(index: 2, child: _rates(context, d.rates)),
-              SectionTitle(context.t('dash.breakdown')),
-              FadeIn(index: 3, child: _breakdownCard(context, d)),
+              if (d.prefs.showValues) FadeIn(index: 2, child: _rates(context, d.rates)),
+              if (d.prefs.dashBreakdown) ...[
+                SectionTitle(context.t('dash.breakdown')),
+                FadeIn(index: 3, child: _breakdownCard(context, d)),
+              ],
+              if (d.prefs.dashReminders) ...[
               SectionTitle(context.t('dash.upcoming'),
                   trailing: TextButton(
                     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemindersScreen())),
@@ -120,6 +124,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Column(children: [for (final r in d.due.take(4)) DueTile(r)]),
                 ),
+              ],
+              if (d.prefs.dashRecent) ...[
               SectionTitle(context.t('dash.recent'),
                   trailing: TextButton(onPressed: () => widget.onOpenTab(3), child: Text(context.t('nav.visits')))),
               if (d.recent.isEmpty)
@@ -129,6 +135,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Column(children: [for (final m in d.recent) MovementTile(m, showItem: true)]),
                 ),
+              ],
             ]),
           ),
         ]),
@@ -173,13 +180,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: StatTile(
-            label: context.t('dash.value'),
-            value: d.rates.isSet ? Fmt.rupees(d.all.value) : context.t('dash.setRates'),
-            icon: Icons.currency_rupee,
-            color: GV.ok,
-            sensitive: d.rates.isSet,
-          ),
+          child: d.prefs.showValues
+              ? StatTile(
+                  label: context.t('dash.value'),
+                  value: d.rates.isSet ? Fmt.rupees(d.all.value) : context.t('dash.setRates'),
+                  icon: Icons.currency_rupee,
+                  color: GV.ok,
+                  sensitive: d.rates.isSet,
+                )
+              : StatTile(
+                  label: context.t('dash.outNow'),
+                  value: Fmt.number(d.byLocation.entries.where((e) => e.key.startsWith('~')).fold<int>(0, (n, e) => n + e.value.items)),
+                  icon: Icons.directions_walk,
+                  color: const Color(0xFF4FC3F7),
+                ),
         ),
       ]),
     ]);

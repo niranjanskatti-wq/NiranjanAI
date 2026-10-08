@@ -8,6 +8,7 @@ import '../../core/security.dart';
 import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../widgets/common.dart';
+import 'alert_settings_screen.dart';
 import 'cloud_screen.dart';
 import 'dashboard_screen.dart';
 import 'reminders_screen.dart';
@@ -38,9 +39,20 @@ class SettingsScreen extends StatelessWidget {
           _group([
             _tile(Icons.travel_explore, context.t('where.title'), null,
                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WhereIsScreen()))),
-            _tile(Icons.trending_up, context.t('rates.title'), _ratesLine(context, s), () => showRatesDialog(context)),
-            _tile(Icons.notifications_outlined, context.t('rem.title'), null,
+            _tile(Icons.alarm, context.t('rem.title'), context.t('rem.titleSub'),
                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemindersScreen()))),
+            _tile(Icons.notifications_active_outlined, context.t('alerts.title'), context.t('alerts.sub'),
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AlertSettingsScreen()))),
+          ]),
+          SectionTitle(context.t('set.display')),
+          _group([
+            _switch(s, 'show_values', false, Icons.currency_rupee, context.t('set.showValues'), context.t('set.showValuesSub')),
+            if (s['show_values'] == '1')
+              _tile(Icons.trending_up, context.t('rates.title'), _ratesLine(context, s), () => showRatesDialog(context)),
+            _switch(s, 'dash_breakdown', true, Icons.pie_chart_outline, context.t('set.dashBreakdown'), null),
+            _switch(s, 'dash_reminders', true, Icons.notifications_outlined, context.t('set.dashReminders'), null),
+            _switch(s, 'dash_recent', true, Icons.swap_horiz, context.t('set.dashRecent'), null),
+            _switch(s, 'holidays_on_visit_cal', true, Icons.beach_access_outlined, context.t('hol.onVisitCal'), null),
           ]),
           SectionTitle(context.t('set.cloud')),
           _group([
@@ -62,7 +74,29 @@ class SettingsScreen extends StatelessWidget {
                 AppServices.I.repo.revision.value++;
               },
             ),
-            _tile(Icons.lock_outline, context.t('set.lockNow'), context.t('set.autoLock'), () => GoldVaultApp.appLock.lock()),
+            ListTile(
+              leading: const Icon(Icons.timer_outlined, size: 28),
+              title: Text(context.t('set.autoLockAfter')),
+              trailing: DropdownButton<int>(
+                value: [30, 60, 120, 300].contains(int.tryParse(s['auto_lock_seconds'] ?? '')) ? int.parse(s['auto_lock_seconds']!) : 60,
+                dropdownColor: GV.surface2,
+                underline: const SizedBox(),
+                items: [
+                  for (final sec in const [30, 60, 120, 300])
+                    DropdownMenuItem(
+                      value: sec,
+                      child: Text(sec < 60 ? context.t('set.seconds', {'n': sec}) : context.t('set.minutes', {'n': sec ~/ 60}),
+                          style: const TextStyle(color: GV.gold, fontSize: 16)),
+                    ),
+                ],
+                onChanged: (v) async {
+                  if (v == null) return;
+                  GoldVaultApp.appLock.timeout = Duration(seconds: v);
+                  await AppServices.I.repo.setPref('auto_lock_seconds', v);
+                },
+              ),
+            ),
+            _tile(Icons.lock_outline, context.t('set.lockNow'), null, () => GoldVaultApp.appLock.lock()),
           ]),
           SectionTitle(context.t('set.about')),
           GoldCard(
@@ -83,6 +117,14 @@ class SettingsScreen extends StatelessWidget {
     if (g == 0 && sv == 0) return context.t('rates.notSet');
     return '${context.t('rates.gold24')} ${Fmt.rupees(g)} · ${context.t('rates.silver')} ${Fmt.rupees(sv)}';
   }
+
+  Widget _switch(Map<String, String?> s, String key, bool def, IconData icon, String title, String? sub) => SwitchListTile(
+        secondary: Icon(icon, color: GV.gold),
+        title: Text(title),
+        subtitle: sub == null ? null : Text(sub),
+        value: s[key] == null ? def : s[key] == '1',
+        onChanged: (v) => AppServices.I.repo.setPref(key, v),
+      );
 
   Widget _group(List<Widget> children) => GoldCard(
         padding: const EdgeInsets.symmetric(vertical: 4),
