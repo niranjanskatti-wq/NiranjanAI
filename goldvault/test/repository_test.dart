@@ -175,6 +175,21 @@ void main() {
     expect(await other.peekNextSerial(), 'GV-0002');
   });
 
+  test('attach, reorder and remove photos on an existing ornament', () async {
+    final i = await repo.createItem(gold('Necklace', loc: sbi), photos: ['a.gvp']);
+    await repo.addPhotos(i.id!, ['b.gvp', 'c.gvp']);
+    var ph = await repo.photosFor(i.id!);
+    expect(ph.map((p) => p.file), ['a.gvp', 'b.gvp', 'c.gvp']);
+    await repo.setMainPhoto(i.id!, ph[2].id!);
+    expect((await repo.firstPhotos())[i.id], 'c.gvp');
+    expect(await repo.removePhoto(ph[0].id!), 'a.gvp');
+    ph = await repo.photosFor(i.id!);
+    expect(ph.map((p) => p.file), ['c.gvp', 'b.gvp']);
+    await repo.setBillPhoto(i.id!, 'bill.gvp');
+    expect((await repo.item(i.id!))!.billPhoto, 'bill.gvp');
+    expect(await repo.allPhotoFiles(), containsAll(['c.gvp', 'b.gvp', 'bill.gvp']));
+  });
+
   test('purity factors', () {
     expect(Opt.purityFactor('24K'), 1);
     expect(Opt.purityFactor('22K'), closeTo(0.9167, 0.001));

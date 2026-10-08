@@ -11,6 +11,9 @@ import 'common.dart';
 
 const gap = SizedBox(height: 14);
 
+/// Photos allowed per ornament.
+const maxPhotos = 5;
+
 class TextIn extends StatelessWidget {
   const TextIn(this.controller, this.label,
       {super.key, this.number = false, this.phone = false, this.lines = 1, this.required = false, this.hint, this.suffix, this.onChanged, this.autofocus = false});
@@ -241,13 +244,15 @@ class LocationPick extends StatelessWidget {
 
 /// Up to [max] encrypted photos, from camera or gallery.
 class PhotoGrid extends StatelessWidget {
-  const PhotoGrid({super.key, required this.files, required this.onChanged, this.max = 5, this.label});
+  const PhotoGrid({super.key, required this.files, required this.onChanged, this.max = maxPhotos, this.label});
   final List<String> files;
   final ValueChanged<List<String>> onChanged;
   final int max;
   final String? label;
 
-  static Future<String?> capture(BuildContext context) async {
+  /// Camera (one photo) or gallery (several at once, up to [limit]).
+  /// Returns the saved, encrypted photo file names.
+  static Future<List<String>> capture(BuildContext context, {int limit = 1}) async {
     final src = await showModalBottomSheet<ImageSource>(
       context: context,
       builder: (c) => SafeArea(
@@ -258,10 +263,20 @@ class PhotoGrid extends StatelessWidget {
         ]),
       ),
     );
-    if (src == null) return null;
-    final x = await ImagePicker().pickImage(source: src, maxWidth: 1800, maxHeight: 1800, imageQuality: 78);
-    if (x == null) return null;
-    return AppServices.I.photos.save(await x.readAsBytes());
+    if (src == null || limit < 1) return const [];
+    final picker = ImagePicker();
+    final List<XFile> picked;
+    if (src == ImageSource.gallery && limit > 1) {
+      picked = (await picker.pickMultiImage(maxWidth: 1800, maxHeight: 1800, imageQuality: 78, limit: limit)).take(limit).toList();
+    } else {
+      final x = await picker.pickImage(source: src, maxWidth: 1800, maxHeight: 1800, imageQuality: 78);
+      picked = [?x];
+    }
+    final out = <String>[];
+    for (final x in picked) {
+      out.add(await AppServices.I.photos.save(await x.readAsBytes()));
+    }
+    return out;
   }
 
   @override
@@ -298,8 +313,8 @@ class PhotoGrid extends StatelessWidget {
             InkWell(
               borderRadius: BorderRadius.circular(14),
               onTap: () async {
-                final f = await capture(context);
-                if (f != null) onChanged([...files, f]);
+                final added = await capture(context, limit: max - files.length);
+                if (added.isNotEmpty) onChanged([...files, ...added]);
               },
               child: Container(
                 width: 96,

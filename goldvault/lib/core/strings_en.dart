@@ -295,6 +295,17 @@ const Map<String, String> en = {
   'picker.done': 'Done ({n} selected)',
   'photo.camera': 'Take photo',
   'photo.gallery': 'Choose from gallery',
+  'photo.add': 'Add photos',
+  'photo.count': '{n} of {max} photos · long-press a photo for options',
+  'photo.countNone': 'No photos yet · up to {max} per ornament',
+  'photo.attachBill': 'Attach bill photo',
+  'photo.added': '{n} photo(s) attached',
+  'photo.full': 'Already {max} photos. Remove one to add another.',
+  'photo.makeMain': 'Set as main photo',
+  'photo.share': 'Share photo',
+  'photo.replace': 'Replace',
+  'photo.remove': 'Remove photo',
+  'photo.removeBody': 'This photo will be deleted from GoldVault.',
 
   // settings
   'set.title': 'More',

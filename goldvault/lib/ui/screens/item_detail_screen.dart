@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/app_services.dart';
 import '../../core/format.dart';
@@ -7,6 +11,7 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../widgets/common.dart';
+import '../widgets/fields.dart';
 import '../widgets/tiles.dart';
 import 'item_form_screen.dart';
 import 'move_item_sheet.dart';
@@ -63,6 +68,8 @@ class ItemDetailScreen extends StatelessWidget {
             ),
             body: ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 40), children: [
               _gallery(context, d),
+              const SizedBox(height: 12),
+              _photoStrip(context, d),
               const SizedBox(height: 16),
               Text(i.name, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 4),
@@ -120,7 +127,7 @@ class ItemDetailScreen extends StatelessWidget {
                   if (i.huid != null) (context.t('item.huid'), i.huid!, true),
                 ]),
               ],
-              if (_any([i.purchaseDate, i.shopName, i.billNo, i.ratePerGram, i.totalPrice, i.billPhoto])) ...[
+              if (_any([i.purchaseDate, i.shopName, i.billNo, i.ratePerGram, i.totalPrice])) ...[
                 SectionTitle(context.t('item.purchase')),
                 _facts([
                   if (i.purchaseDate != null) (context.t('item.purchaseDate'), Fmt.date(Fmt.parse(i.purchaseDate)), false),
@@ -131,13 +138,6 @@ class ItemDetailScreen extends StatelessWidget {
                   if (i.gst != null) (context.t('item.gst'), Fmt.rupees(i.gst, paise: true), true),
                   if (i.totalPrice != null) (context.t('item.total'), Fmt.rupees(i.totalPrice, paise: true), true),
                 ]),
-                if (i.billPhoto != null) ...[
-                  const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () => _fullscreen(context, [i.billPhoto!], 0),
-                    child: ClipRRect(borderRadius: BorderRadius.circular(16), child: SizedBox(height: 160, child: VaultImage(i.billPhoto, fit: BoxFit.cover))),
-                  ),
-                ],
               ],
               if (_any([i.owner, i.occasion, i.giftedBy, i.tags, i.notes])) ...[
                 SectionTitle(context.t('item.ownership')),
@@ -216,7 +216,23 @@ class ItemDetailScreen extends StatelessWidget {
     if (files.isEmpty) {
       return Hero(
         tag: 'item-photo-${d.item.id}',
-        child: ClipRRect(borderRadius: BorderRadius.circular(22), child: const SizedBox(height: 180, child: VaultImage(null))),
+        child: Material(
+          color: GV.surface2,
+          borderRadius: BorderRadius.circular(22),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(22),
+            onTap: () => _attachPhotos(context, d),
+            child: SizedBox(
+              height: 180,
+              width: double.infinity,
+              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const Icon(Icons.add_a_photo_outlined, color: GV.gold, size: 44),
+                const SizedBox(height: 10),
+                Text(context.t('photo.add'), style: const TextStyle(color: GV.gold, fontSize: 17, fontWeight: FontWeight.w700)),
+              ]),
+            ),
+          ),
+        ),
       );
     }
     return SizedBox(
@@ -230,12 +246,175 @@ class ItemDetailScreen extends StatelessWidget {
             padding: EdgeInsets.only(right: files.length > 1 ? 10 : 0),
             child: GestureDetector(
               onTap: () => _fullscreen(context, files, idx),
+              onLongPress: () => _photoActions(context, d, d.photos[idx]),
               child: idx == 0 ? Hero(tag: 'item-photo-${d.item.id}', child: img) : img,
             ),
           );
         },
       ),
     );
+  }
+
+  /// Thumbnails + "add" tile + bill photo, shown under the main gallery.
+  Widget _photoStrip(BuildContext context, _Detail d) {
+    final i = d.item;
+    final canAdd = d.photos.length < maxPhotos;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      SizedBox(
+        height: 84,
+        child: ListView(scrollDirection: Axis.horizontal, children: [
+          for (final (idx, ph) in d.photos.indexed)
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: GestureDetector(
+                onTap: () => _fullscreen(context, d.photos.map((p) => p.file).toList(), idx),
+                onLongPress: () => _photoActions(context, d, ph),
+                child: Stack(children: [
+                  PhotoThumb(ph.file, size: 84),
+                  if (idx == 0)
+                    Positioned(
+                      left: 4,
+                      bottom: 4,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
+                        child: const Icon(Icons.star, color: GV.gold, size: 14),
+                      ),
+                    ),
+                ]),
+              ),
+            ),
+          if (canAdd && d.photos.isNotEmpty)
+            InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () => _attachPhotos(context, d),
+              child: Container(
+                width: 84,
+                height: 84,
+                decoration: BoxDecoration(
+                  color: GV.surface2,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: GV.goldDeep, width: 1.4),
+                ),
+                child: const Icon(Icons.add_a_photo_outlined, color: GV.gold, size: 30),
+              ),
+            ),
+        ]),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        d.photos.isEmpty
+            ? context.t('photo.countNone', {'max': maxPhotos})
+            : context.t('photo.count', {'n': d.photos.length, 'max': maxPhotos}),
+        style: const TextStyle(color: GV.muted, fontSize: 13.5),
+      ),
+      const SizedBox(height: 10),
+      if (i.billPhoto == null)
+        OutlinedButton.icon(
+          icon: const Icon(Icons.receipt_long_outlined),
+          label: Text(context.t('photo.attachBill')),
+          onPressed: () => _attachBill(context, d),
+        )
+      else
+        GoldCard(
+          padding: const EdgeInsets.all(10),
+          onTap: () => _fullscreen(context, [i.billPhoto!], 0),
+          child: Row(children: [
+            PhotoThumb(i.billPhoto, size: 56),
+            const SizedBox(width: 12),
+            Expanded(child: Text(context.t('item.billPhoto'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600))),
+            PopupMenuButton<String>(
+              color: GV.surface2,
+              onSelected: (v) async {
+                if (v == 'replace') await _attachBill(context, d);
+                if (v == 'share' && context.mounted) await _sharePhoto(context, i.billPhoto!);
+                if (v == 'remove' && context.mounted) {
+                  if (await confirm(context, context.t('photo.remove'), context.t('photo.removeBody'), danger: true)) {
+                    await AppServices.I.repo.setBillPhoto(i.id!, null);
+                    await AppServices.I.photos.delete(i.billPhoto!);
+                  }
+                }
+              },
+              itemBuilder: (c) => [
+                PopupMenuItem(value: 'replace', child: Text(context.t('photo.replace'))),
+                PopupMenuItem(value: 'share', child: Text(context.t('photo.share'))),
+                PopupMenuItem(value: 'remove', child: Text(context.t('photo.remove'))),
+              ],
+            ),
+          ]),
+        ),
+    ]);
+  }
+
+  Future<void> _attachPhotos(BuildContext context, _Detail d) async {
+    final room = maxPhotos - d.photos.length;
+    if (room <= 0) {
+      toast(context, context.t('photo.full', {'max': maxPhotos}));
+      return;
+    }
+    final added = await PhotoGrid.capture(context, limit: room);
+    if (added.isEmpty) return;
+    await AppServices.I.repo.addPhotos(d.item.id!, added);
+    if (context.mounted) toast(context, context.t('photo.added', {'n': added.length}));
+  }
+
+  Future<void> _attachBill(BuildContext context, _Detail d) async {
+    final added = await PhotoGrid.capture(context);
+    if (added.isEmpty) return;
+    final old = d.item.billPhoto;
+    await AppServices.I.repo.setBillPhoto(d.item.id!, added.first);
+    if (old != null) await AppServices.I.photos.delete(old);
+  }
+
+  Future<void> _photoActions(BuildContext context, _Detail d, ItemPhoto ph) async {
+    final isMain = d.photos.isNotEmpty && d.photos.first.id == ph.id;
+    final v = await showModalBottomSheet<String>(
+      context: context,
+      builder: (c) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          if (!isMain)
+            ListTile(leading: const Icon(Icons.star_outline), title: Text(context.t('photo.makeMain')), onTap: () => Navigator.pop(c, 'main')),
+          ListTile(leading: const Icon(Icons.share_outlined), title: Text(context.t('photo.share')), onTap: () => Navigator.pop(c, 'share')),
+          ListTile(
+            leading: const Icon(Icons.delete_outline, color: GV.danger),
+            title: Text(context.t('photo.remove')),
+            onTap: () => Navigator.pop(c, 'remove'),
+          ),
+          const SizedBox(height: 12),
+        ]),
+      ),
+    );
+    if (v == null || !context.mounted) return;
+    final repo = AppServices.I.repo;
+    switch (v) {
+      case 'main':
+        await repo.setMainPhoto(d.item.id!, ph.id!);
+        break;
+      case 'share':
+        await _sharePhoto(context, ph.file);
+        break;
+      case 'remove':
+        if (await confirm(context, context.t('photo.remove'), context.t('photo.removeBody'), danger: true)) {
+          final f = await repo.removePhoto(ph.id!);
+          if (f != null) await AppServices.I.photos.delete(f);
+        }
+        break;
+    }
+  }
+
+  /// Decrypts a copy to the private cache just long enough to share it.
+  Future<void> _sharePhoto(BuildContext context, String file) async {
+    final bytes = await AppServices.I.photos.load(file);
+    if (bytes == null) return;
+    final dir = Directory(p.join(AppServices.I.backup.tempDir.path, 'share'));
+    await dir.create(recursive: true);
+    final out = File(p.join(dir.path, 'GoldVault_photo.jpg'));
+    await out.writeAsBytes(bytes, flush: true);
+    try {
+      await SharePlus.instance.share(ShareParams(files: [XFile(out.path, mimeType: 'image/jpeg')]));
+    } finally {
+      if (await out.exists()) await out.delete();
+    }
   }
 
   void _fullscreen(BuildContext context, List<String> files, int start) {

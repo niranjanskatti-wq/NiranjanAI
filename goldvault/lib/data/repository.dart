@@ -460,6 +460,45 @@ class VaultRepo {
     return r.map(ItemPhoto.fromMap).toList();
   }
 
+  /// Attach photos to an item (appended after existing ones).
+  Future<void> addPhotos(int itemId, List<String> files) async {
+    if (files.isEmpty) return;
+    await db.transaction((txn) async {
+      final r = await txn.rawQuery('SELECT MAX(sort_order) AS m FROM item_photos WHERE item_id = ?', [itemId]);
+      var order = ((r.first['m'] as int?) ?? -1) + 1;
+      for (final f in files) {
+        await txn.insert('item_photos', {'item_id': itemId, 'file': f, 'sort_order': order++});
+      }
+    });
+    await _changed();
+  }
+
+  /// Detach a photo; returns its file name so the caller can delete it.
+  Future<String?> removePhoto(int photoId) async {
+    final r = await db.query('item_photos', where: 'id = ?', whereArgs: [photoId]);
+    if (r.isEmpty) return null;
+    await db.delete('item_photos', where: 'id = ?', whereArgs: [photoId]);
+    await _changed();
+    return r.first['file'] as String;
+  }
+
+  /// Make a photo the item's main (first) photo.
+  Future<void> setMainPhoto(int itemId, int photoId) async {
+    final list = await photosFor(itemId);
+    final ordered = [...list.where((p) => p.id == photoId), ...list.where((p) => p.id != photoId)];
+    await db.transaction((txn) async {
+      for (var i = 0; i < ordered.length; i++) {
+        await txn.update('item_photos', {'sort_order': i}, where: 'id = ?', whereArgs: [ordered[i].id]);
+      }
+    });
+    await _changed();
+  }
+
+  Future<void> setBillPhoto(int itemId, String? file) async {
+    await db.update('items', {'bill_photo': file, 'updated_at': _now()}, where: 'id = ?', whereArgs: [itemId]);
+    await _changed();
+  }
+
   Future<Map<int, String>> firstPhotos() async {
     final r = await db.rawQuery(
         'SELECT item_id, file FROM item_photos p WHERE sort_order = '
