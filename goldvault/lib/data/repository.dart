@@ -54,7 +54,8 @@ class WhereIs {
   final Item item;
   final Location? location;
   final Movement? lastMove;
-  const WhereIs(this.item, this.location, this.lastMove);
+  final DateTime? takenOut; // when it left the locker (if it is out now)
+  const WhereIs(this.item, this.location, this.lastMove, [this.takenOut]);
 }
 
 class VisitWithMoves {
@@ -618,6 +619,30 @@ class VaultRepo {
     return r.isEmpty ? null : Movement.fromMap(r.first);
   }
 
+  /// When each ornament that is NOT in a locker now was last taken out of one.
+  Future<Map<int, DateTime>> takenOutTimes() async {
+    final r = await db.rawQuery('''
+      SELECT m.item_id AS id, MAX(m.moved_at) AS at FROM movements m
+      JOIN items i ON i.id = m.item_id
+      WHERE m.from_status = ? AND i.status != ?
+      GROUP BY m.item_id''', [Opt.inLocker, Opt.inLocker]);
+    return {for (final m in r) m['id'] as int: DateTime.parse(m['at'] as String)};
+  }
+
+  /// Ornaments with an open "put back in locker" reminder → that due time.
+  Future<Map<int, DateTime>> returnByTimes(String defaultTime) async {
+    final out = <int, DateTime>{};
+    for (final r in await reminders()) {
+      if (r.kind != 'keep' || !r.enabled) continue;
+      final at = r.at(defaultTime);
+      for (final id in r.itemIds) {
+        final cur = out[id];
+        if (cur == null || at.isBefore(cur)) out[id] = at;
+      }
+    }
+    return out;
+  }
+
   /// When the item last entered [status] (e.g. when it went for repair).
   Future<Movement?> lastMoveTo(int itemId, String status) async {
     final r = await db.rawQuery(
@@ -630,9 +655,10 @@ class VaultRepo {
   Future<List<WhereIs>> whereIs(String text) async {
     final found = await items(ItemQuery(text: text, sort: 'name'));
     final locs = await locationMap();
+    final taken = await takenOutTimes();
     final out = <WhereIs>[];
     for (final i in found.take(50)) {
-      out.add(WhereIs(i, i.locationId == null ? null : locs[i.locationId], await lastMove(i.id!)));
+      out.add(WhereIs(i, i.locationId == null ? null : locs[i.locationId], await lastMove(i.id!), i.isActive ? taken[i.id] : null));
     }
     return out;
   }
@@ -780,7 +806,8 @@ class VaultRepo {
   Future<void> setReminderDone(int id, bool done) async {
     final r = await reminder(id);
     if (r == null) return;
-    final next = done ? r.nextAfter(DateTime.parse(r.dueDate)) : null;
+    // "Until put back" reminders finish when done; other repeats roll forward.
+    final next = done && !r.untilBack ? r.nextAfter(DateTime.parse(r.dueDate)) : null;
     if (next != null) {
       await db.update('reminders', {'due_date': Fmt.isoDate(next), 'done': 0}, where: 'id = ?', whereArgs: [id]);
     } else {

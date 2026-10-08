@@ -513,7 +513,11 @@ class Reminder {
   });
 
   static const kinds = ['keep', 'take', 'planned_visit', 'custom'];
-  static const repeats = ['none', 'weekly', 'monthly', 'yearly'];
+  static const repeats = ['none', 'until_back', 'daily', 'weekly', 'monthly', 'yearly'];
+
+  /// Keeps ringing every day after the due time until the ornaments are back
+  /// in a locker (or it is marked done).
+  bool get untilBack => repeat == 'until_back';
 
   /// When this reminder fires, using [defaultTime] if it has none.
   DateTime at(String defaultTime) {
@@ -524,6 +528,7 @@ class Reminder {
 
   /// The occurrence after [d] for repeating reminders (null if one-off).
   DateTime? nextAfter(DateTime d) => switch (repeat) {
+        'daily' || 'until_back' => DateTime(d.year, d.month, d.day + 1, d.hour, d.minute),
         'weekly' => DateTime(d.year, d.month, d.day + 7, d.hour, d.minute),
         'monthly' => DateTime(d.year, d.month + 1, d.day, d.hour, d.minute),
         'yearly' => DateTime(d.year + 1, d.month, d.day, d.hour, d.minute),
@@ -616,6 +621,9 @@ class Prefs {
   bool get dashReminders => _b('dash_reminders', true);
   bool get dashRecent => _b('dash_recent', true);
   bool get holidaysOnVisitCal => _b('holidays_on_visit_cal', true);
+  bool get showOutTime => _b('show_out_time', true);
+  bool get returnByDefault => _b('return_by_default', false);
+  int get returnByDays => _n('return_by_days', 7);
 
   // Notifications
   bool get notifications => _b('notif_enabled', true);

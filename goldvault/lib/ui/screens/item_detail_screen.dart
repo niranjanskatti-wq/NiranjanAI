@@ -15,6 +15,7 @@ import '../widgets/fields.dart';
 import '../widgets/tiles.dart';
 import 'item_form_screen.dart';
 import 'move_item_sheet.dart';
+import 'reminder_form_screen.dart';
 
 class _Detail {
   final Item item;
@@ -22,7 +23,9 @@ class _Detail {
   final List<Movement> history;
   final Map<int, Location> locs;
   final Rates rates;
-  _Detail(this.item, this.photos, this.history, this.locs, this.rates);
+  final DateTime? outSince;
+  final DateTime? returnBy;
+  _Detail(this.item, this.photos, this.history, this.locs, this.rates, this.outSince, this.returnBy);
 }
 
 class ItemDetailScreen extends StatelessWidget {
@@ -33,7 +36,9 @@ class ItemDetailScreen extends StatelessWidget {
     final repo = AppServices.I.repo;
     final i = await repo.item(itemId);
     if (i == null) return null;
-    return _Detail(i, await repo.photosFor(itemId), await repo.historyFor(itemId), await repo.locationMap(), await repo.valueRates());
+    final p = await repo.prefs();
+    return _Detail(i, await repo.photosFor(itemId), await repo.historyFor(itemId), await repo.locationMap(), await repo.valueRates(),
+        i.isActive ? (await repo.takenOutTimes())[itemId] : null, (await repo.returnByTimes(p.alertTime))[itemId]);
   }
 
   @override
@@ -187,6 +192,30 @@ class ItemDetailScreen extends StatelessWidget {
             ),
             if (last != null)
               Text(context.t('where.since', {'date': Fmt.dateTime(last.at)}), style: const TextStyle(color: GV.muted, fontSize: 14)),
+            if (d.outSince != null) ...[
+              const SizedBox(height: 8),
+              Text(context.t('ret.takenOutOn', {'date': Fmt.dateTime(d.outSince)}), style: const TextStyle(fontSize: 15)),
+              OutLine(outSince: d.outSince!, returnBy: d.returnBy),
+              if (d.returnBy == null)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.alarm_add),
+                    label: Text(context.t('ret.setAlarm')),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ReminderFormScreen(
+                          kind: 'keep',
+                          itemIds: [i.id!],
+                          repeat: 'until_back',
+                          locationId: d.history.where((m) => m.fromStatus == 'in_locker').firstOrNull?.fromLocationId,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ]),
         ),
       ]),

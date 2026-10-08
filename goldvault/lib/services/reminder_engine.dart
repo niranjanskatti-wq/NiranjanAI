@@ -117,6 +117,13 @@ class ReminderEngine {
       };
       if (kind == DueKind.plannedVisit && !prefs.plannedAlerts) continue;
       var at = r.at(t);
+      // Overdue "until put back" alarms keep ringing daily: skip past days,
+      // but keep today's (or the latest missed) one so it shows as overdue.
+      if (r.untilBack || r.repeat == 'daily') {
+        while (at.add(const Duration(days: 1)).isBefore(n)) {
+          at = DateTime(at.year, at.month, at.day + 1, at.hour, at.minute);
+        }
+      }
       for (var k = 0; k < 12 && !Fmt.dateOnly(at).isAfter(horizon); k++) {
         // Planned visits alert a few days ahead (at the chosen time).
         final notifyAt = kind == DueKind.plannedVisit && r.time == null

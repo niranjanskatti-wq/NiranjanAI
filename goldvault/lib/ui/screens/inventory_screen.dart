@@ -16,7 +16,9 @@ class _Inv {
   final List<Item> items;
   final Map<int, String> photos;
   final Map<int, Location> locs;
-  _Inv(this.items, this.photos, this.locs);
+  final Map<int, DateTime> outSince;
+  final Map<int, DateTime> returnBy;
+  _Inv(this.items, this.photos, this.locs, this.outSince, this.returnBy);
 }
 
 class InventoryScreen extends StatefulWidget {
@@ -31,7 +33,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   Future<_Inv> _load() async {
     final repo = AppServices.I.repo;
-    return _Inv(await repo.items(_q), await repo.firstPhotos(), await repo.locationMap());
+    final p = await repo.prefs();
+    return _Inv(await repo.items(_q), await repo.firstPhotos(), await repo.locationMap(),
+        p.showOutTime ? await repo.takenOutTimes() : const {}, p.showOutTime ? await repo.returnByTimes(p.alertTime) : const {});
   }
 
   @override
@@ -120,7 +124,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     );
                   }
                   final it = d.items[i - 1];
-                  return ItemCard(item: it, photo: d.photos[it.id], locations: d.locs, index: i - 1);
+                  return ItemCard(
+                    item: it,
+                    photo: d.photos[it.id],
+                    locations: d.locs,
+                    index: i - 1,
+                    outSince: it.isActive ? d.outSince[it.id] : null,
+                    returnBy: d.returnBy[it.id],
+                  );
                 },
               );
             },

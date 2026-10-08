@@ -8,6 +8,7 @@ import '../../data/models.dart';
 import '../widgets/common.dart';
 import 'location_detail_screen.dart';
 import 'locker_form_screen.dart';
+import 'out_now_screen.dart';
 
 class _Locs {
   final List<Location> locs;
@@ -99,6 +100,7 @@ class _LocationsScreenState extends State<LocationsScreen> {
             if (d.totals[null] != null) ...[
               const SizedBox(height: 14),
               GoldCard(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OutNowScreen())),
                 child: Row(children: [
                   const Icon(Icons.directions_walk, color: Color(0xFF4FC3F7), size: 30),
                   const SizedBox(width: 12),

@@ -10,6 +10,7 @@ import '../../core/theme.dart';
 import '../widgets/common.dart';
 import 'alert_settings_screen.dart';
 import 'cloud_screen.dart';
+import 'out_now_screen.dart';
 import 'dashboard_screen.dart';
 import 'reminders_screen.dart';
 import 'where_is_screen.dart';
@@ -39,6 +40,8 @@ class SettingsScreen extends StatelessWidget {
           _group([
             _tile(Icons.travel_explore, context.t('where.title'), null,
                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WhereIsScreen()))),
+            _tile(Icons.timer_outlined, context.t('ret.screen'), context.t('ret.screenSub'),
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OutNowScreen()))),
             _tile(Icons.alarm, context.t('rem.title'), context.t('rem.titleSub'),
                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemindersScreen()))),
             _tile(Icons.notifications_active_outlined, context.t('alerts.title'), context.t('alerts.sub'),
@@ -52,6 +55,7 @@ class SettingsScreen extends StatelessWidget {
             _switch(s, 'dash_breakdown', true, Icons.pie_chart_outline, context.t('set.dashBreakdown'), null),
             _switch(s, 'dash_reminders', true, Icons.notifications_outlined, context.t('set.dashReminders'), null),
             _switch(s, 'dash_recent', true, Icons.swap_horiz, context.t('set.dashRecent'), null),
+            _switch(s, 'show_out_time', true, Icons.timer_outlined, context.t('set.showOutTime'), context.t('set.showOutTimeSub')),
             _switch(s, 'holidays_on_visit_cal', true, Icons.beach_access_outlined, context.t('hol.onVisitCal'), null),
           ]),
           SectionTitle(context.t('set.cloud')),

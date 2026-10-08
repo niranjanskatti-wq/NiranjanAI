@@ -10,6 +10,7 @@ import '../screens/item_detail_screen.dart';
 import '../screens/location_detail_screen.dart';
 import '../screens/reminders_screen.dart';
 import 'common.dart';
+import 'return_by.dart';
 
 /// One line in an item's movement history.
 class MovementTile extends StatelessWidget {
@@ -119,8 +120,14 @@ class DueTile extends StatelessWidget {
 }
 
 class ItemCard extends StatelessWidget {
-  const ItemCard({super.key, required this.item, required this.photo, required this.locations, this.onTap, this.selected, this.index = 0});
+  const ItemCard({super.key, required this.item, required this.photo, required this.locations, this.onTap, this.selected, this.index = 0, this.outSince, this.returnBy});
   final Item item;
+
+  /// When it was taken out of the locker (null = in a locker / never was).
+  final DateTime? outSince;
+
+  /// "Put back by" time from an open keep-in-locker reminder.
+  final DateTime? returnBy;
   final String? photo;
   final Map<int, Location> locations;
   final VoidCallback? onTap;
@@ -173,6 +180,7 @@ class ItemCard extends StatelessWidget {
                   if (loc != null) ...[Dot(Color(loc.color), size: 9), const SizedBox(width: 5)],
                   Expanded(child: Text(where, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, color: GV.text))),
                 ]),
+                if (outSince != null) OutLine(outSince: outSince!, returnBy: returnBy),
               ]),
             ),
             if (selected != null)
@@ -188,3 +196,31 @@ class ItemCard extends StatelessWidget {
 }
 
 bool isActiveStatus(String s) => Opt.activeStatuses.contains(s);
+
+/// "Out 3 days 4 hrs · return by 15 Oct, 6:00 PM" (red when overdue).
+class OutLine extends StatelessWidget {
+  const OutLine({super.key, required this.outSince, this.returnBy});
+  final DateTime outSince;
+  final DateTime? returnBy;
+  @override
+  Widget build(BuildContext context) {
+    final late = returnBy != null && returnBy!.isBefore(DateTime.now());
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(children: [
+        Icon(Icons.timer_outlined, size: 16, color: late ? GV.danger : const Color(0xFF4FC3F7)),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            [
+              context.t('ret.outFor', {'d': outFor(context, outSince)}),
+              if (returnBy != null) context.t(late ? 'ret.overdue' : 'ret.by', {'date': Fmt.dateTime(returnBy)}),
+            ].join(' · '),
+            maxLines: 2,
+            style: TextStyle(fontSize: 13, color: late ? GV.danger : const Color(0xFF4FC3F7), fontWeight: late ? FontWeight.w700 : FontWeight.w500),
+          ),
+        ),
+      ]),
+    );
+  }
+}

@@ -7,6 +7,7 @@ import '../../data/constants.dart';
 import '../../data/models.dart';
 import '../widgets/common.dart';
 import '../widgets/fields.dart';
+import '../widgets/return_by.dart';
 
 /// Move an item or change its status. [dispose] = sold / exchanged / gifted.
 Future<void> showMoveItemSheet(BuildContext context, Item item, {bool dispose = false}) async {
@@ -17,6 +18,11 @@ Future<void> showMoveItemSheet(BuildContext context, Item item, {bool dispose = 
   final note = TextEditingController();
   var date = DateTime.now();
   var time = TimeOfDay.now();
+  // Optional "return by" alarm when taking an ornament out of the locker.
+  final returnBy = ReturnByChoice();
+  final fromLocker = item.status == Opt.inLocker && !dispose;
+  if (fromLocker) await returnBy.loadDefaults();
+  if (!context.mounted) return;
 
   final ok = await showModalBottomSheet<bool>(
     context: context,
@@ -71,6 +77,10 @@ Future<void> showMoveItemSheet(BuildContext context, Item item, {bool dispose = 
                 ),
               ),
             ]),
+            if (fromLocker && status != Opt.inLocker) ...[
+              const SizedBox(height: 6),
+              ReturnByFields(choice: returnBy, onChanged: () => set(() {})),
+            ],
             if (status == Opt.inLocker) ...[
               const SizedBox(height: 10),
               Text(context.t('move.visitTip'), style: const TextStyle(color: Colors.white60, fontSize: 13.5)),
@@ -96,6 +106,7 @@ Future<void> showMoveItemSheet(BuildContext context, Item item, {bool dispose = 
     final sure = await confirm(context, context.s.status(status), context.t('move.disposeConfirm', {'name': item.name}));
     if (!sure) return;
   }
+  final tr = context.mounted ? context.s : S('en');
   await AppServices.I.repo.moveItem(
     item.id!,
     toLocationId: loc,
@@ -103,4 +114,7 @@ Future<void> showMoveItemSheet(BuildContext context, Item item, {bool dispose = 
     at: DateTime(date.year, date.month, date.day, time.hour, time.minute),
     note: note.text,
   );
+  if (fromLocker && status != Opt.inLocker) {
+    await returnBy.save(s: tr, items: [item], lockerId: item.locationId);
+  }
 }

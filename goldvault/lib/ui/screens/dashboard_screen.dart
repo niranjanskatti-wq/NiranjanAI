@@ -11,6 +11,7 @@ import '../widgets/common.dart';
 import '../widgets/fields.dart';
 import 'item_form_screen.dart';
 import 'lock_screen.dart';
+import 'out_now_screen.dart';
 import 'reminders_screen.dart';
 import 'where_is_screen.dart';
 import '../widgets/tiles.dart';
@@ -193,6 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   value: Fmt.number(d.byLocation.entries.where((e) => e.key.startsWith('~')).fold<int>(0, (n, e) => n + e.value.items)),
                   icon: Icons.directions_walk,
                   color: const Color(0xFF4FC3F7),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OutNowScreen())),
                 ),
         ),
       ]),

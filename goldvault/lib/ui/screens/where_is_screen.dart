@@ -75,6 +75,7 @@ class _WhereIsScreenState extends State<WhereIsScreen> {
               ]),
               const SizedBox(height: 6),
               StatusChip(i.status),
+              if (w.takenOut != null) OutLine(outSince: w.takenOut!),
               if (w.lastMove != null) ...[
                 const SizedBox(height: 6),
                 Text(MovementTile.describe(context, w.lastMove!), style: const TextStyle(color: GV.muted)),

@@ -86,6 +86,8 @@ class AlertSettingsScreen extends StatelessWidget {
               days('rent_lead_days', p.rentLeadDays, context.t('rem.rentLead'), enabled: on && p.rentAlerts),
               sw('planned_alerts', p.plannedAlerts, context.t('alerts.planned'), icon: Icons.event_available_outlined, enabled: on),
               days('planned_lead_days', p.plannedLeadDays, context.t('alerts.plannedLead'), enabled: on && p.plannedAlerts),
+              sw('return_by_default', p.returnByDefault, context.t('ret.askDefault'), sub: context.t('ret.askDefaultSub'), icon: Icons.alarm_add),
+              days('return_by_days', p.returnByDays, context.t('ret.defaultDays'), min: 1),
               sw('not_returned_alerts', p.notReturnedAlerts, context.t('alerts.notReturned'), icon: Icons.assignment_return_outlined, enabled: on),
               days('not_returned_days', p.notReturnedDays, context.t('rem.notReturnedDays'), enabled: on && p.notReturnedAlerts, min: 1),
             ]),

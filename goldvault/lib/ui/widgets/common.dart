@@ -187,7 +187,8 @@ class _RevealTextState extends State<RevealText> {
 }
 
 class StatTile extends StatelessWidget {
-  const StatTile({super.key, required this.label, required this.value, this.icon, this.color = GV.gold, this.sensitive = false});
+  const StatTile({super.key, required this.label, required this.value, this.icon, this.color = GV.gold, this.sensitive = false, this.onTap});
+  final VoidCallback? onTap;
   final String label;
   final String value;
   final IconData? icon;
@@ -198,6 +199,7 @@ class StatTile extends StatelessWidget {
     final vs = TextStyle(fontFamily: GV.display, fontSize: 24, fontWeight: FontWeight.w700, color: color);
     return GoldCard(
       padding: const EdgeInsets.all(16),
+      onTap: onTap,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           if (icon != null) Icon(icon, color: color, size: 22),

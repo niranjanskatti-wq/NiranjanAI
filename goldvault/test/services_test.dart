@@ -218,6 +218,42 @@ void main() {
       expect((await repo.reminder(m))!.done, isFalse);
     });
 
+    test('time taken out, and "until put back" alarms that keep ringing daily', () async {
+      final locs = await repo.locations();
+      final sbi = locs.first;
+      final home = locs.last;
+      final chain = await repo.createItem(
+          const Item(name: 'Chain', category: 'Gold', status: Opt.inLocker, grossWt: 8).copyWith(locationId: sbi.id));
+      await repo.logVisit(Visit(locationId: sbi.id!, visitDate: '2026-10-01', timeIn: '11:00', timeOut: '11:30'),
+          withdraw: [chain.id!], withdrawTo: home.id);
+      final out = await repo.takenOutTimes();
+      expect(out[chain.id], DateTime(2026, 10, 1, 11, 30));
+
+      final id = await repo.saveReminder(Reminder(
+        kind: 'keep', title: 'Put chain back', dueDate: '2026-10-05', time: '10:00',
+        repeat: 'until_back', locationId: sbi.id, itemIds: [chain.id!],
+      ));
+      expect((await repo.returnByTimes('09:00'))[chain.id], DateTime(2026, 10, 5, 10));
+
+      // Three days late: today's alarm is overdue and it keeps ringing daily.
+      final due = (await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 8, 12)))
+          .where((d) => d.reminderId == id)
+          .toList();
+      expect(due.first.notifyAt, DateTime(2026, 10, 8, 10));
+      expect(due.first.isOverdue(DateTime(2026, 10, 9)), isTrue);
+      expect(due[1].notifyAt, DateTime(2026, 10, 9, 10));
+
+      // Putting it back stops the alarm and clears the time out.
+      await repo.logVisit(Visit(locationId: sbi.id!, visitDate: '2026-10-08', timeIn: '15:00'), deposit: [chain.id!]);
+      expect((await repo.reminder(id))!.done, isTrue);
+      expect((await repo.takenOutTimes()).containsKey(chain.id), isFalse);
+
+      // Marking an "until put back" alarm done finishes it (no roll forward).
+      final id2 = await repo.saveReminder(const Reminder(kind: 'keep', title: 'x', dueDate: '2026-10-05', repeat: 'until_back'));
+      await repo.setReminderDone(id2, true);
+      expect((await repo.reminder(id2))!.done, isTrue);
+    });
+
     test('master switch and per-type switches', () async {
       final sbi = (await repo.locations()).first;
       await repo.saveLocker(id: sbi.id, name: sbi.name, info: const LockerInfo(bank: 'SBI', rentDueDate: '2026-10-20'));

@@ -23,7 +23,8 @@ class _LocDetail {
   final Map<int, Location> all;
   final List<Visit> visits;
   final Rates rates;
-  _LocDetail(this.loc, this.info, this.subs, this.items, this.photos, this.all, this.visits, this.rates);
+  final Map<int, DateTime> outSince;
+  _LocDetail(this.loc, this.info, this.subs, this.items, this.photos, this.all, this.visits, this.rates, this.outSince);
 }
 
 class LocationDetailScreen extends StatelessWidget {
@@ -44,6 +45,7 @@ class LocationDetailScreen extends StatelessWidget {
       all,
       l.isLocker ? (await repo.visits(locationId: locationId)).take(10).toList() : const [],
       await repo.valueRates(),
+      (await repo.prefs()).showOutTime ? await repo.takenOutTimes() : const {},
     );
   }
 
@@ -169,7 +171,7 @@ class LocationDetailScreen extends StatelessWidget {
               if (d.items.isEmpty)
                 Text(context.t('loc.noItems'), style: const TextStyle(color: GV.muted))
               else
-                for (final (n, i) in d.items.indexed) ItemCard(item: i, photo: d.photos[i.id], locations: d.all, index: n),
+                for (final (n, i) in d.items.indexed) ItemCard(item: i, photo: d.photos[i.id], locations: d.all, index: n, outSince: d.outSince[i.id]),
               if (d.visits.isNotEmpty) ...[
                 SectionTitle(context.t('visit.recent')),
                 GoldCard(

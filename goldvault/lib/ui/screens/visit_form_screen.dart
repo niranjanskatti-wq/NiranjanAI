@@ -8,7 +8,7 @@ import '../../data/constants.dart';
 import '../../data/models.dart';
 import '../widgets/common.dart';
 import '../widgets/fields.dart';
-import '../../services/notifications.dart';
+import '../widgets/return_by.dart';
 import 'item_picker_screen.dart';
 
 /// Log a locker visit with items deposited and withdrawn.
@@ -36,9 +36,7 @@ class _VisitFormScreenState extends State<VisitFormScreen> {
   String _withdrawStatus = Opt.atHome;
   int? _withdrawTo;
   bool _saving = false;
-  bool _remindBack = false;
-  String _backDate = Fmt.isoDate(DateTime.now().add(const Duration(days: 7)));
-  String? _backTime;
+  final _returnBy = ReturnByChoice();
 
   bool get _edit => widget.existing != null;
 
@@ -65,6 +63,7 @@ class _VisitFormScreenState extends State<VisitFormScreen> {
         _in = '${n.hour.toString().padLeft(2, '0')}:${n.minute.toString().padLeft(2, '0')}';
       }
       _defaultHome();
+      _returnBy.loadDefaults().then((_) => mounted ? setState(() {}) : null);
     }
   }
 
@@ -150,21 +149,7 @@ class _VisitFormScreenState extends State<VisitFormScreen> {
         withdrawStatus: _withdrawStatus,
         withdrawNote: _outNote.text,
       );
-      if (_remindBack && _withdraw.isNotEmpty) {
-        final l = await repo.location(_locker!);
-        await repo.saveReminder(Reminder(
-          kind: 'keep',
-          title: tr.t('rem.keepTitle', {'where': l?.name ?? ''}),
-          dueDate: _backDate,
-          time: _backTime,
-          locationId: _locker,
-          itemIds: _withdraw.map((e) => e.id!).toList(),
-          alarm: (await repo.prefs()).alarmByDefault,
-          notes: _withdraw.map((i) => '${i.name} (${i.serial})').join(', '),
-        ));
-        await Notifier.requestPermission();
-        await Notifier.requestExactAlarms();
-      }
+      await _returnBy.save(s: tr, items: _withdraw, lockerId: _locker);
     }
     if (!mounted) return;
     toast(context, context.t('visit.saved', {'n': _deposit.length + _withdraw.length}));
@@ -245,20 +230,7 @@ class _VisitFormScreenState extends State<VisitFormScreen> {
               else
                 TextIn(_outNote, context.t('item.statusNote'), hint: context.t('item.statusNoteHint')),
               const SizedBox(height: 8),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                secondary: const Icon(Icons.alarm_add, color: GV.gold, size: 28),
-                title: Text(context.t('visit.remindBack')),
-                subtitle: Text(context.t('visit.remindBackSub')),
-                value: _remindBack,
-                onChanged: (v) => setState(() => _remindBack = v),
-              ),
-              if (_remindBack)
-                Row(children: [
-                  Expanded(child: DateIn(label: context.t('common.date'), value: _backDate, allowClear: false, onChanged: (v) => setState(() => _backDate = v!))),
-                  const SizedBox(width: 10),
-                  Expanded(child: TimeIn(label: context.t('common.time'), value: _backTime, onChanged: (v) => setState(() => _backTime = v))),
-                ]),
+              ReturnByFields(choice: _returnBy, onChanged: () => setState(() {})),
             ],
           ],
           gap,

@@ -15,7 +15,8 @@ import 'item_picker_screen.dart';
 /// Create / edit an alarm-style reminder: keep jewellery in the locker,
 /// take it out, plan a visit, or anything else.
 class ReminderFormScreen extends StatefulWidget {
-  const ReminderFormScreen({super.key, this.existing, this.kind = 'keep', this.locationId, this.itemIds = const [], this.date});
+  const ReminderFormScreen({super.key, this.existing, this.kind = 'keep', this.locationId, this.itemIds = const [], this.date, this.repeat = 'none'});
+  final String repeat;
   final Reminder? existing;
   final String kind;
   final int? locationId;
@@ -48,7 +49,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
     _locker = r?.locationId ?? widget.locationId;
     _date = r?.dueDate ?? Fmt.isoDate(widget.date ?? DateTime.now().add(const Duration(days: 1)));
     _time = r?.time;
-    _repeat = r?.repeat ?? 'none';
+    _repeat = r?.repeat ?? widget.repeat;
     _alarm = r?.alarm ?? true;
     _enabled = r?.enabled ?? true;
     _title.text = r?.title ?? '';
