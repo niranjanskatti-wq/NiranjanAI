@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/app_services.dart';
@@ -79,6 +81,9 @@ class _CloudScreenState extends State<CloudScreen> {
                   Expanded(child: Text(context.t('cloud.offlineNote'), style: const TextStyle(color: GV.muted))),
                 ]),
               ),
+              // Works without Google sign-in: Android's own "Save to" screen.
+              SectionTitle(context.t('fbk.title')),
+              _fileBackup(context, s, hasPass),
               SectionTitle(context.t('cloud.account')),
               _account(context, account),
               SectionTitle(context.t('sheet.title')),
@@ -319,6 +324,94 @@ class _CloudScreenState extends State<CloudScreen> {
         Text(context.t('backup.keepNote'), style: const TextStyle(color: GV.muted, fontSize: 13.5)),
       ]),
     );
+  }
+
+  Widget _fileBackup(BuildContext context, Map<String, String?> s, bool hasPass) {
+    final last = Fmt.parse(s['last_backup']);
+    return GoldCard(
+      accent: GV.gold,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(context.t('fbk.body'), style: const TextStyle(color: GV.muted)),
+        const SizedBox(height: 10),
+        Row(children: [
+          Icon(last == null ? Icons.warning_amber : Icons.history, color: last == null ? GV.goldLight : GV.gold),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(last == null ? context.t('backup.never') : context.t('backup.last', {'date': Fmt.dateTime(last)}),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+          ),
+        ]),
+        const SizedBox(height: 12),
+        _btn('fsave', Icons.add_to_drive, context.t('fbk.save'), () => _saveBackupFile(context), filled: true),
+        const SizedBox(height: 10),
+        _btn('fshare', Icons.share, context.t('fbk.share'), () => _shareBackupFile(context)),
+        const SizedBox(height: 10),
+        _btn('frestore', Icons.settings_backup_restore, context.t('fbk.restore'), () => _restoreFromFile(context)),
+        const SizedBox(height: 8),
+        Text(context.t('fbk.help'), style: const TextStyle(color: GV.muted, fontSize: 13.5)),
+      ]),
+    );
+  }
+
+  /// Makes the encrypted backup file (asks for the backup password once).
+  Future<File?> _makeBackupFile(BuildContext context) async {
+    var pass = await svc.secure.backupPassphrase();
+    if (pass == null) {
+      if (!context.mounted) return null;
+      await _setPassphrase(context);
+      pass = await svc.secure.backupPassphrase();
+      if (pass == null) return null;
+    }
+    return svc.backup.writeBackupFile(pass);
+  }
+
+  Future<void> _saveBackupFile(BuildContext context) async {
+    final done = context.t('fbk.saved');
+    final f = await _makeBackupFile(context);
+    if (f == null) return;
+    try {
+      final uri = await FilePicker.saveFile(
+        fileName: p.basename(f.path),
+        bytes: await f.readAsBytes(),
+        dialogTitle: 'GoldVault backup',
+      );
+      if (uri != null) {
+        await svc.repo.setSetting('last_backup', Fmt.isoDateTime(DateTime.now()));
+        if (mounted) toast(this.context, done);
+      }
+    } finally {
+      if (await f.exists()) await f.delete();
+    }
+  }
+
+  Future<void> _shareBackupFile(BuildContext context) async {
+    final f = await _makeBackupFile(context);
+    if (f == null) return;
+    final r = await SharePlus.instance.share(ShareParams(files: [XFile(f.path)], subject: 'GoldVault backup'));
+    if (r.status == ShareResultStatus.success) {
+      await svc.repo.setSetting('last_backup', Fmt.isoDateTime(DateTime.now()));
+    }
+  }
+
+  Future<void> _restoreFromFile(BuildContext context) async {
+    final picked = await FilePicker.pickFile(dialogTitle: 'GoldVault backup');
+    if (picked == null || !mounted) return;
+    final tmp = File(p.join(svc.backup.tempDir.path, 'picked.gvb'));
+    await svc.backup.tempDir.create(recursive: true);
+    await tmp.writeAsBytes(await picked.readAsBytes(), flush: true);
+    try {
+      if (!mounted) return;
+      final pass = await promptText(this.context, this.context.t('backup.enterPass'), label: this.context.t('backup.pass'), obscure: true);
+      if (pass == null || !mounted) return;
+      final sure = await confirm(this.context, this.context.t('fbk.restore'), this.context.t('backup.restoreWarn'),
+          ok: this.context.t('backup.restoreBtn'), danger: true);
+      if (!sure) return;
+      final m = await svc.backup.restoreFromFile(tmp, pass);
+      await svc.secure.setBackupPassphrase(pass);
+      if (mounted) toast(this.context, this.context.t('backup.restored', {'n': m['items'] ?? 0}));
+    } finally {
+      if (await tmp.exists()) await tmp.delete();
+    }
   }
 
   Future<void> _setPassphrase(BuildContext context) async {

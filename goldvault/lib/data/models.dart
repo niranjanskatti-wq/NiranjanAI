@@ -660,6 +660,7 @@ class Prefs {
   bool get dashReminders => _b('dash_reminders', true);
   bool get dashRecent => _b('dash_recent', true);
   bool get dashHolidays => _b('dash_holidays', true);
+  bool get backupNudge => _b('backup_nudge', true);
   bool get holidaysOnVisitCal => _b('holidays_on_visit_cal', true);
   bool get showOutTime => _b('show_out_time', true);
   bool get returnByDefault => _b('return_by_default', false);

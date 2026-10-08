@@ -6,6 +6,7 @@ import 'package:workmanager/workmanager.dart';
 import '../core/app_services.dart';
 import '../core/format.dart';
 import '../core/strings.dart';
+import '../data/repository.dart';
 import 'backup_service.dart';
 import 'notifications.dart';
 import 'alarm_scheduler.dart';
@@ -86,6 +87,17 @@ class Background {
     final prefs = await svc.repo.prefs();
     if (!prefs.notifications) return;
     final s = await _strings(svc);
+    // Weekly nudge to save a backup to Google Drive (no sign-in needed).
+    if (prefs.backupNudge) {
+      final last = Fmt.parse(await svc.repo.getSetting('last_backup'));
+      final hasItems = (await svc.repo.items(const ItemQuery())).isNotEmpty;
+      final week = DateTime.now().difference(DateTime(2024)).inDays ~/ 7;
+      final key = 'backup_nudge@$week';
+      if (hasItems && (last == null || DateTime.now().difference(last).inDays >= 7) && !await svc.repo.wasNotified(key)) {
+        await Notifier.reminder(9002, s.t('fbk.nudge'), s.t('fbk.nudgeBody'));
+        await svc.repo.markNotified(key);
+      }
+    }
     var n = 0;
     for (final d in await svc.reminders.dueForNotification()) {
       final key = '${d.key}@${Fmt.isoDate(DateTime.now())}';

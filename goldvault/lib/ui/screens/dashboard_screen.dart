@@ -10,6 +10,7 @@ import '../../services/reminder_engine.dart';
 import '../widgets/common.dart';
 import '../widgets/fields.dart';
 import 'item_form_screen.dart';
+import 'cloud_screen.dart';
 import 'lock_screen.dart';
 import 'out_now_screen.dart';
 import 'reminder_form_screen.dart';
@@ -27,7 +28,8 @@ class _Dash {
   final List<Movement> recent;
   final List<DueItem> due;
   final Prefs prefs;
-  _Dash(this.all, this.byLocation, this.locColors, this.byOwner, this.byCategory, this.rates, this.recent, this.due, this.prefs);
+  final DateTime? lastBackup;
+  _Dash(this.all, this.byLocation, this.locColors, this.byOwner, this.byCategory, this.rates, this.recent, this.due, this.prefs, this.lastBackup);
 }
 
 class DashboardScreen extends StatefulWidget {
@@ -66,7 +68,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       byCat.putIfAbsent(i.category, Totals.new).add(i, rates);
     }
     return _Dash(all, byLoc, colors, byOwner, byCat, rates, await repo.recentMovements(limit: 8),
-        await AppServices.I.reminders.listed(horizonDays: 60), await repo.prefs());
+        await AppServices.I.reminders.listed(horizonDays: 60), await repo.prefs(),
+        Fmt.parse(await repo.getSetting('last_backup')));
   }
 
   @override
@@ -110,6 +113,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 120),
             sliver: SliverList.list(children: [
+              if (d.prefs.backupNudge && d.all.items > 0 &&
+                  (d.lastBackup == null || DateTime.now().difference(d.lastBackup!).inDays >= 7)) ...[
+                GoldCard(
+                  accent: GV.goldLight,
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CloudScreen())),
+                  child: Row(children: [
+                    const Icon(Icons.add_to_drive, color: GV.goldLight, size: 30),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(context.t('fbk.nudge'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                        Text(
+                          d.lastBackup == null ? context.t('backup.never') : context.t('backup.last', {'date': Fmt.date(d.lastBackup)}),
+                          style: const TextStyle(color: GV.muted),
+                        ),
+                      ]),
+                    ),
+                    const Icon(Icons.chevron_right, color: GV.gold),
+                  ]),
+                ),
+                const SizedBox(height: 12),
+              ],
               FadeIn(child: _whereIs(context)),
               const SizedBox(height: 12),
               FadeIn(

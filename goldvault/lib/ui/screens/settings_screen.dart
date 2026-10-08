@@ -52,6 +52,7 @@ class SettingsScreen extends StatelessWidget {
             _switch(s, 'show_values', false, Icons.currency_rupee, context.t('set.showValues'), context.t('set.showValuesSub')),
             if (s['show_values'] == '1')
               _tile(Icons.trending_up, context.t('rates.title'), _ratesLine(context, s), () => showRatesDialog(context)),
+            _switch(s, 'backup_nudge', true, Icons.add_to_drive, context.t('set.backupNudge'), context.t('set.backupNudgeSub')),
             _switch(s, 'dash_breakdown', true, Icons.pie_chart_outline, context.t('set.dashBreakdown'), null),
             _switch(s, 'dash_reminders', true, Icons.notifications_outlined, context.t('set.dashReminders'), null),
             _switch(s, 'dash_holidays', true, Icons.beach_access_outlined, context.t('set.dashHolidays'), null),
