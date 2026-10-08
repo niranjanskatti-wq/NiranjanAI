@@ -289,6 +289,21 @@ void main() {
       expect((await repo.remindersForItem(ring.id!)).single.id, id);
     });
 
+    test('no day limits: every N days, alerts a month ahead, long return periods', () async {
+      final every = await repo.saveReminder(const Reminder(kind: 'custom', title: 'Check', dueDate: '2026-10-10', time: '09:00', repeat: 'days:15'));
+      final due = (await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 30), horizonDays: 60))
+          .where((d) => d.reminderId == every && d.primary)
+          .map((d) => d.date)
+          .toList();
+      // 10 Oct was missed, 25 Oct too; next ones every 15 days.
+      expect(due.take(3), [DateTime(2026, 10, 25), DateTime(2026, 11, 9), DateTime(2026, 11, 24)]);
+
+      // An alert 1 month before something 3 months away.
+      final far = await repo.saveReminder(const Reminder(kind: 'keep', title: 'Back to locker', dueDate: '2027-01-20', time: '10:00', alerts: [0, 43200]));
+      final all = (await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 30), horizonDays: 400)).where((d) => d.reminderId == far);
+      expect(all.map((d) => d.notifyAt).toSet(), {DateTime(2027, 1, 20, 10), DateTime(2026, 12, 21, 10)});
+    });
+
     test('master switch and per-type switches', () async {
       final sbi = (await repo.locations()).first;
       await repo.saveLocker(id: sbi.id, name: sbi.name, info: const LockerInfo(bank: 'SBI', rentDueDate: '2026-10-20'));

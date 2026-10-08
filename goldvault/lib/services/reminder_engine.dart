@@ -135,9 +135,9 @@ class ReminderEngine {
       var at = r.at(t);
       // Overdue "until put back" alarms keep ringing daily: skip past days,
       // but keep today's (or the latest missed) one so it shows as overdue.
-      if (r.untilBack || r.repeat == 'daily') {
-        while (at.add(const Duration(days: 1)).isBefore(n)) {
-          at = DateTime(at.year, at.month, at.day + 1, at.hour, at.minute);
+      if (r.untilBack || r.repeat == 'daily' || r.everyDays != null) {
+        for (var next = r.nextAfter(at); next != null && next.isBefore(n); next = r.nextAfter(at)) {
+          at = next;
         }
       }
       for (var k = 0; k < 12 && !Fmt.dateOnly(at).isAfter(horizon); k++) {

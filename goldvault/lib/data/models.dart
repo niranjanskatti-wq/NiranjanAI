@@ -530,7 +530,7 @@ class Reminder {
   static const sounds = ['alarm', 'notify', 'silent'];
 
   /// Preset "alert me" choices in minutes before the due time.
-  static const alertPresets = [0, 15, 60, 180, 1440, 2880, 10080];
+  static const alertPresets = [0, 15, 60, 180, 1440, 2880, 10080, 21600, 43200];
   static const snoozeChoices = [0, 5, 10, 15, 30, 60];
 
   String get soundMode => sound ?? (alarm ? 'alarm' : 'notify');
@@ -546,6 +546,9 @@ class Reminder {
   /// in a locker (or it is marked done).
   bool get untilBack => repeat == 'until_back';
 
+  /// Custom repeat "every N days" is stored as `days:N` (any N).
+  int? get everyDays => repeat.startsWith('days:') ? int.tryParse(repeat.substring(5)) : null;
+
   /// When this reminder fires, using [defaultTime] if it has none.
   DateTime at(String defaultTime) {
     final d = DateTime.parse(dueDate);
@@ -559,6 +562,7 @@ class Reminder {
         'weekly' => DateTime(d.year, d.month, d.day + 7, d.hour, d.minute),
         'monthly' => DateTime(d.year, d.month + 1, d.day, d.hour, d.minute),
         'yearly' => DateTime(d.year + 1, d.month, d.day, d.hour, d.minute),
+        _ when everyDays != null => DateTime(d.year, d.month, d.day + everyDays!, d.hour, d.minute),
         _ => null,
       };
 

@@ -593,4 +593,14 @@ const Map<String, String> kn = {
   'alert.nAlerts': '{n} ಎಚ್ಚರಿಕೆಗಳು',
   'notif.snooze': '{n} ನಿಮಿಷ ಸ್ನೂಜ್',
   'notif.done': 'ಆಯ್ತು',
+
+  // any number of days
+  'dur.months': '{n} ತಿಂಗಳು',
+  'dur.years': '{n} ವರ್ಷ',
+  'alert.months': '{n} ತಿಂಗಳು',
+  'alert.unit.month': 'ತಿಂಗಳು ಮುಂಚೆ',
+  'rem.repeat.everyN': 'ಪ್ರತಿ {n}',
+  'rem.repeat.everyNPick': 'ಪ್ರತಿ … ದಿನಕ್ಕೊಮ್ಮೆ (ಆಯ್ಕೆಮಾಡಿ)',
+  'ret.after': 'ಎಷ್ಟು ದಿನದ ನಂತರ ಹಿಂದಿರುಗಿಸಬೇಕು',
+  'ret.otherDays': 'ಬೇರೆ…',
 };

@@ -65,6 +65,11 @@ class ReturnByChoice {
   }
 }
 
+DateTime _plusDays(int n) {
+  final t = DateTime.now();
+  return DateTime(t.year, t.month, t.day + n);
+}
+
 class ReturnByFields extends StatelessWidget {
   const ReturnByFields({super.key, required this.choice, required this.onChanged});
   final ReturnByChoice choice;
@@ -86,6 +91,31 @@ class ReturnByFields extends StatelessWidget {
         },
       ),
       if (c.on) ...[
+        Text(context.t('ret.after'), style: const TextStyle(color: GV.muted, fontSize: 15)),
+        const SizedBox(height: 8),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final n in const [3, 7, 15, 30, 60, 90, 180])
+            ChoiceChip(
+              label: Text(daysLabel(context, n)),
+              selected: c.date == Fmt.isoDate(_plusDays(n)),
+              onSelected: (_) {
+                c.date = Fmt.isoDate(_plusDays(n));
+                onChanged();
+              },
+            ),
+          ActionChip(
+            avatar: const Icon(Icons.edit_calendar, size: 18, color: GV.gold),
+            label: Text(context.t('ret.otherDays')),
+            onPressed: () async {
+              final n = await askDays(context, title: context.t('ret.after'), initial: 20, min: 1);
+              if (n != null) {
+                c.date = Fmt.isoDate(_plusDays(n));
+                onChanged();
+              }
+            },
+          ),
+        ]),
+        const SizedBox(height: 12),
         Row(children: [
           Expanded(
             child: DateIn(

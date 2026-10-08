@@ -13,12 +13,14 @@ class AlarmScheduler {
   AlarmScheduler._();
 
   static const _maxScheduled = 60;
-  static const _horizonDays = 60;
+  // Far enough for alerts set months ahead; only the nearest are scheduled.
+  static const _horizonDays = 400;
 
   static int idFor(String key) => 100000 + (key.hashCode & 0x3FFFFFF);
 
   /// "1 day", "3 hrs", "15 min" – how long before the due time.
   static String beforeText(S s, int minutes) {
+    if (minutes % 43200 == 0) return s.t('alert.months', {'n': minutes ~/ 43200});
     if (minutes % 10080 == 0) return s.t('alert.weeks', {'n': minutes ~/ 10080});
     if (minutes % 1440 == 0) return s.t('alert.days', {'n': minutes ~/ 1440});
     if (minutes % 60 == 0) return s.t('alert.hours', {'n': minutes ~/ 60});

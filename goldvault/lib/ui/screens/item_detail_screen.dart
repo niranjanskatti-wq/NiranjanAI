@@ -208,7 +208,7 @@ class ItemDetailScreen extends StatelessWidget {
             title: Text(r.title, style: TextStyle(color: r.enabled ? GV.text : GV.muted)),
             subtitle: Text([
               Fmt.dateTime(r.at(d.alertTime)),
-              if (r.repeat != 'none') context.t('rem.repeat.${r.repeat}'),
+              if (r.repeat != 'none') repeatLabel(context, r.repeat),
               if (r.alerts.length > 1 || r.alerts.first != 0) context.t('alert.nAlerts', {'n': r.alerts.length}),
             ].join(' · ')),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ReminderFormScreen(existing: r))),

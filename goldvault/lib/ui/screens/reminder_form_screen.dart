@@ -35,6 +35,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
   late String _date;
   String? _time;
   String _repeat = 'none';
+  int _repeatKey = 0;
   AlarmOptions _opts = AlarmOptions();
   bool _enabled = true;
   List<Item> _items = [];
@@ -200,10 +201,26 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
         ],
         gap,
         Pick<String>(
+          key: ValueKey('repeat$_repeatKey'),
           label: context.t('rem.repeat'),
           value: _repeat,
-          items: [for (final r in Reminder.repeats) (r, context.t('rem.repeat.$r'))],
-          onChanged: (v) => setState(() => _repeat = v ?? 'none'),
+          items: [
+            for (final r in Reminder.repeats) (r, context.t('rem.repeat.$r')),
+            if (_repeat.startsWith('days:')) (_repeat, repeatLabel(context, _repeat)),
+            ('__every', context.t('rem.repeat.everyNPick')),
+          ],
+          onChanged: (v) async {
+            if (v == '__every') {
+              final cur = _repeat.startsWith('days:') ? int.tryParse(_repeat.substring(5)) ?? 15 : 15;
+              final n = await askDays(context, title: context.t('rem.repeat.everyNPick'), initial: cur, min: 1);
+              setState(() {
+                if (n != null) _repeat = 'days:$n';
+                _repeatKey++; // redraw the dropdown if cancelled
+              });
+              return;
+            }
+            setState(() => _repeat = v ?? 'none');
+          },
         ),
         if (_kind == 'keep' || _kind == 'take') ...[
           SectionTitle(context.t('rem.items')),

@@ -596,4 +596,14 @@ const Map<String, String> en = {
   'alert.nAlerts': '{n} alerts',
   'notif.snooze': 'Snooze {n} min',
   'notif.done': 'Done',
+
+  // any number of days
+  'dur.months': '{n} month(s)',
+  'dur.years': '{n} year(s)',
+  'alert.months': '{n} month',
+  'alert.unit.month': 'months before',
+  'rem.repeat.everyN': 'Every {n}',
+  'rem.repeat.everyNPick': 'Every … days (choose)',
+  'ret.after': 'Return after',
+  'ret.otherDays': 'Other…',
 };

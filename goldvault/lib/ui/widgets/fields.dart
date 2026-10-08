@@ -332,3 +332,57 @@ class PhotoGrid extends StatelessWidget {
     ]);
   }
 }
+
+/// Ask for any number of days (no upper limit), with quick picks.
+Future<int?> askDays(BuildContext context, {required String title, required int initial, int min = 0}) async {
+  final c = TextEditingController(text: '$initial');
+  const presets = [1, 2, 3, 7, 15, 30, 45, 60, 90, 180, 365];
+  return showDialog<int>(
+    context: context,
+    builder: (d) => AlertDialog(
+      title: Text(title),
+      content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        TextField(
+          controller: c,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+          decoration: InputDecoration(suffixText: context.t('common.days')),
+        ),
+        const SizedBox(height: 14),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final n in presets)
+            ActionChip(label: Text(daysLabel(context, n)), onPressed: () => Navigator.pop(d, n)),
+        ]),
+      ]),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(d), child: Text(context.t('common.cancel'))),
+        FilledButton(
+          onPressed: () {
+            final v = int.tryParse(c.text.trim());
+            Navigator.pop(d, v == null || v < min ? null : v);
+          },
+          child: Text(context.t('common.ok')),
+        ),
+      ],
+    ),
+  );
+}
+
+/// "15 days", "1 month", "3 months", "1 year".
+String daysLabel(BuildContext context, int n) {
+  if (n >= 365 && n % 365 == 0) return context.t('dur.years', {'n': n ~/ 365});
+  if (n >= 30 && n % 30 == 0) return context.t('dur.months', {'n': n ~/ 30});
+  return context.t('dur.days', {'n': n});
+}
+
+/// Label for a reminder's repeat setting, including "Every N days".
+String repeatLabel(BuildContext context, String repeat) {
+  if (repeat.startsWith('days:')) {
+    final n = int.tryParse(repeat.substring(5)) ?? 1;
+    return context.t('rem.repeat.everyN', {'n': daysLabel(context, n)});
+  }
+  return context.t('rem.repeat.$repeat');
+}

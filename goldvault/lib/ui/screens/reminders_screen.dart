@@ -7,6 +7,7 @@ import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../../services/reminder_engine.dart';
 import '../widgets/common.dart';
+import '../widgets/fields.dart';
 import '../widgets/tiles.dart';
 import 'alert_settings_screen.dart';
 import 'reminder_form_screen.dart';
@@ -98,7 +99,7 @@ class _ReminderTile extends StatelessWidget {
       title: Text(r.title, style: TextStyle(color: r.enabled ? GV.text : GV.muted)),
       subtitle: Text([
         '${context.t('rem.kind.${r.kind}')} · ${Fmt.dateTime(at)}',
-        if (r.repeat != 'none') context.t('rem.repeat.${r.repeat}'),
+        if (r.repeat != 'none') repeatLabel(context, r.repeat),
         if (overdue) context.t('rem.overdue'),
       ].join(' · ')),
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ReminderFormScreen(existing: r))),

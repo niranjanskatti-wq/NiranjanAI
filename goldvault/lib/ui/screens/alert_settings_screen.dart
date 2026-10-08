@@ -8,6 +8,7 @@ import '../../data/models.dart';
 import '../../services/notifications.dart';
 import '../widgets/alarm_options.dart';
 import '../widgets/common.dart';
+import '../widgets/fields.dart';
 
 /// Every alert and alarm, each with its own on/off switch.
 class AlertSettingsScreen extends StatelessWidget {
@@ -33,7 +34,7 @@ class AlertSettingsScreen extends StatelessWidget {
           Widget days(String key, int value, String title, {bool enabled = true, int min = 0}) => ListTile(
                 enabled: enabled,
                 title: Text(title),
-                trailing: _Stepper(value: value, min: min, enabled: enabled, onChanged: (v) => repo.setPref(key, v)),
+                trailing: _Stepper(value: value, min: min, enabled: enabled, title: title, onChanged: (v) => repo.setPref(key, v)),
               );
           return ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 40), children: [
             SectionTitle(context.t('alerts.general')),
@@ -135,10 +136,11 @@ class AlertSettingsScreen extends StatelessWidget {
 
 /// Big −/+ buttons for day counts (easy for elders).
 class _Stepper extends StatelessWidget {
-  const _Stepper({required this.value, required this.onChanged, this.min = 0, this.enabled = true});
+  const _Stepper({required this.value, required this.onChanged, this.min = 0, this.enabled = true, this.title = ''});
   final int value;
   final int min;
   final bool enabled;
+  final String title;
   final ValueChanged<int> onChanged;
   @override
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
@@ -147,15 +149,27 @@ class _Stepper extends StatelessWidget {
           color: GV.gold,
           onPressed: enabled && value > min ? () => onChanged(value - 1) : null,
         ),
-        SizedBox(
-          width: 52,
-          child: Text(context.t('common.nDays', {'n': value}),
-              textAlign: TextAlign.center, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        // Tap the number to type any value (15 days, a month, a year…).
+        InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: enabled
+              ? () async {
+                  final v = await askDays(context, title: title, initial: value, min: min);
+                  if (v != null) onChanged(v);
+                }
+              : null,
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 64),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(border: Border.all(color: GV.goldDeep), borderRadius: BorderRadius.circular(10)),
+            child: Text(daysLabel(context, value),
+                textAlign: TextAlign.center, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: GV.gold)),
+          ),
         ),
         IconButton(
           icon: const Icon(Icons.add_circle_outline),
           color: GV.gold,
-          onPressed: enabled && value < 365 ? () => onChanged(value + 1) : null,
+          onPressed: enabled ? () => onChanged(value + 1) : null,
         ),
       ]);
 }

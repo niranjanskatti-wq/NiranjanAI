@@ -153,6 +153,7 @@ class AlarmOptionsEditor extends StatelessWidget {
                   DropdownMenuItem(value: 60, child: Text(context.t('alert.unit.hour'))),
                   DropdownMenuItem(value: 1440, child: Text(context.t('alert.unit.day'))),
                   DropdownMenuItem(value: 10080, child: Text(context.t('alert.unit.week'))),
+                  DropdownMenuItem(value: 43200, child: Text(context.t('alert.unit.month'))),
                 ],
                 onChanged: (v) => set(() => unit = v ?? 1440),
               ),
