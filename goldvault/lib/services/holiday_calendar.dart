@@ -7,10 +7,22 @@ class Closure {
   final DateTime start;
   final DateTime end;
   final List<String> names; // named holidays in the run (not weekends)
-  const Closure(this.start, this.end, this.names);
+  final List<String> weekends; // 'sun' / 'sat2' / 'sat4' days in the run
+  const Closure(this.start, this.end, this.names, [this.weekends = const []]);
 
   int get days => end.difference(start).inDays + 1;
   bool get hasNamedHoliday => names.isNotEmpty;
+  bool get hasSaturdayHoliday => weekends.contains('sat2') || weekends.contains('sat4');
+
+  /// Whether this closure is shown in lists and gets a warning alarm.
+  /// Named holidays always; 2nd/4th Saturday weekends when weekend holidays
+  /// are on; a plain Sunday only if "every Sunday" is on.
+  bool listed({required bool weekendHolidays, required bool everySunday}) =>
+      hasNamedHoliday || (weekendHolidays && (hasSaturdayHoliday || (everySunday && weekends.isNotEmpty)));
+
+  /// "Ayudha Pooja, 4th Saturday, Sunday" (weekend names via [weekendLabel]).
+  String label(String Function(String code) weekendLabel) =>
+      [...names.toSet(), ...weekends.toSet().map(weekendLabel)].join(', ');
 }
 
 /// Bank holiday rules: user's holiday list + (optionally) every Sunday and
@@ -62,11 +74,14 @@ class HolidayCalendar {
       }
       final start = d;
       final names = <String>[];
+      final weekends = <String>[];
       while (isClosed(d)) {
         names.addAll(namedOn(d));
+        final w = weekendOn(d);
+        if (w != null) weekends.add(w);
         d = DateTime(d.year, d.month, d.day + 1);
       }
-      out.add(Closure(start, DateTime(d.year, d.month, d.day - 1), names));
+      out.add(Closure(start, DateTime(d.year, d.month, d.day - 1), names, weekends));
     }
     return out;
   }

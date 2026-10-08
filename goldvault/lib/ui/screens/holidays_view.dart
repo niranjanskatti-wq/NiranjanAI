@@ -39,7 +39,10 @@ class _HolidaysViewState extends State<HolidaysView> {
       builder: (context, d) {
         final (cal, all, prefs) = d;
         final today = Fmt.dateOnly(DateTime.now());
-        final upcoming = cal.closures(today, today.add(const Duration(days: 120))).where((c) => c.hasNamedHoliday).toList();
+        final upcoming = cal
+            .closures(today, today.add(const Duration(days: 120)))
+            .where((c) => c.listed(weekendHolidays: prefs.holidayWeekendAlerts, everySunday: prefs.everySundayAlerts))
+            .toList();
         final named = cal.namedOn(_selected);
         final weekend = cal.weekendOn(_selected);
         final selectedHolidays = all.where((h) => h.fallsOn(_selected)).toList();
@@ -98,7 +101,7 @@ class _HolidaysViewState extends State<HolidaysView> {
             padding: const EdgeInsets.fromLTRB(8, 12, 8, 0),
             child: Wrap(spacing: 16, runSpacing: 6, children: [
               _legend(const BoxDecoration(color: holidayRed, shape: BoxShape.circle), context.t('hol.legendHoliday')),
-              _legend(BoxDecoration(shape: BoxShape.circle, border: Border.all(color: holidayRed, width: 1.5)), context.t('hol.legendWeekend')),
+              _legend(BoxDecoration(shape: BoxShape.circle, color: holidayRed.withValues(alpha: 0.45)), context.t('hol.legendWeekend')),
             ]),
           ),
           SectionTitle(Fmt.date(_selected)),
@@ -155,7 +158,7 @@ class _HolidaysViewState extends State<HolidaysView> {
                 for (final c in upcoming.take(10))
                   ListTile(
                     leading: const CircleAvatar(backgroundColor: Color(0x33EF6C6C), child: Icon(Icons.beach_access, color: holidayRed)),
-                    title: Text(c.names.toSet().join(', ')),
+                    title: Text(c.label((w) => context.t('hol.$w'))),
                     subtitle: Text([
                       c.days > 1 ? '${Fmt.date(c.start)} – ${Fmt.date(c.end)}' : Fmt.date(c.start),
                       context.t('hol.closedDays', {'n': c.days}),
@@ -240,14 +243,15 @@ class _HolidaysViewState extends State<HolidaysView> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: named ? holidayRed : null,
-          border: named ? null : Border.all(color: holidayRed.withValues(alpha: 0.7), width: 1.5),
+          // Festival holidays: solid red. Sundays / 2nd & 4th Saturdays: lighter red.
+          color: named ? holidayRed : holidayRed.withValues(alpha: 0.45),
+          border: today ? Border.all(color: GV.gold, width: 2) : null,
         ),
         child: Text('${day.day}',
             style: TextStyle(
               fontSize: 16,
-              fontWeight: today || named ? FontWeight.w800 : FontWeight.w500,
-              color: named ? Colors.white : holidayRed,
+              fontWeight: today || named ? FontWeight.w800 : FontWeight.w600,
+              color: Colors.white,
             )),
       ),
     );

@@ -144,7 +144,11 @@ void main() {
       final after = await engine.upcoming(now: now);
       // (Kannada Rajyotsava on 1 Nov also shows up as a holiday warning.)
       expect(after.where((d) => d.kind != DueKind.holiday).map((d) => d.kind), [DueKind.rent]);
-      expect(after.where((d) => d.kind == DueKind.holiday).single.title, 'Kannada Rajyotsava');
+      // 2nd & 4th Saturday weekends now count as bank holidays too.
+      final hol = after.where((d) => d.kind == DueKind.holiday).toList();
+      expect(hol.map((d) => d.date), [DateTime(2026, 10, 10), DateTime(2026, 10, 24), DateTime(2026, 11, 1)]);
+      expect(hol[0].weekends, ['sat2', 'sun']);
+      expect(hol[2].title, 'Kannada Rajyotsava');
 
       // Far from the due date, rent is not yet nagging.
       await repo.markRentPaid(sbi.id!);
@@ -180,6 +184,13 @@ void main() {
       await repo.setPref('holiday_alerts', false);
       final off = await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15), horizonDays: 30);
       expect(off.where((d) => d.kind == DueKind.holiday), isEmpty);
+
+      // Ordinary Sundays are listed only when "every Sunday" is on.
+      await repo.setPref('holiday_alerts', true);
+      bool sunday(List<DueItem> l) => l.any((d) => d.kind == DueKind.holiday && d.date == DateTime(2026, 10, 18));
+      expect(sunday(await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15), horizonDays: 30)), isFalse);
+      await repo.setPref('every_sunday_alerts', true);
+      expect(sunday(await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15), horizonDays: 30)), isTrue);
 
       // Rules can be switched off too.
       await repo.setPref('closed_sat_2_4', false);

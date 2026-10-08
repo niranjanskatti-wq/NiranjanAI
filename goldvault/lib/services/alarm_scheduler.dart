@@ -55,7 +55,7 @@ class AlarmScheduler {
       case DueKind.custom:
         return (d.title, [Fmt.dateTime(d.notifyAt), ?d.subtitle].join(' · '));
       case DueKind.holiday:
-        final what = d.title.isEmpty ? s.t('hol.weekend') : d.title;
+        final what = [if (d.title.isNotEmpty) d.title, ...d.weekends.toSet().map((w) => s.t('hol.$w'))].join(', ');
         return (
           s.t('notif.holiday', {'n': d.days, 'date': date}),
           s.t('notif.holidayBody', {'what': what, 'range': d.subtitle ?? date}),

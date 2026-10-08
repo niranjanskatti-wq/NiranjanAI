@@ -31,6 +31,9 @@ class DueItem {
   final bool vibrate;
   final int snooze; // minutes, 0 = none
 
+  /// Weekend closure codes in a holiday closure ('sun', 'sat2', 'sat4').
+  final List<String> weekends;
+
   const DueItem({
     required this.kind,
     required this.key,
@@ -50,6 +53,7 @@ class DueItem {
     String? sound,
     this.vibrate = true,
     this.snooze = 10,
+    this.weekends = const [],
   }) : sound = sound ?? (alarm ? 'alarm' : 'notify');
 
   bool isOverdue(DateTime now) => date.isBefore(Fmt.dateOnly(now));
@@ -177,7 +181,7 @@ class ReminderEngine {
     if (prefs.holidayAlerts) {
       final cal = await HolidayCalendar.load(repo);
       for (final c in cal.closures(today.add(const Duration(days: 1)), horizon)) {
-        if (!c.hasNamedHoliday && !prefs.holidayWeekendAlerts) continue;
+        if (!c.listed(weekendHolidays: prefs.holidayWeekendAlerts, everySunday: prefs.everySundayAlerts)) continue;
         out.add(DueItem(
           kind: DueKind.holiday,
           key: 'hol:${Fmt.isoDate(c.start)}',
@@ -185,6 +189,7 @@ class ReminderEngine {
           notifyAt: _atTime(c.start.subtract(Duration(days: prefs.holidayLeadDays)), t),
           title: c.names.isEmpty ? '' : c.names.toSet().join(', '),
           days: c.days,
+          weekends: c.weekends,
           subtitle: c.days > 1 ? '${Fmt.date(c.start)} – ${Fmt.date(c.end)}' : Fmt.date(c.start),
         ));
       }

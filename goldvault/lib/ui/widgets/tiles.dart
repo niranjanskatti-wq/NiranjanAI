@@ -84,7 +84,7 @@ class DueTile extends StatelessWidget {
     final (icon, label) = look(context, d.kind);
     final color = overdue ? GV.danger : (d.kind == DueKind.holiday ? const Color(0xFFEF9A9A) : GV.gold);
     final title = d.kind == DueKind.holiday
-        ? context.t('hol.closedDays', {'n': d.days}) + (d.title.isEmpty ? '' : ' · ${d.title}')
+        ? '${context.t('hol.closedDays', {'n': d.days})} · ${[if (d.title.isNotEmpty) d.title, ...d.weekends.toSet().map((w) => context.t('hol.$w'))].join(', ')}'
         : d.title;
     final when = d.kind == DueKind.holiday
         ? (d.subtitle ?? Fmt.date(d.date))

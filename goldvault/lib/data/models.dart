@@ -681,7 +681,11 @@ class Prefs {
   int get plannedLeadDays => _n('planned_lead_days', 1);
   bool get holidayAlerts => _b('holiday_alerts', true);
   int get holidayLeadDays => _n('holiday_lead_days', 2);
-  bool get holidayWeekendAlerts => _b('holiday_weekend_alerts', false);
+  /// 2nd/4th Saturday + Sunday treated as bank holidays in lists & alerts.
+  bool get holidayWeekendAlerts => _b('holiday_weekend_alerts', true);
+
+  /// Also list/alert for ordinary Sundays (4 a month – off by default).
+  bool get everySundayAlerts => _b('every_sunday_alerts', false);
   bool get backupNotifications => _b('backup_notifications', true);
 
   // Bank holiday rules (RBI: all Sundays, 2nd & 4th Saturdays)

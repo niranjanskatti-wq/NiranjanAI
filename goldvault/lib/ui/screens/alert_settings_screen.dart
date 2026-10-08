@@ -116,7 +116,8 @@ class AlertSettingsScreen extends StatelessWidget {
             _group([
               sw('holiday_alerts', p.holidayAlerts, context.t('alerts.holiday'), sub: context.t('alerts.holidaySub'), icon: Icons.beach_access_outlined, enabled: on),
               days('holiday_lead_days', p.holidayLeadDays, context.t('alerts.holidayLead'), enabled: on && p.holidayAlerts),
-              sw('holiday_weekend_alerts', p.holidayWeekendAlerts, context.t('alerts.holidayWeekends'), enabled: on && p.holidayAlerts),
+              sw('holiday_weekend_alerts', p.holidayWeekendAlerts, context.t('alerts.holidayWeekends'), sub: context.t('alerts.holidayWeekendsSub')),
+              sw('every_sunday_alerts', p.everySundayAlerts, context.t('alerts.everySunday'), sub: context.t('alerts.everySundaySub'), enabled: p.holidayWeekendAlerts),
               sw('closed_sundays', p.sundaysClosed, context.t('hol.ruleSundays'), icon: Icons.calendar_view_week),
               sw('closed_sat_2_4', p.saturdays24Closed, context.t('hol.ruleSaturdays'), icon: Icons.calendar_view_week),
               sw('holidays_on_visit_cal', p.holidaysOnVisitCal, context.t('hol.onVisitCal'), icon: Icons.event_note),
