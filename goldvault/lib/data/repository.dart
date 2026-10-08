@@ -816,6 +816,10 @@ class VaultRepo {
     await _changed();
   }
 
+  /// Open reminders/alarms linked to one ornament.
+  Future<List<Reminder>> remindersForItem(int itemId) async =>
+      (await reminders()).where((r) => r.itemIds.contains(itemId)).toList();
+
   Future<void> setReminderEnabled(int id, bool enabled) async {
     await db.update('reminders', {'enabled': enabled ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
     await _changed();

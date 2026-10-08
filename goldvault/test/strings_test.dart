@@ -22,6 +22,7 @@ void main() {
     for (final k in ['keep', 'take', 'planned_visit', 'custom']) 'rem.kind.$k',
     for (final r in ['none', 'until_back', 'daily', 'weekly', 'monthly', 'yearly']) 'rem.repeat.$r',
     for (final w in ['sun', 'sat2', 'sat4']) 'hol.$w',
+    for (final x in ['alarm', 'notify', 'silent']) ...['alert.sound.$x', 'alert.soundHelp.$x'],
   };
 
   test('every string used in the app has English text', () {

@@ -17,7 +17,25 @@ class AlarmScheduler {
 
   static int idFor(String key) => 100000 + (key.hashCode & 0x3FFFFFF);
 
+  /// "1 day", "3 hrs", "15 min" – how long before the due time.
+  static String beforeText(S s, int minutes) {
+    if (minutes % 10080 == 0) return s.t('alert.weeks', {'n': minutes ~/ 10080});
+    if (minutes % 1440 == 0) return s.t('alert.days', {'n': minutes ~/ 1440});
+    if (minutes % 60 == 0) return s.t('alert.hours', {'n': minutes ~/ 60});
+    return s.t('alert.mins', {'n': minutes});
+  }
+
   static (String, String) texts(S s, DueItem d) {
+    final (title, body) = _texts(s, d);
+    if (d.minutesBefore <= 0) return (title, body);
+    // Early alert: say how long until the actual time.
+    return (
+      '${s.t('alert.inX', {'x': beforeText(s, d.minutesBefore)})} · $title',
+      '${Fmt.dateTime(d.notifyAt.add(Duration(minutes: d.minutesBefore)))} · $body',
+    );
+  }
+
+  static (String, String) _texts(S s, DueItem d) {
     final date = Fmt.date(d.date);
     switch (d.kind) {
       case DueKind.rent:
@@ -50,7 +68,7 @@ class AlarmScheduler {
       if (prefs.notifications) {
         final engine = ReminderEngine(repo);
         final items = (await engine.upcoming(now: now, horizonDays: _horizonDays))
-            .where((d) => d.notifyAt.isAfter(now))
+            .where((d) => d.notify && d.notifyAt.isAfter(now))
             .toList()
           ..sort((a, b) => a.notifyAt.compareTo(b.notifyAt));
         for (final d in items.take(_maxScheduled)) {
@@ -60,10 +78,14 @@ class AlarmScheduler {
       for (final id in old.difference(want.keys.toSet())) {
         await Notifier.cancel(id);
       }
-      final s = S(await repo.getSetting('lang') ?? 'en');
+      final lang = await repo.getSetting('lang') ?? 'en';
+      final s = S(lang);
       for (final e in want.entries) {
-        final (title, body) = texts(s, e.value);
-        await Notifier.schedule(e.key, e.value.notifyAt, title, body, alarm: e.value.alarm);
+        final d = e.value;
+        final (title, body) = texts(s, d);
+        await Notifier.schedule(e.key, d.notifyAt, title, body,
+            lang: lang,
+            style: AlertStyle(sound: d.sound, vibrate: d.vibrate, snooze: d.snooze, reminderId: d.reminderId));
       }
       await repo.setSetting('scheduled_ids', want.keys.join(','));
     } catch (e) {

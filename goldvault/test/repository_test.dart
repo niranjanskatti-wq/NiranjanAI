@@ -215,6 +215,9 @@ void main() {
     expect(old.title, 'SBI');
     expect(old.enabled, isTrue);
     expect(old.repeat, 'none');
+    expect(old.alerts, [0]);
+    expect(old.soundMode, 'alarm');
+    expect(old.snooze, 10);
     expect((await r.holidays()).map((h) => h.name), contains('Kannada Rajyotsava'));
     await db.close();
   });

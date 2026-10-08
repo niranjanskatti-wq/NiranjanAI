@@ -6,6 +6,7 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../../services/notifications.dart';
+import 'alarm_options.dart';
 import 'fields.dart';
 
 /// "How long has it been out?" e.g. "3 days 4 hrs".
@@ -28,7 +29,7 @@ class ReturnByChoice {
   String date = Fmt.isoDate(DateTime.now().add(const Duration(days: 7)));
   String? time;
   bool untilBack = true;
-  bool alarm = true;
+  AlarmOptions options = AlarmOptions();
 
   /// Applies the user's defaults (Settings → Alerts & alarms).
   Future<void> loadDefaults() async {
@@ -36,7 +37,7 @@ class ReturnByChoice {
     on = p.returnByDefault;
     date = Fmt.isoDate(DateTime.now().add(Duration(days: p.returnByDays)));
     time = p.alertTime;
-    alarm = p.alarmByDefault;
+    options = AlarmOptions.fromPrefs(p);
   }
 
   /// Creates the "put back in locker" alarm if switched on.
@@ -52,11 +53,15 @@ class ReturnByChoice {
       repeat: untilBack ? 'until_back' : 'none',
       locationId: lockerId,
       itemIds: items.map((e) => e.id!).toList(),
-      alarm: alarm,
+      alarm: options.sound == 'alarm',
+      alerts: options.sortedAlerts,
+      sound: options.sound,
+      vibrate: options.vibrate,
+      snooze: options.snooze,
       notes: items.map((i) => '${i.name} (${i.serial})').join(', '),
     ));
     await Notifier.requestPermission();
-    if (alarm) await Notifier.requestExactAlarms();
+    await Notifier.requestExactAlarms();
   }
 }
 
@@ -115,15 +120,8 @@ class ReturnByFields extends StatelessWidget {
             onChanged();
           },
         ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(context.t('rem.alarm')),
-          value: c.alarm,
-          onChanged: (v) {
-            c.alarm = v;
-            onChanged();
-          },
-        ),
+        const SizedBox(height: 4),
+        AlarmOptionsEditor(options: c.options, onChanged: onChanged, compact: true),
       ],
     ]);
   }

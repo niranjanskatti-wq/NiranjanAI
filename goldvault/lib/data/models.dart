@@ -497,6 +497,16 @@ class Reminder {
   final bool done;
   final String? notes;
 
+  /// Minutes before the due time to alert (0 = at the time). Several allowed.
+  final List<int> alerts;
+
+  /// 'alarm' (alarm volume, keeps ringing), 'notify' (normal sound), 'silent'.
+  final String? sound;
+  final bool vibrate;
+
+  /// Snooze length in minutes offered on the notification (0 = no snooze).
+  final int snooze;
+
   const Reminder({
     this.id,
     required this.kind,
@@ -510,9 +520,26 @@ class Reminder {
     this.enabled = true,
     this.done = false,
     this.notes,
+    this.alerts = const [0],
+    this.sound,
+    this.vibrate = true,
+    this.snooze = 10,
   });
 
   static const kinds = ['keep', 'take', 'planned_visit', 'custom'];
+  static const sounds = ['alarm', 'notify', 'silent'];
+
+  /// Preset "alert me" choices in minutes before the due time.
+  static const alertPresets = [0, 15, 60, 180, 1440, 2880, 10080];
+  static const snoozeChoices = [0, 5, 10, 15, 30, 60];
+
+  String get soundMode => sound ?? (alarm ? 'alarm' : 'notify');
+
+  static List<int> parseAlerts(String? s) {
+    final l = (s ?? '0').split(',').map((e) => int.tryParse(e.trim())).whereType<int>().where((e) => e >= 0).toSet().toList()
+      ..sort();
+    return l.isEmpty ? const [0] : l;
+  }
   static const repeats = ['none', 'until_back', 'daily', 'weekly', 'monthly', 'yearly'];
 
   /// Keeps ringing every day after the due time until the ornaments are back
@@ -548,10 +575,18 @@ class Reminder {
         enabled: (_i(m['enabled']) ?? 1) == 1,
         done: (_i(m['done']) ?? 0) == 1,
         notes: _s(m['notes']),
+        alerts: parseAlerts(_s(m['alerts'])),
+        sound: _s(m['sound']),
+        vibrate: (_i(m['vibrate']) ?? 1) == 1,
+        snooze: _i(m['snooze']) ?? 10,
       );
 
   Map<String, Object?> toMap() => {
         if (id != null) 'id': id,
+        'alerts': (alerts.isEmpty ? const [0] : alerts).join(','),
+        'sound': sound,
+        'vibrate': vibrate ? 1 : 0,
+        'snooze': snooze,
         'kind': kind,
         'title': title,
         'due_date': dueDate,
@@ -629,6 +664,10 @@ class Prefs {
   bool get notifications => _b('notif_enabled', true);
   String get alertTime => _s['alert_time'] ?? '09:00';
   bool get alarmByDefault => _b('alarm_default', true);
+  String get defaultSound => _s['default_sound'] ?? (alarmByDefault ? 'alarm' : 'notify');
+  List<int> get defaultAlerts => Reminder.parseAlerts(_s['default_alerts']);
+  int get defaultSnooze => _n('default_snooze', 10);
+  bool get defaultVibrate => _b('default_vibrate', true);
   bool get rentAlerts => _b('rent_alerts', true);
   int get rentLeadDays => _n('rent_lead_days', 15);
   bool get notReturnedAlerts => _b('not_returned_alerts', true);

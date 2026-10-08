@@ -8,6 +8,7 @@ import '../../data/constants.dart';
 import '../../data/models.dart';
 import '../../services/holiday_calendar.dart';
 import '../../services/notifications.dart';
+import '../widgets/alarm_options.dart';
 import '../widgets/common.dart';
 import '../widgets/fields.dart';
 import 'item_picker_screen.dart';
@@ -34,7 +35,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
   late String _date;
   String? _time;
   String _repeat = 'none';
-  bool _alarm = true;
+  AlarmOptions _opts = AlarmOptions();
   bool _enabled = true;
   List<Item> _items = [];
   HolidayCalendar? _cal;
@@ -50,7 +51,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
     _date = r?.dueDate ?? Fmt.isoDate(widget.date ?? DateTime.now().add(const Duration(days: 1)));
     _time = r?.time;
     _repeat = r?.repeat ?? widget.repeat;
-    _alarm = r?.alarm ?? true;
+    if (r != null) _opts = AlarmOptions.fromReminder(r);
     _enabled = r?.enabled ?? true;
     _title.text = r?.title ?? '';
     _notes.text = r?.notes ?? '';
@@ -62,7 +63,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
     final prefs = await repo.prefs();
     _cal = await HolidayCalendar.load(repo);
     if (!_edit) {
-      _alarm = prefs.alarmByDefault;
+      _opts = AlarmOptions.fromPrefs(prefs);
       _time ??= prefs.alertTime;
     }
     for (final id in ids) {
@@ -133,14 +134,18 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
       repeat: _repeat,
       locationId: _locker,
       itemIds: _items.map((e) => e.id!).toList(),
-      alarm: _alarm,
+      alarm: _opts.sound == 'alarm',
+      alerts: _opts.sortedAlerts,
+      sound: _opts.sound,
+      vibrate: _opts.vibrate,
+      snooze: _opts.snooze,
       enabled: _enabled,
       done: false,
       notes: _notes.text.trim().isEmpty ? itemsText : _notes.text.trim(),
     );
     await AppServices.I.repo.saveReminder(r);
     await Notifier.requestPermission();
-    if (_alarm) await Notifier.requestExactAlarms();
+    await Notifier.requestExactAlarms();
     if (mounted) {
       toast(context, context.t('rem.saved', {'when': Fmt.dateTime(r.at(_time ?? '09:00'))}));
       Navigator.pop(context, true);
@@ -223,14 +228,12 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
           ),
         ],
         const SizedBox(height: 8),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          secondary: const Icon(Icons.alarm, color: GV.gold, size: 28),
-          title: Text(context.t('rem.alarm')),
-          subtitle: Text(context.t('rem.alarmSub')),
-          value: _alarm,
-          onChanged: (v) => setState(() => _alarm = v),
+        SectionTitle(context.t('alert.options')),
+        GoldCard(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
+          child: AlarmOptionsEditor(options: _opts, onChanged: () => setState(() {})),
         ),
+        const SizedBox(height: 8),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           secondary: const Icon(Icons.notifications_active_outlined, color: GV.gold, size: 28),

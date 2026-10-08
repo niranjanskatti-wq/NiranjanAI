@@ -16,7 +16,7 @@ class RemindersScreen extends StatelessWidget {
 
   Future<(List<Reminder>, List<DueItem>, Prefs)> _load() async {
     final repo = AppServices.I.repo;
-    final auto = (await AppServices.I.reminders.upcoming(horizonDays: 60)).where((d) => d.reminderId == null).toList();
+    final auto = (await AppServices.I.reminders.listed(horizonDays: 60)).where((d) => d.reminderId == null).toList();
     return (await repo.reminders(), auto, await repo.prefs());
   }
 

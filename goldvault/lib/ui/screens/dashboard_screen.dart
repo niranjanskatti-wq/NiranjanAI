@@ -65,7 +65,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       byCat.putIfAbsent(i.category, Totals.new).add(i, rates);
     }
     return _Dash(all, byLoc, colors, byOwner, byCat, rates, await repo.recentMovements(limit: 8),
-        await AppServices.I.reminders.upcoming(horizonDays: 30), await repo.prefs());
+        await AppServices.I.reminders.listed(horizonDays: 30), await repo.prefs());
   }
 
   @override

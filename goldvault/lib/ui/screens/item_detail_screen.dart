@@ -25,7 +25,9 @@ class _Detail {
   final Rates rates;
   final DateTime? outSince;
   final DateTime? returnBy;
-  _Detail(this.item, this.photos, this.history, this.locs, this.rates, this.outSince, this.returnBy);
+  final List<Reminder> alarms;
+  final String alertTime;
+  _Detail(this.item, this.photos, this.history, this.locs, this.rates, this.outSince, this.returnBy, this.alarms, this.alertTime);
 }
 
 class ItemDetailScreen extends StatelessWidget {
@@ -38,7 +40,8 @@ class ItemDetailScreen extends StatelessWidget {
     if (i == null) return null;
     final p = await repo.prefs();
     return _Detail(i, await repo.photosFor(itemId), await repo.historyFor(itemId), await repo.locationMap(), await repo.valueRates(),
-        i.isActive ? (await repo.takenOutTimes())[itemId] : null, (await repo.returnByTimes(p.alertTime))[itemId]);
+        i.isActive ? (await repo.takenOutTimes())[itemId] : null, (await repo.returnByTimes(p.alertTime))[itemId],
+        await repo.remindersForItem(itemId), p.alertTime);
   }
 
   @override
@@ -116,6 +119,10 @@ class ItemDetailScreen extends StatelessWidget {
                     ),
                   ),
                 ]),
+              if (i.isActive) ...[
+                SectionTitle(context.t('alert.forItem')),
+                _alarms(context, d),
+              ],
               SectionTitle(context.t('item.weights')),
               _facts([
                 (context.t('item.gross'), Fmt.grams(i.grossWt), false),
@@ -166,6 +173,56 @@ class ItemDetailScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Widget _alarms(BuildContext context, _Detail d) {
+    final i = d.item;
+    final repo = AppServices.I.repo;
+    final inLocker = i.status == 'in_locker';
+    void add(String kind) => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ReminderFormScreen(
+              kind: kind,
+              itemIds: [i.id!],
+              locationId: inLocker ? i.locationId : null,
+              repeat: kind == 'keep' ? 'until_back' : 'none',
+            ),
+          ),
+        );
+    return GoldCard(
+      padding: const EdgeInsets.fromLTRB(8, 6, 8, 12),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (d.alarms.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Text(context.t('alert.noneForItem'), style: const TextStyle(color: GV.muted)),
+          ),
+        for (final r in d.alarms)
+          ListTile(
+            leading: Icon(
+              r.soundMode == 'alarm' ? Icons.alarm_on : (r.soundMode == 'silent' ? Icons.notifications_off_outlined : Icons.notifications_active_outlined),
+              color: r.enabled ? GV.gold : GV.muted,
+            ),
+            title: Text(r.title, style: TextStyle(color: r.enabled ? GV.text : GV.muted)),
+            subtitle: Text([
+              Fmt.dateTime(r.at(d.alertTime)),
+              if (r.repeat != 'none') context.t('rem.repeat.${r.repeat}'),
+              if (r.alerts.length > 1 || r.alerts.first != 0) context.t('alert.nAlerts', {'n': r.alerts.length}),
+            ].join(' · ')),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ReminderFormScreen(existing: r))),
+            trailing: Switch(value: r.enabled, onChanged: (v) => repo.setReminderEnabled(r.id!, v)),
+          ),
+        const SizedBox(height: 6),
+        Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.center, children: [
+          if (!inLocker)
+            OutlinedButton.icon(icon: const Icon(Icons.login), label: Text(context.t('rem.kind.keep')), onPressed: () => add('keep')),
+          if (inLocker)
+            OutlinedButton.icon(icon: const Icon(Icons.logout), label: Text(context.t('rem.kind.take')), onPressed: () => add('take')),
+          OutlinedButton.icon(icon: const Icon(Icons.alarm_add), label: Text(context.t('rem.kind.custom')), onPressed: () => add('custom')),
+        ]),
+      ]),
     );
   }
 

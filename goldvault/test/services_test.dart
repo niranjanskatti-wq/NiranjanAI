@@ -17,6 +17,10 @@ import 'package:goldvault/services/report_data.dart';
 
 import 'helpers.dart';
 
+extension on Reminder {
+  Reminder copyWithAlerts(List<int> a) => Reminder.fromMap({...toMap(), 'id': id, 'alerts': a.join(',')});
+}
+
 void main() {
   group('crypto', () {
     test('seal/open round trip and tamper detection', () {
@@ -252,6 +256,37 @@ void main() {
       final id2 = await repo.saveReminder(const Reminder(kind: 'keep', title: 'x', dueDate: '2026-10-05', repeat: 'until_back'));
       await repo.setReminderDone(id2, true);
       expect((await repo.reminder(id2))!.done, isTrue);
+    });
+
+    test('several alerts per reminder with their own sound, vibration and snooze', () async {
+      final ring = await repo.createItem(const Item(name: 'Ring', category: 'Gold', status: Opt.atHome, grossWt: 4)
+          .copyWith(locationId: (await repo.locations()).last.id));
+      final id = await repo.saveReminder(Reminder(
+        kind: 'keep',
+        title: 'Keep ring',
+        dueDate: '2026-10-20',
+        time: '18:00',
+        itemIds: [ring.id!],
+        alerts: const [0, 60, 1440],
+        sound: 'silent',
+        vibrate: false,
+        snooze: 15,
+      ));
+      final all = (await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15))).where((d) => d.reminderId == id).toList();
+      expect(all.where((d) => d.notify).map((d) => d.notifyAt).toSet(), {
+        DateTime(2026, 10, 20, 18),
+        DateTime(2026, 10, 20, 17),
+        DateTime(2026, 10, 19, 18),
+      });
+      expect(all.every((d) => d.sound == 'silent' && !d.vibrate && d.snooze == 15), isTrue);
+      // Lists show it once.
+      expect((await ReminderEngine(repo).listed(now: DateTime(2026, 10, 15))).where((d) => d.reminderId == id).length, 1);
+      // Only early alerts (no alert at the time itself).
+      await repo.saveReminder((await repo.reminder(id))!.copyWithAlerts(const [2880]));
+      final early = (await ReminderEngine(repo).upcoming(now: DateTime(2026, 10, 15))).where((d) => d.reminderId == id && d.notify);
+      expect(early.map((d) => d.notifyAt), [DateTime(2026, 10, 18, 18)]);
+      // Linked to the ornament.
+      expect((await repo.remindersForItem(ring.id!)).single.id, id);
     });
 
     test('master switch and per-type switches', () async {

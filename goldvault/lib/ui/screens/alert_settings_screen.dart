@@ -6,6 +6,7 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../../services/notifications.dart';
+import '../widgets/alarm_options.dart';
 import '../widgets/common.dart';
 
 /// Every alert and alarm, each with its own on/off switch.
@@ -53,7 +54,26 @@ class AlertSettingsScreen extends StatelessWidget {
                   }
                 },
               ),
-              sw('alarm_default', p.alarmByDefault, context.t('alerts.alarmDefault'), sub: context.t('rem.alarmSub'), icon: Icons.alarm, enabled: on),
+              ExpansionTile(
+                leading: const Icon(Icons.alarm, color: GV.gold, size: 26),
+                title: Text(context.t('alert.defaults')),
+                subtitle: Text(context.t('alert.defaultsSub')),
+                childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                children: [
+                  Builder(builder: (context) {
+                    final o = AlarmOptions.fromPrefs(p);
+                    return AlarmOptionsEditor(
+                      options: o,
+                      onChanged: () async {
+                        await repo.setSetting('default_alerts', o.sortedAlerts.join(','));
+                        await repo.setSetting('default_sound', o.sound);
+                        await repo.setSetting('default_snooze', '${o.snooze}');
+                        await repo.setPref('default_vibrate', o.vibrate);
+                      },
+                    );
+                  }),
+                ],
+              ),
               ListTile(
                 enabled: on,
                 leading: const Icon(Icons.verified_outlined, color: GV.gold, size: 26),
@@ -75,7 +95,7 @@ class AlertSettingsScreen extends StatelessWidget {
                   final body = context.t('alerts.testBody');
                   await Notifier.requestPermission();
                   await Notifier.requestExactAlarms();
-                  await Notifier.schedule(99999, DateTime.now().add(const Duration(minutes: 1)), title, body, alarm: true);
+                  await Notifier.schedule(99999, DateTime.now().add(const Duration(minutes: 1)), title, body, style: AlertStyle(sound: p.defaultSound, vibrate: p.defaultVibrate, snooze: p.defaultSnooze));
                   if (context.mounted) toast(context, msg);
                 },
               ),

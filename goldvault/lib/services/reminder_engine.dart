@@ -21,6 +21,16 @@ class DueItem {
   final List<int> itemIds;
   final int days; // holiday closures: number of closed days
 
+  /// The main entry shown in lists (extra early alerts are not primary).
+  final bool primary;
+
+  /// Whether a notification should fire at [notifyAt].
+  final bool notify;
+  final int minutesBefore;
+  final String sound; // alarm / notify / silent
+  final bool vibrate;
+  final int snooze; // minutes, 0 = none
+
   const DueItem({
     required this.kind,
     required this.key,
@@ -34,7 +44,13 @@ class DueItem {
     this.reminderId,
     this.itemIds = const [],
     this.days = 1,
-  });
+    this.primary = true,
+    this.notify = true,
+    this.minutesBefore = 0,
+    String? sound,
+    this.vibrate = true,
+    this.snooze = 10,
+  }) : sound = sound ?? (alarm ? 'alarm' : 'notify');
 
   bool isOverdue(DateTime now) => date.isBefore(Fmt.dateOnly(now));
 }
@@ -125,22 +141,32 @@ class ReminderEngine {
         }
       }
       for (var k = 0; k < 12 && !Fmt.dateOnly(at).isAfter(horizon); k++) {
-        // Planned visits alert a few days ahead (at the chosen time).
-        final notifyAt = kind == DueKind.plannedVisit && r.time == null
+        // Planned visits without a time alert a few days ahead.
+        final base = kind == DueKind.plannedVisit && r.time == null
             ? at.subtract(Duration(days: prefs.plannedLeadDays))
             : at;
-        out.add(DueItem(
-          kind: kind,
-          key: 'rem:${r.id}:${Fmt.isoDateTime(at)}',
-          date: Fmt.dateOnly(at),
-          notifyAt: notifyAt,
-          alarm: r.alarm,
-          title: r.title,
-          subtitle: r.locationId != null ? locs[r.locationId]?.name : r.notes,
-          locationId: r.locationId,
-          reminderId: r.id,
-          itemIds: r.itemIds,
-        ));
+        DueItem make(int before, {required bool primary, required bool notify}) => DueItem(
+              kind: kind,
+              key: 'rem:${r.id}:${Fmt.isoDateTime(at)}:$before',
+              date: Fmt.dateOnly(at),
+              notifyAt: base.subtract(Duration(minutes: before)),
+              alarm: r.soundMode == 'alarm',
+              sound: r.soundMode,
+              vibrate: r.vibrate,
+              snooze: r.snooze,
+              minutesBefore: before,
+              primary: primary,
+              notify: notify,
+              title: r.title,
+              subtitle: r.locationId != null ? locs[r.locationId]?.name : r.notes,
+              locationId: r.locationId,
+              reminderId: r.id,
+              itemIds: r.itemIds,
+            );
+        out.add(make(0, primary: true, notify: r.alerts.contains(0)));
+        for (final b in r.alerts.where((b) => b > 0)) {
+          out.add(make(b, primary: false, notify: true));
+        }
         final next = r.nextAfter(at);
         if (next == null) break;
         at = next;
@@ -168,13 +194,17 @@ class ReminderEngine {
     return out;
   }
 
+  /// One entry per reminder occurrence (for lists and the dashboard).
+  Future<List<DueItem>> listed({DateTime? now, int horizonDays = 30}) async =>
+      (await upcoming(now: now, horizonDays: horizonDays)).where((d) => d.primary).toList();
+
   /// Overdue rent / not-returned items: nagged once a day by the background
   /// job (everything else is scheduled at its exact time).
   Future<List<DueItem>> dueForNotification({DateTime? now}) async {
     final n = now ?? DateTime.now();
     final all = await upcoming(now: n, horizonDays: 1);
     return all
-        .where((d) => (d.kind == DueKind.rent || d.kind == DueKind.notReturned) && !d.notifyAt.isAfter(n))
+        .where((d) => d.primary && (d.kind == DueKind.rent || d.kind == DueKind.notReturned) && !d.notifyAt.isAfter(n))
         .toList();
   }
 

@@ -3,7 +3,7 @@ import 'package:sqflite_sqlcipher/sqlite_api.dart';
 import '../core/format.dart';
 import 'constants.dart';
 
-const int kSchemaVersion = 2;
+const int kSchemaVersion = 3;
 
 /// All tables, in dependency order. Used for creation, JSON backup and wipe.
 const List<String> kTables = [
@@ -30,6 +30,13 @@ Future<void> upgradeSchema(DatabaseExecutor db, int from) async {
     await db.execute('ALTER TABLE reminders ADD COLUMN item_ids TEXT');
     await _createHolidays(db);
     await seedHolidays(db);
+  }
+  if (from < 3) {
+    // Several alerts per reminder, sound style, vibration and snooze.
+    await db.execute("ALTER TABLE reminders ADD COLUMN alerts TEXT NOT NULL DEFAULT '0'");
+    await db.execute('ALTER TABLE reminders ADD COLUMN sound TEXT');
+    await db.execute('ALTER TABLE reminders ADD COLUMN vibrate INTEGER NOT NULL DEFAULT 1');
+    await db.execute('ALTER TABLE reminders ADD COLUMN snooze INTEGER NOT NULL DEFAULT 10');
   }
 }
 
@@ -184,6 +191,7 @@ Future<void> createSchema(DatabaseExecutor db, {int upTo = kSchemaVersion}) asyn
       at TEXT
     )''');
   if (upTo >= 2) await upgradeSchema(db, 1);
+  // (upgradeSchema runs every step up to kSchemaVersion)
 }
 
 /// Pre-creates SBI locker, HDFC locker and Home with common sub-locations.
