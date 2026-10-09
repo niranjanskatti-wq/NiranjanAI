@@ -118,6 +118,27 @@ class MainActivity : FlutterFragmentActivity() {
                     setLockScreen(call.arguments as? Boolean ?: false)
                     result.success(null)
                 }
+                "glowFrames" -> {
+                    // Pictures of a moving widget effect, for the live preview in Settings.
+                    @Suppress("UNCHECKED_CAST")
+                    val a = call.arguments as Map<String, Any?>
+                    Thread {
+                        val bytes = try {
+                            val color = (a["color"] as? Number)?.toInt()
+                            GlowArt.png(
+                                GlowArt.frames(
+                                    a["style"] as String,
+                                    ((a["w"] as Number).toFloat() * 2).toInt(),
+                                    ((a["h"] as Number).toFloat() * 2).toInt(),
+                                    color, 2f, a["width"] as? String ?: "mid",
+                                ),
+                            )
+                        } catch (_: Exception) {
+                            emptyList<ByteArray>()
+                        }
+                        Handler(Looper.getMainLooper()).post { result.success(bytes) }
+                    }.start()
+                }
                 "manufacturer" -> result.success(Build.MANUFACTURER ?: "")
                 "sdkInt" -> result.success(Build.VERSION.SDK_INT)
                 "placeCall" -> {

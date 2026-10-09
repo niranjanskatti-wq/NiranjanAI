@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
+import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetLaunchIntent
+import es.antonborri.home_widget.HomeWidgetPlugin
 import es.antonborri.home_widget.HomeWidgetProvider
 import org.json.JSONArray
 import org.json.JSONObject
@@ -70,15 +72,41 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
         prepare(context, widgetData)
         val scale = scale()
         for (id in appWidgetIds) {
-            val views = RemoteViews(context.packageName, layout)
-            views.setOnClickPendingIntent(
-                R.id.widget_root,
-                HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java),
-            )
-            fill(views, items)
-            for ((text, sp) in texts) views.setTextViewTextSize(text, TypedValue.COMPLEX_UNIT_SP, sp * scale)
-            appWidgetManager.updateAppWidget(id, views)
+            try {
+                appWidgetManager.updateAppWidget(id, build(context, appWidgetManager, id, items, scale, rich = true))
+            } catch (_: Exception) {
+                // Too big for this phone (moving pictures): show the simple version instead.
+                appWidgetManager.updateAppWidget(id, build(context, appWidgetManager, id, items, scale, rich = false))
+            }
         }
+    }
+
+    private fun build(
+        context: Context,
+        manager: AppWidgetManager,
+        id: Int,
+        items: List<Item>,
+        scale: Float,
+        rich: Boolean,
+    ): RemoteViews {
+        val views = RemoteViews(context.packageName, layout)
+        views.setOnClickPendingIntent(
+            R.id.widget_root,
+            HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java),
+        )
+        fill(views, items)
+        for ((text, sp) in texts) views.setTextViewTextSize(text, TypedValue.COMPLEX_UNIT_SP, sp * scale)
+        if (rich) decorate(context, manager, id, views)
+        return views
+    }
+
+    /** Extra pictures drawn for this widget's own size (the Today widget's moving effects). */
+    protected open fun decorate(context: Context, manager: AppWidgetManager, id: Int, views: RemoteViews) {}
+
+    /** Resized on the home screen: draw again at the new size. */
+    override fun onAppWidgetOptionsChanged(context: Context, manager: AppWidgetManager, id: Int, options: Bundle) {
+        super.onAppWidgetOptionsChanged(context, manager, id, options)
+        onUpdate(context, manager, intArrayOf(id), HomeWidgetPlugin.getData(context))
     }
 
     protected val dateFormat = SimpleDateFormat("EEE d MMM", Locale.getDefault())
@@ -300,7 +328,15 @@ class SmritiTodayWidget : SmritiWidgetBase() {
     )
 
     /** How the border shines, from Settings › Today widget flash. */
-    private data class Glow(val color: Int, val style: String, val speed: Int, val width: String)
+    private data class Glow(val color: Int, val style: String, val speed: Int, val width: String, val natural: Boolean = false)
+
+    private val animIds = listOf(
+        R.id.anim_0, R.id.anim_1, R.id.anim_2, R.id.anim_3, R.id.anim_4, R.id.anim_5,
+        R.id.anim_6, R.id.anim_7, R.id.anim_8, R.id.anim_9, R.id.anim_10, R.id.anim_11,
+    )
+
+    /** Set by [fill]: a moving effect should be drawn for this update. */
+    private var animate = false
 
     private var context: Context? = null
     private var done: Set<String> = emptySet()
@@ -310,11 +346,14 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         this.context = context
         glow = try {
             val o = JSONObject(widgetData.getString("glow", "{}") ?: "{}")
+            val hex = o.optString("c", "#E7B75A")
+            val natural = hex == "auto"
             Glow(
-                Color.parseColor(o.optString("c", "#E7B75A")),
+                Color.parseColor(if (natural) "#E7B75A" else hex),
                 o.optString("s", "pulse"),
                 o.optInt("v", 900).coerceIn(200, 5000),
                 o.optString("w", "mid"),
+                natural,
             )
         } catch (_: Exception) {
             Glow(Color.parseColor("#E7B75A"), "pulse", 900, "mid")
@@ -361,7 +400,9 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         }
 
         val shine = left > 0
-        showGlow(views, if (shine) glow.style else "off")
+        animate = shine && glow.style in GlowArt.STYLES
+        // A moving effect is added in decorate(); until then (or if it can't be) a pulse shows.
+        showGlow(views, if (!shine) "off" else if (animate) "pulse" else glow.style)
         views.setTextColor(R.id.status, if (shine) glow.color else Color.parseColor("#8FCB8F"))
         views.setTextViewText(
             R.id.status,
@@ -385,6 +426,28 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         }
     }
 
+    override fun decorate(context: Context, manager: AppWidgetManager, id: Int, views: RemoteViews) {
+        if (!animate) {
+            views.setViewVisibility(R.id.glow_anim, View.GONE)
+            return
+        }
+        val opts = manager.getAppWidgetOptions(id)
+        val wDp = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH).takeIf { it > 0 } ?: 300
+        val hDp = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT).takeIf { it > 0 } ?: 100
+        // Pixels per dp: sharp enough, but small enough for the widget's picture limit.
+        val pxPerDp = minOf(context.resources.displayMetrics.density, 480f / wDp, 260f / hDp)
+        val frames = GlowArt.frames(
+            glow.style, (wDp * pxPerDp).toInt(), (hDp * pxPerDp).toInt(),
+            if (glow.natural) null else glow.color, pxPerDp, glow.width,
+        )
+        frames.forEachIndexed { i, b -> views.setImageViewBitmap(animIds[i], b) }
+        views.setInt(R.id.glow_anim, "setFlipInterval", (glow.speed / 8).coerceIn(60, 240))
+        views.setViewVisibility(R.id.glow_anim, View.VISIBLE)
+        views.setViewVisibility(R.id.glow_pulse, View.GONE)
+        views.setViewVisibility(R.id.glow_blink, View.GONE)
+        views.setViewVisibility(R.id.glow_steady, View.GONE)
+    }
+
     private fun showGlow(views: RemoteViews, style: String) {
         val ring = when (glow.width) {
             "thin" -> R.drawable.widget_ring_thin
@@ -401,5 +464,6 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         views.setViewVisibility(R.id.glow_pulse, if (style == "pulse") View.VISIBLE else View.GONE)
         views.setViewVisibility(R.id.glow_blink, if (style == "blink") View.VISIBLE else View.GONE)
         views.setViewVisibility(R.id.glow_steady, if (style == "steady") View.VISIBLE else View.GONE)
+        views.setViewVisibility(R.id.glow_anim, View.GONE)
     }
 }

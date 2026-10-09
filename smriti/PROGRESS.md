@@ -324,6 +324,15 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Automatic backup: every day or every week
 - Native DriveBackup.kt + "smriti/drive" channel (ACTION_CREATE_DOCUMENT + persistable permission)
 
+### Today widget: 14 moving effects
+- Settings › Widget size & flash › Moving effects: 🔥 Fire border, ✴️ Light rays, ☄️ Comet chase, 🌈 Rainbow,
+  ✨ Twinkle, 💓 Heartbeat, ⚡ Lightning, 🪔 Diyas, 🎊 Confetti, 🎈 Balloons, 🎆 Fireworks, 💡 Marquee lights,
+  🌌 Aurora, 🏵️ Rangoli (plus Pulse/Blink/Steady/Off); colours: Natural (each effect's own) or any one colour;
+  speed and thickness; new ready-made choices (On fire, Spotlight, Birthday party, Festive, Celebration)
+- How: a widget can't animate, so GlowArt.kt draws 12 frames at the widget's own size and a ViewFlipper flips
+  them (60–240 ms per frame); redrawn when the widget is resized; if the phone refuses the pictures the widget
+  falls back to the simple pulse. The Settings preview shows the same frames (smriti/window glowFrames)
+
 ### No doubled contacts
 - Every time Smriti opens (and after importing from contacts) it removes certain doubles on its own:
   - one phone number (or the same name) saved twice with the same birthday/anniversary → merged into one

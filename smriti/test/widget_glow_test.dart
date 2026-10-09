@@ -24,6 +24,18 @@ void main() {
     expect(WidgetGlow.parse(null).summary, 'Normal · pulse · medium');
     expect(WidgetGlow.parse('not json').same(const WidgetGlow()), isTrue);
     expect(WidgetGlow.presets.first.$3.summary, 'Very urgent · blink · fast');
+
+    // Moving effects keep their own colours when "Natural" is chosen.
+    final fire = const WidgetGlow().copyWith(style: GlowStyle.fire, natural: true);
+    expect(fire.toJson(), contains('"c":"auto"'));
+    final back = WidgetGlow.parse(fire.toJson());
+    expect((back.style, back.natural, back.style.moving), (GlowStyle.fire, true, true));
+    expect(back.copyWith(color: WidgetGlow.colors['Blue']).natural, isFalse, reason: 'picking a colour ends natural');
+    expect(back.copyWith(speed: GlowSpeed.fast).natural, isTrue);
+    expect(GlowStyle.values.where((s) => s.moving).length, 14);
+    for (final (_, _, p) in WidgetGlow.presets) {
+      expect(WidgetGlow.parse(p.toJson()).same(p), isTrue);
+    }
   });
 
   test('text sizes and the compact Next up are saved', () {
@@ -67,6 +79,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
     expect(WidgetGlow.parse(await db.getSetting('widgetGlow')).style, GlowStyle.blink);
+    await tester.scrollUntilVisible(find.text('🔥 Fire'), 300, scrollable: find.byType(Scrollable).first);
+    await tester.ensureVisible(find.text('🔥 Fire'));
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.text('🔥 Fire'));
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(WidgetGlow.parse(await db.getSetting('widgetGlow')).style, GlowStyle.fire);
+    expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(seconds: 1));
     await db.close();
