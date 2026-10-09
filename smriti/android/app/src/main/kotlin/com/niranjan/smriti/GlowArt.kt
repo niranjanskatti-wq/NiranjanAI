@@ -617,21 +617,27 @@ object GlowArt {
     private fun bullseye(x: Ctx) {
         val col = x.color ?: Color.rgb(230, 40, 40)
         val t = x.t
-        // Small and faint, so "to wish" and the Done button stay easy to read over it.
-        val r = min(x.h * 0.3f, x.w * 0.13f)
+        // In the gap between the name and the Done button, so the hit is easy to see.
+        val r = min(x.h * 0.28f, x.w * 0.075f)
         val hitAt = 0.4f
         val shake = if (t in hitAt..hitAt + 0.2f) x.dp(3f) * wave((t - hitAt) * 5f, 1) else 0f
-        val cx = x.w - r - x.dp(10f) + shake
-        val cy = x.h / 2
+        val cx = x.w * 0.66f + shake
+        val cy = x.h * 0.6f
         for (i in 4 downTo 0) {
             val ringCol = if (i % 2 == 0) col else Color.WHITE
-            x.c.drawCircle(cx, cy, r * (i + 1) / 5f, paint(alpha(ringCol, 0.22f)))
+            x.c.drawCircle(cx, cy, r * (i + 1) / 5f, paint(alpha(ringCol, 0.4f)))
         }
         x.c.drawCircle(cx, cy, r, paint(alpha(col, 0.45f), Paint.Style.STROKE, x.dp(1.2f)))
         if (t < hitAt) {
-            if (t < 0.12f) burst(x, x.dp(12f), cy, min(x.h * 0.32f, x.dp(26f)), 0.0, 1f - t / 0.12f, Color.rgb(255, 170, 60))
+            // Fired from the bottom-left corner, below the name, up into the target.
+            val sx = x.dp(14f)
+            val sy = x.h - x.dp(10f)
+            val len = hypot(cx - sx, cy - sy)
+            val dx = (cx - sx) / len
+            val dy = (cy - sy) / len
+            if (t < 0.12f) burst(x, sx, sy, min(x.h * 0.32f, x.dp(26f)), kotlin.math.atan2(dy, dx).toDouble(), 1f - t / 0.12f, Color.rgb(255, 170, 60))
             val p = t / hitAt
-            streak(x, x.dp(16f) + (cx - x.dp(16f)) * p, cy, 1f, 0f, x.dp(44f), Color.rgb(255, 210, 120), 0.8f)
+            streak(x, sx + (cx - sx) * p, sy + (cy - sy) * p, dx, dy, x.dp(44f), Color.rgb(255, 210, 120), 0.9f)
         } else {
             val p = (t - hitAt) / (1f - hitAt)
             for (k in 0..1) {
