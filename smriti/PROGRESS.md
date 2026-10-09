@@ -300,6 +300,8 @@ Building all phases in a row (your choice), testing everything on the phone at t
   Steady glow); 8 colour sets (Neon, Gold, Fire, Rose, Emerald, Ocean, Rainbow, White); speed; thickness;
   where (top card / lists); stop once wished
 - Respects the phone's "remove animations" setting (shows a still glow)
+- Also 🔥 Fire, ✴️ Light rays, ⚡ Lightning, 💡 Marquee lights, 💓 Heartbeat in the app (smooth animation);
+  choosing Fire switches to fire colours
 
 ### Fix: single copy of a couple date
 - "Dad · Anniversary 10 May" next to "Dad & Mom · Anniversary 10 May" is now found: removed automatically

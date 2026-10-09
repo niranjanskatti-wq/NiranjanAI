@@ -18,6 +18,11 @@ enum FrameStyle {
   sweep('Colour sweep', 'Colours flow round the border'),
   pulse('Pulse', 'The whole border breathes'),
   sparkle('Sparkle', 'Twinkling lights on the edge'),
+  fire('🔥 Fire', 'Flames flicker all round the card'),
+  rays('✴️ Light rays', 'Rays of light spin behind the card'),
+  lightning('⚡ Lightning', 'Electric sparks crackle on the edge'),
+  marquee('💡 Marquee lights', 'Theatre bulbs chase round'),
+  heartbeat('💓 Heartbeat', 'The border beats lub-dub'),
   steady('Steady glow', 'Glows without moving');
 
   const FrameStyle(this.label, this.help);
@@ -345,8 +350,130 @@ class _FramePainter extends CustomPainter {
           );
           canvas.drawCircle(pos, w * 0.8 * a + 0.3, Paint()..color = Colors.white.withValues(alpha: a));
         }
+      case FrameStyle.fire:
+        _fire(canvas, m, rect, w);
+        _glow(canvas, outer, rect, w * 0.7, color: colors.length > 1 ? colors[1] : colors.first);
+      case FrameStyle.rays:
+        _rays(canvas, rect);
+        _glow(canvas, outer, rect, w * 0.6, alpha: 0.8);
+      case FrameStyle.lightning:
+        _glow(canvas, outer, rect, w * 0.4, alpha: 0.35);
+        _lightning(canvas, m, rect, w);
+      case FrameStyle.marquee:
+        _marquee(canvas, m, w);
+      case FrameStyle.heartbeat:
+        final beat = math.max(0.0, 1 - (t - 0.08).abs() * 9) + 0.8 * math.max(0.0, 1 - (t - 0.3).abs() * 9);
+        final k = 0.25 + 0.75 * beat.clamp(0.0, 1.0);
+        _glow(canvas, outer, rect, w * (0.7 + 0.6 * k), alpha: k);
       case FrameStyle.steady:
         _glow(canvas, outer, rect, w);
+    }
+  }
+
+  /// Flames licking up from every edge; they always rise, so the top edge burns outward.
+  void _fire(Canvas canvas, ui.PathMetric m, Rect rect, double w) {
+    final base = colors.first;
+    final mid = colors.length > 1 ? colors[1] : base;
+    final core = colors.length > 2 ? colors[2] : Colors.white;
+    const step = 5.0;
+    final n = (m.length / step).floor();
+    final scale = w / 2.6;
+    const tau = 2 * math.pi;
+    for (var layer = 0; layer < 2; layer++) {
+      for (var i = 0; i < n; i++) {
+        final pos = m.getTangentForOffset(i * step)!.position;
+        final top = pos.dy < rect.center.dy;
+        final f = 0.55 +
+            0.25 * math.sin(i * 1.7 + t * tau * 3) +
+            0.2 * math.sin(i * 0.43 - t * tau * 2) +
+            0.12 * math.sin(i * 3.1 + t * tau * 5);
+        final h = (top ? 10.0 : 7.0) * f.clamp(0.2, 1.3) * scale * (layer == 0 ? 1 : 0.55);
+        final fw = step * (layer == 0 ? 1.9 : 1.1);
+        final sway = math.sin(i * 2.3 + t * tau * 4) * fw * 0.25;
+        final path = Path()
+          ..moveTo(pos.dx - fw / 2, pos.dy)
+          ..quadraticBezierTo(pos.dx - fw * 0.35, pos.dy - h * 0.55, pos.dx + sway, pos.dy - h)
+          ..quadraticBezierTo(pos.dx + fw * 0.35, pos.dy - h * 0.55, pos.dx + fw / 2, pos.dy)
+          ..close();
+        final shader = ui.Gradient.linear(
+          pos,
+          pos.translate(0, -h),
+          layer == 0
+              ? [base.withValues(alpha: 0.95), mid.withValues(alpha: 0.7), mid.withValues(alpha: 0)]
+              : [core, base.withValues(alpha: 0.8), base.withValues(alpha: 0)],
+          const [0, 0.55, 1],
+        );
+        canvas.drawPath(
+            path,
+            Paint()
+              ..shader = shader
+              ..maskFilter = layer == 0 ? const MaskFilter.blur(BlurStyle.normal, 1.2) : null);
+      }
+    }
+  }
+
+  /// Rays of light turning slowly behind the card, kept inside its corners.
+  void _rays(Canvas canvas, Rect rect) {
+    final c = colors.first;
+    final center = rect.center;
+    final far = math.sqrt(rect.width * rect.width + rect.height * rect.height);
+    final near = math.min(rect.width, rect.height) * 0.15;
+    const count = 12;
+    final turn = 2 * math.pi / count * t;
+    canvas.save();
+    canvas.clipRRect(RRect.fromRectAndRadius(rect, Radius.circular(radius)));
+    final paint = Paint()
+      ..shader = ui.Gradient.radial(center, far * 0.7,
+          [c.withValues(alpha: 0), c.withValues(alpha: 0.32), c.withValues(alpha: 0.12)], const [0, 0.45, 1]);
+    for (var i = 0; i < count; i++) {
+      final a = 2 * math.pi * i / count + turn + (i.isEven ? 0.05 : -0.04);
+      final s = i.isEven ? 0.06 : 0.04;
+      Offset at(double r, double ang) => center + Offset(r * math.cos(ang), r * math.sin(ang));
+      canvas.drawPath(
+          Path()
+            ..moveTo(at(near, a - s).dx, at(near, a - s).dy)
+            ..lineTo(at(far, a - s * 1.6).dx, at(far, a - s * 1.6).dy)
+            ..lineTo(at(far, a + s * 1.6).dx, at(far, a + s * 1.6).dy)
+            ..lineTo(at(near, a + s).dx, at(near, a + s).dy)
+            ..close(),
+          paint);
+    }
+    canvas.restore();
+  }
+
+  /// Jagged sparks that jump to a new place 12 times a loop.
+  void _lightning(Canvas canvas, ui.PathMetric m, Rect rect, double w) {
+    final rnd = math.Random(500 + (t * 12).floor());
+    final c = colors.first;
+    for (var b = 0; b < 2; b++) {
+      final start = rnd.nextDouble() * m.length;
+      final seg = m.length * (0.12 + rnd.nextDouble() * 0.12);
+      final bolt = Path();
+      for (var d = 0.0; d <= seg; d += 5) {
+        final tg = m.getTangentForOffset((start + d) % m.length)!;
+        final off = (rnd.nextDouble() - 0.5) * 7;
+        final p = tg.position + Offset(-tg.vector.dy * off, tg.vector.dx * off);
+        d == 0 ? bolt.moveTo(p.dx, p.dy) : bolt.lineTo(p.dx, p.dy);
+      }
+      canvas.drawPath(bolt, _stroke(w * 2.2, color: c.withValues(alpha: 0.7), blur: w * 2));
+      canvas.drawPath(bolt, _stroke(math.max(1, w * 0.5), color: Colors.white));
+    }
+  }
+
+  /// Bulbs round the edge, every third one lit, the lit ones stepping along.
+  void _marquee(Canvas canvas, ui.PathMetric m, double w) {
+    final c = colors.first;
+    final count = math.max(6, (m.length / 11).floor() ~/ 3 * 3);
+    final on = (t * 12).floor() % 3;
+    for (var i = 0; i < count; i++) {
+      final pos = m.getTangentForOffset(m.length * i / count)!.position;
+      final lit = i % 3 == on;
+      final r = lit ? 2.6 : 2.0;
+      if (lit) {
+        canvas.drawCircle(
+            pos, r * 2.4, Paint()..color = c.withValues(alpha: 0.55)..maskFilter = MaskFilter.blur(BlurStyle.normal, r * 1.8));
+      }
+      canvas.drawCircle(pos, r, Paint()..color = lit ? Color.lerp(c, Colors.white, 0.55)! : c.withValues(alpha: 0.28));
     }
   }
 
@@ -406,7 +533,11 @@ class HighlightScreen extends ConsumerWidget {
               children: [
                 for (final s in FrameStyle.values)
                   GestureDetector(
-                    onTap: () => save(p.copyWith(style: s)),
+                    onTap: () => save(p.copyWith(
+                      style: s,
+                      // Fire looks like fire unless you picked other colours yourself.
+                      palette: s == FrameStyle.fire && p.palette == FramePalette.neon ? FramePalette.fire : null,
+                    )),
                     child: GlowFrame(
                       prefs: p.copyWith(style: s),
                       radius: 14,
