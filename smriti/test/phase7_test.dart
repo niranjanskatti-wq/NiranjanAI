@@ -82,6 +82,7 @@ void main() {
     expect(items[1]['t'], 'Appa');
     expect(items[1]['l'], contains('Birthday'));
     expect(items[1]['l'], startsWith('🎂 Turning 61'), reason: 'age first, so a narrow widget still shows it');
+    expect(items[1]['y'], '61', reason: 'the bullseye shows 60 → 61');
     await db.close();
   });
 

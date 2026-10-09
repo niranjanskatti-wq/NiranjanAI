@@ -36,6 +36,7 @@ class HomeWidgetService {
             'l': label(u),
             'd': u.date.toString(),
             'k': keyOf(u.entry),
+            if ((u.years ?? 0) > 0) 'y': '${u.years}',
           },
       ];
 

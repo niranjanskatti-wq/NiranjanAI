@@ -38,8 +38,11 @@ object GlowArt {
     )
 
     /** Pictures for [style] at [w]×[h] pixels. [color] null means the effect's own colours. */
-    fun frames(style: String, w: Int, h: Int, color: Int?, density: Float, widthName: String, count: Int = FRAMES): List<Bitmap> =
-        (0 until count).map { f -> render(style, w, h, color, density, widthName, f, count) }
+    /** [years]: the age being turned (or years married), shown by the bullseye; 0 if not known. */
+    fun frames(
+        style: String, w: Int, h: Int, color: Int?, density: Float, widthName: String,
+        years: Int = 0, count: Int = FRAMES,
+    ): List<Bitmap> = (0 until count).map { f -> render(style, w, h, color, density, widthName, years, f, count) }
 
     /** The same pictures as PNG files' bytes, for the preview in Settings. */
     fun png(frames: List<Bitmap>): List<ByteArray> = frames.map { b ->
@@ -58,20 +61,21 @@ object GlowArt {
         val n: Int,
         val color: Int?,
         val stroke: Float,
+        val years: Int,
     ) {
         val t get() = f.toFloat() / n
         val radius get() = 22 * d
         fun dp(v: Float) = v * d
     }
 
-    private fun render(style: String, w: Int, h: Int, color: Int?, d: Float, widthName: String, f: Int, n: Int): Bitmap {
+    private fun render(style: String, w: Int, h: Int, color: Int?, d: Float, widthName: String, years: Int, f: Int, n: Int): Bitmap {
         val bmp = Bitmap.createBitmap(max(1, w), max(1, h), Bitmap.Config.ARGB_8888)
         val stroke = when (widthName) {
             "thin" -> 2f
             "thick" -> 5f
             else -> 3f
         } * d
-        val x = Ctx(Canvas(bmp), w.toFloat(), h.toFloat(), d, f, n, color, stroke)
+        val x = Ctx(Canvas(bmp), w.toFloat(), h.toFloat(), d, f, n, color, stroke, years)
         when (style) {
             "fire" -> fire(x)
             "rays" -> rays(x)
@@ -648,6 +652,27 @@ object GlowArt {
             sparks(x, cx, cy, p * 2.2f, Color.rgb(255, 200, 90), r * 1.3f, 11)
             x.c.drawCircle(cx + x.dp(1f), cy - x.dp(1f), x.dp(3.2f), paint(Color.rgb(25, 20, 20)))
             x.c.drawCircle(cx + x.dp(1f), cy - x.dp(1f), x.dp(3.2f), paint(alpha(Color.rgb(255, 180, 80), 0.7f), Paint.Style.STROKE, x.dp(1f)))
+        }
+        if (x.years > 0) {
+            // This year's age until the shot lands, then it pops up to the new one: 30 → 31.
+            val after = t >= hitAt
+            val text = (if (after) x.years else x.years - 1).toString()
+            val pop = if (after) 1f + 0.5f * max(0f, 1f - (t - hitAt) / 0.15f) else 1f
+            val size = r * (if (text.length > 2) 0.75f else 0.95f) * pop
+            val ink = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                textSize = size
+                textAlign = Paint.Align.CENTER
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+            }
+            val base = cy + size * 0.36f
+            ink.color = alpha(Color.BLACK, 0.75f)
+            ink.style = Paint.Style.STROKE
+            ink.strokeWidth = size * 0.16f
+            x.c.drawText(text, cx, base, ink)
+            ink.style = Paint.Style.FILL
+            ink.color = if (after) mix(Color.rgb(255, 214, 10), Color.WHITE, 0.2f) else alpha(Color.WHITE, 0.9f)
+            if (after) ink.setShadowLayer(size * 0.35f, 0f, 0f, Color.rgb(255, 170, 40))
+            x.c.drawText(text, cx, base, ink)
         }
         glowLine(x, ring(x, x.stroke * 1.6f), col, x.stroke * 0.45f, if (t in hitAt..hitAt + 0.15f) 1f else 0.35f)
     }

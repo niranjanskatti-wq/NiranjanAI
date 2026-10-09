@@ -131,6 +131,7 @@ class MainActivity : FlutterFragmentActivity() {
                                     ((a["w"] as Number).toFloat() * 2).toInt(),
                                     ((a["h"] as Number).toFloat() * 2).toInt(),
                                     color, 2f, a["width"] as? String ?: "mid",
+                                    (a["years"] as? Number)?.toInt() ?: 31,
                                 ),
                             )
                         } catch (_: Exception) {

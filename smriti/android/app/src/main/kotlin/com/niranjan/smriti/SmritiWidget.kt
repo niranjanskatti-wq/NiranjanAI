@@ -31,6 +31,8 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
         val days: Int,
         val key: String = "",
         val day: String = "",
+        /** Age or years married on this date; 0 if not known. */
+        val years: Int = 0,
     )
     protected data class Row(val root: Int, val days: Int, val name: Int, val label: Int)
 
@@ -171,7 +173,7 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
                 }
                 // Half a day of slack keeps daylight-saving shifts from changing the count.
                 val days = ((date.timeInMillis - today.timeInMillis + 43_200_000L) / 86_400_000L).toInt()
-                if (days >= 0) out.add(Item(o.optString("t"), o.optString("l"), date, days, o.optString("k"), o.getString("d")))
+                if (days >= 0) out.add(Item(o.optString("t"), o.optString("l"), date, days, o.optString("k"), o.getString("d"), o.optString("y").toIntOrNull() ?: 0))
             }
         } catch (_: Exception) {
             return emptyList()
@@ -338,6 +340,9 @@ class SmritiTodayWidget : SmritiWidgetBase() {
     /** Set by [fill]: a moving effect should be drawn for this update. */
     private var animate = false
 
+    /** Set by [fill]: the age (or years married) of the first one still to wish, for the bullseye. */
+    private var years = 0
+
     private var context: Context? = null
     private var done: Set<String> = emptySet()
     private var glow = Glow(Color.parseColor("#E7B75A"), "pulse", 900, "mid")
@@ -401,6 +406,7 @@ class SmritiTodayWidget : SmritiWidgetBase() {
 
         val shine = left > 0
         animate = shine && glow.style in GlowArt.STYLES
+        years = today.firstOrNull { "${it.key}|${it.day}" !in done && it.years > 0 }?.years ?: 0
         // A moving effect is added in decorate(); until then (or if it can't be) a pulse shows.
         showGlow(views, if (!shine) "off" else if (animate) "pulse" else glow.style)
         views.setTextColor(R.id.status, if (shine) glow.color else Color.parseColor("#8FCB8F"))
@@ -438,7 +444,7 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         val pxPerDp = minOf(context.resources.displayMetrics.density, 480f / wDp, 260f / hDp)
         val frames = GlowArt.frames(
             glow.style, (wDp * pxPerDp).toInt(), (hDp * pxPerDp).toInt(),
-            if (glow.natural) null else glow.color, pxPerDp, glow.width,
+            if (glow.natural) null else glow.color, pxPerDp, glow.width, years,
         )
         frames.forEachIndexed { i, b -> views.setImageViewBitmap(animIds[i], b) }
         views.setInt(R.id.glow_anim, "setFlipInterval", (glow.speed / 8).coerceIn(60, 240))
