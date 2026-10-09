@@ -326,6 +326,15 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Automatic backup: every day or every week
 - Native DriveBackup.kt + "smriti/drive" channel (ACTION_CREATE_DOCUMENT + persistable permission)
 
+### Shooting-range effects and the age on widgets
+- 6 more moving effects for the Today widget: 💥 Muzzle flash (flash, bullet along the bottom, sparks),
+  🔫 Tracer fire, 🎯 Bullseye (shot hits a target: ripples, sparks, bullet hole), 🪃 Ricochet (bouncing
+  bullet sparking off the walls), 🪟 Shattered glass (holes crack the glass, then it clears) and
+  🔴 Laser blaster; new ready-made choice "🎯 Shooting range"
+- Widgets now show the age first ("🎂 Turning 61 · Birthday", "💍 25th anniversary") and the Today widget
+  allows two lines, so the age is no longer cut off. Dates with no year show no age: open the date and add
+  the age once
+
 ### Today widget: 14 moving effects
 - Settings › Widget size & flash › Moving effects: 🔥 Fire border, ✴️ Light rays, ☄️ Comet chase, 🌈 Rainbow,
   ✨ Twinkle, 💓 Heartbeat, ⚡ Lightning, 🪔 Diyas, 🎊 Confetti, 🎈 Balloons, 🎆 Fireworks, 💡 Marquee lights,

@@ -27,6 +27,12 @@ enum GlowStyle {
   marquee('💡 Marquee lights', 'Theatre bulbs chase round the edge', moving: true),
   aurora('🌌 Aurora', 'Northern-lights colours flow round', moving: true),
   mandala('🏵️ Rangoli', 'Rangoli flowers slowly turn at both ends', moving: true),
+  muzzle('💥 Muzzle flash', 'Bang! A flash, a bullet along the bottom, sparks', moving: true),
+  tracer('🔫 Tracer fire', 'Glowing rounds race along the top and bottom', moving: true),
+  bullseye('🎯 Bullseye', 'A shot hits the target: ripples and sparks', moving: true),
+  ricochet('🪃 Ricochet', 'A bullet bounces round, sparking off the walls', moving: true),
+  glass('🪟 Shattered glass', 'Bullet holes crack the glass, then it clears', moving: true),
+  laser('🔴 Laser blaster', 'Pew-pew laser bolts and a hunting sight dot', moving: true),
   off('Off', 'No border');
 
   const GlowStyle(this.label, this.help, {this.moving = false});
@@ -113,6 +119,11 @@ class WidgetGlow {
     ('🎈 Birthday party', 'Balloons and confetti feel', WidgetGlow(style: GlowStyle.balloons, natural: true)),
     ('🪔 Festive', 'Flickering diya lamps', WidgetGlow(style: GlowStyle.diya, natural: true)),
     ('🎆 Celebration', 'Fireworks popping', WidgetGlow(style: GlowStyle.fireworks, natural: true)),
+    (
+      '🎯 Shooting range',
+      'Fast muzzle flash and a bullet: bang on time',
+      WidgetGlow(style: GlowStyle.muzzle, speed: GlowSpeed.fast, natural: true),
+    ),
   ];
 
   String get hex => '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';

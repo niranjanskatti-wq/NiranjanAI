@@ -5,6 +5,7 @@ import 'package:home_widget/home_widget.dart';
 
 import '../../core/util/occurrence.dart';
 import '../../data/database.dart';
+import '../../data/enums.dart';
 import '../../data/models.dart';
 import '../../data/repository.dart';
 import '../festivals/festival_model.dart';
@@ -32,11 +33,21 @@ class HomeWidgetService {
         for (final u in computeUpcoming(entries, today).where((u) => u.daysLeft <= 366).take(count))
           {
             't': u.entry.title,
-            'l': [u.entry.typeLabel, ?u.yearsPhrase].join(' · '),
+            'l': label(u),
             'd': u.date.toString(),
             'k': keyOf(u.entry),
           },
       ];
+
+  /// The age first ("🎂 Turning 61 · Birthday", "💍 25th anniversary"), so a
+  /// narrow widget that cuts the end off still shows it.
+  static String label(Upcoming u) {
+    final phrase = u.yearsPhrase;
+    if (phrase == null) return u.entry.typeLabel;
+    if (u.entry.type == EventType.birthday) return '🎂 $phrase · ${u.entry.typeLabel}';
+    if (u.entry.type.isAnniversaryLike) return '💍 $phrase';
+    return '$phrase · ${u.entry.typeLabel}';
+  }
 
   /// [done]: "key|yyyy-mm-dd" of dates already marked as wished; the Today
   /// widget stops glowing once all of today's are in it.

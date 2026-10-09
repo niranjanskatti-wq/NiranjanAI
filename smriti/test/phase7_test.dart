@@ -81,7 +81,7 @@ void main() {
     expect(items.map((i) => i['d']), ['2026-10-01', '2026-10-03']);
     expect(items[1]['t'], 'Appa');
     expect(items[1]['l'], contains('Birthday'));
-    expect(items[1]['l'], contains('61'));
+    expect(items[1]['l'], startsWith('🎂 Turning 61'), reason: 'age first, so a narrow widget still shows it');
     await db.close();
   });
 

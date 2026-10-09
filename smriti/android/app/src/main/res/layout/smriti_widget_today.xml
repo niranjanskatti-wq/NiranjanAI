@@ -214,7 +214,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:textColor="#CFC6B6"
                 android:textSize="14sp" />
 
@@ -261,7 +261,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:textColor="#CFC6B6"
                 android:textSize="14sp" />
 
@@ -308,7 +308,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:textColor="#CFC6B6"
                 android:textSize="14sp" />
 

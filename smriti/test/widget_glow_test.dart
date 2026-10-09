@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,13 @@ void main() {
     expect((back.style, back.natural, back.style.moving), (GlowStyle.fire, true, true));
     expect(back.copyWith(color: WidgetGlow.colors['Blue']).natural, isFalse, reason: 'picking a colour ends natural');
     expect(back.copyWith(speed: GlowSpeed.fast).natural, isTrue);
-    expect(GlowStyle.values.where((s) => s.moving).length, 14);
+    final moving = GlowStyle.values.where((s) => s.moving).map((s) => s.name).toSet();
+    expect(moving.length, 20);
+    expect(moving, containsAll(['muzzle', 'tracer', 'bullseye', 'ricochet', 'glass', 'laser']));
+    final kotlin = File('android/app/src/main/kotlin/com/niranjan/smriti/GlowArt.kt').readAsStringSync();
+    for (final s in moving) {
+      expect(kotlin, contains('"$s" -> '), reason: 'the widget draws $s');
+    }
     for (final (_, _, p) in WidgetGlow.presets) {
       expect(WidgetGlow.parse(p.toJson()).same(p), isTrue);
     }
