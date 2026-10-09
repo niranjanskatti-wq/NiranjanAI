@@ -116,10 +116,12 @@ class Background {
     var ok = true;
     if (await svc.backup.isDue()) {
       try {
-        final name = await svc.backup.backupToDrive();
+        final name = await svc.backup.autoBackup();
         if ((await svc.repo.prefs()).backupNotifications) await Notifier.backup(s.t('notif.backupDone'), name);
       } on BackupException catch (e) {
-        // Needs the user (sign-in / passphrase): tell them once a day.
+        // No place chosen yet: the weekly "save a backup" nudge covers it.
+        if (e.code == 'no_target') return ok;
+        // Needs the user (choose a place / sign in): tell them once a day.
         final key = 'backup_fail:${e.code}@${Fmt.isoDate(DateTime.now())}';
         if (!await svc.repo.wasNotified(key)) {
           await Notifier.backup(s.t('notif.backupFailed'), s.t('backup.err.${e.code}'));

@@ -65,7 +65,7 @@ void main() {
     late AppServices svc;
     setUp(() async => svc = await testServices());
 
-    test('encrypted backup restores data and photos on a "new phone"', () async {
+    test('backup needs no password and restores data and photos on a "new phone"', () async {
       final repo = svc.repo;
       final sbi = (await repo.locations()).first.id!;
       final photo = await svc.photos.save(Uint8List.fromList(List.generate(5000, (i) => i % 256)));
@@ -74,7 +74,7 @@ void main() {
         photos: [photo],
       );
       await repo.logVisit(Visit(locationId: sbi, visitDate: '2026-03-12', timeIn: '11:30'));
-      final file = await svc.backup.writeBackupFile('family-secret');
+      final file = await svc.backup.writeBackupFile();
       expect(await file.length(), greaterThan(5000));
       // Nothing readable inside.
       expect(latin1.decode(await file.readAsBytes()).contains('Kasu mala'), isFalse);
@@ -82,11 +82,7 @@ void main() {
       // Fresh install: different photo key, empty data.
       final fresh = await testServices();
       expect((await fresh.repo.items(const ItemQuery())), isEmpty);
-      await expectLater(
-        fresh.backup.restoreFromFile(file, 'nope'),
-        throwsA(isA<BackupException>().having((e) => e.code, 'code', 'wrong_passphrase')),
-      );
-      final manifest = await fresh.backup.restoreFromFile(file, 'family-secret');
+      final manifest = await fresh.backup.restoreFromFile(file);
       expect(manifest['items'], 1);
       final restored = await fresh.repo.items(const ItemQuery());
       expect(restored.single.name, 'Kasu mala');
@@ -96,10 +92,30 @@ void main() {
       expect((await fresh.photos.load(photos.single.file))!.length, 5000);
     });
 
+    test('old backups made with a personal password still restore', () async {
+      await svc.repo.createItem(Item(name: 'Old chain', category: 'Gold', status: Opt.inLocker, locationId: (await svc.repo.locations()).first.id!));
+      final file = await svc.backup.writeBackupFile(passphrase: 'family-secret');
+      final fresh = await testServices();
+      await expectLater(
+        fresh.backup.restoreFromFile(file),
+        throwsA(isA<BackupException>().having((e) => e.code, 'code', 'wrong_passphrase')),
+      );
+      await fresh.backup.restoreFromFile(file, 'family-secret');
+      expect((await fresh.repo.items(const ItemQuery())).single.name, 'Old chain');
+    });
+
+    test('weekly backup is on by default and asks for a place first', () async {
+      expect((await svc.backup.schedule()).enabled, isTrue);
+      await expectLater(
+        svc.backup.autoBackup(),
+        throwsA(isA<BackupException>().having((e) => e.code, 'code', 'no_target')),
+      );
+    });
+
     test('rejects files that are not backups', () async {
       final dir = await Directory.systemTemp.createTemp('gv_bad');
       final f = File('${dir.path}/x.gvb')..writeAsStringSync('hello world, not a backup at all');
-      await expectLater(svc.backup.restoreFromFile(f, 'x'), throwsA(isA<BackupException>()));
+      await expectLater(svc.backup.restoreFromFile(f), throwsA(isA<BackupException>()));
     });
 
     test('weekly schedule: due after the chosen slot, not before', () async {

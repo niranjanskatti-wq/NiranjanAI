@@ -18,7 +18,7 @@ void main() {
     for (final s in Opt.statuses) 'status.$s',
     for (final s in ['serial', 'name', 'weight', 'category', 'location', 'date', 'purchase']) 'sort.$s',
     for (final s in ['deposit', 'withdraw', 'both', 'check', 'rent']) 'visit.p.$s',
-    for (final s in ['no_passphrase', 'not_signed_in', 'wrong_passphrase', 'bad_file']) 'backup.err.$s',
+    for (final s in ['no_target', 'no_access', 'not_signed_in', 'wrong_passphrase', 'bad_file']) 'backup.err.$s',
     for (final k in ['keep', 'take', 'planned_visit', 'custom']) 'rem.kind.$k',
     for (final r in ['none', 'until_back', 'daily', 'weekly', 'monthly', 'yearly']) 'rem.repeat.$r',
     for (final w in ['sun', 'sat2', 'sat4']) 'hol.$w',

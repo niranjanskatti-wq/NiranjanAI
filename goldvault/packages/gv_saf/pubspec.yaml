@@ -1,0 +1,19 @@
+name: gv_saf
+description: "GoldVault: keep writing to one file the user picked once (e.g. in Google Drive), also from background jobs."
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.13.5
+  flutter: '>=3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.goldvault.saf
+        pluginClass: GvSafPlugin

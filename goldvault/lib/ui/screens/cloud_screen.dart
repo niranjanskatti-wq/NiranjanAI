@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:gv_saf/gv_saf.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
@@ -36,6 +37,8 @@ class _CloudScreenState extends State<CloudScreen> {
       await f();
     } on BackupException catch (e) {
       if (mounted) toast(context, context.t('backup.err.${e.code}'));
+    } on SafException catch (e) {
+      if (mounted) toast(context, e.code == 'no_access' ? context.t('backup.err.no_access') : '${context.t('cloud.error')}: ${e.message ?? e.code}');
     } on GoogleSignInException catch (e) {
       if (mounted) {
         toast(context, e.code == GoogleSignInExceptionCode.canceled ? context.t('cloud.cancelled') : '${context.t('cloud.signInFailed')} (${e.code.name})');
@@ -69,10 +72,10 @@ class _CloudScreenState extends State<CloudScreen> {
       appBar: AppBar(title: Text(context.t('cloud.title'))),
       body: ValueListenableBuilder<String?>(
         valueListenable: svc.google.email,
-        builder: (context, account, _) => DataBuilder<(Map<String, String?>, BackupSchedule, bool)>(
-          load: () async => (await svc.repo.allSettings(), await svc.backup.schedule(), (await svc.secure.backupPassphrase()) != null),
+        builder: (context, account, _) => DataBuilder<(Map<String, String?>, BackupSchedule, SafTarget?)>(
+          load: () async => (await svc.repo.allSettings(), await svc.backup.schedule(), await svc.backup.autoTarget()),
           builder: (context, d) {
-            final (s, sched, hasPass) = d;
+            final (s, sched, target) = d;
             return ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 40), children: [
               GoldCard(
                 child: Row(children: [
@@ -83,7 +86,7 @@ class _CloudScreenState extends State<CloudScreen> {
               ),
               // Works without Google sign-in: Android's own "Save to" screen.
               SectionTitle(context.t('fbk.title')),
-              _fileBackup(context, s, hasPass),
+              _fileBackup(context, s, sched, target, account != null),
               SectionTitle(context.t('cloud.account')),
               _account(context, account),
               SectionTitle(context.t('sheet.title')),
@@ -104,8 +107,10 @@ class _CloudScreenState extends State<CloudScreen> {
                   }),
                 ]),
               ),
-              SectionTitle(context.t('backup.title')),
-              _backup(context, s, sched, hasPass, account != null),
+              if (svc.google.configured) ...[
+                SectionTitle(context.t('backup.title')),
+                _backup(context, account != null),
+              ],
             ]);
           },
         ),
@@ -233,101 +238,81 @@ class _CloudScreenState extends State<CloudScreen> {
     if (mounted) toast(this.context, this.context.t('sheet.sharedWith', {'email': e}));
   }
 
-  Widget _backup(BuildContext context, Map<String, String?> s, BackupSchedule sched, bool hasPass, bool signedIn) {
-    final last = Fmt.parse(s['last_backup']);
-    final locale = Localizations.localeOf(context).languageCode;
-    String dayName(int wd) => DateFormat.EEEE(locale).format(DateTime(2024, 1, wd)); // 1 Jan 2024 = Monday
-    Future<void> save(BackupSchedule n) async {
-      await svc.backup.saveSchedule(n);
-      await Background.schedule(svc);
-      svc.repo.revision.value++;
-    }
-
+  /// Optional extra: the "GoldVault Backups" folder via Google sign-in.
+  Widget _backup(BuildContext context, bool signedIn) {
     return GoldCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(context.t('backup.body'), style: const TextStyle(color: GV.muted)),
         const SizedBox(height: 12),
-        Row(children: [
-          const Icon(Icons.history, color: GV.gold),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(last == null ? context.t('backup.never') : context.t('backup.last', {'date': Fmt.dateTime(last)}),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-          ),
-        ]),
-        const SizedBox(height: 8),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Icon(hasPass ? Icons.key : Icons.key_off, color: hasPass ? GV.ok : GV.danger),
-          title: Text(hasPass ? context.t('backup.passSet') : context.t('backup.passNotSet')),
-          subtitle: Text(context.t('backup.passHelp')),
-          trailing: TextButton(onPressed: () => _setPassphrase(context), child: Text(hasPass ? context.t('common.change') : context.t('common.set'))),
-        ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(context.t('backup.weekly')),
-          value: sched.enabled,
-          onChanged: (v) async {
-            if (v && !hasPass) {
-              await _setPassphrase(context);
-              if (await svc.secure.backupPassphrase() == null) return;
-            }
-            await save(BackupSchedule(enabled: v, weekday: sched.weekday, hour: sched.hour, minute: sched.minute, wifiOnly: sched.wifiOnly));
-            await Notifier.requestPermission();
-          },
-        ),
-        if (sched.enabled) ...[
-          Row(children: [
-            Expanded(
-              child: DropdownButtonFormField<int>(
-                initialValue: sched.weekday,
-                dropdownColor: GV.surface2,
-                decoration: InputDecoration(labelText: context.t('backup.day')),
-                items: [for (var d = 1; d <= 7; d++) DropdownMenuItem(value: d, child: Text(dayName(d)))],
-                onChanged: (v) => save(BackupSchedule(enabled: true, weekday: v!, hour: sched.hour, minute: sched.minute, wifiOnly: sched.wifiOnly)),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: InkWell(
-                onTap: () async {
-                  final t = await showTimePicker(context: context, initialTime: TimeOfDay(hour: sched.hour, minute: sched.minute));
-                  if (t != null) {
-                    await save(BackupSchedule(enabled: true, weekday: sched.weekday, hour: t.hour, minute: t.minute, wifiOnly: sched.wifiOnly));
-                  }
-                },
-                child: InputDecorator(
-                  decoration: InputDecoration(labelText: context.t('backup.time')),
-                  child: Text(Fmt.hhmm('${sched.hour}:${sched.minute}'), style: const TextStyle(fontSize: 17)),
-                ),
-              ),
-            ),
-          ]),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(context.t('backup.wifiOnly')),
-            value: sched.wifiOnly,
-            onChanged: (v) => save(BackupSchedule(enabled: true, weekday: sched.weekday, hour: sched.hour, minute: sched.minute, wifiOnly: v)),
-          ),
-          Text(context.t('backup.next', {'date': Fmt.dateTime(sched.nextSlot(DateTime.now()))}), style: const TextStyle(color: GV.muted)),
-          const SizedBox(height: 12),
-        ],
         _btn('backup', Icons.cloud_upload_outlined, context.t('backup.now'), () async {
           final done = context.t('notif.backupDone');
           final name = await svc.backup.backupToDrive(interactive: true);
           await Notifier.backup(done, name);
           if (mounted) toast(this.context, done);
-        }, filled: true),
+        }),
         const SizedBox(height: 10),
         _btn('restore', Icons.settings_backup_restore, context.t('backup.restore'), () => _restore(context)),
-        const SizedBox(height: 6),
-        Text(context.t('backup.keepNote'), style: const TextStyle(color: GV.muted, fontSize: 13.5)),
       ]),
     );
   }
 
-  Widget _fileBackup(BuildContext context, Map<String, String?> s, bool hasPass) {
+  Future<void> _saveSchedule(BackupSchedule n) async {
+    await svc.backup.saveSchedule(n);
+    await Background.schedule(svc);
+    svc.repo.revision.value++;
+  }
+
+  Widget _scheduleFields(BuildContext context, BackupSchedule sched) {
+    final locale = Localizations.localeOf(context).languageCode;
+    String dayName(int wd) => DateFormat.EEEE(locale).format(DateTime(2024, 1, wd)); // 1 Jan 2024 = Monday
+    BackupSchedule copy({int? weekday, int? hour, int? minute, bool? wifiOnly}) => BackupSchedule(
+        enabled: true,
+        weekday: weekday ?? sched.weekday,
+        hour: hour ?? sched.hour,
+        minute: minute ?? sched.minute,
+        wifiOnly: wifiOnly ?? sched.wifiOnly);
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      const SizedBox(height: 4),
+      Row(children: [
+        Expanded(
+          child: DropdownButtonFormField<int>(
+            initialValue: sched.weekday,
+            dropdownColor: GV.surface2,
+            decoration: InputDecoration(labelText: context.t('backup.day')),
+            items: [for (var d = 1; d <= 7; d++) DropdownMenuItem(value: d, child: Text(dayName(d)))],
+            onChanged: (v) => _saveSchedule(copy(weekday: v)),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: InkWell(
+            onTap: () async {
+              final t = await showTimePicker(context: context, initialTime: TimeOfDay(hour: sched.hour, minute: sched.minute));
+              if (t != null) await _saveSchedule(copy(hour: t.hour, minute: t.minute));
+            },
+            child: InputDecorator(
+              decoration: InputDecoration(labelText: context.t('backup.time')),
+              child: Text(Fmt.hhmm('${sched.hour}:${sched.minute}'), style: const TextStyle(fontSize: 17)),
+            ),
+          ),
+        ),
+      ]),
+      SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(context.t('backup.wifiOnly')),
+        value: sched.wifiOnly,
+        onChanged: (v) => _saveSchedule(copy(wifiOnly: v)),
+      ),
+      Text(context.t('backup.next', {'date': Fmt.dateTime(sched.nextSlot(DateTime.now()))}), style: const TextStyle(color: GV.muted)),
+      const SizedBox(height: 12),
+    ]);
+  }
+
+  /// Main backup card: automatic weekly backup to one file in Google Drive
+  /// (chosen once, no password, no Google setup) plus manual backups.
+  Widget _fileBackup(BuildContext context, Map<String, String?> s, BackupSchedule sched, SafTarget? target, bool signedIn) {
     final last = Fmt.parse(s['last_backup']);
+    final auto = target != null || signedIn;
     return GoldCard(
       accent: GV.gold,
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -341,8 +326,39 @@ class _CloudScreenState extends State<CloudScreen> {
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           ),
         ]),
-        const SizedBox(height: 12),
-        _btn('fsave', Icons.add_to_drive, context.t('fbk.save'), () => _saveBackupFile(context), filled: true),
+        const SizedBox(height: 8),
+        if (target != null)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(target.drive ? Icons.add_to_drive : Icons.folder_outlined, color: GV.ok, size: 28),
+            title: Text(context.t('fbk.target', {'name': target.name ?? BackupService.autoFileName})),
+            subtitle: target.drive ? Text(context.t('fbk.inDrive')) : null,
+            trailing: TextButton(onPressed: _busy == null ? () => _run('target', () => _chooseTarget(context)) : null, child: Text(context.t('common.change'))),
+          ),
+        if (auto) ...[
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(context.t('backup.weekly')),
+            subtitle: Text(context.t('fbk.autoSub')),
+            value: sched.enabled,
+            onChanged: (v) async {
+              await _saveSchedule(BackupSchedule(enabled: v, weekday: sched.weekday, hour: sched.hour, minute: sched.minute, wifiOnly: sched.wifiOnly));
+              await Notifier.requestPermission();
+            },
+          ),
+          if (sched.enabled) _scheduleFields(context, sched),
+          _btn('now', Icons.backup_outlined, context.t('backup.now'), () async {
+            final done = context.t('fbk.saved');
+            await svc.backup.autoBackup(interactive: true);
+            if (mounted) toast(this.context, done);
+          }, filled: true),
+        ] else ...[
+          Text(context.t('fbk.setupHelp'), style: const TextStyle(color: GV.goldLight)),
+          const SizedBox(height: 10),
+          _btn('target', Icons.add_to_drive, context.t('fbk.turnOn'), () => _chooseTarget(context), filled: true),
+        ],
+        const SizedBox(height: 10),
+        _btn('fsave', Icons.save_alt, context.t('fbk.save'), () => _saveBackupFile(context)),
         const SizedBox(height: 10),
         _btn('fshare', Icons.share, context.t('fbk.share'), () => _shareBackupFile(context)),
         const SizedBox(height: 10),
@@ -353,22 +369,22 @@ class _CloudScreenState extends State<CloudScreen> {
     );
   }
 
-  /// Makes the encrypted backup file (asks for the backup password once).
-  Future<File?> _makeBackupFile(BuildContext context) async {
-    var pass = await svc.secure.backupPassphrase();
-    if (pass == null) {
-      if (!context.mounted) return null;
-      await _setPassphrase(context);
-      pass = await svc.secure.backupPassphrase();
-      if (pass == null) return null;
-    }
-    return svc.backup.writeBackupFile(pass);
+  /// Asks once where automatic backups go (choose Drive), then backs up.
+  Future<void> _chooseTarget(BuildContext context) async {
+    final done = context.t('fbk.saved');
+    final t = await GvSaf.create(BackupService.autoFileName);
+    if (t == null) return;
+    await svc.backup.setAutoTarget(t);
+    final sched = await svc.backup.schedule();
+    await _saveSchedule(BackupSchedule(enabled: true, weekday: sched.weekday, hour: sched.hour, minute: sched.minute, wifiOnly: sched.wifiOnly));
+    await Notifier.requestPermission();
+    await svc.backup.autoBackup();
+    if (mounted) toast(this.context, done);
   }
 
   Future<void> _saveBackupFile(BuildContext context) async {
     final done = context.t('fbk.saved');
-    final f = await _makeBackupFile(context);
-    if (f == null) return;
+    final f = await svc.backup.writeBackupFile();
     try {
       final uri = await FilePicker.saveFile(
         fileName: p.basename(f.path),
@@ -376,7 +392,7 @@ class _CloudScreenState extends State<CloudScreen> {
         dialogTitle: 'GoldVault backup',
       );
       if (uri != null) {
-        await svc.repo.setSetting('last_backup', Fmt.isoDateTime(DateTime.now()));
+        await svc.backup.markBackedUp(await f.length());
         if (mounted) toast(this.context, done);
       }
     } finally {
@@ -385,66 +401,41 @@ class _CloudScreenState extends State<CloudScreen> {
   }
 
   Future<void> _shareBackupFile(BuildContext context) async {
-    final f = await _makeBackupFile(context);
-    if (f == null) return;
+    final f = await svc.backup.writeBackupFile();
     final r = await SharePlus.instance.share(ShareParams(files: [XFile(f.path)], subject: 'GoldVault backup'));
-    if (r.status == ShareResultStatus.success) {
-      await svc.repo.setSetting('last_backup', Fmt.isoDateTime(DateTime.now()));
+    if (r.status == ShareResultStatus.success) await svc.backup.markBackedUp(await f.length());
+  }
+
+  /// Confirms, then restores. Old backups made with a personal password ask
+  /// for it.
+  Future<void> _confirmAndRestore(String title, Future<Map<String, dynamic>> Function(String? pass) run) async {
+    if (!mounted) return;
+    final sure = await confirm(context, title, context.t('backup.restoreWarn'), ok: context.t('backup.restoreBtn'), danger: true);
+    if (!sure) return;
+    Map<String, dynamic> m;
+    try {
+      m = await run(null);
+    } on BackupException catch (e) {
+      if (e.code != 'wrong_passphrase' || !mounted) rethrow;
+      final pass = await promptText(context, context.t('backup.oldPass'), label: context.t('backup.pass'), obscure: true);
+      if (pass == null) return;
+      m = await run(pass);
     }
+    if (mounted) toast(context, context.t('backup.restored', {'n': m['items'] ?? 0}));
   }
 
   Future<void> _restoreFromFile(BuildContext context) async {
+    final title = context.t('fbk.restore');
     final picked = await FilePicker.pickFile(dialogTitle: 'GoldVault backup');
     if (picked == null || !mounted) return;
     final tmp = File(p.join(svc.backup.tempDir.path, 'picked.gvb'));
     await svc.backup.tempDir.create(recursive: true);
     await tmp.writeAsBytes(await picked.readAsBytes(), flush: true);
     try {
-      if (!mounted) return;
-      final pass = await promptText(this.context, this.context.t('backup.enterPass'), label: this.context.t('backup.pass'), obscure: true);
-      if (pass == null || !mounted) return;
-      final sure = await confirm(this.context, this.context.t('fbk.restore'), this.context.t('backup.restoreWarn'),
-          ok: this.context.t('backup.restoreBtn'), danger: true);
-      if (!sure) return;
-      final m = await svc.backup.restoreFromFile(tmp, pass);
-      await svc.secure.setBackupPassphrase(pass);
-      if (mounted) toast(this.context, this.context.t('backup.restored', {'n': m['items'] ?? 0}));
+      await _confirmAndRestore(title, (pass) => svc.backup.restoreFromFile(tmp, pass));
     } finally {
       if (await tmp.exists()) await tmp.delete();
     }
-  }
-
-  Future<void> _setPassphrase(BuildContext context) async {
-    final p1 = TextEditingController();
-    final p2 = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: Text(context.t('backup.passTitle')),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(context.t('backup.passWarn'), style: const TextStyle(color: GV.goldLight)),
-          const SizedBox(height: 12),
-          TextField(controller: p1, obscureText: true, decoration: InputDecoration(labelText: context.t('backup.pass'))),
-          const SizedBox(height: 12),
-          TextField(controller: p2, obscureText: true, decoration: InputDecoration(labelText: context.t('backup.passAgain'))),
-        ]),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: Text(context.t('common.cancel'))),
-          FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(context.t('common.save'))),
-        ],
-      ),
-    );
-    if (ok != true) return;
-    if (p1.text.length < 8) {
-      if (mounted) toast(this.context, this.context.t('backup.passShort'));
-      return;
-    }
-    if (p1.text != p2.text) {
-      if (mounted) toast(this.context, this.context.t('lock.mismatch'));
-      return;
-    }
-    await svc.secure.setBackupPassphrase(p1.text);
-    svc.repo.revision.value++;
   }
 
   Future<void> _restore(BuildContext context) async {
@@ -470,12 +461,6 @@ class _CloudScreenState extends State<CloudScreen> {
       ),
     );
     if (pick == null || !mounted) return;
-    final pass = await promptText(this.context, this.context.t('backup.enterPass'), label: this.context.t('backup.pass'), obscure: true);
-    if (pass == null || !mounted) return;
-    final sure = await confirm(this.context, this.context.t('backup.restore'), this.context.t('backup.restoreWarn'),
-        ok: this.context.t('backup.restoreBtn'), danger: true);
-    if (!sure) return;
-    final m = await svc.backup.restoreFromDrive(pick, pass);
-    if (mounted) toast(this.context, this.context.t('backup.restored', {'n': m['items'] ?? 0}));
+    await _confirmAndRestore(this.context.t('backup.restore'), (pass) => svc.backup.restoreFromDrive(pick, pass));
   }
 }

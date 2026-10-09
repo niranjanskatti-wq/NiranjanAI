@@ -10,7 +10,6 @@ import 'crypto.dart';
 /// * `db_key`     – random SQLCipher key for the local database (per device)
 /// * `photo_key`  – random AES key for photo files (travels inside backups)
 /// * `pin_*`      – salted PBKDF2 hash of the app PIN
-/// * `backup_pass`– passphrase that encrypts Drive backups
 class SecureStore {
   SecureStore([FlutterSecureStorage? storage])
       : _s = storage ??
@@ -67,8 +66,6 @@ class SecureStore {
   Future<bool> biometricEnabled() async => (await read('biometric')) == '1';
   Future<void> setBiometricEnabled(bool v) => write('biometric', v ? '1' : '0');
 
-  Future<String?> backupPassphrase() => read('backup_pass');
-  Future<void> setBackupPassphrase(String? v) => write('backup_pass', v);
 
   static String _hex(List<int> b) => b.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
 }

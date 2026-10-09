@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:gv_saf/gv_saf.dart';
 import 'package:path/path.dart' as p;
 
 import '../core/crypto.dart';
@@ -22,7 +23,7 @@ class BackupInfo {
 }
 
 class BackupException implements Exception {
-  final String code; // no_passphrase / not_signed_in / wrong_passphrase / bad_file
+  final String code; // no_target / no_access / not_signed_in / wrong_passphrase / bad_file
   BackupException(this.code);
   @override
   String toString() => 'BackupException($code)';
@@ -58,9 +59,10 @@ class BackupSchedule {
   }
 }
 
-/// Encrypted full backup: every database row (as JSON) plus all photo files,
-/// streamed through AES-256-GCM with a key derived from the backup passphrase.
-/// The passphrase is required to restore on a new phone.
+/// Full backup: every database row (as JSON) plus all photo files, streamed
+/// through AES-256-GCM. No password is needed: files are locked with a key built
+/// into GoldVault, so only the GoldVault app can open them, on any phone.
+/// (Older backups made with a personal backup password still restore.)
 class BackupService {
   BackupService({
     required this.repo,
@@ -79,6 +81,8 @@ class BackupService {
   static const folderName = 'GoldVault Backups';
   static const keep = 8;
   static const _tEnd = 0, _tManifest = 1, _tData = 2, _tPhoto = 3;
+  static const _builtInKey = 'GoldVault/backup/v2/7f3c9a2e-5b14-4d8e-a6c1-0e9b2d4f8a31';
+  static const autoFileName = 'GoldVault-auto-backup.gvb';
 
   // ------------------------------------------------------------ schedule
 
@@ -86,7 +90,7 @@ class BackupService {
     final s = await repo.allSettings();
     final t = (s['backup_time'] ?? '02:00').split(':');
     return BackupSchedule(
-      enabled: s['backup_enabled'] == '1',
+      enabled: s['backup_enabled'] != '0', // on unless switched off
       weekday: int.tryParse(s['backup_day'] ?? '') ?? DateTime.sunday,
       hour: int.tryParse(t[0]) ?? 2,
       minute: t.length > 1 ? int.tryParse(t[1]) ?? 0 : 0,
@@ -114,12 +118,12 @@ class BackupService {
 
   // ------------------------------------------------------------ local file
 
-  Future<File> writeBackupFile(String passphrase, {File? target}) async {
+  Future<File> writeBackupFile({String? passphrase, File? target}) async {
     await tempDir.create(recursive: true);
     final out = target ??
         File(p.join(tempDir.path,
             'GoldVault-backup-${Fmt.isoDateTime(DateTime.now()).replaceAll(':', '').replaceAll('T', '_')}.gvb'));
-    final w = await EncryptedWriter.create(out, passphrase);
+    final w = await EncryptedWriter.create(out, passphrase ?? _builtInKey);
     final files = await repo.allPhotoFiles();
     final data = await repo.dumpAll();
     final manifest = {
@@ -154,10 +158,11 @@ class BackupService {
   }
 
   /// Reads a backup file, then replaces all local data with it.
-  Future<Map<String, dynamic>> restoreFromFile(File f, String passphrase) async {
+  /// [passphrase] is only for old backups made with a personal password.
+  Future<Map<String, dynamic>> restoreFromFile(File f, [String? passphrase]) async {
     final EncryptedReader r;
     try {
-      r = await EncryptedReader.open(f, passphrase);
+      r = await EncryptedReader.open(f, passphrase ?? _builtInKey);
     } on FormatException {
       throw BackupException('bad_file');
     }
@@ -204,7 +209,7 @@ class BackupService {
     }
 
     // Everything decrypted fine: swap in.
-    await repo.restoreAll(data, keepSettings: const {'google_email', 'google_id', 'last_backup', 'backup_enabled', 'backup_day', 'backup_time', 'backup_wifi_only'});
+    await repo.restoreAll(data, keepSettings: const {'google_email', 'google_id', 'last_backup', 'backup_enabled', 'backup_day', 'backup_time', 'backup_wifi_only', 'auto_backup_uri', 'auto_backup_name'});
     final key = base64Decode(manifest['photoKey'] as String);
     await secure.setPhotoKey(key);
     photos.setKey(key);
@@ -218,6 +223,51 @@ class BackupService {
     }
     await staging.delete(recursive: true);
     return manifest;
+  }
+
+  // ------------------------------------------------- automatic backup file
+
+  /// The file (usually in Google Drive) chosen once for automatic backups.
+  Future<SafTarget?> autoTarget() async {
+    final uri = await repo.getSetting('auto_backup_uri');
+    if (uri == null || uri.isEmpty) return null;
+    return SafTarget(uri, await repo.getSetting('auto_backup_name'), uri.contains('com.google.android.apps.docs'));
+  }
+
+  Future<void> setAutoTarget(SafTarget? t) async {
+    final old = await repo.getSetting('auto_backup_uri');
+    if (old != null && old != t?.uri) await GvSaf.release(old);
+    await repo.setSetting('auto_backup_uri', t?.uri);
+    await repo.setSetting('auto_backup_name', t?.name);
+  }
+
+  Future<void> markBackedUp(int size) async {
+    await repo.setSetting('last_backup', Fmt.isoDateTime(DateTime.now()));
+    await repo.setSetting('last_backup_size', '$size');
+  }
+
+  /// Backs up to the chosen file, or to the Drive folder when signed in with
+  /// Google. Used by the weekly job and by "Back up now".
+  Future<String> autoBackup({bool interactive = false}) async {
+    final t = await autoTarget();
+    if (t != null) {
+      final local = await writeBackupFile();
+      try {
+        final len = await local.length();
+        try {
+          await GvSaf.write(t.uri, local.path);
+        } on SafException catch (e) {
+          if (e.code == 'no_access') throw BackupException('no_access');
+          rethrow;
+        }
+        await markBackedUp(len);
+        return t.name ?? autoFileName;
+      } finally {
+        if (await local.exists()) await local.delete();
+      }
+    }
+    if (google.configured && google.email.value != null) return backupToDrive(interactive: interactive);
+    throw BackupException('no_target');
   }
 
   // ---------------------------------------------------------------- Drive
@@ -248,15 +298,13 @@ class BackupService {
 
   /// Full backup to Drive. Returns the uploaded file name.
   Future<String> backupToDrive({bool interactive = false}) async {
-    final pass = await secure.backupPassphrase();
-    if (pass == null || pass.isEmpty) throw BackupException('no_passphrase');
     final client = await google.client(interactive: interactive);
     if (client == null) throw BackupException('not_signed_in');
     File? local;
     try {
       final api = drive.DriveApi(client);
       final folder = await _folderId(api);
-      local = await writeBackupFile(pass);
+      local = await writeBackupFile();
       final name = p.basename(local.path);
       final len = await local.length();
       await api.files.create(
@@ -266,8 +314,7 @@ class BackupService {
         $fields: 'id',
       );
       await _prune(api, folder);
-      await repo.setSetting('last_backup', Fmt.isoDateTime(DateTime.now()));
-      await repo.setSetting('last_backup_size', '$len');
+      await markBackedUp(len);
       return name;
     } finally {
       client.close();
@@ -311,7 +358,7 @@ class BackupService {
     }
   }
 
-  Future<Map<String, dynamic>> restoreFromDrive(BackupInfo b, String passphrase) async {
+  Future<Map<String, dynamic>> restoreFromDrive(BackupInfo b, [String? passphrase]) async {
     final client = await google.client(interactive: true);
     if (client == null) throw BackupException('not_signed_in');
     final tmp = File(p.join(tempDir.path, 'download_${b.id}.gvb'));
@@ -322,10 +369,7 @@ class BackupService {
       await tempDir.create(recursive: true);
       final sink = tmp.openWrite();
       await media.stream.pipe(sink);
-      final manifest = await restoreFromFile(tmp, passphrase);
-      // Remember the passphrase so future automatic backups keep working.
-      await secure.setBackupPassphrase(passphrase);
-      return manifest;
+      return await restoreFromFile(tmp, passphrase);
     } finally {
       client.close();
       if (await tmp.exists()) await tmp.delete();
