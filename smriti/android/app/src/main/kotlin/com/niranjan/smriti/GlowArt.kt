@@ -617,16 +617,17 @@ object GlowArt {
     private fun bullseye(x: Ctx) {
         val col = x.color ?: Color.rgb(230, 40, 40)
         val t = x.t
-        val r = min(x.h * 0.36f, x.w * 0.16f)
+        // Small and faint, so "to wish" and the Done button stay easy to read over it.
+        val r = min(x.h * 0.3f, x.w * 0.13f)
         val hitAt = 0.4f
         val shake = if (t in hitAt..hitAt + 0.2f) x.dp(3f) * wave((t - hitAt) * 5f, 1) else 0f
         val cx = x.w - r - x.dp(10f) + shake
         val cy = x.h / 2
         for (i in 4 downTo 0) {
             val ringCol = if (i % 2 == 0) col else Color.WHITE
-            x.c.drawCircle(cx, cy, r * (i + 1) / 5f, paint(alpha(ringCol, 0.5f)))
+            x.c.drawCircle(cx, cy, r * (i + 1) / 5f, paint(alpha(ringCol, 0.22f)))
         }
-        x.c.drawCircle(cx, cy, r, paint(alpha(col, 0.7f), Paint.Style.STROKE, x.dp(1.5f)))
+        x.c.drawCircle(cx, cy, r, paint(alpha(col, 0.45f), Paint.Style.STROKE, x.dp(1.2f)))
         if (t < hitAt) {
             if (t < 0.12f) burst(x, x.dp(12f), cy, min(x.h * 0.32f, x.dp(26f)), 0.0, 1f - t / 0.12f, Color.rgb(255, 170, 60))
             val p = t / hitAt
@@ -636,7 +637,7 @@ object GlowArt {
             for (k in 0..1) {
                 val rp = (p * 1.6f - k * 0.35f)
                 if (rp in 0f..1f) x.c.drawCircle(cx, cy, r * (1f + rp * 0.9f),
-                    paint(alpha(col, 0.8f * (1f - rp)), Paint.Style.STROKE, x.dp(2f), x.dp(1.5f)))
+                    paint(alpha(col, 0.6f * (1f - rp)), Paint.Style.STROKE, x.dp(2f), x.dp(1.5f)))
             }
             sparks(x, cx, cy, p * 2.2f, Color.rgb(255, 200, 90), r * 1.3f, 11)
             x.c.drawCircle(cx + x.dp(1f), cy - x.dp(1f), x.dp(3.2f), paint(Color.rgb(25, 20, 20)))
