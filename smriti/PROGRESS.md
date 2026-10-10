@@ -326,6 +326,12 @@ Building all phases in a row (your choice), testing everything on the phone at t
 - Automatic backup: every day or every week
 - Native DriveBackup.kt + "smriti/drive" channel (ACTION_CREATE_DOCUMENT + persistable permission)
 
+### Widgets: only important people until their day
+- Next up, Countdown and Coming up show only people with 4★ or more (Settings › Widget size & flash ›
+  Who shows on the widgets: ★★★★★ only / 4★ and up / 3★ and up / Everyone). Everyone else shows up on
+  the Today widget on their day. Festivals, other dates and your own dates always show
+- Bullseye: the target shows this year's age and pops to the new one when the bullet hits (30 → 31)
+
 ### Shooting-range effects and the age on widgets
 - 6 more moving effects for the Today widget: 💥 Muzzle flash (flash, bullet along the bottom, sparks),
   🔫 Tracer fire, 🎯 Bullseye (shot hits a target: ripples, sparks, bullet hole), 🪃 Ricochet (bouncing

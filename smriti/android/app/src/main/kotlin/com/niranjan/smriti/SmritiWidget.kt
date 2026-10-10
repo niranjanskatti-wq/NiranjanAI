@@ -33,6 +33,8 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
         val day: String = "",
         /** Age or years married on this date; 0 if not known. */
         val years: Int = 0,
+        /** Not important (fewer stars than chosen): only shown on its day. */
+        val muted: Boolean = false,
     )
     protected data class Row(val root: Int, val days: Int, val name: Int, val label: Int)
 
@@ -56,6 +58,9 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
         else -> 1f
     }
 
+    /** True for Today, which lists everyone celebrating today, important or not. */
+    protected open val showsAll = false
+
     /** Called before [fill] on each update, for widgets that need more saved data. */
     protected open fun prepare(context: Context, widgetData: SharedPreferences) {}
 
@@ -65,7 +70,8 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
         appWidgetIds: IntArray,
         widgetData: SharedPreferences,
     ) {
-        val items = upcoming(widgetData.getString("items", null))
+        val all = upcoming(widgetData.getString("items", null))
+        val items = if (showsAll) all else all.filter { !it.muted || it.days == 0 }
         look = try {
             JSONObject(widgetData.getString("look", "{}") ?: "{}")
         } catch (_: Exception) {
@@ -173,7 +179,7 @@ abstract class SmritiWidgetBase : HomeWidgetProvider() {
                 }
                 // Half a day of slack keeps daylight-saving shifts from changing the count.
                 val days = ((date.timeInMillis - today.timeInMillis + 43_200_000L) / 86_400_000L).toInt()
-                if (days >= 0) out.add(Item(o.optString("t"), o.optString("l"), date, days, o.optString("k"), o.getString("d"), o.optString("y").toIntOrNull() ?: 0))
+                if (days >= 0) out.add(Item(o.optString("t"), o.optString("l"), date, days, o.optString("k"), o.getString("d"), o.optString("y").toIntOrNull() ?: 0, o.optString("m") == "1"))
             }
         } catch (_: Exception) {
             return emptyList()
@@ -305,6 +311,7 @@ class SmritiListWidget : SmritiWidgetBase() {
  */
 class SmritiTodayWidget : SmritiWidgetBase() {
     override val layout = R.layout.smriti_widget_today
+    override val showsAll = true
     override val sizeKey = "today"
     override val texts = mapOf(
         R.id.header to 11f,
@@ -420,7 +427,7 @@ class SmritiTodayWidget : SmritiWidgetBase() {
         )
 
         if (today.isEmpty()) {
-            val next = items.firstOrNull()
+            val next = items.firstOrNull { !it.muted }
             views.setTextViewText(
                 R.id.empty,
                 if (next == null) "Nothing today"

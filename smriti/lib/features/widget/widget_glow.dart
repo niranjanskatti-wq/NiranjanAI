@@ -185,21 +185,29 @@ enum TextSize {
 
 /// Text size for each widget, and whether "Next up" shows its first date big.
 class WidgetLook {
-  const WidgetLook({this.sizes = const {}, this.nextBig = true});
+  const WidgetLook({this.sizes = const {}, this.nextBig = true, this.minStars = 4});
 
   /// Widget key (next, countdown, list, today) → text size; Medium when missing.
   final Map<String, TextSize> sizes;
   final bool nextBig;
 
+  /// Coming-up widgets show only people with at least this many stars (1 = everyone);
+  /// the others appear on their day in the Today widget.
+  final int minStars;
+
   static const widgets = {'today': 'Today', 'next': 'Next up', 'countdown': 'Countdown', 'list': 'Coming up'};
 
   TextSize size(String key) => sizes[key] ?? TextSize.m;
 
-  WidgetLook withSize(String key, TextSize v) => WidgetLook(sizes: {...sizes, key: v}, nextBig: nextBig);
+  WidgetLook withSize(String key, TextSize v) =>
+      WidgetLook(sizes: {...sizes, key: v}, nextBig: nextBig, minStars: minStars);
 
-  WidgetLook withNextBig(bool v) => WidgetLook(sizes: sizes, nextBig: v);
+  WidgetLook withNextBig(bool v) => WidgetLook(sizes: sizes, nextBig: v, minStars: minStars);
 
-  String toJson() => jsonEncode({for (final e in sizes.entries) e.key: e.value.name, 'nextBig': nextBig});
+  WidgetLook withMinStars(int v) => WidgetLook(sizes: sizes, nextBig: nextBig, minStars: v);
+
+  String toJson() =>
+      jsonEncode({for (final e in sizes.entries) e.key: e.value.name, 'nextBig': nextBig, 'stars': minStars});
 
   static WidgetLook parse(String? json) {
     if (json == null || json.isEmpty) return const WidgetLook();
@@ -208,6 +216,7 @@ class WidgetLook {
       return WidgetLook(
         sizes: {for (final k in widgets.keys) k: ?TextSize.values.asNameMap()[m[k]]},
         nextBig: m['nextBig'] != false,
+        minStars: ((m['stars'] as num?)?.toInt() ?? 4).clamp(1, 5),
       );
     } catch (_) {
       return const WidgetLook();
@@ -268,6 +277,27 @@ class WidgetGlowScreen extends ConsumerWidget {
           ),
           Text(
             'To make a widget itself bigger or smaller, long-press it on the home screen and drag its edges.',
+            style: context.text.bodySmall?.copyWith(color: context.c.muted),
+          ),
+          const SizedBox(height: 24),
+          const SectionLabel('Who shows on the widgets'),
+          const SizedBox(height: 4),
+          Text(
+            'Next up, Countdown and Coming up show only the important people. '
+            'Everyone else appears on the Today widget on their day.',
+            style: context.text.bodyMedium?.copyWith(color: context.c.muted),
+          ),
+          const SizedBox(height: 10),
+          chips(
+            const [5, 4, 3, 1],
+            look.minStars,
+            (n) => switch (n) { 5 => '★★★★★ only', 1 => 'Everyone', _ => '${'★' * n} and up' },
+            (n) => saveLook(look.withMinStars(n)),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Stars are set on each person (★ = less important, ★★★★★ = most). '
+            'Festivals and other dates always show.',
             style: context.text.bodySmall?.copyWith(color: context.c.muted),
           ),
           const SizedBox(height: 24),

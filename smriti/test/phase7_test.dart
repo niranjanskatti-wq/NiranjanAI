@@ -8,6 +8,7 @@ import 'package:smriti/features/calendar_sync/calendar_sync.dart';
 import 'package:smriti/features/export/export_service.dart';
 import 'package:smriti/features/export/import_service.dart';
 import 'package:smriti/features/widget/home_widget_service.dart';
+import 'package:smriti/features/widget/widget_glow.dart';
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -83,6 +84,29 @@ void main() {
     expect(items[1]['l'], contains('Birthday'));
     expect(items[1]['l'], startsWith('🎂 Turning 61'), reason: 'age first, so a narrow widget still shows it');
     expect(items[1]['y'], '61', reason: 'the bullseye shows 60 → 61');
+    await db.close();
+  });
+
+  test('widgets: unimportant people only from the day before, festivals and other dates always', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final r = Repository(db);
+    final vip = await r.insertPerson(PeopleCompanion.insert(name: 'Shanta', stars: const Value(5)));
+    final far = await r.insertPerson(PeopleCompanion.insert(name: 'Colleague', stars: const Value(2)));
+    final soon = await r.insertPerson(PeopleCompanion.insert(name: 'Neighbour', stars: const Value(3)));
+    await r.saveEvent(data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: 20, month: 10), personIds: [vip]);
+    await r.saveEvent(data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: 12, month: 10), personIds: [far]);
+    await r.saveEvent(data: EventsCompanion.insert(kind: 'person', type: 'birthday', day: 10, month: 10), personIds: [soon]);
+    await r.saveEvent(
+        data: EventsCompanion.insert(kind: 'other', type: 'insurance', title: const Value('Car insurance'), day: 15, month: 10),
+        personIds: const []);
+    final entries = await r.watchEntries().first;
+    final items = HomeWidgetService.items(entries, const Day(2026, 10, 10), minStars: 4);
+    expect(items.map((i) => i['t']), ['Neighbour', 'Car insurance', 'Shanta'], reason: 'the 2-star birthday in 2 days is left out');
+    expect(items.first['m'], '1', reason: 'today, but only for the Today widget');
+    expect(items[1]['m'], isNull);
+    expect(HomeWidgetService.items(entries, const Day(2026, 10, 10), minStars: 1).length, 4);
+    expect(WidgetLook.parse(const WidgetLook().withMinStars(5).toJson()).minStars, 5);
+    expect(WidgetLook.parse('{"nextBig":true}').minStars, 4);
     await db.close();
   });
 

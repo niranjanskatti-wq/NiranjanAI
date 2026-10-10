@@ -28,15 +28,25 @@ class HomeWidgetService {
   /// Key used for "wished" on a date: the event id, or the festival key.
   static String keyOf(EventEntry e) => e is FestivalEntry ? e.festival.key : '${e.event.id}';
 
-  /// The next few dates, oldest first, as the widgets read them.
-  static List<Map<String, String>> items(List<EventEntry> entries, Day today, {int count = 15}) => [
-        for (final u in computeUpcoming(entries, today).where((u) => u.daysLeft <= 366).take(count))
+  /// Below [minStars], a person's date is "not important": the Coming-up
+  /// widgets leave it out until its day, while Today still shows it.
+  /// Festivals, other dates and your own dates always count as important.
+  static bool important(EventEntry e, int minStars) =>
+      !(e.kind == EventKind.person || e.kind == EventKind.couple) || e.isMine || e.stars >= minStars;
+
+  /// The next few dates, oldest first, as the widgets read them. "m": not
+  /// important, sent only when it is today or tomorrow (so Today has it).
+  static List<Map<String, String>> items(List<EventEntry> entries, Day today, {int count = 15, int minStars = 0}) => [
+        for (final u in computeUpcoming(entries, today)
+            .where((u) => u.daysLeft <= 366 && (u.daysLeft <= 1 || important(u.entry, minStars)))
+            .take(count))
           {
             't': u.entry.title,
             'l': label(u),
             'd': u.date.toString(),
             'k': keyOf(u.entry),
             if ((u.years ?? 0) > 0) 'y': '${u.years}',
+            if (!important(u.entry, minStars)) 'm': '1',
           },
       ];
 
@@ -58,7 +68,8 @@ class HomeWidgetService {
     if (!NotificationService.supported) return;
     try {
       final from = today.addDays(-2).toString();
-      await HomeWidget.saveWidgetData<String>('items', jsonEncode(items(entries, today)));
+      final minStars = WidgetLook.parse(look).minStars;
+      await HomeWidget.saveWidgetData<String>('items', jsonEncode(items(entries, today, minStars: minStars)));
       await HomeWidget.saveWidgetData<String>(
           'done', jsonEncode([for (final k in done) if (k.split('|').last.compareTo(from) >= 0) k]));
       await HomeWidget.saveWidgetData<String>('glow', glow ?? const WidgetGlow().toJson());
