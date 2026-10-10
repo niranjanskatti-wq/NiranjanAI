@@ -1,0 +1,291 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../autocall/auto_call.dart';
+import '../autosms/auto_sms.dart';
+import '../cards/card_screen.dart';
+import '../messages/message_engine.dart';
+import '../wish/suggest.dart';
+import '../../core/theme/tokens.dart';
+import '../../core/util/format.dart';
+import '../../core/util/occurrence.dart';
+import '../../data/enums.dart';
+import '../../data/models.dart';
+import '../../data/providers.dart';
+import '../../widgets/common.dart';
+import '../../widgets/countdown.dart';
+import '../reminders/reminder_model.dart';
+import '../reminders/reminders_screen.dart';
+import '../wish/share_sheet.dart';
+import '../wish/wish_buttons.dart';
+import '../wish/wish_service.dart';
+
+class EventDetailScreen extends ConsumerStatefulWidget {
+  const EventDetailScreen({super.key, required this.id, this.action, this.date});
+
+  final int id;
+
+  /// From a notification button: call, wish or belated.
+  final String? action;
+  final String? date;
+
+  @override
+  ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
+  bool _actionDone = false;
+
+  int get id => widget.id;
+
+  void _runAction(EventEntry e, Day fallback) {
+    if (_actionDone || widget.action == null || !canWish(e)) return;
+    _actionDone = true;
+    final parts = widget.date?.split('-');
+    final day = parts != null && parts.length == 3
+        ? Day(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]))
+        : fallback;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final t = await targetFor(ref, e, day, belated: widget.action == 'belated');
+      if (!mounted) return;
+      if (widget.action == 'call') {
+        await callTarget(context, ref, t);
+      } else {
+        await showShareSheet(context, ref, t);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final entry = ref.watch(entryProvider(id));
+    final today = ref.watch(todayProvider).value ?? Day.today();
+    return entry.when(
+      loading: () => const Scaffold(),
+      error: (e, _) => Scaffold(body: Center(child: Text('$e'))),
+      data: (e) {
+        if (e == null) return Scaffold(appBar: AppBar(), body: const Center(child: Text('This event was deleted.')));
+        final next = e.nextFrom(today);
+        _runAction(e, next ?? today);
+        final item = next == null ? null : Upcoming(e, next, today.daysUntil(next));
+        final ev = e.event;
+        return Scaffold(
+          appBar: AppBar(
+            actions: [
+              TextButton(onPressed: () => context.push('/event/$id/edit'), child: const Text('Edit')),
+              IconButton(
+                tooltip: 'Delete',
+                icon: Icon(Icons.delete_outline, color: c.alert),
+                onPressed: () async {
+                  final ok = await confirm(context,
+                      title: 'Delete this event?',
+                      message: '${e.typeLabel} for ${e.title} will be removed.',
+                      action: 'Delete',
+                      danger: true);
+                  if (!ok) return;
+                  await ref.read(repoProvider).deleteEvent(id);
+                  if (context.mounted) {
+                    context.pop();
+                    showToast(context, 'Deleted');
+                  }
+                },
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
+              children: [
+                Center(child: EventAvatar(entry: e, size: 96, ring: true)),
+                const SizedBox(height: 12),
+                Text(e.title, textAlign: TextAlign.center, style: context.text.displayMedium),
+                const SizedBox(height: 4),
+                Text(
+                  [if (e.kind != EventKind.other) e.relationLine, e.typeLabel].join(' · '),
+                  textAlign: TextAlign.center,
+                  style: context.text.bodySmall,
+                ),
+                const SizedBox(height: 6),
+                Center(child: Stars(value: e.stars, size: 18)),
+                const SizedBox(height: 20),
+                if (item == null)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Text('This one-time date has passed.',
+                          textAlign: TextAlign.center, style: context.text.titleMedium),
+                    ),
+                  )
+                else
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(children: [
+                        Text(fmtWeekday(item.date), style: context.text.headlineMedium),
+                        if (item.yearsPhrase != null) ...[
+                          const SizedBox(height: 6),
+                          Badge2(item.milestone ? '${item.yearsPhrase}!' : item.yearsPhrase!, sparkle: item.milestone),
+                        ],
+                        const SizedBox(height: 14),
+                        if (item.isToday)
+                          Text('Today!', style: context.text.headlineLarge?.copyWith(color: c.goldText))
+                        else
+                          Countdown(target: item.date),
+                        const SizedBox(height: 8),
+                        Text(relativeDays(item.daysLeft), style: context.text.bodySmall),
+                        if (canWish(e)) ...[
+                          const SizedBox(height: 14),
+                          CallShareButtons(entry: e, date: item.date),
+                          const SizedBox(height: 4),
+                          _WishedToggle(eventId: id, date: item.date.toString()),
+                        ],
+                      ]),
+                    ),
+                  ),
+                const SizedBox(height: 12),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.notifications_active_outlined, color: c.goldText),
+                    title: const Text('Reminders'),
+                    subtitle: Text(describeSpecs(ref.watch(remindersForProvider(id)).value ?? const [])),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.push('/event/$id/reminders'),
+                  ),
+                ),
+                if (canWish(e)) ...[
+                  const SizedBox(height: 12),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.edit_note_rounded, color: c.goldText),
+                      title: const Text('Prepared message'),
+                      subtitle: Text(
+                        ev.draftMessage ?? 'Write or pick the message now; Share will use it on the day',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => context.push('/event/$id/message'),
+                    ),
+                  ),
+                  if (ref.watch(autoCallOnProvider).value ?? false)
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.phone_forwarded_rounded, color: c.call),
+                        title: const Text('Auto call'),
+                        subtitle: Text(() {
+                          final a = (ref.watch(autoCallsProvider).value ?? const [])
+                              .where((a) => a.eventId == ev.id)
+                              .firstOrNull;
+                          return a == null
+                              ? 'Ring and ask “Call now?” at a set time on the day'
+                              : 'On the day at ${fmtMinute(a.minuteOfDay)}${a.speaker ? ' · speaker' : ''}${a.enabled ? '' : ' · off'}';
+                        }()),
+                        trailing: const Icon(Icons.chevron_right_rounded),
+                        onTap: () {
+                          final a = (ref.read(autoCallsProvider).value ?? const [])
+                              .where((a) => a.eventId == ev.id)
+                              .firstOrNull;
+                          scheduleAutoCall(context, ref, event: e, person: e.people.firstOrNull, existing: a);
+                        },
+                      ),
+                    ),
+                  if (ref.watch(autoSmsOnProvider).value ?? false)
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.schedule_send_outlined, color: c.goldText),
+                        title: const Text('Scheduled text message'),
+                        subtitle: Text(() {
+                          final mine = (ref.watch(smsSchedulesProvider).value ?? const [])
+                              .where((a) => a.eventId == ev.id)
+                              .toList();
+                          return mine.isEmpty
+                              ? 'A tap-to-send SMS on the day, at any times you choose'
+                              : 'On the day at ${mine.map((a) => fmtMinute(a.minuteOfDay)).join(', ')}';
+                        }()),
+                        trailing: const Icon(Icons.add_rounded),
+                        onTap: () => scheduleSms(context, ref,
+                            event: e, person: e.people.where((p) => !p.isMe).firstOrNull),
+                      ),
+                    ),
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.image_outlined, color: c.goldText),
+                      title: const Text('Greeting card'),
+                      subtitle: const Text('Make a picture card to send'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () async {
+                        final t = await targetFor(ref, e, item?.date ?? today);
+                        final lang = Lang.parse(await ref.read(databaseProvider).getSetting('messageLang'));
+                        final to = t.recipients.firstOrNull;
+                        final draft = ev.draftMessage?.trim() ?? '';
+                        final msg = draft.isNotEmpty ? draft : (await suggestFor(ref, t, to, lang)).textAt(0);
+                        if (context.mounted) await openCardFor(context, ref, t, message: msg, to: to);
+                      },
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                InfoCard(title: 'Details', children: [
+                  _kv(context, 'Date', fmtEventDate(day: ev.day, month: ev.month, year: ev.year, monthly: e.repeat == Repeat.monthly)),
+                  _kv(context, 'Repeats', e.repeat.label),
+                  if (ev.day == 29 && ev.month == 2) _kv(context, 'Non-leap years', e.feb29.label),
+                  if (ev.notes != null) ...[
+                    const SizedBox(height: 6),
+                    Text('Notes', style: context.text.bodySmall),
+                    Text(ev.notes!, style: context.text.bodyMedium),
+                  ],
+                ]),
+                if (e.people.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  InfoCard(title: e.people.length > 1 ? 'People' : 'Person', children: [
+                    for (final p in e.people)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: PersonAvatar(person: p, size: 40),
+                        title: Text(p.isMe ? 'You' : p.shortName),
+                        subtitle: Text(p.isMe ? p.name : p.relationLabel),
+                        trailing: const Icon(Icons.chevron_right_rounded),
+                        onTap: () => context.push('/person/${p.id}'),
+                      ),
+                  ]),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _kv(BuildContext context, String k, String v) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Row(children: [
+          Expanded(child: Text(k, style: context.text.bodyMedium?.copyWith(color: context.c.muted))),
+          Text(v, style: context.text.titleSmall),
+        ]),
+      );
+}
+
+/// "Wished" switch for this occurrence of the event.
+class _WishedToggle extends ConsumerWidget {
+  const _WishedToggle({required this.eventId, required this.date});
+
+  final int eventId;
+  final String date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final wished = ref.watch(wishedKeysProvider).contains('$eventId|$date');
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      title: const Text('Wished'),
+      subtitle: Text(wished ? 'Marked as wished for this year' : 'Turn on once you have wished'),
+      value: wished,
+      onChanged: (v) => v
+          ? ref.read(repoProvider).markWished(eventId: eventId, occasionDate: date)
+          : ref.read(repoProvider).unmarkWished(eventId: eventId, occasionDate: date),
+    );
+  }
+}

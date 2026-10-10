@@ -1,0 +1,3424 @@
+{
+ "language": "en",
+ "about": "Smriti message library. Edit freely: change text, add lines, or remove them. Placeholders: {name} {nickname} {relation} {age} {age_th} {years_married} {years_th} {couple_names} {festival} {my_name}.",
+ "messages": [
+  {
+   "id": "en.birthday.001",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Everything good in me started with you. Thank you for your love, your patience and your blessings. Wishing you good health and many happy years 🙏"
+  },
+  {
+   "id": "en.birthday.002",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! You have given us so much and asked for so little. Today is all about you. Love you always ❤️"
+  },
+  {
+   "id": "en.birthday.003",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! May God keep you healthy, happy and always smiling. We are so lucky to have you 🙏"
+  },
+  {
+   "id": "en.birthday.004",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Love you more than I say. Have a lovely day 🎂"
+  },
+  {
+   "id": "en.birthday.005",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Thank you for putting up with me all these years. I know it wasn't easy 😄 Love you!"
+  },
+  {
+   "id": "en.birthday.006",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "poetic",
+   "text": "For every early morning, every packed lunch and every quiet prayer for us — thank you. Happy birthday, {nickname} ❤️"
+  },
+  {
+   "id": "en.birthday.007",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Whatever I achieve, it rests on your sacrifices. Today I just want to say thank you, and I love you 🙏"
+  },
+  {
+   "id": "en.birthday.008",
+   "occasion": "birthday",
+   "relations": [
+    "parent"
+   ],
+   "tone": "short",
+   "text": "Wishing the best {relation} in the world a very happy birthday! Stay healthy and happy always ❤️"
+  },
+  {
+   "id": "en.birthday.009",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, my love! Every day with you is a gift, and today I get to celebrate the best one. Here's to you and to us ❤️"
+  },
+  {
+   "id": "en.birthday.010",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "You are my calm on busy days and my favourite person on every day. Happy birthday, love ❤️"
+  },
+  {
+   "id": "en.birthday.011",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday to the person who steals my blanket and my heart, in that order 😄❤️"
+  },
+  {
+   "id": "en.birthday.012",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, jaan! Today and always, all my love ❤️"
+  },
+  {
+   "id": "en.birthday.013",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday to my best friend and partner in everything. Life is so much better with you in it ❤️"
+  },
+  {
+   "id": "en.birthday.014",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "Another year of your laugh, your kindness and your cold feet 😄 I wouldn't change a thing. Happy birthday, my love ❤️"
+  },
+  {
+   "id": "en.birthday.015",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "I thank God every day that I get to do life with you. Happy birthday, {nickname} ❤️"
+  },
+  {
+   "id": "en.birthday.016",
+   "occasion": "birthday",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "Happy birthday to my forever person! Can't wait to celebrate you tonight 🥂"
+  },
+  {
+   "id": "en.birthday.017",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Watching you grow has been the greatest joy of my life. So proud of you ❤️"
+  },
+  {
+   "id": "en.birthday.018",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! May you always be healthy, kind and fearless. God bless you, beta 🙏"
+  },
+  {
+   "id": "en.birthday.019",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Still my baby, no matter how tall you get 😄❤️"
+  },
+  {
+   "id": "en.birthday.020",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, my dear {nickname}! Have the best day ever 🎉"
+  },
+  {
+   "id": "en.birthday.021",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday to the one who made me a parent and made every day brighter. Love you always, {nickname} ❤️"
+  },
+  {
+   "id": "en.birthday.022",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "poetic",
+   "text": "Dream big, laugh loud and never stop being you. Happy birthday, {nickname} 🌟"
+  },
+  {
+   "id": "en.birthday.023",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! Wishing you good health, great friends and success in everything you do 🙏"
+  },
+  {
+   "id": "en.birthday.024",
+   "occasion": "birthday",
+   "relations": [
+    "child"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, champ! So proud of you 🎂"
+  },
+  {
+   "id": "en.birthday.025",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Still the only person who can annoy me and make me laugh in the same minute. Have the best day 🎂"
+  },
+  {
+   "id": "en.birthday.026",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Partner in crime, keeper of secrets, forever my first friend ❤️"
+  },
+  {
+   "id": "en.birthday.027",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Don't worry, you're still younger than you look… wait 😄 Have a great one!"
+  },
+  {
+   "id": "en.birthday.028",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Love you loads 🎉"
+  },
+  {
+   "id": "en.birthday.029",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "Growing up with you was the best part of my childhood. Happy birthday, {nickname}! Always here for you ❤️"
+  },
+  {
+   "id": "en.birthday.030",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday! Another year older and still not Amma's favourite. That title is still mine 😄"
+  },
+  {
+   "id": "en.birthday.031",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! May this year bring you everything you've been working so hard for 🙏"
+  },
+  {
+   "id": "en.birthday.032",
+   "occasion": "birthday",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "Happy birthday to my favourite sibling! (Don't tell the others 😉) 🎂"
+  },
+  {
+   "id": "en.birthday.033",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! Your blessings mean everything to us. Wishing you good health, peace and many more years with all of us 🙏"
+  },
+  {
+   "id": "en.birthday.034",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Your stories, your love and your food are my happiest memories. Stay healthy and keep smiling ❤️"
+  },
+  {
+   "id": "en.birthday.035",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Wishing you a very happy birthday, {nickname}. May God give you strength, health and happiness always 🙏"
+  },
+  {
+   "id": "en.birthday.036",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Sending you lots of love and a big hug 🤗"
+  },
+  {
+   "id": "en.birthday.037",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday to the heart of our family! Everything we are began with you, {nickname} ❤️"
+  },
+  {
+   "id": "en.birthday.038",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "poetic",
+   "text": "Your wisdom guides us and your love holds us together. Happy birthday, {nickname} 🙏"
+  },
+  {
+   "id": "en.birthday.039",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "short",
+   "text": "Many happy returns of the day, {nickname}! Take care of your health 🙏"
+  },
+  {
+   "id": "en.birthday.040",
+   "occasion": "birthday",
+   "relations": [
+    "grandparent"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Still the only one allowed to tell me I'm too thin and feed me three more rotis 😄❤️"
+  },
+  {
+   "id": "en.birthday.041",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! Wishing you good health, happiness and a wonderful year ahead. Please keep blessing us 🙏"
+  },
+  {
+   "id": "en.birthday.042",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "short",
+   "text": "Many happy returns of the day, {nickname}! Have a lovely birthday 🎂"
+  },
+  {
+   "id": "en.birthday.043",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Thank you for always treating me like your own. Lots of love and respect 🙏"
+  },
+  {
+   "id": "en.birthday.044",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a very happy birthday, {nickname}. May the year ahead bring you health, peace and joy."
+  },
+  {
+   "id": "en.birthday.045",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Hope you have a wonderful day with the family 🎉"
+  },
+  {
+   "id": "en.birthday.046",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Thank you for always being the fun one at family functions 😄"
+  },
+  {
+   "id": "en.birthday.047",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! May God fill your life with good health and happiness 🙏"
+  },
+  {
+   "id": "en.birthday.048",
+   "occasion": "birthday",
+   "relations": [
+    "elder"
+   ],
+   "tone": "short",
+   "text": "Warm birthday wishes, {nickname}! Take care and stay happy 🙏"
+  },
+  {
+   "id": "en.birthday.049",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Have a super fun day 🎉🎂"
+  },
+  {
+   "id": "en.birthday.050",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! Study well, play well and stay happy always. Lots of love and blessings 🙏"
+  },
+  {
+   "id": "en.birthday.051",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Eat as much cake as you want today — just don't tell your parents I said so 😄"
+  },
+  {
+   "id": "en.birthday.052",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! You were so tiny the first time I held you, and look at you now. So proud ❤️"
+  },
+  {
+   "id": "en.birthday.053",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "short",
+   "text": "Happy {age_th} birthday, {nickname}! Have an amazing day 🥳"
+  },
+  {
+   "id": "en.birthday.054",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "blessing",
+   "text": "Many happy returns, {nickname}! May all your dreams come true 🌟"
+  },
+  {
+   "id": "en.birthday.055",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Officially old enough to do chores now 😄 Have a great day!"
+  },
+  {
+   "id": "en.birthday.056",
+   "occasion": "birthday",
+   "relations": [
+    "young"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Big hug from me 🤗"
+  },
+  {
+   "id": "en.birthday.057",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Have a fantastic day 🎉"
+  },
+  {
+   "id": "en.birthday.058",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Remember when we got caught together at every family function? Good times 😄"
+  },
+  {
+   "id": "en.birthday.059",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! More friend than cousin, always. Have a wonderful year ❤️"
+  },
+  {
+   "id": "en.birthday.060",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Party soon? 🥳"
+  },
+  {
+   "id": "en.birthday.061",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! Wishing you health, happiness and lots of success 🙏"
+  },
+  {
+   "id": "en.birthday.062",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday! Still waiting for the treat from last year, {nickname} 😄"
+  },
+  {
+   "id": "en.birthday.063",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "short",
+   "text": "Many happy returns, {nickname}! Stay awesome 🌟"
+  },
+  {
+   "id": "en.birthday.064",
+   "occasion": "birthday",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Family gatherings wouldn't be the same without you ❤️"
+  },
+  {
+   "id": "en.birthday.065",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Have a fantastic day and an even better year ahead 🎉"
+  },
+  {
+   "id": "en.birthday.066",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {name}! Wishing you lots of laughter, good food and great company today 🥳"
+  },
+  {
+   "id": "en.birthday.067",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! You're not getting older, you're just levelling up 😄🎮"
+  },
+  {
+   "id": "en.birthday.068",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Thank you for being there through everything. Lucky to call you my friend ❤️"
+  },
+  {
+   "id": "en.birthday.069",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday! Let's be honest, the cake is the real reason we're friends 😄🎂"
+  },
+  {
+   "id": "en.birthday.070",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "poetic",
+   "text": "Here's to more late-night talks, silly jokes and memories we'll laugh about forever. Happy birthday, {nickname} 🥂"
+  },
+  {
+   "id": "en.birthday.071",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "short",
+   "text": "HBD {nickname}! Treat is due 😉🎉"
+  },
+  {
+   "id": "en.birthday.072",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "emotional",
+   "text": "Some friends become family. You are one of them. Happy birthday, {nickname} ❤️"
+  },
+  {
+   "id": "en.birthday.073",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {nickname}! Age is just a number… a big one in your case 😄 Have a blast!"
+  },
+  {
+   "id": "en.birthday.074",
+   "occasion": "birthday",
+   "relations": [
+    "friend"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! Wishing you good health, success and happiness always 🙏"
+  },
+  {
+   "id": "en.birthday.075",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a very happy birthday, {name}. May the year ahead bring you good health, success and happiness."
+  },
+  {
+   "id": "en.birthday.076",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Happy birthday, {name}! Wishing you a wonderful day and a great year ahead."
+  },
+  {
+   "id": "en.birthday.077",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {name}! Have a great day 🎉"
+  },
+  {
+   "id": "en.birthday.078",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Warm wishes on your birthday, {name}. It's a pleasure working with you. Have a wonderful year ahead."
+  },
+  {
+   "id": "en.birthday.079",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "short",
+   "text": "Many happy returns of the day, {name}! Enjoy your day 🎂"
+  },
+  {
+   "id": "en.birthday.080",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Happy birthday, {name}. Thank you for your guidance and support. Wishing you health and happiness."
+  },
+  {
+   "id": "en.birthday.081",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "funny",
+   "text": "Happy birthday, {name}! Hope there's cake in the office today 😄"
+  },
+  {
+   "id": "en.birthday.082",
+   "occasion": "birthday",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a joyful birthday and continued success, {name}."
+  },
+  {
+   "id": "en.birthday.083",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Wishing you a wonderful day and a year full of happiness 🎂"
+  },
+  {
+   "id": "en.birthday.084",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Many happy returns of the day, {nickname}! Stay happy and healthy always 🎉"
+  },
+  {
+   "id": "en.birthday.085",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy birthday, {nickname}! May God bless you with health, happiness and success 🙏"
+  },
+  {
+   "id": "en.birthday.086",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "May your year be as bright as your smile. Happy birthday, {nickname} 🌟"
+  },
+  {
+   "id": "en.birthday.087",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy birthday, {nickname}! Have a lovely day 🥳"
+  },
+  {
+   "id": "en.birthday.088",
+   "occasion": "birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy birthday, {nickname}! Hope today reminds you how loved you are ❤️"
+  },
+  {
+   "id": "en.milestone_birthday.001",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy {age_th} birthday, {nickname}! What a beautiful milestone. Wishing you health, joy and many more wonderful years 🎉"
+  },
+  {
+   "id": "en.milestone_birthday.002",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "{age} years of making the world better! Happy birthday, {nickname}. Today we celebrate you 🥳"
+  },
+  {
+   "id": "en.milestone_birthday.003",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "parent",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy {age_th} birthday, {nickname}! {age} years of love, strength and blessings for all of us. May God give you many more healthy years 🙏"
+  },
+  {
+   "id": "en.milestone_birthday.004",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "parent",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "{age} years young! Happy birthday, {nickname}. Everything we have, we owe to you ❤️"
+  },
+  {
+   "id": "en.milestone_birthday.005",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy {age_th}, {nickname}! Here's to this big, beautiful milestone 🥂"
+  },
+  {
+   "id": "en.milestone_birthday.006",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "young",
+    "child"
+   ],
+   "tone": "funny",
+   "text": "Happy {age_th} birthday, {nickname}! Officially a grown-up now… well, almost 😄🎉"
+  },
+  {
+   "id": "en.milestone_birthday.007",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "{age} years of stories, laughter and love — and the best chapters are still ahead. Happy birthday, {nickname} 🌟"
+  },
+  {
+   "id": "en.milestone_birthday.008",
+   "occasion": "milestone_birthday",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy {age_th}, {nickname}! Don't worry, you don't look a day over {age}… wait 😄"
+  },
+  {
+   "id": "en.anniversary.001",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy anniversary, my love! Thank you for every laugh, every hard day we got through together, and every ordinary moment that feels special with you ❤️"
+  },
+  {
+   "id": "en.anniversary.002",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy {years_th} anniversary! I would choose you again, every single time ❤️"
+  },
+  {
+   "id": "en.anniversary.003",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "{years_married} years, one home, countless memories. Happy anniversary to my favourite person ❤️"
+  },
+  {
+   "id": "en.anniversary.004",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "Happy anniversary! Thank you for tolerating my snoring for {years_married} whole years 😄❤️"
+  },
+  {
+   "id": "en.anniversary.005",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "Happy anniversary, jaan! Love you more every year ❤️"
+  },
+  {
+   "id": "en.anniversary.006",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Marrying you was the best decision of my life. Happy anniversary, {nickname} ❤️"
+  },
+  {
+   "id": "en.anniversary.007",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "poetic",
+   "text": "With you, even the busiest days feel like home. Happy anniversary, my love 🌹"
+  },
+  {
+   "id": "en.anniversary.008",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "Happy anniversary to my partner in crime, snacks and endless TV shows 😄❤️"
+  },
+  {
+   "id": "en.anniversary.009",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "short",
+   "text": "Here's to us! Happy anniversary ❤️🥂"
+  },
+  {
+   "id": "en.anniversary.010",
+   "occasion": "anniversary",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Through every up and down, you held my hand. Happy anniversary. Here's to forever ❤️"
+  },
+  {
+   "id": "en.couple_anniversary.001",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy anniversary, {couple_names}! Wishing you both a lifetime of love, laughter and togetherness 💐"
+  },
+  {
+   "id": "en.couple_anniversary.002",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy anniversary! May your bond grow stronger with every year. Lots of love to you both 💐"
+  },
+  {
+   "id": "en.couple_anniversary.003",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy anniversary to a lovely couple! Have a wonderful day together 🥂"
+  },
+  {
+   "id": "en.couple_anniversary.004",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Two hearts, one journey. Wishing you both a very happy anniversary 💕"
+  },
+  {
+   "id": "en.couple_anniversary.005",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy anniversary! Proof that true love exists — and so does patience 😄💐"
+  },
+  {
+   "id": "en.couple_anniversary.006",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy {years_th} anniversary, {couple_names}! 🎉"
+  },
+  {
+   "id": "en.couple_anniversary.007",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy anniversary, you two! Still the couple everyone secretly wants to be 😄❤️"
+  },
+  {
+   "id": "en.couple_anniversary.008",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "emotional",
+   "text": "Happy anniversary! Seeing you two together always reminds me what real love looks like ❤️"
+  },
+  {
+   "id": "en.couple_anniversary.009",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy {years_th} anniversary! You have shown us what real togetherness looks like. Wishing you both good health and many more happy years 🙏"
+  },
+  {
+   "id": "en.couple_anniversary.010",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "Happy anniversary! Your love is the foundation of our family. Thank you for everything ❤️🙏"
+  },
+  {
+   "id": "en.couple_anniversary.011",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Wishing you both a very happy anniversary. May God keep you together, healthy and happy always 🙏"
+  },
+  {
+   "id": "en.couple_anniversary.012",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "short",
+   "text": "Happy anniversary to the best couple I know! Lots of love 💐"
+  },
+  {
+   "id": "en.couple_anniversary.013",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "poetic",
+   "text": "{years_married} years of standing by each other — through everything. Happy anniversary, with all our love 🙏"
+  },
+  {
+   "id": "en.couple_anniversary.014",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "funny",
+   "text": "Happy anniversary! {years_married} years and you still argue about the TV remote 😄 Love you both!"
+  },
+  {
+   "id": "en.couple_anniversary.015",
+   "occasion": "couple_anniversary",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Wishing you both a very happy wedding anniversary and many more years of happiness together."
+  },
+  {
+   "id": "en.work_anniversary.001",
+   "occasion": "work_anniversary",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Congratulations on your work anniversary, {name}! Your dedication inspires everyone around you. Wishing you continued success."
+  },
+  {
+   "id": "en.work_anniversary.002",
+   "occasion": "work_anniversary",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Happy work anniversary, {name}! Thank you for all your hard work and support."
+  },
+  {
+   "id": "en.work_anniversary.003",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy work anniversary, {nickname}! Here's to many more milestones 🎉"
+  },
+  {
+   "id": "en.work_anniversary.004",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Congratulations on completing another year, {name}. Wishing you growth and success ahead."
+  },
+  {
+   "id": "en.work_anniversary.005",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy work anniversary! Another year of surviving meetings that could have been emails 😄"
+  },
+  {
+   "id": "en.work_anniversary.006",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Congrats on another great year, {nickname}! Proud of you 👏"
+  },
+  {
+   "id": "en.work_anniversary.007",
+   "occasion": "work_anniversary",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Congratulations on this milestone, {name}. It's a privilege to work alongside you."
+  },
+  {
+   "id": "en.work_anniversary.008",
+   "occasion": "work_anniversary",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Congratulations on your work anniversary, {nickname}! Your hard work never goes unnoticed. Proud of you ❤️"
+  },
+  {
+   "id": "en.engagement.001",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Congratulations on your engagement, {nickname}! So happy for you both 💍"
+  },
+  {
+   "id": "en.engagement.002",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Congratulations, {nickname}! Wishing you both a lifetime of love and happiness 💍❤️"
+  },
+  {
+   "id": "en.engagement.003",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Congratulations! Now the real planning — and the family WhatsApp group — begins 😄💍"
+  },
+  {
+   "id": "en.engagement.004",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Heartiest congratulations on your engagement! May God bless your new journey together 🙏"
+  },
+  {
+   "id": "en.engagement.005",
+   "occasion": "engagement",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Congrats on the big news, {nickname}! Can't wait for the wedding 🎉"
+  },
+  {
+   "id": "en.congratulations.001",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Congratulations, {nickname}! So proud of you. Wishing you all the success ahead 🎉"
+  },
+  {
+   "id": "en.congratulations.002",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Many congratulations, {name}! You truly deserve this. Keep shining ✨"
+  },
+  {
+   "id": "en.congratulations.003",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Congratulations, {nickname}! All your hard work has paid off. So happy for you ❤️"
+  },
+  {
+   "id": "en.congratulations.004",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Congratulations, {nickname}! Party kab hai? 😄🎉"
+  },
+  {
+   "id": "en.congratulations.005",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Heartiest congratulations on this achievement, {name}. Wishing you continued success."
+  },
+  {
+   "id": "en.congratulations.006",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Congratulations, {nickname}! May this be the start of many more successes 🙏"
+  },
+  {
+   "id": "en.congratulations.007",
+   "occasion": "congratulations",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Every late night and every effort led to this moment. Congratulations, {nickname} 🌟"
+  },
+  {
+   "id": "en.congratulations.008",
+   "occasion": "congratulations",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "Congratulations, {nickname}! Your hard work inspires all of us. So proud of you 🙏"
+  },
+  {
+   "id": "en.belated.001",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Belated happy birthday, {nickname}! Sorry I'm late, but my wishes are just as warm. Hope you had a lovely day 🎂"
+  },
+  {
+   "id": "en.belated.002",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "I missed the day but not the love! Belated wishes, {nickname}. Hope it was a wonderful one 💐"
+  },
+  {
+   "id": "en.belated.003",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Belated happy birthday, {nickname}! I'm not late, I'm just extending your celebrations 😄🎂"
+  },
+  {
+   "id": "en.belated.004",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "So sorry I missed your special day, {nickname}. Wishing you a wonderful year ahead ❤️"
+  },
+  {
+   "id": "en.belated.005",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy belated birthday! My calendar let me down, but my wishes are 100% on time 😄"
+  },
+  {
+   "id": "en.belated.006",
+   "occasion": "belated",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "Belated birthday wishes, {nickname}. Sorry for the delay — please keep blessing me 🙏"
+  },
+  {
+   "id": "en.belated.007",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Belated wishes, {nickname}! Hope your day was as lovely as you are 🌸"
+  },
+  {
+   "id": "en.belated.008",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Wishes don't expire. Belated happy birthday, {nickname} — here's to a beautiful year 🌟"
+  },
+  {
+   "id": "en.belated.009",
+   "occasion": "belated",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "funny",
+   "text": "Belated happy anniversary! I'll make it up to you with dinner… and dessert 😄❤️"
+  },
+  {
+   "id": "en.belated.010",
+   "occasion": "belated",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Please accept my belated wishes, {name}. Hope you had a wonderful day."
+  },
+  {
+   "id": "en.thank_you.001",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thank you so much for the lovely wishes! It really made my day 😊"
+  },
+  {
+   "id": "en.thank_you.002",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thank you for remembering my birthday! Your wishes mean a lot 🙏"
+  },
+  {
+   "id": "en.thank_you.003",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Thank you for the warm wishes! Feeling so loved today ❤️"
+  },
+  {
+   "id": "en.thank_you.004",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Thank you! Another year older, but with friends like you, still feeling young 😄"
+  },
+  {
+   "id": "en.thank_you.005",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Thank you very much for your kind wishes. Much appreciated."
+  },
+  {
+   "id": "en.thank_you.006",
+   "occasion": "thank_you",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Thank you for your blessings! Please keep them coming always 🙏"
+  },
+  {
+   "id": "en.thank_you.007",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thanks a lot for the wishes! Hope to see you soon 😊"
+  },
+  {
+   "id": "en.thank_you.008",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Your wishes made my day extra special. Thank you so much ❤️"
+  },
+  {
+   "id": "en.thank_you.009",
+   "occasion": "thank_you",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Thank you for making my day so special, my love. I'm so lucky to have you ❤️"
+  },
+  {
+   "id": "en.thank_you.010",
+   "occasion": "thank_you",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thank you for thinking of me! 🙏😊"
+  },
+  {
+   "id": "en.general.001",
+   "occasion": "general",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Thinking of you today, {nickname}! Wishing you all the very best 😊"
+  },
+  {
+   "id": "en.general.002",
+   "occasion": "general",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Just wanted to say you mean a lot to me, {nickname}. Have a wonderful day ❤️"
+  },
+  {
+   "id": "en.general.003",
+   "occasion": "general",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Wishing you health, peace and happiness always, {nickname} 🙏"
+  },
+  {
+   "id": "en.general.004",
+   "occasion": "general",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Sending you warm wishes, {nickname}! Have a great day 🌸"
+  },
+  {
+   "id": "en.festival.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy {festival}! Wishing you and your family joy, good health and prosperity 🙏"
+  },
+  {
+   "id": "en.festival.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy {festival} to you and your family! 🌸"
+  },
+  {
+   "id": "en.festival.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Warm wishes on {festival}! May this festival bring happiness to your home 🙏"
+  },
+  {
+   "id": "en.festival.new_year.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy New Year, {nickname}! Wishing you a year full of good health and happiness 🎉",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy New Year! May your resolutions last longer than the party snacks 😄🎉",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Thank you for being part of my year, {nickname}. Wishing you a wonderful New Year ❤️",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you and your family a happy, healthy and prosperous New Year.",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "New year, new dreams, same old love. Happy New Year, {nickname} 🌟",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.006",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy New Year! May God bless you with good health and happiness all year long 🙏",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Cheers to a brand new year, {nickname}! 🥂",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy New Year! May every day of this year bring you peace and success 🙏",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.009",
+   "occasion": "festival",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy New Year! Same crazy friend, new calendar 😄🎉",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.new_year.010",
+   "occasion": "festival",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a successful and fulfilling New Year ahead, {name}.",
+   "festival": "new_year"
+  },
+  {
+   "id": "en.festival.makar_sankranti.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Makar Sankranti! May the sun bring warmth, sweetness and new beginnings to your life ☀️",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Sankranti, {nickname}! Ellu bella tindu olle maatadi 😊",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Sankranti! Eat ellu-bella, fly high like a kite and keep your worries grounded 😄🪁",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Wishing you a sweet and joyful Sankranti with your loved ones 🙏",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Makar Sankranti to you and your family! 🪁",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "As the sun turns north, may your life turn towards joy and success. Happy Sankranti ☀️",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.007",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Sankranti! Please accept our ellu-bella and bless us 🙏",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a prosperous Makar Sankranti and a bountiful harvest season.",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.009",
+   "occasion": "festival",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy Sankranti! Let's see whose kite goes higher this year 😄🪁",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.makar_sankranti.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Til-gul ghya, god god bola! Happy Sankranti 😊",
+   "festival": "makar_sankranti"
+  },
+  {
+   "id": "en.festival.republic_day.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Republic Day! Proud to be Indian 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Warm wishes on Republic Day. Let us honour the Constitution that unites us 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Freedom in our hearts, the Constitution in our hands. Happy Republic Day 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Republic Day to you and your family! Jai Hind 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Salute to the makers of our Constitution. Happy Republic Day 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a proud and happy Republic Day.",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy 26th January! Jai Hind 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "May our nation keep growing in peace and unity. Happy Republic Day 🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.009",
+   "occasion": "festival",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy Republic Day! Parade on TV, jalebi in hand — perfect holiday 😄🇮🇳",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.republic_day.010",
+   "occasion": "festival",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Happy Republic Day to you and your team. Jai Hind.",
+   "festival": "republic_day"
+  },
+  {
+   "id": "en.festival.holi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Holi, {nickname}! May your life be as colourful as today 🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Holi! Warning: I'm coming with colours and no mercy 😄🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Wishing you and your family a joyful and colourful Holi 🙏🌈",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Let the colours wash away the worries and leave only happiness. Happy Holi 🌈",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.005",
+   "occasion": "festival",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy Holi! Bura na mano, Holi hai 😄🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Holi to you and your family! 🌸",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.007",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Holi! Wishing you good health and lots of happiness 🙏",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Holi, {nickname}! Wish we could play together this year ❤️🎨",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.009",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a safe and happy Holi.",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.holi.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Rang barse! Happy Holi, {nickname} 🌈",
+   "festival": "holi"
+  },
+  {
+   "id": "en.festival.ugadi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Ugadi! May the new year bring you health, happiness and prosperity 🙏",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Ugadi habbada shubhashayagalu, {nickname}! 🌿",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Like bevu-bella, may this year bring a little of everything — and mostly sweetness. Happy Ugadi 🌿",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Ugadi and Gudi Padwa to you and your family! 🌸",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.005",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Ugadi! Please bless us for a good year ahead 🙏",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Ugadi! Hope this year has more bella than bevu 😄",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a happy and prosperous Ugadi.",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "On this Ugadi, may your home be filled with new hopes and good fortune 🙏",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.009",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy New Year, the Ugadi way! 🌿",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ugadi.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Ugadi, {nickname}! Missing the obbattu and the family chatter today ❤️",
+   "festival": "ugadi"
+  },
+  {
+   "id": "en.festival.ram_navami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Ram Navami! May Lord Rama bless you with strength, wisdom and peace 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Jai Shri Ram! Happy Ram Navami to you and your family 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "On this holy day, may Shri Ram fill your life with happiness 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you and your family a blessed Ram Navami.",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "May the ideals of Shri Ram light up your path. Happy Ram Navami 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.006",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Ram Navami! May Lord Rama keep you healthy and happy always 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Ram Navami, {nickname}! 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Wishing you peace and prosperity this Ram Navami 🌸",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.009",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Shri Ram Navami shubhashayagalu! 🙏",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.ram_navami.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Ram Navami! Remembering the panaka and kosambari at home ❤️",
+   "festival": "ram_navami"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.001",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "Happy Raksha Bandhan! No matter how far we are, you'll always be my first best friend ❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.002",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "Happy Raksha Bandhan! Rakhi is done, now where's my gift? 😄🎁",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.003",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "Happy Rakhi, {nickname}! Thank you for always having my back. Love you ❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.004",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "Happy Raksha Bandhan, {nickname}! 🧵❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.005",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "blessing",
+   "text": "Happy Rakhi! May our bond stay this strong forever 🙏",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.006",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "Happy Rakhi! Thanks for protecting me… mostly from our parents finding out things 😄",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.007",
+   "occasion": "festival",
+   "relations": [
+    "cousin"
+   ],
+   "tone": "short",
+   "text": "Happy Raksha Bandhan, {nickname}! Love you loads 🧵",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Raksha Bandhan to you and your family! 🌸",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.009",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "poetic",
+   "text": "A thread that ties our hearts, a promise that never breaks. Happy Rakhi, {nickname} ❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.raksha_bandhan.010",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "Missing you this Rakhi, {nickname}. Sending all my love and a virtual rakhi 🧵❤️",
+   "festival": "raksha_bandhan"
+  },
+  {
+   "id": "en.festival.independence_day.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Independence Day! Jai Hind 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Remembering those who gave us freedom. Happy Independence Day 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a proud and happy Independence Day.",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Free skies, proud hearts. Happy Independence Day 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy 15th August to you and your family! 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "May our country keep shining brighter every year. Happy Independence Day 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.007",
+   "occasion": "festival",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy Independence Day! Free from office today — the best kind of freedom 😄🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Vande Mataram! Happy Independence Day 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.009",
+   "occasion": "festival",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Happy Independence Day to you and your team. Jai Hind.",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.independence_day.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Proud to be Indian today and every day. Happy Independence Day 🇮🇳",
+   "festival": "independence_day"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Janmashtami! May Lord Krishna fill your life with love and joy 🙏🪈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Krishna Janmashtami, {nickname}! 🪈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Janmashtami! May you get all the butter and none of the scolding 😄🧈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "May the flute of Krishna bring melody to your life. Happy Janmashtami 🪈",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you and your family a blessed Janmashtami.",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.006",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Gokulashtami! May Shri Krishna bless you with health and happiness 🙏",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Jai Shri Krishna! Happy Gokulashtami 🙏",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Wishing you love, peace and prosperity this Janmashtami 🌸",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.009",
+   "occasion": "festival",
+   "relations": [
+    "child",
+    "young"
+   ],
+   "tone": "funny",
+   "text": "Happy Janmashtami, little Krishna! Don't steal all the laddoos 😄",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.krishna_janmashtami.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Janmashtami! Missing the little footprints and the chakkuli at home ❤️",
+   "festival": "krishna_janmashtami"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Ganesh Chaturthi! May Lord Ganesha remove all obstacles from your path 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Ganapati Bappa Morya! Happy Ganesh Chaturthi 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Ganesh Chaturthi! May your life be as sweet as Bappa's modaks — and as many 😄",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "May Ganesha bring wisdom to your mind and joy to your home. Happy Ganesh Chaturthi 🌺",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you and your family a blessed Ganesh Chaturthi.",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.006",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Ganesh Habba! May Vinayaka keep you healthy and happy always 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Gowri Ganesha habbada shubhashayagalu! 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "May Bappa bless you with success in every new beginning 🙏",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.009",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Vinayaka Chaturthi, {nickname}! 🌺",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.ganesh_chaturthi.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Ganesh Chaturthi! Wish I was home for the modaks and the aarti ❤️",
+   "festival": "ganesh_chaturthi"
+  },
+  {
+   "id": "en.festival.vijayadashami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Dasara! May good always win over evil in your life 🙏",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Vijayadashami, {nickname}! 🌼",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Dasara habbada shubhashayagalu! May Devi bless you with strength and success 🙏",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "May this Dasara burn away every worry and light up every dream 🔥🌼",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you and your family a happy and prosperous Dasara.",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.006",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Dasara! Please accept our banni and bless us 🙏",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Dasara! Hope your worries lose like Ravana every year 😄",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Dussehra to you and your family! 🌼",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.009",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "May Goddess Durga bless your home with peace and joy. Happy Vijayadashami 🙏",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.vijayadashami.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Dasara! Missing the Mysuru lights and the family time ❤️",
+   "festival": "vijayadashami"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Diwali! May Goddess Lakshmi bless your home with health, wealth and happiness 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Deepavali, {nickname}! 🪔✨",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "May the diyas light up your home and the sweets fill your heart. Happy Diwali 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Diwali! May your sweets be many and your calories be few 😄🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you and your family a bright and prosperous Diwali.",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.006",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Deepavali! Please bless us for a bright year ahead 🙏🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Diwali, {nickname}! Wish we could burst crackers together like old times ❤️🎆",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.008",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Deepavali habbada shubhashayagalu! 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.009",
+   "occasion": "festival",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a very happy and prosperous Diwali, {name}. May the year ahead bring success.",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.010",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "May this festival of lights bring new hope and happiness to your family 🪔",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.011",
+   "occasion": "festival",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Happy Diwali! Save some kaju katli for me, I'm coming over 😄",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.diwali_lakshmi_puja.012",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Shubh Deepavali! 🪔✨",
+   "festival": "diwali_lakshmi_puja"
+  },
+  {
+   "id": "en.festival.christmas.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Merry Christmas, {nickname}! 🎄",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Merry Christmas! Wishing you peace, love and joy this season 🎄",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Merry Christmas! Hope Santa brings you everything… and cake 😄🎅",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "May the magic of Christmas fill your heart with warmth and your home with love 🎄✨",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.005",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you and your family a merry Christmas and a happy New Year.",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.006",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Merry Christmas to you and your family! 🌟",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.007",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "May this Christmas bring you peace and happiness 🙏🎄",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.008",
+   "occasion": "festival",
+   "relations": [
+    "friend",
+    "sibling",
+    "cousin"
+   ],
+   "tone": "funny",
+   "text": "Merry Christmas! Where's the plum cake? Asking for a friend 😄🎂",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.009",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Merry Christmas, {nickname}! Grateful for you this season ❤️",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.christmas.010",
+   "occasion": "festival",
+   "relations": [
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Season's greetings! Wishing you a merry Christmas, {name}.",
+   "festival": "christmas"
+  },
+  {
+   "id": "en.festival.maha_shivaratri.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Maha Shivaratri! May Lord Shiva bless you with peace and strength 🙏 Om Namah Shivaya",
+   "festival": "maha_shivaratri"
+  },
+  {
+   "id": "en.festival.maha_shivaratri.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Har Har Mahadev! Happy Shivaratri 🙏",
+   "festival": "maha_shivaratri"
+  },
+  {
+   "id": "en.festival.maha_shivaratri.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "On this sacred night, may Shiva light your path. Happy Maha Shivaratri 🌙",
+   "festival": "maha_shivaratri"
+  },
+  {
+   "id": "en.festival.maha_shivaratri.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a blessed Maha Shivaratri.",
+   "festival": "maha_shivaratri"
+  },
+  {
+   "id": "en.festival.hanuman_jayanti.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Hanuman Jayanti! May Bajrangbali give you strength and courage 🙏",
+   "festival": "hanuman_jayanti"
+  },
+  {
+   "id": "en.festival.hanuman_jayanti.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Jai Hanuman! Happy Hanuman Jayanti 🙏",
+   "festival": "hanuman_jayanti"
+  },
+  {
+   "id": "en.festival.hanuman_jayanti.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a blessed Hanuman Jayanti.",
+   "festival": "hanuman_jayanti"
+  },
+  {
+   "id": "en.festival.akshaya_tritiya.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Akshaya Tritiya! May your happiness and prosperity never run out 🙏✨",
+   "festival": "akshaya_tritiya"
+  },
+  {
+   "id": "en.festival.akshaya_tritiya.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Akshaya Tritiya, {nickname}! 🌸",
+   "festival": "akshaya_tritiya"
+  },
+  {
+   "id": "en.festival.akshaya_tritiya.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you good fortune this Akshaya Tritiya.",
+   "festival": "akshaya_tritiya"
+  },
+  {
+   "id": "en.festival.guru_purnima.001",
+   "occasion": "festival",
+   "relations": [
+    "mentor",
+    "work"
+   ],
+   "tone": "formal",
+   "text": "Happy Guru Purnima! Thank you for your guidance and wisdom 🙏",
+   "festival": "guru_purnima"
+  },
+  {
+   "id": "en.festival.guru_purnima.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Guru Purnima! Grateful for everything you've taught me 🙏",
+   "festival": "guru_purnima"
+  },
+  {
+   "id": "en.festival.guru_purnima.003",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "emotional",
+   "text": "Happy Guru Purnima! You were my first teacher and my best one 🙏❤️",
+   "festival": "guru_purnima"
+  },
+  {
+   "id": "en.festival.guru_purnima.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Guru Purnima, {nickname}! 🙏",
+   "festival": "guru_purnima"
+  },
+  {
+   "id": "en.festival.nag_panchami.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Nag Panchami! Wishing you and your family health and happiness 🙏",
+   "festival": "nag_panchami"
+  },
+  {
+   "id": "en.festival.nag_panchami.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Nagara Panchami habbada shubhashayagalu! 🙏",
+   "festival": "nag_panchami"
+  },
+  {
+   "id": "en.festival.nag_panchami.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a blessed Nag Panchami.",
+   "festival": "nag_panchami"
+  },
+  {
+   "id": "en.festival.varamahalakshmi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Varamahalakshmi Vrata! May Goddess Lakshmi bless your home with wealth and happiness 🙏",
+   "festival": "varamahalakshmi"
+  },
+  {
+   "id": "en.festival.varamahalakshmi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Varamahalakshmi habbada shubhashayagalu, {nickname}! 🌸",
+   "festival": "varamahalakshmi"
+  },
+  {
+   "id": "en.festival.varamahalakshmi.003",
+   "occasion": "festival",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy Varamahalakshmi! You are the Lakshmi of our home ❤️🙏",
+   "festival": "varamahalakshmi"
+  },
+  {
+   "id": "en.festival.varamahalakshmi.004",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Varamahalakshmi! Please bless us all 🙏",
+   "festival": "varamahalakshmi"
+  },
+  {
+   "id": "en.festival.gowri_habba.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Gowri Habba! May Swarna Gowri bless you with happiness and good fortune 🙏",
+   "festival": "gowri_habba"
+  },
+  {
+   "id": "en.festival.gowri_habba.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Gowri habbada shubhashayagalu, {nickname}! 🌸",
+   "festival": "gowri_habba"
+  },
+  {
+   "id": "en.festival.gowri_habba.003",
+   "occasion": "festival",
+   "relations": [
+    "parent",
+    "elder",
+    "grandparent"
+   ],
+   "tone": "blessing",
+   "text": "Happy Gowri Habba! Please accept our bagina and bless us 🙏",
+   "festival": "gowri_habba"
+  },
+  {
+   "id": "en.festival.anant_chaturdashi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Ganapati Bappa Morya, pudhchya varshi lavkar ya! 🙏",
+   "festival": "anant_chaturdashi"
+  },
+  {
+   "id": "en.festival.anant_chaturdashi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Anant Chaturdashi! May Bappa's blessings stay with you all year 🙏",
+   "festival": "anant_chaturdashi"
+  },
+  {
+   "id": "en.festival.navratri_begins.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Navratri! May the nine nights bring you strength, joy and blessings 🙏",
+   "festival": "navratri_begins"
+  },
+  {
+   "id": "en.festival.navratri_begins.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Shubh Navratri, {nickname}! 🌺",
+   "festival": "navratri_begins"
+  },
+  {
+   "id": "en.festival.navratri_begins.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Navratri! Garba practice starts now 😄💃",
+   "festival": "navratri_begins"
+  },
+  {
+   "id": "en.festival.navratri_begins.004",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a blessed Navratri.",
+   "festival": "navratri_begins"
+  },
+  {
+   "id": "en.festival.dhanteras.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Dhanteras! May Goddess Lakshmi bless you with health and prosperity 🪔",
+   "festival": "dhanteras"
+  },
+  {
+   "id": "en.festival.dhanteras.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Dhanteras! Buy gold, buy silver — or at least buy sweets 😄",
+   "festival": "dhanteras"
+  },
+  {
+   "id": "en.festival.dhanteras.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Shubh Dhanteras, {nickname}! ✨",
+   "festival": "dhanteras"
+  },
+  {
+   "id": "en.festival.naraka_chaturdashi.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Naraka Chaturdashi! May the light of Deepavali drive away all darkness 🪔",
+   "festival": "naraka_chaturdashi"
+  },
+  {
+   "id": "en.festival.naraka_chaturdashi.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Naraka Chaturdashi! Enjoy the oil bath and the first crackers 🎆",
+   "festival": "naraka_chaturdashi"
+  },
+  {
+   "id": "en.festival.naraka_chaturdashi.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "funny",
+   "text": "Happy Naraka Chaturdashi! Early oil bath — no excuses today 😄🪔",
+   "festival": "naraka_chaturdashi"
+  },
+  {
+   "id": "en.festival.balipratipada.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Balipratipada! Wishing you a prosperous new year ahead 🪔",
+   "festival": "balipratipada"
+  },
+  {
+   "id": "en.festival.balipratipada.002",
+   "occasion": "festival",
+   "relations": [
+    "spouse"
+   ],
+   "tone": "emotional",
+   "text": "Happy Padwa, my love! Here's to another beautiful year together ❤️🪔",
+   "festival": "balipratipada"
+  },
+  {
+   "id": "en.festival.balipratipada.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Diwali Padwa, {nickname}! 🪔",
+   "festival": "balipratipada"
+  },
+  {
+   "id": "en.festival.bhai_dooj.001",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "emotional",
+   "text": "Happy Bhai Dooj, {nickname}! Praying for your long and happy life ❤️🙏",
+   "festival": "bhai_dooj"
+  },
+  {
+   "id": "en.festival.bhai_dooj.002",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "funny",
+   "text": "Happy Bhai Dooj! Tilak done, sweets eaten — gift pending 😄🎁",
+   "festival": "bhai_dooj"
+  },
+  {
+   "id": "en.festival.bhai_dooj.003",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "short",
+   "text": "Happy Bhau Beej, {nickname}! Love you ❤️",
+   "festival": "bhai_dooj"
+  },
+  {
+   "id": "en.festival.bhai_dooj.004",
+   "occasion": "festival",
+   "relations": [
+    "sibling"
+   ],
+   "tone": "blessing",
+   "text": "Happy Bhai Dooj! May our bond stay strong forever 🙏",
+   "festival": "bhai_dooj"
+  },
+  {
+   "id": "en.festival.gandhi_jayanti.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Remembering Bapu on Gandhi Jayanti. May his message of truth and peace guide us 🙏",
+   "festival": "gandhi_jayanti"
+  },
+  {
+   "id": "en.festival.gandhi_jayanti.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Gandhi Jayanti! 🕊️",
+   "festival": "gandhi_jayanti"
+  },
+  {
+   "id": "en.festival.gandhi_jayanti.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "poetic",
+   "text": "Be the change you wish to see. Happy Gandhi Jayanti 🕊️",
+   "festival": "gandhi_jayanti"
+  },
+  {
+   "id": "en.festival.kannada_rajyotsava.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Kannada Rajyotsavada shubhashayagalu! 💛❤️",
+   "festival": "kannada_rajyotsava"
+  },
+  {
+   "id": "en.festival.kannada_rajyotsava.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "emotional",
+   "text": "Happy Kannada Rajyotsava! Proud of our language, our land and our people 💛❤️",
+   "festival": "kannada_rajyotsava"
+  },
+  {
+   "id": "en.festival.kannada_rajyotsava.003",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "formal",
+   "text": "Wishing you a proud and happy Karnataka Rajyotsava.",
+   "festival": "kannada_rajyotsava"
+  },
+  {
+   "id": "en.festival.holika_dahan.001",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "blessing",
+   "text": "Happy Holika Dahan! May the bonfire burn away all negativity 🔥🙏",
+   "festival": "holika_dahan"
+  },
+  {
+   "id": "en.festival.holika_dahan.002",
+   "occasion": "festival",
+   "relations": [
+    "any"
+   ],
+   "tone": "short",
+   "text": "Happy Holika Dahan, {nickname}! 🔥",
+   "festival": "holika_dahan"
+  }
+ ]
+}
