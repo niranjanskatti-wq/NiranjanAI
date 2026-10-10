@@ -7,6 +7,7 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../../services/holiday_calendar.dart';
+import '../widgets/bank_glance.dart';
 import '../widgets/common.dart';
 import '../widgets/fields.dart';
 import 'alert_settings_screen.dart';
@@ -39,10 +40,7 @@ class _HolidaysViewState extends State<HolidaysView> {
       builder: (context, d) {
         final (cal, all, prefs) = d;
         final today = Fmt.dateOnly(DateTime.now());
-        final upcoming = cal
-            .closures(today, today.add(const Duration(days: 120)))
-            .where((c) => c.listed(weekendHolidays: prefs.holidayWeekendAlerts, everySunday: prefs.everySundayAlerts))
-            .toList();
+        final upcoming = BankGlance.coming(cal, prefs, today, max: 100);
         final named = cal.namedOn(_selected);
         final weekend = cal.weekendOn(_selected);
         final selectedHolidays = all.where((h) => h.fallsOn(_selected)).toList();

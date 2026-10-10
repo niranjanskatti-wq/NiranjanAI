@@ -6,7 +6,9 @@ import '../../core/strings.dart';
 import '../../core/theme.dart';
 import '../../data/models.dart';
 import '../../data/repository.dart';
+import '../../services/holiday_calendar.dart';
 import '../../services/reminder_engine.dart';
+import '../widgets/bank_glance.dart';
 import '../widgets/common.dart';
 import '../widgets/fields.dart';
 import 'item_form_screen.dart';
@@ -29,7 +31,8 @@ class _Dash {
   final List<DueItem> due;
   final Prefs prefs;
   final DateTime? lastBackup;
-  _Dash(this.all, this.byLocation, this.locColors, this.byOwner, this.byCategory, this.rates, this.recent, this.due, this.prefs, this.lastBackup);
+  final HolidayCalendar cal;
+  _Dash(this.all, this.byLocation, this.locColors, this.byOwner, this.byCategory, this.rates, this.recent, this.due, this.prefs, this.lastBackup, this.cal);
 }
 
 class DashboardScreen extends StatefulWidget {
@@ -69,7 +72,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
     return _Dash(all, byLoc, colors, byOwner, byCat, rates, await repo.recentMovements(limit: 8),
         await AppServices.I.reminders.listed(horizonDays: 60), await repo.prefs(),
-        Fmt.parse(await repo.getSetting('last_backup')));
+        Fmt.parse(await repo.getSetting('last_backup')), await HolidayCalendar.load(repo));
   }
 
   @override
@@ -187,17 +190,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
               // Coming bank holidays – separate on/off.
               _toggleHeader(context, context.t('dash.holidays'), 'dash_holidays', d.prefs.dashHolidays),
-              if (d.prefs.dashHolidays) ...[
-                if (_holidays(d).isEmpty)
-                  GoldCard(child: Text(context.t('hol.noneUpcoming'), style: const TextStyle(color: GV.muted)))
-                else
-                  GoldCard(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Column(children: [
-                      for (final r in _holidays(d).take(4)) DueTile(r, onTap: () => widget.onOpenTab(3)),
-                    ]),
-                  ),
-              ],
+              if (d.prefs.dashHolidays) BankGlance(cal: d.cal, prefs: d.prefs, onTap: () => widget.onOpenTab(3)),
               if (d.prefs.dashRecent) ...[
               SectionTitle(context.t('dash.recent'),
                   trailing: TextButton(onPressed: () => widget.onOpenTab(3), child: Text(context.t('nav.visits')))),
@@ -217,7 +210,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   static List<DueItem> _reminders(_Dash d) => d.due.where((x) => x.kind != DueKind.holiday).toList();
-  static List<DueItem> _holidays(_Dash d) => d.due.where((x) => x.kind == DueKind.holiday).toList();
 
   /// Section title with its own on/off switch, so a hidden section can be
   /// turned back on straight from the home page.

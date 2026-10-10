@@ -15,6 +15,8 @@ import 'package:goldvault/services/holiday_calendar.dart';
 import 'package:goldvault/services/reminder_engine.dart';
 import 'package:goldvault/services/report_data.dart';
 
+import 'package:goldvault/ui/widgets/bank_glance.dart';
+
 import 'helpers.dart';
 
 extension on Reminder {
@@ -409,5 +411,20 @@ void main() {
       expect(head, '%PDF-');
       expect(await f.length(), greaterThan(2000));
     });
+  });
+
+  test('home bank card includes today and tomorrow, then counts down', () async {
+    final svc = await testServices();
+    final cal = await HolidayCalendar.load(svc.repo);
+    final prefs = await svc.repo.prefs();
+    // Sat 10 Oct 2026 is the 2nd Saturday, Sun 11 Oct follows.
+    final list = BankGlance.coming(cal, prefs, DateTime(2026, 10, 10, 9));
+    expect(list.first.start, DateTime(2026, 10, 10));
+    expect(list.first.days, 2);
+    expect(list.first.weekends, ['sat2', 'sun']);
+    expect(list.any((c) => c.start == DateTime(2026, 10, 24)), isTrue);
+    // On a Saturday that is not a holiday, tomorrow's plain Sunday is still shown.
+    final sat3 = BankGlance.coming(cal, prefs, DateTime(2026, 10, 17));
+    expect(sat3.first.start, DateTime(2026, 10, 18));
   });
 }
